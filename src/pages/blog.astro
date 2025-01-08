@@ -1,7 +1,7 @@
 ---
 // Component Imports
 
-import Navigation from '@/components/Navigation';
+import BaseLayout from '../layouts/baseLayout.astro';
 
 const someProps = {
   count: 0,
@@ -11,29 +11,6 @@ const someProps = {
 // https://docs.astro.build/basics/astro-components/
 ---
 
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width" />
-  <meta name="generator" content={Astro.generator} />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <style>
-      html,
-      body {
-          font-family: system-ui;
-          margin: 0;
-      }
-
-      body {
-          padding: 2rem;
-      }
-  </style>
-  <title></title>
-</head>
-<body>
-<main>
-  <Navigation></Navigation>
+<BaseLayout>
   <h1>Blog</h1>
-</main>
-</body>
-</html>
+</BaseLayout>
