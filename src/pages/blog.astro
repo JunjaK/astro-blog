@@ -1,11 +1,12 @@
 ---
 // Component Imports
-import Counter from '@/components/Counter';
+
 import Navigation from '@/components/Navigation';
 
 const someProps = {
   count: 0,
 };
+
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
 ---
@@ -22,6 +23,7 @@ const someProps = {
           font-family: system-ui;
           margin: 0;
       }
+
       body {
           padding: 2rem;
       }
@@ -31,11 +33,7 @@ const someProps = {
 <body>
 <main>
   <Navigation></Navigation>
-  <section>
-    <Counter {...someProps} client:visible>
-      <h1>Hello, React!</h1>
-    </Counter>
-  </section>
+  <h1>Blog</h1>
 </main>
 </body>
 </html>
