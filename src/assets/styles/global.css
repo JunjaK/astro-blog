@@ -95,5 +95,8 @@
   .lead {
     @apply text-muted-foreground text-xl
   }
+  .layout-background {
+    @apply shadow-sm saturate-100 backdrop-blur-[4px] transition-all duration-200 bg-background/80
+  }
 
 }

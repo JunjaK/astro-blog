@@ -54,7 +54,7 @@ export default function Navigation() {
   return (
     <>
       <nav>
-        <div className={`nav-content-wrapper shadow-sm saturate-100 backdrop-blur-[4px] transition-all duration-200 bg-background/80'`}>
+        <div className="nav-content-wrapper layout-background">
           <div className="nav-content">
             <Button variant="ghost" size="icon" asChild>
               <a href="/">
