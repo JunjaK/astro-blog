@@ -6,7 +6,15 @@ export default function Flickering() {
   const { width } = useWindowSize();
 
   const calcWidth = useMemo(() => {
-    return width < 768 ? width * 0.95 : width * 0.8;
+    if (width < 768) {
+      return width * 0.95;
+    }
+    else if (width >= 768 && width < 1200) {
+      return width * 0.8;
+    }
+    else {
+      return 1200;
+    }
   }, [width]);
 
   return (
