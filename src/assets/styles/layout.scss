@@ -1,0 +1,38 @@
+@use "variables" as *;
+
+nav {
+  .nav-content-wrapper {
+    position: fixed;
+    z-index: 10;
+    width: 100vw;
+  }
+
+  .nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $px15 $px20;
+    width: $px400;
+    margin: 0 auto;
+
+    a {
+      width: $px32
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    .action-btn-wrapper {
+      display: flex;
+      gap: $px6;
+    }
+  }
+}
+
+.container {
+  margin: $px60 auto 0;
+  height: 100dvh;
+  padding: 0 $px15;
+}

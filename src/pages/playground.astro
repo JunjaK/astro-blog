@@ -1,18 +1,25 @@
 ---
 // Component Imports
-
+import Counter from '@/components/Counter';
 import BaseLayout from '../layouts/baseLayout.astro';
 
 const someProps = {
   count: 0,
 };
-
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
 ---
 
 <BaseLayout>
   <div class="container">
-    <h1>Blog</h1>
+    <h1>Playground</h1>
+    <br />
+    <section>
+      <Counter {...someProps} client:visible>
+        <h1>Hello, React!</h1>
+      </Counter>
+    </section>
   </div>
+
+
 </BaseLayout>
