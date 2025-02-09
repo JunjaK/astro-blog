@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react';
 export default function Intro() {
   return (
     <div className="mt-4">
+
       <BoxReveal boxColor="#27272A" duration={0.5}>
         <p>
           <span>
