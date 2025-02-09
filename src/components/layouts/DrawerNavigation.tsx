@@ -6,7 +6,6 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
 // @flow
@@ -26,7 +25,7 @@ export function DrawerNavigation({ children, tab }: Props) {
       <DrawerTrigger>{children}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Navigation Menu</DrawerTitle>
+          <h3>Navigation Menu</h3>
           <DrawerDescription>Click to navigate other pages!</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
