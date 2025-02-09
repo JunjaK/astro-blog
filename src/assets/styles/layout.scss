@@ -36,3 +36,17 @@ nav {
   height: 100dvh;
   padding: 0 $px15;
 }
+
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+}
