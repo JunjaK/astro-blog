@@ -1,41 +1,33 @@
 ---
-// Component Imports
-import Counter from '@/components/Counter';
-import Navigation from '@/components/Navigation';
+import Intro from '@/components/home/Intro';
+import TerminalInfo from '@/components/home/TerminalInfo';
+import LetterPullup from '@/components/ui/letter-pullup';
+import BaseLayout from '@/layouts/baseLayout.astro';
 
-const someProps = {
-  count: 0,
-};
+const visible = false;
+
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
 ---
 
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width" />
-  <meta name="generator" content={Astro.generator} />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <style>
-      html,
-      body {
-          font-family: system-ui;
-          margin: 0;
-      }
-      body {
-          padding: 2rem;
-      }
-  </style>
-  <title></title>
-</head>
-<body>
-<main>
-  <Navigation></Navigation>
-  <section>
-    <Counter {...someProps} client:visible>
-      <h1>Hello, React!</h1>
-    </Counter>
-  </section>
-</main>
-</body>
-</html>
+<BaseLayout>
+  <div class="container ">
+    <div class="mt-px100"></div>
+    <div class="flex justify-center ">
+      <TerminalInfo client:visible />
+    </div>
+    <div id="intro" class="flex justify-center">
+      <div class="intro-wrapper">
+        <LetterPullup className="" words="Hello World! I'm Junja" delay={0.05} client:visible />
+        <Intro client:visible />
+      </div>
+    </div>
+  </div>
+
+</BaseLayout>
+
+<script is:inline>
+  setTimeout(() => {
+    document.getElementById('intro').classList.add('visible');
+  }, 6000);
+</script>

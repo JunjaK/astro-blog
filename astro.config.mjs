@@ -13,4 +13,12 @@ export default defineConfig({
       applyBaseStyles: false,
     }),
   ],
+  vite: {
+    ssr: {
+      noExternal: ['react-use'],
+    },
+    optimizeDeps: {
+      include: ['react-use'],
+    },
+  },
 });

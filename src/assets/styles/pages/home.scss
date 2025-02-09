@@ -1,0 +1,14 @@
+@use "../variables" as *;
+
+#intro {
+  display: none;
+  &.visible {
+    display: flex;
+  }
+  .intro-wrapper {
+    margin-top: 6rem;
+    .icon {
+        font-size: 1rem;
+    }
+  }
+}
