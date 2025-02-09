@@ -14,7 +14,7 @@ export default function Intro() {
           </span>
           <br />
           <span>
-            여기서는 저의 간단한 정보들을 확인 할 수 있습니다.
+            이곳에서는 저의 간단한 정보들을 확인 할 수 있습니다.
           </span>
         </p>
       </BoxReveal>
@@ -22,19 +22,17 @@ export default function Intro() {
       <BoxReveal boxColor="#27272A" duration={1}>
         <div>
           <div className="flex gap-px2 mt-2">
-            <span>
-              포스트는 주로 개발에 관한 것들
-            </span>
-            <FadeText
-              className="font-bold text-black dark:text-white"
-              direction="right"
-              framerProps={{
-                show: { transition: { delay: 0.4 } },
-              }}
-              text="(웹 개발, 프론트엔드 관련)"
-            />
+            포스트는 주로 개발에 관한 것들,
           </div>
-          <div>
+          <FadeText
+            className="font-bold text-black dark:text-white"
+            direction="right"
+            framerProps={{
+              show: { transition: { delay: 0.4 } },
+            }}
+            text="(🌐 웹 개발, 💻 프론트엔드)"
+          />
+          <div className="mt-1">
             그리고 제가 관심있어 하는 주제를 올릴 예정입니다.
           </div>
           <FadeText
