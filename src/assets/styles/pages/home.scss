@@ -2,11 +2,14 @@
 
 #intro {
   display: none;
+  margin-top: -21rem;
   &.visible {
     display: flex;
   }
+
   .intro-wrapper {
-    margin-top: 6rem;
+    position: relative;
+    z-index: 2;
     .icon {
         font-size: 1rem;
     }

@@ -3,6 +3,7 @@ import Intro from '@/components/home/Intro';
 import TerminalInfo from '@/components/home/TerminalInfo';
 import LetterPullup from '@/components/ui/letter-pullup';
 import BaseLayout from '@/layouts/baseLayout.astro';
+import Flickering from '../components/home/Flickering';
 
 const visible = false;
 
@@ -16,6 +17,7 @@ const visible = false;
     <div class="flex justify-center ">
       <TerminalInfo client:visible />
     </div>
+    <Flickering client:visible />
     <div id="intro" class="flex justify-center">
       <div class="intro-wrapper">
         <LetterPullup className="" words="Hello World! I'm Junja" delay={0.05} client:visible />
