@@ -11,9 +11,12 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: $px15 $px20;
+    padding: 1.5rem 3rem;
     width: $px400;
     margin: 0 auto;
+    @media  screen and (max-width: 768px) {
+      padding: 1rem 2rem;
+    }
 
     a {
       width: $px32
@@ -31,9 +34,28 @@ nav {
   }
 }
 
+footer {
+  position: fixed;
+  z-index: 10;
+  bottom: 0;
+  width: 100vw;
+
+  .footer-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $px5 $px20;
+    width: $px400;
+    margin: 0 auto;
+
+  }
+
+}
+
 .container {
   margin: $px60 auto 0;
   padding: 0 $px15;
+  height: calc(100dvh - $px160);
 }
 
 

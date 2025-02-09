@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import Footer from '../components/layouts/Footer';
 // Component Imports
 import Navigation from '../components/layouts/Navigation';
 import '@/assets/styles/global.css';
@@ -28,11 +29,12 @@ const { frontmatter, title } = Astro.props;
 
 </head>
 <body>
-  <Navigation client:load></Navigation>
+  <Navigation client:visible></Navigation>
 
   <main>
     <slot></slot>
   </main>
+<Footer client:visible />
 
 </body>
 </html>

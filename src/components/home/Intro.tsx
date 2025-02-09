@@ -7,7 +7,7 @@ export default function Intro() {
   return (
     <div className="mt-4">
 
-      <BoxReveal boxColor="#27272A" duration={0.5}>
+      <BoxReveal boxColor="rgba(39,39,39,0.6)" duration={0.5}>
         <p>
           <span>
             안녕하세요, 여기는 저의 개인 블로그입니다.
@@ -19,7 +19,7 @@ export default function Intro() {
         </p>
       </BoxReveal>
 
-      <BoxReveal boxColor="#27272A" duration={1}>
+      <BoxReveal boxColor="rgba(39,39,39,0.6)" duration={1}>
         <div>
           <div className="flex gap-px2 mt-2">
             포스트는 주로 개발에 관한 것들,
@@ -45,7 +45,7 @@ export default function Intro() {
           />
         </div>
       </BoxReveal>
-      <BoxReveal boxColor="#27272A" duration={1.5}>
+      <BoxReveal boxColor="rgba(39,39,39,0.6)" duration={1.5}>
         <Button className="mt-6" asChild>
           <a href="/blog">
             <Icon icon="mingcute:document-2-line" className="icon mr-1" />
