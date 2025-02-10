@@ -47,7 +47,7 @@ export default function Intro() {
       </BoxReveal>
       <BoxReveal boxColor="rgba(39,39,39,0.6)" duration={1.5}>
         <Button className="mt-6" asChild>
-          <a href="/blog">
+          <a href="/blog/">
             <Icon icon="mingcute:document-2-line" className="icon mr-1" />
             포스트 바로가기
           </a>

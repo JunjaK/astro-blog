@@ -1,12 +1,14 @@
 ---
 // Component Imports
 
-import BaseLayout from '../layouts/baseLayout.astro';
+import type { BlogFrontMatter } from '@/types/commonType';
+import type { MarkdownInstance } from 'astro';
+import EachArticle from '@/components/Blog/EachArticle.astro';
+import BaseLayout from '@/layouts/baseLayout.astro';
+import dayjs from 'dayjs';
 
-const someProps = {
-  count: 0,
-};
-
+const posts: MarkdownInstance<BlogFrontMatter>[] = Object.values(import.meta.glob('./blog/**/*.md', { eager: true }));
+posts.sort((a, b) => dayjs(b.frontmatter.created).unix() - dayjs(a.frontmatter.created).unix());
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
 ---
@@ -14,8 +16,13 @@ const someProps = {
 <BaseLayout>
   <div class="container">
     <h1>Blog</h1>
-    <div class="bg-amber-300 h-[100rem]">
+    <hr class="title-divider" />
 
+    <div class="mt-8">
+      {posts.map((post) =>
+        <EachArticle frontmatter={post.frontmatter} url={post.url} client:visible />,
+      )}
     </div>
+
   </div>
 </BaseLayout>

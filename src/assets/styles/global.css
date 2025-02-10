@@ -81,7 +81,7 @@
     @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl
   }
   h2 {
-    @apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0
+    @apply scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0
   }
   h3 {
     @apply scroll-m-20 text-2xl font-semibold tracking-tight
@@ -98,5 +98,7 @@
   .layout-background {
     @apply shadow-sm saturate-100 backdrop-blur-[4px] transition-all duration-200 bg-background/80
   }
-
+  .title-divider {
+    @apply h-px my-4 bg-gray-300 border-0 dark:bg-zinc-700 w-1/3
+  }
 }

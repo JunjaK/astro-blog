@@ -29,19 +29,19 @@ export function DrawerNavigation({ children, tab }: Props) {
           <DrawerDescription>Click to navigate other pages!</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
-          <Button variant={checkRoute('home')} asChild>
+          <Button variant={checkRoute('home')}>
             <a href="/">Home</a>
           </Button>
-          <Button variant={checkRoute('blog')} asChild>
+          <Button variant={checkRoute('blog')}>
             <a href="/blog/">Blog</a>
           </Button>
-          <Button variant={checkRoute('project')} asChild>
+          <Button variant={checkRoute('project')}>
             <a href="/project/">Project</a>
           </Button>
-          <Button variant={checkRoute('playground')} asChild>
+          <Button variant={checkRoute('playground')}>
             <a href="/playground/">Playground</a>
           </Button>
-          <Button variant={checkRoute('about')} asChild>
+          <Button variant={checkRoute('about')}>
             <a href="/about/">About</a>
           </Button>
           <DrawerClose>

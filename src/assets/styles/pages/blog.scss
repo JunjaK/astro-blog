@@ -1,0 +1,39 @@
+@use "../variables" as *;
+
+.blog-article {
+  display: flex;
+  gap: 1rem;
+
+  img {
+    object-fit: cover;
+    aspect-ratio: 1 / 1; /* 정사각형 비율 */
+  }
+
+  .article-info {
+    .title {
+      max-width: calc($px400 - 15rem);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .category {
+      text-decoration: underline;
+
+    }
+
+    .scroll-area {
+      width: calc($px400 - 15rem);
+      margin: 0.8rem 0;
+    }
+    .tag-wrapper {
+      display: flex; /* 태그들을 가로로 정렬 */
+      gap: 0.5rem; /* 태그 간 간격 설정 */
+      white-space: nowrap; /* 줄바꿈 방지 */
+    }
+  }
+
+
+}
+.article-wrapper + .article-wrapper {
+  margin-top: 1rem;
+}

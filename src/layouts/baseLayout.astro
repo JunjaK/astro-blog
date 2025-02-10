@@ -1,15 +1,20 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import dayjs from 'dayjs';
+import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
+
+import FloatButton from '../components/layouts/FloatButton';
 import Footer from '../components/layouts/Footer';
-// Component Imports
 import Navigation from '../components/layouts/Navigation';
+import '@fontsource/gothic-a1';
 import '@/assets/styles/global.css';
 import '@/assets/styles/index.scss';
+import 'dayjs/locale/en';
+
+dayjs.extend(dayJsRelativeTime);
+dayjs.locale('en');
 
 const { frontmatter, title } = Astro.props;
-
-
-
 ---
 
 <html lang="en">
@@ -29,35 +34,33 @@ const { frontmatter, title } = Astro.props;
 
 </head>
 <body>
-  <Navigation client:visible></Navigation>
+<Navigation client:load></Navigation>
 
-  <main>
-    <div class="container-wrapper">
-      <slot></slot>
-      <div class="dummy-container" />
-    </div>
-  </main>
-
-
-  <Footer client:visible />
-
+<main>
+  <div class="container-wrapper">
+    <slot></slot>
+    <div class="dummy-container" />
+  </div>
+</main>
+<Footer client:load />
+<FloatButton client:visible />
 </body>
 </html>
 
 <script is:inline>
-function getThemePreference() {
-  if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-    return localStorage.getItem('theme');
+  function getThemePreference() {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+      return localStorage.getItem('theme');
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
 
-function update() {
-  const isDark = getThemePreference() === 'dark';
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
-}
+  function update() {
+    const isDark = getThemePreference() === 'dark';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+  }
 
-document.addEventListener('astro:after-swap', update);
-document.addEventListener('DOMContentLoaded', update);
+  document.addEventListener('astro:after-swap', update);
+  document.addEventListener('DOMContentLoaded', update);
 </script>

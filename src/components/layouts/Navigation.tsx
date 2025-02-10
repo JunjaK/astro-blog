@@ -4,40 +4,34 @@ import { ModeToggle } from '@/components/ModeToggle.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import { Icon } from '@iconify/react';
-import React, { useEffect, useMemo } from 'react';
-import { useWindowSize } from 'react-use';
+import React, { useEffect } from 'react';
 
 export default function Navigation() {
   const [tab, setTab] = React.useState('');
   const [isMobileMenuOpened, setIsMobileMenuOpened] = React.useState(false);
   const [openSearch, setOpenSearch] = React.useState(false);
-  const { width } = useWindowSize();
 
   useEffect(() => {
     const path = window.location.pathname;
     if (path === '/') {
       setTab('home');
     }
-    else if (path === '/blog/') {
+    else if (path.includes('blog')) {
       setTab('blog');
     }
-    else if (path === '/project/') {
+    else if (path.includes('project')) {
       setTab('project');
     }
-    else if (path === '/playground/') {
+    else if (path.includes('playground')) {
       setTab('playground');
     }
-    else if (path === '/about/') {
+    else if (path.includes('about')) {
       setTab('about');
     }
-    else if (path === '/resume/') {
+    else if (path.includes('resume')) {
       setTab('resume');
     }
   }, []);
-
-  const isMobileSize = useMemo(() => {
-    return width < 768;
-  }, [width]);
 
   function changeRoute(e: string) {
     setTab(e);
@@ -61,35 +55,33 @@ export default function Navigation() {
                 <Icon icon="mynaui:code-waves-solid" className="logo"></Icon>
               </a>
             </Button>
-            { !isMobileSize && (
-              <Tabs value={tab} onValueChange={changeRoute}>
-                <TabsList>
-                  <TabsTrigger value="home">
-                    <a href="/">Home</a>
-                  </TabsTrigger>
-                  <TabsTrigger value="blog">
-                    <a href="/blog/">Blog</a>
-                  </TabsTrigger>
-                  <TabsTrigger value="project">
-                    <a href="/project/">Project</a>
-                  </TabsTrigger>
-                  <TabsTrigger value="playground">
-                    <a href="/playground/">Playground</a>
-                  </TabsTrigger>
-                  <TabsTrigger value="about">
-                    <a href="/about/">About</a>
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            )}
+
+            <Tabs value={tab} onValueChange={changeRoute} className="max-md:hidden">
+              <TabsList>
+                <TabsTrigger value="home" className="nav-route">
+                  <a href="/">Home</a>
+                </TabsTrigger>
+                <TabsTrigger value="blog" className="nav-route">
+                  <a href="/blog/">Blog</a>
+                </TabsTrigger>
+                <TabsTrigger value="project" className="nav-route">
+                  <a href="/project/">Project</a>
+                </TabsTrigger>
+                <TabsTrigger value="playground" className="nav-route">
+                  <a href="/playground/">Playground</a>
+                </TabsTrigger>
+                <TabsTrigger value="about" className="nav-route">
+                  <a href="/about/">About</a>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
             <div className="action-btn-wrapper">
-              { isMobileSize && (
-                <DrawerNavigation tab={tab}>
-                  <Button variant="ghost" size="icon" onClick={toggleMenu}>
-                    <Icon icon="mynaui:menu" className="logo"></Icon>
-                  </Button>
-                </DrawerNavigation>
-              )}
+              <DrawerNavigation tab={tab}>
+                <Button variant="ghost" size="icon" onClick={toggleMenu} className="md:hidden" asChild>
+                  <Icon icon="mynaui:menu" className="logo"></Icon>
+                </Button>
+              </DrawerNavigation>
               <Button
                 variant="ghost"
                 size="icon"
