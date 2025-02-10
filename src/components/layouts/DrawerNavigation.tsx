@@ -33,16 +33,16 @@ export function DrawerNavigation({ children, tab }: Props) {
             <a href="/">Home</a>
           </Button>
           <Button variant={checkRoute('blog')} asChild>
-            <a href="/blog">Blog</a>
+            <a href="/blog/">Blog</a>
           </Button>
           <Button variant={checkRoute('project')} asChild>
-            <a href="/project">Project</a>
+            <a href="/project/">Project</a>
           </Button>
           <Button variant={checkRoute('playground')} asChild>
-            <a href="/playground">Playground</a>
+            <a href="/playground/">Playground</a>
           </Button>
           <Button variant={checkRoute('about')} asChild>
-            <a href="/about">About</a>
+            <a href="/about/">About</a>
           </Button>
           <DrawerClose>
             <Button className="w-full" variant="outline">Nav Close</Button>

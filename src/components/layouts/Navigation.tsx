@@ -18,19 +18,19 @@ export default function Navigation() {
     if (path === '/') {
       setTab('home');
     }
-    else if (path === '/blog') {
+    else if (path === '/blog/') {
       setTab('blog');
     }
-    else if (path === '/project') {
+    else if (path === '/project/') {
       setTab('project');
     }
-    else if (path === '/playground') {
+    else if (path === '/playground/') {
       setTab('playground');
     }
-    else if (path === '/about') {
+    else if (path === '/about/') {
       setTab('about');
     }
-    else if (path === '/resume') {
+    else if (path === '/resume/') {
       setTab('resume');
     }
   }, []);
@@ -70,16 +70,16 @@ export default function Navigation() {
                     </a>
                   </TabsTrigger>
                   <TabsTrigger value="blog">
-                    <a href="/blog">Blog</a>
+                    <a href="/blog/">Blog</a>
                   </TabsTrigger>
                   <TabsTrigger value="project">
-                    <a href="/project">Project</a>
+                    <a href="/project/">Project</a>
                   </TabsTrigger>
                   <TabsTrigger value="playground">
-                    <a href="/playground">Playground</a>
+                    <a href="/playground/">Playground</a>
                   </TabsTrigger>
                   <TabsTrigger value="about">
-                    <a href="/about">About</a>
+                    <a href="/about/">About</a>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
