@@ -18,10 +18,10 @@ const { frontmatter, title } = Astro.props;
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="generator" content={Astro.generator} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <ClientRouter />
   {frontmatter?.title
     ? <title>{frontmatter.title}</title>
     : <title>{title}</title>}
-  <ClientRouter />
   <style>
 
 
@@ -32,6 +32,7 @@ const { frontmatter, title } = Astro.props;
   <Navigation client:visible></Navigation>
 
   <main>
+
     <slot></slot>
   </main>
 <Footer client:visible />
@@ -47,13 +48,7 @@ function getThemePreference() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 const isDark = getThemePreference() === 'dark';
+console.log(isDark, 'test');
+localStorage.setItem('theme', isDark ? 'dark' : 'light');
 document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
-
-if (typeof localStorage !== 'undefined') {
-  const observer = new MutationObserver(() => {
-    const isDark = document.documentElement.classList.contains('dark');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  });
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-}
 </script>
