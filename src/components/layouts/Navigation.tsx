@@ -65,9 +65,7 @@ export default function Navigation() {
               <Tabs value={tab} onValueChange={changeRoute}>
                 <TabsList>
                   <TabsTrigger value="home">
-                    <a href="/">
-                      Home
-                    </a>
+                    <a href="/">Home</a>
                   </TabsTrigger>
                   <TabsTrigger value="blog">
                     <a href="/blog/">Blog</a>
