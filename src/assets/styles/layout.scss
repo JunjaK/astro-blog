@@ -1,5 +1,9 @@
 @use "variables" as *;
 
+body {
+  overflow-x: hidden;
+}
+
 nav {
   .nav-content-wrapper {
     position: fixed;
@@ -44,18 +48,36 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: $px5 $px20;
+    padding: 1.5rem 3rem;
     width: $px400;
     margin: 0 auto;
-
+    @media  screen and (max-width: 768px) {
+      padding: 1rem 2rem;
+    }
   }
 
 }
 
-.container {
-  margin: $px60 auto 0;
-  padding: 0 $px15;
-  height: calc(100dvh - $px160);
+main {
+  width: $px400;
+  margin: 0 auto;
+  padding: 0 4rem;
+  @media  screen and (max-width: 768px) {
+    padding: 0 2rem;
+  }
+  .container-wrapper {
+    margin-top: 8rem;
+    height: calc(100dvh - 13.5rem);
+    @media  screen and (max-width: 768px) {
+      height: calc(100dvh - 11.5rem);
+    }
+  }
+  .dummy-container {
+    height: 6rem;
+    @media  screen and (max-width: 768px) {
+      padding: 0 3rem;
+    }
+  }
 }
 
 

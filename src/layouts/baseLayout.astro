@@ -32,9 +32,14 @@ const { frontmatter, title } = Astro.props;
   <Navigation client:visible></Navigation>
 
   <main>
-    <slot></slot>
+    <div class="container-wrapper">
+      <slot></slot>
+      <div class="dummy-container" />
+    </div>
   </main>
-<Footer client:visible />
+
+
+  <Footer client:visible />
 
 </body>
 </html>
