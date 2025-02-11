@@ -2,10 +2,9 @@
 
 #intro {
   display: none;
-  margin-top: -21rem;
 
   &.visible {
-    display: flex;
+    display: unset;
   }
 
   .intro-wrapper {
@@ -16,4 +15,9 @@
       font-size: 1rem;
     }
   }
+  .on-spacer {
+    height: 4rem;
+  }
+
 }
+
