@@ -6,10 +6,11 @@ import Navigation from '@/components/layouts/Navigation';
 import { ClientRouter } from 'astro:transitions';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
+import ScrollProgress from '../components/ui/scroll-progress';
 import '@fontsource/gothic-a1';
 import '@fontsource/m-plus-1p';
-import '@fontsource/roboto';
 
+import '@fontsource/roboto';
 import '@/assets/styles/global.css';
 import '@/assets/styles/index.scss';
 import 'dayjs/locale/en';
@@ -40,6 +41,8 @@ const { frontmatter, title } = Astro.props;
 <Navigation client:load></Navigation>
 
 <main>
+  <ScrollProgress className="scroll-animation hidden top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:visible />
+
   <div class="container-wrapper">
     <slot></slot>
     <div class="dummy-container" />
@@ -59,9 +62,18 @@ const { frontmatter, title } = Astro.props;
   }
 
   function update() {
+    // 테마 설정
     const isDark = getThemePreference() === 'dark';
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+    // 스크롤 애니메이션 여부
+    setTimeout(() => {
+      if (document.querySelector('.scroll-animation') && document.querySelector('.container')) {
+        if (window.innerHeight < (document.querySelector('.container').offsetHeight + 224)) {
+          document.querySelector('.scroll-animation').classList.remove('hidden');
+        }
+      }
+    }, 1000);
   }
 
   document.addEventListener('astro:after-swap', update);

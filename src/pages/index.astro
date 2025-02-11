@@ -5,7 +5,6 @@ import Intro from '@/components/home/Intro';
 import TerminalInfo from '@/components/home/TerminalInfo';
 import GradualSpacing from '@/components/ui/gradual-spacing';
 import LetterPullup from '@/components/ui/letter-pullup';
-import ScrollProgress from '@/components/ui/scroll-progress';
 
 import { Separator } from '@/components/ui/separator';
 import BaseLayout from '@/layouts/baseLayout.astro';
@@ -16,8 +15,6 @@ import BaseLayout from '@/layouts/baseLayout.astro';
 ---
 
 <BaseLayout title="Home">
-  <ScrollProgress className="scroll-animation top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:visible />
-
   <div class="container overflow-x-hidden">
     <div class="mt-[20rem]"></div>
     <div class="flex justify-center ">
@@ -54,5 +51,10 @@ import BaseLayout from '@/layouts/baseLayout.astro';
   setTimeout(() => {
     if (document.getElementById('intro'))
       document.getElementById('intro').classList.add('visible');
+    if (document.querySelector('.scroll-animation') && document.querySelector('.container')) {
+      if (window.innerHeight < (document.querySelector('.container').offsetHeight + 224)) {
+        document.querySelector('.scroll-animation').classList.remove('hidden');
+      }
+    }
   }, 6000);
 </script>
