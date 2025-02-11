@@ -77,8 +77,23 @@ export default function Articles({ posts }: Props) {
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.href.split('?')[1]);
-    form.setValue('searchType', 'title-tag');
-    form.setValue('searchType', query.get('category') as SearchType ?? 'title-tag');
+    const category = query.get('category');
+    const tag = query.get('tag');
+
+    if (category) {
+      form.setValue('searchType', 'category');
+      form.setValue('search', category);
+      onSubmit(form.getValues());
+    }
+    else if (tag) {
+      form.setValue('searchType', 'title-tag');
+      form.setValue('search', tag);
+      onSubmit(form.getValues());
+    }
+    else {
+      form.setValue('searchType', 'title-tag');
+      form.setValue('search', '');
+    }
   }, []);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -161,7 +176,7 @@ export default function Articles({ posts }: Props) {
               framerProps={{
                 show: { transition: { delay: 0.1 } },
               }}
-              text={`${articles.length}개 해당하는 포스트를 찾았습니다.`}
+              text={`${articles.length}개의 해당하는 포스트를 찾았습니다.`}
             />
           </div>
         )}
