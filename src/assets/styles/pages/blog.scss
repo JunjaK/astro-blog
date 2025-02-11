@@ -50,13 +50,11 @@
   hr {
     box-sizing: content-box;
     overflow: hidden;
-    background: transparent;
     border-bottom: 1px solid #3d444db3;
     height: .25em;
     padding: 0;
     margin: 1.5rem 0;
     background-color: #3d444d;
-    border: 0;
   }
   h1 {
     margin-bottom: 1rem;
@@ -92,8 +90,6 @@
       list-style-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 16 10'><path fill='%2327272a' d='M4 8a4 4 0 1 1 8 0a4 4 0 0 1-8 0m4-2.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5'/></svg>");
     }
   }
-
-
 
 }
 
