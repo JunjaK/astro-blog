@@ -1,7 +1,7 @@
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, passthroughImageService } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,6 +12,9 @@ export default defineConfig({
       applyBaseStyles: false,
     }),
   ],
+  image: {
+    service: passthroughImageService(),
+  },
   markdown: {
     shikiConfig: {
       theme: 'github-dark-dimmed',
