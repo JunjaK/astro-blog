@@ -22,6 +22,11 @@ nav {
     @media  screen and (max-width: 768px) {
       padding: 1rem 2rem;
     }
+    .doc-nav {
+      .nav-btn {
+        width: 5.5rem;
+      }
+    }
 
     .nav-route {
       width: 6rem
