@@ -46,7 +46,6 @@ export function DrawerNavigation({ children, tab }: Props) {
           <Button variant={checkRoute('about')}>
             <a href="/about/">About</a>
           </Button>
-          <Button className="w-full" variant="outline">Nav Close</Button>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
