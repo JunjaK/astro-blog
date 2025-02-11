@@ -1,9 +1,13 @@
 ---
 import Flickering from '@/components/home/Flickering';
+import InteractiveIconCloud from '@/components/home/InteractiveIconCloud';
 import Intro from '@/components/home/Intro';
 import TerminalInfo from '@/components/home/TerminalInfo';
+import GradualSpacing from '@/components/ui/gradual-spacing';
 import LetterPullup from '@/components/ui/letter-pullup';
 import ScrollProgress from '@/components/ui/scroll-progress';
+
+import { Separator } from '@/components/ui/separator';
 import BaseLayout from '@/layouts/baseLayout.astro';
 
 
@@ -20,16 +24,28 @@ import BaseLayout from '@/layouts/baseLayout.astro';
       <TerminalInfo client:visible />
     </div>
     <Flickering client:visible />
-    <div id="intro" class="flex justify-center">
-      <div class="intro-wrapper">
-        <LetterPullup className="max-sm:text-3xl" words="Hello World! I'm Junja" delay={0.05} client:visible />
-        <Intro client:visible />
+    <div id="intro">
+      <div class="flex justify-center mt-[-21rem]">
+        <div class="intro-wrapper">
+          <LetterPullup className="max-sm:text-3xl dark:text-slate-200 text-slate-700 " words="Hello World! I'm Junja" delay={0.05} client:visible />
+          <Intro client:visible />
+        </div>
+      </div>
+      <div class="on-spacer"></div>
+      <Separator className="my-8" />
+        <GradualSpacing
+          className="font-display text-center text-4xl max-sm:text-3xl font-extrabold dark:text-slate-200 text-slate-700"
+          text="Technologies I've worked"
+          client:visible
+        />
+      <div class="flex justify-center">
+
+        <InteractiveIconCloud client:visible />
       </div>
     </div>
-    <div class="h-[5rem]">
 
-    </div>
-    <!--<div class="bg-zinc-400 h-[50rem]"></div>-->
+
+
   </div>
 
 </BaseLayout>
