@@ -60,11 +60,9 @@ type IconData = Awaited<ReturnType<typeof fetchSimpleIcons>>;
 export default function IconCloud({ iconSlugs }: DynamicCloudProps) {
   const [data, setData] = useState<IconData | null>(null);
   const theme = useStore($theme);
-  console.log(theme);
 
   useEffect(() => {
     fetchSimpleIcons({ slugs: iconSlugs }).then((e) => {
-      console.log(iconSlugs, e);
       setData(e);
     });
   }, [iconSlugs]);
