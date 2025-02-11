@@ -23,7 +23,7 @@ export default function BlogFrontmatter({ frontmatter }: Props) {
   }, [frontmatter.created]);
 
   function onSearch(type: 'category' | 'tag', value: string) {
-    window.location.href = `/blog?${type}=${value}/`;
+    window.location.href = `/blog?${type}=${value}`;
   }
 
   return (
