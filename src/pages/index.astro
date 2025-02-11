@@ -6,7 +6,6 @@ import LetterPullup from '@/components/ui/letter-pullup';
 import ScrollProgress from '@/components/ui/scroll-progress';
 import BaseLayout from '@/layouts/baseLayout.astro';
 
-const visible = false;
 
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
@@ -15,7 +14,7 @@ const visible = false;
 <BaseLayout title="Home">
   <ScrollProgress className="scroll-animation top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:visible />
 
-  <div class="container ">
+  <div class="container overflow-x-hidden">
     <div class="mt-[20rem]"></div>
     <div class="flex justify-center ">
       <TerminalInfo client:visible />
@@ -23,9 +22,12 @@ const visible = false;
     <Flickering client:visible />
     <div id="intro" class="flex justify-center">
       <div class="intro-wrapper">
-        <LetterPullup className="" words="Hello World! I'm Junja" delay={0.05} client:visible />
+        <LetterPullup className="max-sm:text-3xl" words="Hello World! I'm Junja" delay={0.05} client:visible />
         <Intro client:visible />
       </div>
+    </div>
+    <div class="h-[5rem]">
+
     </div>
     <!--<div class="bg-zinc-400 h-[50rem]"></div>-->
   </div>

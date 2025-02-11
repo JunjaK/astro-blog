@@ -3,6 +3,7 @@
 #intro {
   display: none;
   margin-top: -21rem;
+
   &.visible {
     display: flex;
   }
@@ -10,8 +11,9 @@
   .intro-wrapper {
     position: relative;
     z-index: 2;
+
     .icon {
-        font-size: 1rem;
+      font-size: 1rem;
     }
   }
 }
