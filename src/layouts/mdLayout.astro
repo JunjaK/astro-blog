@@ -1,11 +1,13 @@
 ---
+import BlogFrontmatter from '@/components/Blog/BlogFrontmatter';
+import FloatButton from '@/components/layouts/FloatButton';
+import Footer from '@/components/layouts/Footer';
+import Navigation from '@/components/layouts/Navigation';
+import ScrollProgress from '@/components/ui/scroll-progress';
+
 import { ClientRouter } from 'astro:transitions';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
-
-import FloatButton from '../components/layouts/FloatButton';
-import Footer from '../components/layouts/Footer';
-import Navigation from '../components/layouts/Navigation';
 import '@fontsource/gothic-a1';
 import '@/assets/styles/global.css';
 import '@/assets/styles/pages/markdowncss.css';
@@ -16,6 +18,8 @@ dayjs.extend(dayJsRelativeTime);
 dayjs.locale('en');
 
 const { frontmatter, title } = Astro.props;
+
+
 ---
 
 <html lang="en">
@@ -38,10 +42,17 @@ const { frontmatter, title } = Astro.props;
 <Navigation client:load></Navigation>
 
 <main>
-  <div class="markdown-body">
-    <slot></slot>
-    <div class="dummy-container" />
+  <ScrollProgress className="top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:visible />\
+  <div class="markdown-content-wrapper">
+    <div class="front-matter-info">
+      <BlogFrontmatter frontmatter={frontmatter} client:visible />
+    </div>
+    <div class="markdown-body">
+      <slot></slot>
+      <div class="dummy-container" />
+    </div>
   </div>
+
 </main>
 <Footer client:load />
 <FloatButton client:visible />

@@ -15,7 +15,7 @@ function makeKey(tag: string) {
 export default function BlogTags({ tags }: Props) {
   return (
     <ScrollArea className="scroll-area">
-      <div className="tag-wrapper">
+      <div className="tags-wrapper">
         {tags.map((tag) => (
           <Badge variant="secondary" className="rounded-md tag" key={makeKey(tag)}>
             {tag}

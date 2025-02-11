@@ -9,11 +9,12 @@ import dayjs from 'dayjs';
 
 const posts: MarkdownInstance<BlogFrontMatter>[] = Object.values(import.meta.glob('./blog/**/*.md', { eager: true }));
 posts.sort((a, b) => dayjs(b.frontmatter.created).unix() - dayjs(a.frontmatter.created).unix());
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+
+const { query } = Astro.params;
+
 ---
 
-<BaseLayout>
+<BaseLayout title="Blog">
   <div class="container">
     <h1>Blog</h1>
     <hr class="title-divider" />

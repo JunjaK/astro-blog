@@ -16,6 +16,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .category {
       text-decoration: underline;
 
@@ -25,6 +26,7 @@
       width: calc($px400 - 15rem);
       margin: 0.8rem 0;
     }
+
     .tag-wrapper {
       display: flex; /* 태그들을 가로로 정렬 */
       gap: 8px; /* 태그 간 간격 설정 */
@@ -35,61 +37,104 @@
 
 
 }
+
 .article-wrapper + .article-wrapper {
   margin-top: 1rem;
 }
 
-.markdown-body {
+.markdown-content-wrapper {
   margin-top: 8rem !important;
   height: calc(100dvh - 12.5rem) !important;
-  background-color: unset !important;
-
-  @media  screen and (max-width: 768px) {
+  @media screen and (max-width: 768px) {
     height: calc(100dvh - 11rem) !important;
   }
-  hr {
-    box-sizing: content-box;
-    overflow: hidden;
-    border-bottom: 1px solid #3d444db3;
-    height: .25em;
-    padding: 0;
-    margin: 1.5rem 0;
-    background-color: #3d444d;
-  }
-  h1 {
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #d2d2d2;
-    line-height: 2;
-  }
-  h2 {
 
-  }
-  h3 {
-    margin-top: 1rem;
-  }
-  img {
-    border-radius: 1rem;
-    margin: 0.5rem 0;
-  }
-  p {
-    margin-top: 1rem;
-    line-height: 1.8;
-  }
+  .front-matter-info {
+    .title {
+      font-size: 2.5rem;
+      @media  screen and (max-width: 768px) {
+        font-size: 2rem;
+      }
+      font-weight: bold;
+    }
 
-  &.dark {
-    li {
-      list-style-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 16 10'><path fill='%23e4e4e7' d='M4 8a4 4 0 1 1 8 0a4 4 0 0 1-8 0m4-2.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5'/></svg>");
-      > p {
-        margin-top: 0.5rem !important;
-        margin-bottom: 0.5rem !important;
+    .category {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: $color-slate-300;
+      cursor: pointer;
+    }
+
+    hr {
+      margin: 1rem 0;
+    }
+
+
+    .tags-wrapper {
+      display: flex;
+      gap: 0.5rem;
+      .tag {
+        cursor: pointer;
       }
     }
   }
-  &.light {
-    li {
-      list-style-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 16 10'><path fill='%2327272a' d='M4 8a4 4 0 1 1 8 0a4 4 0 0 1-8 0m4-2.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5'/></svg>");
+
+  .markdown-body {
+    margin-top: 2rem !important;
+    background-color: unset !important;
+
+    hr {
+      box-sizing: content-box;
+      overflow: hidden;
+      border-bottom: 1px solid #3d444db3;
+      height: .25em;
+      padding: 0;
+      margin: 1.5rem 0;
+      background-color: #3d444d;
     }
+
+    h1 {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #d2d2d2;
+      line-height: 2;
+    }
+
+    h2 {
+
+    }
+
+    h3 {
+      margin-top: 1rem;
+    }
+
+    img {
+      border-radius: 1rem;
+      margin: 0.5rem 0;
+    }
+
+    p {
+      margin-top: 1rem;
+      line-height: 1.8;
+    }
+
+    &.dark {
+      li {
+        list-style-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 16 10'><path fill='%23e4e4e7' d='M4 8a4 4 0 1 1 8 0a4 4 0 0 1-8 0m4-2.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5'/></svg>");
+
+        > p {
+          margin-top: 0.5rem !important;
+          margin-bottom: 0.5rem !important;
+        }
+      }
+    }
+
+    &.light {
+      li {
+        list-style-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 16 10'><path fill='%2327272a' d='M4 8a4 4 0 1 1 8 0a4 4 0 0 1-8 0m4-2.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5'/></svg>");
+      }
+    }
+
   }
 
-}
 
+}

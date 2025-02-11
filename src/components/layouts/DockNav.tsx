@@ -12,7 +12,7 @@ export default function DocNav({ tab }: Props) {
     return tab === e ? 'default' : 'ghost';
   }
   return (
-    <Dock direction="middle" className="doc-nav">
+    <Dock direction="middle" className="doc-nav max-md:hidden">
       <DockIcon>
         <Button variant={checkRoute('home')} size="icon" asChild className="nav-btn">
           <a href="/">
