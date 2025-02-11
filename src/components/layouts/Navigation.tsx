@@ -1,7 +1,7 @@
 import DocNav from '@/components/layouts/DockNav.tsx';
 import { DrawerNavigation } from '@/components/layouts/DrawerNavigation.tsx';
+import { ModeToggle } from '@/components/layouts/ModeToggle.tsx';
 import { SearchSite } from '@/components/layouts/SearchSite.tsx';
-import { ModeToggle } from '@/components/ModeToggle.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Icon } from '@iconify/react';
 import React, { useEffect } from 'react';

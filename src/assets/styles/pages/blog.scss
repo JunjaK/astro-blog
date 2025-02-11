@@ -1,4 +1,13 @@
 @use "../variables" as *;
+.search-area {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  .search-input {
+    width: calc($px400 - 20.5rem)
+  }
+}
+
 
 .blog-article {
   display: flex;
@@ -7,6 +16,8 @@
   img {
     object-fit: cover;
     aspect-ratio: 1 / 1; /* 정사각형 비율 */
+    width: 128px;
+    height: 128px;
   }
 
   .article-info {
@@ -27,7 +38,7 @@
       margin: 0.8rem 0;
     }
 
-    .tag-wrapper {
+    .tags-wrapper {
       display: flex; /* 태그들을 가로로 정렬 */
       gap: 8px; /* 태그 간 간격 설정 */
       overflow-x: auto; /* 가로 스크롤 활성화 */
@@ -61,7 +72,6 @@
     .category {
       font-size: 1.2rem;
       font-weight: 500;
-      color: $color-slate-300;
       cursor: pointer;
     }
 
@@ -82,6 +92,7 @@
   .markdown-body {
     margin-top: 2rem !important;
     background-color: unset !important;
+    font-family: 'Gothic A1', sans-serif !important;
 
     hr {
       box-sizing: content-box;
@@ -99,9 +110,7 @@
       line-height: 2;
     }
 
-    h2 {
 
-    }
 
     h3 {
       margin-top: 1rem;
@@ -118,6 +127,9 @@
     }
 
     &.dark {
+      h2 {
+        color: $color-cyan-500;
+      }
       li {
         list-style-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 16 10'><path fill='%23e4e4e7' d='M4 8a4 4 0 1 1 8 0a4 4 0 0 1-8 0m4-2.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5'/></svg>");
 
@@ -129,12 +141,12 @@
     }
 
     &.light {
+      h2 {
+        color: $color-cyan-600;
+      }
       li {
         list-style-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 16 10'><path fill='%2327272a' d='M4 8a4 4 0 1 1 8 0a4 4 0 0 1-8 0m4-2.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5'/></svg>");
       }
     }
-
   }
-
-
 }

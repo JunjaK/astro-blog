@@ -43,6 +43,7 @@ const { frontmatter, title } = Astro.props;
 
 <main>
   <ScrollProgress className="top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:visible />\
+
   <div class="markdown-content-wrapper">
     <div class="front-matter-info">
       <BlogFrontmatter frontmatter={frontmatter} client:visible />
@@ -54,7 +55,7 @@ const { frontmatter, title } = Astro.props;
   </div>
 
 </main>
-<Footer client:load />
+<Footer client:visible />
 <FloatButton client:visible />
 </body>
 </html>

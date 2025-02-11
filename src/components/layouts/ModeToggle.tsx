@@ -1,11 +1,11 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button.tsx';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { $theme, setTheme } from '@/store/system';
+} from '@/components/ui/dropdown-menu.tsx';
+import { $theme, setTheme } from '@/store/system.ts';
 import { Icon } from '@iconify/react';
 import { useStore } from '@nanostores/react';
 import * as React from 'react';
@@ -20,6 +20,7 @@ export function ModeToggle() {
   React.useEffect(() => {
     const isDark = theme === 'dark';
     document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+    document.getElementsByClassName('markdown-body')[0]?.classList.add(isDark ? 'dark' : 'light');
   }, [theme]);
 
   return (

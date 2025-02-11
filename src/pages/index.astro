@@ -1,9 +1,10 @@
 ---
+import Flickering from '@/components/home/Flickering';
 import Intro from '@/components/home/Intro';
 import TerminalInfo from '@/components/home/TerminalInfo';
 import LetterPullup from '@/components/ui/letter-pullup';
+import ScrollProgress from '@/components/ui/scroll-progress';
 import BaseLayout from '@/layouts/baseLayout.astro';
-import Flickering from '../components/home/Flickering';
 
 const visible = false;
 
@@ -12,6 +13,8 @@ const visible = false;
 ---
 
 <BaseLayout title="Home">
+  <ScrollProgress className="scroll-animation top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:visible />
+
   <div class="container ">
     <div class="mt-[20rem]"></div>
     <div class="flex justify-center ">
@@ -31,6 +34,7 @@ const visible = false;
 
 <script is:inline>
   setTimeout(() => {
-    document.getElementById('intro').classList.add('visible');
+    if (document.getElementById('intro'))
+      document.getElementById('intro').classList.add('visible');
   }, 6000);
 </script>
