@@ -9,7 +9,6 @@ export default function FloatButton() {
   const { y } = useWindowScroll();
   const isScrollTop = useMemo(() => {
     return y === 0;
-    console.log(y);
   }, [y]);
 
   function onClick() {
@@ -17,18 +16,16 @@ export default function FloatButton() {
   }
   return (
     <div>
-      {!isScrollTop && (
-        <div className="float-btn-wrapper">
-          <RippleButton
-            className="rounded-full"
-            rippleColor="#ADD8E6"
-            onClick={onClick}
-          >
-            <Icon icon="mingcute:large-arrow-up-fill" className="icon">
-            </Icon>
-          </RippleButton>
-        </div>
-      )}
+      <div className={`float-btn-wrapper ${isScrollTop ? 'hidden' : ''}`}>
+        <RippleButton
+          className="rounded-full"
+          rippleColor="#ADD8E6"
+          onClick={onClick}
+        >
+          <Icon icon="mingcute:large-arrow-up-fill" className="icon">
+          </Icon>
+        </RippleButton>
+      </div>
     </div>
 
   );

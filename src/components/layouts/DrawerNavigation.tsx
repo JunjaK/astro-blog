@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button';
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
+  DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
 // @flow
@@ -25,7 +25,9 @@ export function DrawerNavigation({ children, tab }: Props) {
       <DrawerTrigger>{children}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <h3>Navigation Menu</h3>
+          <DrawerTitle>
+            Navigation Menu
+          </DrawerTitle>
           <DrawerDescription>Click to navigate other pages!</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
@@ -44,9 +46,7 @@ export function DrawerNavigation({ children, tab }: Props) {
           <Button variant={checkRoute('about')}>
             <a href="/about/">About</a>
           </Button>
-          <DrawerClose>
-            <Button className="w-full" variant="outline">Nav Close</Button>
-          </DrawerClose>
+          <Button className="w-full" variant="outline">Nav Close</Button>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
