@@ -1,8 +1,8 @@
+import DocNav from '@/components/layouts/DockNav.tsx';
 import { DrawerNavigation } from '@/components/layouts/DrawerNavigation.tsx';
 import { SearchSite } from '@/components/layouts/SearchSite.tsx';
 import { ModeToggle } from '@/components/ModeToggle.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import { Icon } from '@iconify/react';
 import React, { useEffect } from 'react';
 
@@ -56,25 +56,7 @@ export default function Navigation() {
               </a>
             </Button>
 
-            <Tabs value={tab} onValueChange={changeRoute} className="max-md:hidden">
-              <TabsList>
-                <TabsTrigger value="home" className="nav-route">
-                  <a href="/">Home</a>
-                </TabsTrigger>
-                <TabsTrigger value="blog" className="nav-route">
-                  <a href="/blog/">Blog</a>
-                </TabsTrigger>
-                <TabsTrigger value="project" className="nav-route">
-                  <a href="/project/">Project</a>
-                </TabsTrigger>
-                <TabsTrigger value="playground" className="nav-route">
-                  <a href="/playground/">Playground</a>
-                </TabsTrigger>
-                <TabsTrigger value="about" className="nav-route">
-                  <a href="/about/">About</a>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <DocNav tab={tab} />
 
             <div className="action-btn-wrapper">
               <DrawerNavigation tab={tab}>
