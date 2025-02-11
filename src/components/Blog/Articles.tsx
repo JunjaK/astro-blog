@@ -19,47 +19,84 @@ import {
 } from '@/components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Icon } from '@iconify/react';
-// @flow
+import Fuse from 'fuse.js';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-type SearchType = 'category' | 'title' | 'tag';
-const formSchema = z.object({
-  search: z.string().min(2).max(50),
-  searchType: z.enum(['category', 'title', 'tag']),
-});
+import { FadeText } from '~/components/ui/fade-text';
 
+type SearchType = 'category' | 'title-tag';
 type Props = {
   posts: MarkdownInstance<BlogFrontMatter>[];
 };
+const formSchema = z.object({
+  search: z.string().min(2).max(50),
+  searchType: z.enum(['category', 'title-tag']),
+
+});
+
+const fuseOptions = {
+  isCaseSensitive: false,
+  includeScore: true,
+  ignoreDiacritics: false,
+  shouldSort: true,
+  includeMatches: false,
+  findAllMatches: false,
+  minMatchCharLength: 2,
+  location: 0,
+  threshold: 0.15,
+  distance: 100,
+  useExtendedSearch: false,
+  ignoreLocation: false,
+  ignoreFieldNorm: false,
+  fieldNormWeight: 1,
+  keys: [
+    'frontmatter.title',
+    {
+      name: 'frontmatter.tags',
+      weight: 0.3,
+    },
+  ],
+};
+
 export default function Articles({ posts }: Props) {
   const [articles, setArticles] = useState(posts);
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       search: '',
-      searchType: 'title',
+      searchType: 'title-tag',
     },
   });
 
+  const fuse = new Fuse(posts, fuseOptions);
+
   useEffect(() => {
     const query = new URLSearchParams(window.location.href.split('?')[1]);
-    form.setValue('searchType', query.get('category') as SearchType ?? 'title');
-    form.setValue('searchType', query.get('tag') as SearchType ?? 'title');
+    form.setValue('searchType', 'title-tag');
+    form.setValue('searchType', query.get('category') as SearchType ?? 'title-tag');
   }, []);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSearchActive(true);
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    if (values.searchType === 'category') {
+      setArticles(posts.filter((post) => post.frontmatter.category === values.search));
+    }
+    else {
+      const result = fuse.search(values.search);
+      setArticles(result.map((r) => r.item));
+    }
   }
 
   function resetForm() {
     form.reset();
+    setIsSearchActive(false);
     setArticles(posts);
   }
 
@@ -78,14 +115,13 @@ export default function Articles({ posts }: Props) {
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="w-[8rem] rounded-lg">
+                      <SelectTrigger className="w-[7rem] rounded-lg">
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="title">Title</SelectItem>
+                      <SelectItem value="title-tag">Title & Tag</SelectItem>
                       <SelectItem value="category">Category</SelectItem>
-                      <SelectItem value="tag">Tag</SelectItem>
                     </SelectContent>
                   </Select>
 
@@ -100,7 +136,7 @@ export default function Articles({ posts }: Props) {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input className="search-input rounded-lg" placeholder="검색어를 입력해주세요." {...field} />
+                    <Input className="search-input rounded-lg" placeholder="검색어" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,6 +153,18 @@ export default function Articles({ posts }: Props) {
             </Button>
           </form>
         </Form>
+        {isSearchActive && (
+          <div className="search-result">
+            <FadeText
+              className="transition ease-out text-neutral-400"
+              direction="down"
+              framerProps={{
+                show: { transition: { delay: 0.1 } },
+              }}
+              text={`${articles.length}개 해당하는 포스트를 찾았습니다.`}
+            />
+          </div>
+        )}
       </div>
 
       {articles.map((article) =>

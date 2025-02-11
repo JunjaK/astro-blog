@@ -4,10 +4,19 @@
   gap: 1rem;
   margin-bottom: 1rem;
   .search-input {
-    width: calc($px400 - 20.5rem)
-  }
-}
+    width: calc($px400 - 19.5rem);
+    @media screen and (max-width: 768px) {
+      width: calc($px400 - 15.5rem);
+    }
 
+  }
+
+}
+.search-result {
+  margin-top: -0.5rem;
+  margin-left: 0.5rem;
+  margin-bottom: 1rem;
+}
 
 .blog-article {
   display: flex;
@@ -63,10 +72,10 @@
   .front-matter-info {
     .title {
       font-size: 2.5rem;
+      font-weight: bold;
       @media  screen and (max-width: 768px) {
         font-size: 2rem;
       }
-      font-weight: bold;
     }
 
     .category {
