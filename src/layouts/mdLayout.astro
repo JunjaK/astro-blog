@@ -1,0 +1,68 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import dayjs from 'dayjs';
+import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
+
+import FloatButton from '../components/layouts/FloatButton';
+import Footer from '../components/layouts/Footer';
+import Navigation from '../components/layouts/Navigation';
+import '@fontsource/gothic-a1';
+import '@/assets/styles/global.css';
+import '@/assets/styles/pages/markdowncss.css';
+import '@/assets/styles/index.scss';
+import 'dayjs/locale/en';
+
+dayjs.extend(dayJsRelativeTime);
+dayjs.locale('en');
+
+const { frontmatter, title } = Astro.props;
+---
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="generator" content={Astro.generator} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <ClientRouter />
+  {frontmatter?.title
+    ? <title>{frontmatter.title}</title>
+    : <title>{title}</title>}
+  <style>
+
+
+  </style>
+
+</head>
+<body>
+<Navigation client:load></Navigation>
+
+<main>
+  <div class="markdown-body">
+    <slot></slot>
+    <div class="dummy-container" />
+  </div>
+</main>
+<Footer client:load />
+<FloatButton client:visible />
+</body>
+</html>
+
+<script is:inline>
+  function getThemePreference() {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+      return localStorage.getItem('theme');
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function update() {
+    const isDark = getThemePreference() === 'dark';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+    document.getElementsByClassName('markdown-body')[0].classList.add(isDark ? 'dark' : 'light');
+  }
+
+  document.addEventListener('astro:after-swap', update);
+  document.addEventListener('DOMContentLoaded', update);
+</script>

@@ -20,7 +20,7 @@ posts.sort((a, b) => dayjs(b.frontmatter.created).unix() - dayjs(a.frontmatter.c
 
     <div class="mt-8">
       {posts.map((post) =>
-        <EachArticle frontmatter={post.frontmatter} url={post.url} client:visible />,
+        <EachArticle frontmatter={post.frontmatter} url={post.url} />,
       )}
     </div>
 

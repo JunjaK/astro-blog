@@ -27,7 +27,8 @@
     }
     .tag-wrapper {
       display: flex; /* 태그들을 가로로 정렬 */
-      gap: 0.5rem; /* 태그 간 간격 설정 */
+      gap: 8px; /* 태그 간 간격 설정 */
+      overflow-x: auto; /* 가로 스크롤 활성화 */
       white-space: nowrap; /* 줄바꿈 방지 */
     }
   }
@@ -37,3 +38,62 @@
 .article-wrapper + .article-wrapper {
   margin-top: 1rem;
 }
+
+.markdown-body {
+  margin-top: 8rem !important;
+  height: calc(100dvh - 12.5rem) !important;
+  background-color: unset !important;
+
+  @media  screen and (max-width: 768px) {
+    height: calc(100dvh - 11rem) !important;
+  }
+  hr {
+    box-sizing: content-box;
+    overflow: hidden;
+    background: transparent;
+    border-bottom: 1px solid #3d444db3;
+    height: .25em;
+    padding: 0;
+    margin: 1.5rem 0;
+    background-color: #3d444d;
+    border: 0;
+  }
+  h1 {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #d2d2d2;
+    line-height: 2;
+  }
+  h2 {
+
+  }
+  h3 {
+    margin-top: 1rem;
+  }
+  img {
+    border-radius: 1rem;
+    margin: 0.5rem 0;
+  }
+  p {
+    margin-top: 1rem;
+    line-height: 1.8;
+  }
+
+  &.dark {
+    li {
+      list-style-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 16 10'><path fill='%23e4e4e7' d='M4 8a4 4 0 1 1 8 0a4 4 0 0 1-8 0m4-2.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5'/></svg>");
+      > p {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+      }
+    }
+  }
+  &.light {
+    li {
+      list-style-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 16 10'><path fill='%2327272a' d='M4 8a4 4 0 1 1 8 0a4 4 0 0 1-8 0m4-2.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5'/></svg>");
+    }
+  }
+
+
+
+}
+

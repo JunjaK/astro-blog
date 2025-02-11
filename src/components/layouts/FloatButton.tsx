@@ -16,10 +16,11 @@ export default function FloatButton() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   return (
-    <>
+    <div>
       {!isScrollTop && (
         <div className="float-btn-wrapper">
           <RippleButton
+            className="rounded-full"
             rippleColor="#ADD8E6"
             onClick={onClick}
           >
@@ -28,7 +29,7 @@ export default function FloatButton() {
           </RippleButton>
         </div>
       )}
-    </>
+    </div>
 
   );
 }
