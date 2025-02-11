@@ -9,11 +9,11 @@ export default function Intro() {
 
       <BoxReveal boxColor="rgba(39,39,39,0.6)" duration={0.5}>
         <p>
-          <span>
+          <span className="max-sm:text-sm">
             안녕하세요, 여기는 저의 개인 블로그입니다.
           </span>
           <br />
-          <span>
+          <span className="max-sm:text-sm">
             이곳에서는 저의 간단한 정보들을 확인 할 수 있습니다.
           </span>
         </p>
@@ -21,22 +21,22 @@ export default function Intro() {
 
       <BoxReveal boxColor="rgba(39,39,39,0.6)" duration={1}>
         <div>
-          <div className="flex gap-px2 mt-2">
+          <div className="max-sm:text-sm flex gap-px2 mt-2">
             포스트는 주로 개발에 관한 것들,
           </div>
           <FadeText
-            className="font-bold text-black dark:text-white"
+            className="font-bold max-sm:text-sm text-black dark:text-white"
             direction="right"
             framerProps={{
               show: { transition: { delay: 0.4 } },
             }}
             text="(🌐 웹 개발, 💻 프론트엔드)"
           />
-          <div className="mt-1">
+          <div className="mt-1 max-sm:text-sm">
             그리고 제가 관심있어 하는 주제를 올릴 예정입니다.
           </div>
           <FadeText
-            className="font-bold text-black dark:text-white"
+            className="font-bold max-sm:text-sm text-black dark:text-white"
             direction="right"
             framerProps={{
               show: { transition: { delay: 0.4 } },
@@ -46,7 +46,7 @@ export default function Intro() {
         </div>
       </BoxReveal>
       <BoxReveal boxColor="rgba(39,39,39,0.6)" duration={1.5}>
-        <Button className="mt-6" asChild>
+        <Button className="mt-6 max-sm:text-sm" asChild>
           <a href="/blog/">
             <Icon icon="mingcute:document-2-line" className="icon mr-1" />
             포스트 바로가기
