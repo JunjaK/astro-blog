@@ -61,7 +61,6 @@
     "eslint-plugin-format": "^1.0.1",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
-    "sass": "^1.84.0",
-    "vite-plugin-imagemin": "^0.6.1"
+    "sass": "^1.84.0"
   }
 }

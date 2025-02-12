@@ -170,11 +170,13 @@
 
 .giscus-body {
   padding: 3rem 1.5rem 1.5rem 1.5rem;
+  background-color: $color-zinc-900;
+  border-radius: 0.5rem;
   @media screen and (max-width: 768px) {
     padding: 2rem 1rem 1rem 1rem;
   }
-  background-color: $color-zinc-900;
-    border-radius: 0.5rem;
+
+
   .giscus-fallback {
     width: $px400;
   }

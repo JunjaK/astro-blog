@@ -13,12 +13,7 @@ interface Props {
   url?: string;
 }
 
-const images = import.meta.glob<{ default: ImageMetadata }>('/src/pages/blog/**/*.{jpeg,jpg,png,gif,webp}', {
-  query: {
-    w: '200',
-  },
-  import: 'default',
-});
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/pages/blog/**/*.{jpeg,jpg,png,gif,webp}', { import: 'default' });
 
 export default function EachArticle({ frontmatter, url }: Props) {
   const [imageSrc, setImageSrc] = useState<string | undefined>(darkFallbackImg.src);
