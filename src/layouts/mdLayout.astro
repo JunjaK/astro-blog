@@ -1,17 +1,20 @@
 ---
 import BlogFrontmatter from '@/components/Blog/BlogFrontmatter';
+import GiscusComp from '@/components/Blog/GiscusComp';
 import FloatButton from '@/components/layouts/FloatButton';
 import Footer from '@/components/layouts/Footer';
 import Navigation from '@/components/layouts/Navigation';
 import ScrollProgress from '@/components/ui/scroll-progress';
 
+import { Icon } from '@iconify/react';
 import { ClientRouter } from 'astro:transitions';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
+import { Separator } from '../components/ui/separator';
+import { Skeleton } from '../components/ui/skeleton';
 import '@fontsource/gothic-a1';
 import '@fontsource/m-plus-1p';
 import '@fontsource/roboto';
-
 import '@/assets/styles/global.css';
 import '@/assets/styles/pages/markdowncss.css';
 import '@/assets/styles/index.scss';
@@ -21,6 +24,10 @@ dayjs.extend(dayJsRelativeTime);
 dayjs.locale('en');
 
 const { frontmatter, title } = Astro.props;
+
+function goBack() {
+  window.history.back();
+}
 
 
 ---
@@ -45,21 +52,34 @@ const { frontmatter, title } = Astro.props;
 <Navigation client:load></Navigation>
 
 <main>
-  <ScrollProgress className="scroll-animation top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:visible />\
+  <ScrollProgress className="scroll-animation top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:visible />
 
   <div class="markdown-content-wrapper">
+    <div id="go-back" class="text-lg font-bold text-opacity-80 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-gray-50 mb-2 w-[3rem] cursor-pointer">
+      > cd ..
+    </div>
     <div class="front-matter-info">
+
       <BlogFrontmatter frontmatter={frontmatter} client:visible />
     </div>
     <div class="markdown-body">
       <slot></slot>
-      <div class="dummy-container" />
     </div>
+    <Separator className="my-8" />
+    <div class="giscus-body">
+      <GiscusComp client:load>
+        <div class="giscus-fallback" slot="fallback">
+          <Skeleton className="h-[1rem] w-full]" />
+          <Skeleton className="h-[1rem] w-full" />
+          <Skeleton className="h-[1rem] w-full" />
+        </div>
+      </GiscusComp>
+    </div>
+    <div class="dummy-container" />
   </div>
-
 </main>
 <Footer client:visible />
-<FloatButton client:visible />
+<FloatButton client:load />
 </body>
 </html>
 
@@ -80,4 +100,7 @@ const { frontmatter, title } = Astro.props;
 
   document.addEventListener('astro:after-swap', update);
   document.addEventListener('DOMContentLoaded', update);
+  document.getElementById('go-back').addEventListener('click', () => {
+    window.history.back();
+  });
 </script>

@@ -1,9 +1,9 @@
 ---
-// Component Imports
-
 import type { BlogFrontMatter } from '@/types/commonType';
 import type { MarkdownInstance } from 'astro';
 import Articles from '@/components/Blog/Articles';
+// Component Imports
+import { Skeleton } from '@/components/ui/skeleton';
 import BaseLayout from '@/layouts/baseLayout.astro';
 import dayjs from 'dayjs';
 
@@ -18,21 +18,23 @@ posts.sort((a, b) => dayjs(b.frontmatter.created).unix() - dayjs(a.frontmatter.c
     <hr class="title-divider" />
 
     <div id="articles-wrapper" class="mt-8">
-      <Articles posts={posts} client:visible></Articles>
+      <Articles posts={posts} client:visible>
+        <div id="articles-skeleton" class="mt-8" slot="fallback">
+          {[...Array.from({ length: 10 })].map((_) => (
+            <div class="flex items-center space-x-4 h-[9.5rem]">
+              <Skeleton className="size-[8rem] rounded-lg" />
+              <div class="space-y-4">
+                <Skeleton className="h-[1.5rem] w-[250px]" />
+                <Skeleton className="h-[1rem] w-[300px]" />
+                <Skeleton className="h-[1rem] w-[100px]" />
+                <Skeleton className="h-[1rem] w-[150px]" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Articles>
     </div>
-    <!--<div id="articles-skeleton" class="mt-8">-->
-    <!--  {[...Array.from({ length: 10 })].map((_) => (-->
-    <!--    <div class="flex items-center space-x-4 h-[9.5rem]">-->
-    <!--      <Skeleton className="size-[8rem] rounded-lg" />-->
-    <!--      <div class="space-y-4">-->
-    <!--        <Skeleton className="h-[1.5rem] w-[250px]" />-->
-    <!--        <Skeleton className="h-[1rem] w-[300px]" />-->
-    <!--        <Skeleton className="h-[1rem] w-[100px]" />-->
-    <!--        <Skeleton className="h-[1rem] w-[150px]" />-->
-    <!--      </div>-->
-    <!--    </div>-->
-    <!--  ))}-->
-    <!--</div>-->
+
   </div>
 </BaseLayout>
 
