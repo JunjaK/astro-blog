@@ -13,7 +13,7 @@ interface Props {
   url?: string;
 }
 
-const images = import.meta.glob<{ default: ImageMetadata }>('/src/pages/blog/**/*.{jpeg,jpg,png,gif,webp}', { import: 'default' });
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/pages/blog/**/*.{jpeg,jpg,png,gif,webp}');
 
 export default function EachArticle({ frontmatter, url }: Props) {
   const [imageSrc, setImageSrc] = useState<string | undefined>(darkFallbackImg.src);
@@ -31,8 +31,7 @@ export default function EachArticle({ frontmatter, url }: Props) {
   useEffect(() => {
     images[frontmatter.thumbnail]()
       .then((e) => {
-        console.log(e);
-        setImageSrc(e);
+        setImageSrc(e.default.src);
       });
   }, []);
 
