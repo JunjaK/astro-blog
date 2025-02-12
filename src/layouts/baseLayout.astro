@@ -38,7 +38,7 @@ const { frontmatter, title } = Astro.props;
 
 </head>
 <body>
-<Navigation client:load></Navigation>
+<Navigation client:visible></Navigation>
 
 <main>
   <ScrollProgress className="scroll-animation hidden top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:visible />
@@ -49,7 +49,7 @@ const { frontmatter, title } = Astro.props;
   </div>
 </main>
 <Footer client:load />
-<FloatButton client:visible />
+<FloatButton client:load />
 </body>
 </html>
 

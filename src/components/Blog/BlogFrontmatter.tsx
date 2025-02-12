@@ -31,7 +31,7 @@ export default function BlogFrontmatter({ frontmatter }: Props) {
       <MagicCard className="flex w-full  items-center overflow-hidden p-6 shadow-2xl">
         <div className="front-matter-info">
           <div
-            className="cursor-pointer category text-cyan-600 dark:text-cyan-500"
+            className="cursor-pointer category text-green-600 dark:text-green-500"
             onClick={() => onSearch('category', frontmatter.category)}
           >
             {frontmatter.category}
