@@ -14,7 +14,7 @@ export default function Intro() {
           </span>
           <br />
           <span className="max-sm:text-sm">
-            이곳에서는 저의 간단한 정보들을 확인 할 수 있습니다.
+            이 블로그에서는 저의 간단한 정보들을 확인 할 수 있습니다.
           </span>
         </p>
       </BoxReveal>
@@ -22,7 +22,7 @@ export default function Intro() {
       <BoxReveal boxColor="rgba(39,39,39,0.6)" duration={1}>
         <div>
           <div className="max-sm:text-sm flex gap-px2 mt-2">
-            포스트는 주로 개발에 관한 것들,
+            블로그 포스트는 주로 개발에 관한 것들,
           </div>
           <FadeText
             className="font-bold max-sm:text-sm text-black dark:text-white"

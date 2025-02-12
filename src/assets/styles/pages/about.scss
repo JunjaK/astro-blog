@@ -1,0 +1,51 @@
+@use "../variables" as *;
+
+.simple-intro {
+  .simple-intro-wrapper {
+    display: flex;
+    gap: 3rem;
+
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+    }
+
+    .profile-wrapper {
+      .name {
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 900;
+        margin: 0.3rem 0
+      }
+      .desc {
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 900;
+      }
+    }
+    .desc-wrapper {
+      width: calc(100% - 20rem);
+      @media screen and (max-width: 768px) {
+        width: 100%
+      }
+      .desc {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+.tech-stack {
+
+}
+
+.chronicle {
+
+}
+
+.blog-stack {
+
+}
+
+.hobby {
+
+}
