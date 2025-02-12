@@ -27,7 +27,6 @@ import { z } from 'zod';
 
 import { FadeText } from '~/components/ui/fade-text';
 
-type SearchType = 'category' | 'title-tag';
 type Props = {
   posts: MarkdownInstance<BlogFrontMatter>[];
 };

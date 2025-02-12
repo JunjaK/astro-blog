@@ -1,7 +1,7 @@
 ---
+import { SimpleIntro } from '@/components/About/SimpleIntro';
 // Component Imports
-import BaseLayout from '../layouts/baseLayout.astro';
-
+import BaseLayout from '@/layouts/baseLayout.astro';
 
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
@@ -9,7 +9,26 @@ import BaseLayout from '../layouts/baseLayout.astro';
 
 <BaseLayout title="About">
   <div class="container">
-    <h1>About</h1>
+    <h1 class="font-black">About</h1>
     <hr class="title-divider" />
+    <section class="simple-intro">
+      <SimpleIntro client:visible />
+    </section>
+
+    <section class="tech-stack">
+
+    </section>
+
+    <section class="chronicle">
+
+    </section>
+
+    <section class="blog-stack">
+
+    </section>
+
+    <section class="hobby">
+
+    </section>
   </div>
 </BaseLayout>
