@@ -20,6 +20,15 @@ export function DrawerNavigation({ children, tab }: Props) {
     return tab === e ? 'default' : 'outline';
   }
 
+  function moveToPage(e: string) {
+    if (e === '') {
+      window.location.href = '/';
+    }
+    else {
+      window.location.href = `/${e}/`;
+    }
+  }
+
   return (
     <Drawer>
       <DrawerTrigger>{children}</DrawerTrigger>
@@ -31,20 +40,20 @@ export function DrawerNavigation({ children, tab }: Props) {
           <DrawerDescription>Click to navigate other pages!</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
-          <Button variant={checkRoute('home')}>
-            <a href="/">Home</a>
+          <Button variant={checkRoute('home')} onClick={() => moveToPage('')}>
+            Home
           </Button>
-          <Button variant={checkRoute('blog')}>
-            <a href="/blog/">Blog</a>
+          <Button variant={checkRoute('blog')} onClick={() => moveToPage('blog')}>
+            Blog
           </Button>
-          <Button variant={checkRoute('project')}>
-            <a href="/project/">Project</a>
+          <Button variant={checkRoute('project')} onClick={() => moveToPage('project')}>
+            Project
           </Button>
-          <Button variant={checkRoute('playground')}>
-            <a href="/playground/">Playground</a>
+          <Button variant={checkRoute('playground')} onClick={() => moveToPage('playground')}>
+            Playground
           </Button>
-          <Button variant={checkRoute('about')}>
-            <a href="/about/">About</a>
+          <Button variant={checkRoute('about')} onClick={() => moveToPage('about')}>
+            About
           </Button>
         </DrawerFooter>
       </DrawerContent>
