@@ -1,13 +1,24 @@
 # Astro + React Example
 
-```sh
-npm create astro@latest -- --template framework-react
+## Intro
+This is Private Dev Blog made with Astro and React.
+```shell    
+pnpm i
+pnpm dev
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/framework-react)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/framework-react)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/framework-react/devcontainer.json)
-
-This example showcases Astro working with [React](https://react.dev).
-
-Write your React components as `.jsx` or `.tsx` files in your project.
+## Used Library
+- [Astro](https://astro.build/)
+- [React](https://reactjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Vite](https://vitejs.dev/)
+- Giscus
+- Iconify
+- Fontsources: roboto, gothic-a1, m-plus-1p
+- NanoStore
+- Nyxbui
+- Dayjs
+- Framer-motion
+- fuse.js
+- antfu/eslitn-config
+- Sass

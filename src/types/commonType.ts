@@ -6,3 +6,7 @@ export interface BlogFrontMatter {
   category: string;
   thumbnail: string;
 }
+
+export type StringKeyType<T> = {
+  [key: string]: T;
+};

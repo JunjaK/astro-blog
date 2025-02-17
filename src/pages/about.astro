@@ -1,7 +1,10 @@
 ---
+import { Chronicle } from '@/components/About/Chronicle';
 import { SimpleIntro } from '@/components/About/SimpleIntro';
+import { TechStack } from '@/components/About/TechStack';
 // Component Imports
 import BaseLayout from '@/layouts/baseLayout.astro';
+import { Separator } from '../components/ui/separator';
 
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
@@ -15,18 +18,21 @@ import BaseLayout from '@/layouts/baseLayout.astro';
       <SimpleIntro client:visible />
     </section>
 
+    <Separator className="my-8" />
     <section class="tech-stack">
+      <TechStack client:visible />
 
     </section>
-
+    <Separator className="my-8" />
     <section class="chronicle">
+      <Chronicle client:visible />
 
     </section>
-
+    <Separator className="my-8" />
     <section class="blog-stack">
 
     </section>
-
+    <Separator className="my-8" />
     <section class="hobby">
 
     </section>
