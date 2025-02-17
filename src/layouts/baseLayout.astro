@@ -38,18 +38,18 @@ const { frontmatter, title } = Astro.props;
 
 </head>
 <body>
-<Navigation client:visible></Navigation>
+<Navigation client:idle></Navigation>
 
 <main>
-  <ScrollProgress className="scroll-animation hidden top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:visible />
+  <ScrollProgress className="scroll-animation hidden top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:idle />
 
   <div class="container-wrapper">
     <slot></slot>
     <div class="dummy-container" />
   </div>
 </main>
-<Footer client:load />
-<FloatButton client:load />
+<Footer client:idle />
+<FloatButton client:idle />
 </body>
 </html>
 
