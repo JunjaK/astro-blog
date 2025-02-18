@@ -66,8 +66,8 @@ export function UnivTimeline({ isOpen, handleOpenChange }: Props) {
   return (
     <div>
       <Collapsible
-        open={isOpen.twoz1st}
-        onOpenChange={() => handleOpenChange('twoz1st')}
+        open={isOpen.univ}
+        onOpenChange={() => handleOpenChange('univ')}
         className="space-y-2"
       >
         <div className="flex items-center justify-between collapsible">
@@ -76,7 +76,7 @@ export function UnivTimeline({ isOpen, handleOpenChange }: Props) {
           </div>
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="sm" className="w-9 p-0">
-              {isOpen.twoz1st
+              {isOpen.univ
                 ? (<Icon icon="mingcute:up-line" className="w-4 h-4" />)
                 : (<Icon icon="mingcute:down-line" className="w-4 h-4" />)}
               <span className="sr-only">Toggle</span>
