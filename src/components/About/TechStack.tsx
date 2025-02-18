@@ -1,4 +1,5 @@
-import { TechIcon } from '@/components/About/TechIcon.tsx';
+import type { TechIconType } from '@/types/commonType.ts';
+import { TechIcon } from '@/components/About/TechStackComp/TechIcon.tsx';
 import {
   Card,
   CardContent,
@@ -13,13 +14,13 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { $theme } from '@/store/system.ts';
-import { useStore } from '@nanostores/react';
 
+import { useStore } from '@nanostores/react';
 import { motion, useTransform } from 'framer-motion';
 import { type MotionValue, useScroll } from 'motion/react';
 // @flow
 import * as React from 'react';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function useParallax(value: MotionValue<number>, distance: number) {
   return useTransform(value, [0, 1], [-distance, distance]);
@@ -27,12 +28,19 @@ function useParallax(value: MotionValue<number>, distance: number) {
 
 export function TechStack() {
   const theme = useStore($theme);
+  const [isHydrated, setIsHydrated] = useState(false);
+
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref });
   const y = useParallax(scrollYProgress, 300);
 
-  function usingTechList(mode: string) {
-    console.log(mode);
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  function usingTechList(mode: string): TechIconType[] {
+    if (!isHydrated)
+      return [];
     return [
       { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
       { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
@@ -48,10 +56,14 @@ export function TechStack() {
   }
 
   function learningTechList(mode: string) {
+    if (!isHydrated)
+      return [];
+
     return [
       { iconUrl: `/images/about/tech-stack/${mode}/react.svg`, techName: 'React' },
       { iconUrl: `/images/about/tech-stack/${mode}/nextdotjs.svg`, techName: 'Next' },
       { iconUrl: `/images/about/tech-stack/${mode}/astro.svg`, techName: 'Astro' },
+      { iconUrl: `/images/about/tech-stack/${mode}/framer.svg`, techName: 'Framer' },
       { iconUrl: `/images/about/tech-stack/${mode}/d3.svg`, techName: 'D3' },
       { iconUrl: `/images/about/tech-stack/${mode}/threedotjs.svg`, techName: 'Three.js' },
       { iconUrl: `/images/about/tech-stack/${mode}/graphql.svg`, techName: 'GraphQL' },
@@ -62,13 +74,14 @@ export function TechStack() {
 
   return (
     <div>
-      <motion.h2>
+      <motion.h2 className="mb-4">
         Tech Stack
       </motion.h2>
       <Tabs defaultValue="use" className="tech-stack-tabs">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-2 h-[3rem]">
           <TabsTrigger value="use">
             <motion.div
+              className="text-lg font-normal"
               transition={{ delay: 0.6, duration: 0.5 }}
             >
               Using
@@ -77,6 +90,7 @@ export function TechStack() {
           </TabsTrigger>
           <TabsTrigger value="learn">
             <motion.div
+              className="text-lg font-normal"
               transition={{ delay: 0.6, duration: 0.5 }}
             >
               Learning

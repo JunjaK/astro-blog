@@ -10,3 +10,8 @@ export interface BlogFrontMatter {
 export type StringKeyType<T> = {
   [key: string]: T;
 };
+
+export interface TechIconType {
+  iconUrl: string;
+  techName: string;
+}
