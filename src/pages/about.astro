@@ -1,5 +1,6 @@
 ---
 import { Chronicle } from '@/components/About/Chronicle';
+import { HobbyList } from '@/components/About/HobbyList';
 import { SimpleIntro } from '@/components/About/SimpleIntro';
 import { TechStack } from '@/components/About/TechStack';
 import { UseTools } from '@/components/About/UseTools';
@@ -36,7 +37,7 @@ import { Separator } from '../components/ui/separator';
     </section>
     <Separator className="my-8" />
     <section class="hobby">
-
+      <HobbyList client:visible />
     </section>
   </div>
 </BaseLayout>
