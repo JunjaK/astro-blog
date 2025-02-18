@@ -2,6 +2,7 @@
 import { Chronicle } from '@/components/About/Chronicle';
 import { SimpleIntro } from '@/components/About/SimpleIntro';
 import { TechStack } from '@/components/About/TechStack';
+import { UseTools } from '@/components/About/UseTools';
 // Component Imports
 import BaseLayout from '@/layouts/baseLayout.astro';
 import { Separator } from '../components/ui/separator';
@@ -29,7 +30,8 @@ import { Separator } from '../components/ui/separator';
 
     </section>
     <Separator className="my-8" />
-    <section class="blog-stack">
+    <section class="use-tool">
+      <UseTools client:visible />
 
     </section>
     <Separator className="my-8" />
