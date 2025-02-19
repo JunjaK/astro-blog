@@ -1,0 +1,114 @@
+---
+title: Nyxb UI
+created: 2025-02-20
+updated: 2025-02-20
+tags: [ 'css-framework', 'react', 'shadcn-ui', 'tailwind-css' ]
+category: Web
+thumbnail: /src/content/blog/web/react/assets/CleanShot 2025-02-20 at 03.33.38@2x.png
+---
+
+
+
+![CleanShot 2025-02-20 at 03.33.38@2x](./assets/CleanShot%202025-02-20%20at%2003.33.38@2x.png)
+
+## Intro
+
+블로그로 사용할 CSS Framework 중 괜찮은 것이 뭐가 있을까 이리저리 뒤져보다 [awesome shadcn-ui](!https://github.com/bytefer/awesome-shadcn-ui)에서 우연히 이 라이브러리를 찾아버렸다.    
+
+이름은 Nyxb UI.  
+
+블로그다 보니까 애니메이션적인 요소가 많았으면 했는데, 이 라이브러리가 딱이다.  
+
+사용감도 괜찮았으므로, 조금 더 자세히 작성해보고자 한다.
+
+
+
+## Nyxb UI?
+
+shadcn-ui 기반으로 만들어진 ui components의 집합체라고 볼 수 있다.   
+
+홈페이지 레이아웃도 shadcn-ui과 큰 차이가 없다.   
+
+소개에 적혀있는 철학 부분을 보면 이건 컴포넌트 라이브러리가 아니라고 하는데 전문을 보면
+
+> This is **NOT** a component library. It's a collection of re-usable components that you can copy and paste into your apps.
+>
+> **What do you mean by not a component library?**
+>
+> I mean you do not install it as a dependency. It is not available or distributed via npm.
+>
+> Pick the components you need. Copy and paste the code into your project and customize to your needs. The code is yours.
+>
+> *Use this as a reference to build your own component libraries.*
+
+필요한 것은 복붙으로 갖다 쓰라고 한다. shadcn-ui에 적혀있는 것과는 크게 다르지 않다...
+
+shadcn-ui와의 차이점은 일단 shadcn-ui에 있는 컴포넌트들은 다 있고, 추가로 애니메이션, 동적 요소들을 가진 컴포넌트들이 꽤 많다.
+
+대표적인 예시들은 다음과 같다.
+
+### 컴포넌트 예시
+
+- [Letter Pullup](!https://nyxbui.design/docs/components/letter-pullup)
+
+  ![CleanShot 2025-02-20 at 04.03.07](./assets/CleanShot%202025-02-20%20at%2004.03.07.gif)
+
+- [Terminal](!https://nyxbui.design/docs/components/terminal) 
+
+![CleanShot 2025-02-20 at 04.02.04](./assets/CleanShot%202025-02-20%20at%2004.02.04.gif)
+
+- [Interactive Icon Cloud](!https://nyxbui.design/docs/components/icon-cloud)
+- ![CleanShot 2025-02-20 at 03.58.17](./assets/CleanShot%202025-02-20%20at%2003.58.17.gif)
+
+## 사용법
+
+사용법 또한 shadcn-ui와 크게 다르지 않다.  
+
+```shell title="terminal"
+pnpm dlx nyxb@latest add button
+```
+
+```tsx title="ButtonDemo.tsx"
+import { Button } from "~/components/ui/button"
+
+export function ButtonDemo() {
+   return <Button>Button</Button>
+}
+```
+
+필요한 것을 pnpm dlx 또는 npx 등 동적 패키지 실행하면, `./src/components/ui` 폴더 경로에 button.tsx 등의 이름으로 파일이 생성되어 있을 것이다.  
+
+만약 커스텀이 필요하면 자유롭게 하면 되고, 그냥 그대로 써도 무방하다.  
+
+특정 컴포넌트의 경우 shadcn-ui가 radix-ui에 의존하고 있어서 dependency가 설치되는 경우도 있다.  (철학과 다르지 않나...)   
+
+```json title="packge.json"
+{
+  "dependencies": {
+    "@radix-ui/react-avatar": "^1.1.3",
+    "@radix-ui/react-collapsible": "^1.1.3",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-label": "^2.1.1",
+    "@radix-ui/react-scroll-area": "^1.2.3",
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-separator": "^1.1.2",
+    "@radix-ui/react-slot": "^1.1.1",
+    "@radix-ui/react-tabs": "^1.1.2",
+    "react-hook-form": "^7.54.2",
+    "react-icon-cloud": "^4.1.7",
+  }
+}
+
+```
+
+블로그에 사용할 컴포넌트들을 이것저것 설치하다보니 package.json에 이 정도의 dependency가 쌓였다.
+
+
+
+### 결론
+
+애니메이션, 동적 요소들을 웹 사이트에 넣어보고 싶으면 추천하는 라이브러리이다.  
+
+ant-design 등과 같은 라이브러리와 달리 form 요소들에 대한 것은 좀 아쉬우니 블로그, 랜딩 페이지 등의 정적 사이트에 사용하는 것이 좋지 않을까 싶다.
+

@@ -172,7 +172,7 @@
   margin-top: 2rem !important;
   background-color: unset !important;
   font-family: 'Roboto', 'M PLUS 1p', 'Noto Sans KR Variable', sans-serif;
-  
+
   h2 {
     margin-bottom: 40px;
   }
@@ -433,6 +433,23 @@
   padding: 1px 5px;
   border-radius: 5px;
   color: var(--color-link);
+}
+
+.article-entry code,
+.article-entry kbd {
+  background: var(--color-code-background);
+  padding: 1px 5px;
+  border-radius: 5px;
+  color: var(--color-link);
+}
+
+.language-mermaid {
+  background: unset !important;
+
+  svg {
+    border-radius: 0.5rem;
+    background: var(--color-mermaid-background);
+  }
 }
 
 .giscus-body {

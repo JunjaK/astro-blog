@@ -1,14 +1,26 @@
 ---
-title: code-test
+title: Markdown Test
 created: 2025-02-20
 updated: 2025-02-20
-tags: [ 'code', 'js', 'ts', 'other languages'' ]
+tags: [ 'markdown', 'shiki', 'expressive-code', 'mermaid', 'katex' ]
 category: Test
-thumbnail: /src/content/blog/diary/japan-around-trip/assets/image-20250103023827664.png
+thumbnail: /src/content/blog/web/common/assets/code-test4234234.png
 ---
 
-## Code Test
+# Code Test
 
+Astro에서 제공해주고 있는 Shiki를 통해 코드들이 이쁘게 잘 나오는지 테스트합니다.  
+추가 플러그인은 다음과 같습니다.
+
+- astro-expressive-code
+- expressive-code-color-chips
+- @expressive-code/plugin-collapsible-sections
+- @expressive-code/plugin-line-numbers
+- mermaid
+- rehype-katex
+- remark-math
+
+## Each Language / Code Test
 ```plain title="example.txt"
 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
 ```
@@ -310,4 +322,76 @@ name = ${NAME}
 default = True
 auto = no
 counter = 1_000
+```
+
+### Katex Test
+
+$f(n) = \Theta(g(n)) \land g(n) = \Theta(h(n)) \rightarrow f(n) = \Theta(h(n))$
+
+$\omega(g(n))=\{f(n):\text{存在正常量}c\text{和}n_0\text{，使得对所有}n \geq n_0\text{，有}0\leq cg(n) < f(n)\}$
+
+$$
+f^{(i)}(n) =
+\begin{cases}
+n \qquad & i = 1 \\
+f(f^{(i-1)}(n)) \qquad & i>1
+\end{cases}
+$$
+
+$$
+A = \begin{bmatrix}
+A_{11} & A_{12} \\
+A_{21} & A_{22}
+\end{bmatrix}
+,
+B = \begin{bmatrix}
+B_{11} & B_{12} \\
+B_{21} & B_{22}
+\end{bmatrix}
+,
+C = \begin{bmatrix}
+C_{11} & C_{12} \\
+C_{21} & C_{22}
+\end{bmatrix}
+$$
+
+$$\sum^{\lfloor lgn \rfloor}_{h=0} \lceil \frac{n}{2^{h+1}} \rceil O(h) = O(n \sum^{\lfloor lgn \rfloor}_{h=0} \frac{h}{2^h}) = O(n \sum^{\infty}_{h=0} \frac{h}{2^h}) =O(n)$$
+
+## Mermaid Test
+
+```mermaid
+pie title NETFLIX
+         "Time spent looking for movie" : 90
+         "Time spent watching it" : 10
+
+```
+
+```mermaid
+sequenceDiagram
+    Alice ->> Bob: Hello Bob, how are you?
+    Bob-->>John: How about you John?
+    Bob--x Alice: I am good thanks!
+    Bob-x John: I am good thanks!
+    Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+
+    Bob-->Alice: Checking with John...
+    Alice->John: Yes... John, how are you?
+
+```
+
+```mermaid
+gitGraph:
+    commit "Ashish"
+    branch newbranch
+    checkout newbranch
+    commit id:"1111"
+    commit tag:"test"
+    checkout main
+    commit type: HIGHLIGHT
+    commit
+    merge newbranch
+    commit
+    branch b2
+    commit
+
 ```
