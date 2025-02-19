@@ -19,8 +19,14 @@ export function ModeToggle() {
 
   React.useEffect(() => {
     const isDark = theme === 'dark';
-    document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
-    document.getElementsByClassName('markdown-body')[0]?.classList.add(isDark ? 'dark' : 'light');
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.removeAttribute('data-theme');
+    }
   }, [theme]);
 
   return (

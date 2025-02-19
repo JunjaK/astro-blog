@@ -84,12 +84,12 @@ export default function Articles({ posts }: Props) {
     const category = query.get('category');
     const tag = query.get('tag');
 
-    if (category) {
+    if (category != null) {
       form.setValue('searchType', 'category');
       form.setValue('search', category);
       onSubmit(form.getValues());
     }
-    else if (tag) {
+    else if (tag != null) {
       form.setValue('searchType', 'title-tag');
       form.setValue('search', tag);
       onSubmit(form.getValues());
@@ -132,6 +132,8 @@ export default function Articles({ posts }: Props) {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    value={field.value}
+
                   >
                     <FormControl>
                       <SelectTrigger className="w-[7rem] rounded-lg">
@@ -189,7 +191,7 @@ export default function Articles({ posts }: Props) {
       {articles.map((article) => (
         <EachArticle
           frontmatter={article.data}
-          url={article.slug}
+          url={`/blog/${article.slug}`}
           key={`${article.data.title}-${article.data.category}`}
         />
       ),
