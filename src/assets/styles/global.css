@@ -159,7 +159,7 @@
     --color-red-6-shadow: rgba(78, 255, 78, 0.6);
 }
 
-:root, .dark {
+[data-theme="dark"]:root {
     --accent-color: var(--green-1);
     --green-0: var(--green-1);
     --green-4: rgba(208, 255, 208, 0.5);

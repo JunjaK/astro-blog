@@ -41,7 +41,7 @@ export default function BlogFrontmatter({ frontmatter }: Props) {
           <hr />
           <div className="tags-wrapper">
             <BlogTags
-              tags={frontmatter.tags}
+              tags={frontmatter.tags ?? []}
               badgeClick={(tag) => onSearch('tag', tag)}
             />
           </div>

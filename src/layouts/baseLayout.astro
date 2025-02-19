@@ -8,8 +8,10 @@ import ScrollProgress from '@/components/ui/scroll-progress';
 import { ClientRouter } from 'astro:transitions';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
-import '@fontsource/gothic-a1';
+import CommonMeta from '../components/MetaAnalytics/CommonMeta.astro';
 
+import VendorScript from '../components/MetaAnalytics/VendorScript.astro';
+import '@fontsource/gothic-a1';
 import '@fontsource/m-plus-1p';
 import '@fontsource/roboto';
 import '@/assets/styles/global.css';
@@ -33,6 +35,8 @@ const { frontmatter, title } = Astro.props;
   {frontmatter?.title
     ? <title>{frontmatter.title}</title>
     : <title>{title}</title>}
+  <CommonMeta title={title} description="Except post" keywords={['others']} />
+  <VendorScript />
   <style>
 
 

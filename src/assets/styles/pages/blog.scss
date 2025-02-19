@@ -66,7 +66,6 @@
 }
 
 .markdown-content-wrapper {
-
   margin-top: 8rem !important;
   height: calc(100dvh - 12.5rem) !important;
   @media screen and (max-width: 768px) {
@@ -90,6 +89,7 @@
 
     hr {
       margin: 1rem 0;
+      width: calc($px400 - 11.5rem);
     }
 
 
@@ -171,10 +171,8 @@
 .article-entry {
   margin-top: 2rem !important;
   background-color: unset !important;
-  font-family: 'Gothic A1', sans-serif !important;
-
-  padding: 0 35px;
-
+  font-family: 'Roboto', 'M PLUS 1p', 'Noto Sans KR Variable', sans-serif;
+  
   h2 {
     margin-bottom: 40px;
   }
@@ -439,7 +437,7 @@
 
 .giscus-body {
   padding: 3rem 1.5rem 1.5rem 1.5rem;
-  background-color: var(--black);
+  background-color: $color-zinc-800;
   border-radius: 0.5rem;
   @media screen and (max-width: 768px) {
     padding: 2rem 1rem 1rem 1rem;
