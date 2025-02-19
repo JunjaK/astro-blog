@@ -3,7 +3,7 @@ title: Markdown Test
 created: 2025-02-20
 updated: 2025-02-20
 tags: [ 'markdown', 'shiki', 'expressive-code', 'mermaid', 'katex' ]
-category: Test
+category: Web
 thumbnail: /src/content/blog/web/common/assets/code-test4234234.png
 ---
 
