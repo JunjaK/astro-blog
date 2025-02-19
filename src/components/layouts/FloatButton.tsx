@@ -16,7 +16,11 @@ export default function FloatButton() {
   }
   return (
     <div>
-      <div className={`float-btn-wrapper ${isScrollTop ? 'hidden' : ''}`}>
+      <div
+        className="float-btn-wrapper"
+        style={{ opacity: isScrollTop ? 0 : 1 }}
+      >
+
         <RippleButton
           className="rounded-full"
           rippleColor="#ADD8E6"

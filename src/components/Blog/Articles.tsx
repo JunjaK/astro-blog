@@ -1,5 +1,4 @@
-import type { BlogFrontMatter } from '@/types/commonType.ts';
-import type { MarkdownInstance } from 'astro';
+import type { CollectionEntry } from 'astro:content';
 import EachArticle from '@/components/Blog/EachArticle';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,12 +22,12 @@ import Fuse from 'fuse.js';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
+import { z } from 'zod';
 import { FadeText } from '~/components/ui/fade-text';
 
 type Props = {
-  posts: MarkdownInstance<BlogFrontMatter>[];
+  posts: CollectionEntry<'blog'>[];
 };
 const formSchema = z.object({
   search: z.string().min(2).max(50),
@@ -52,16 +51,22 @@ const fuseOptions = {
   ignoreFieldNorm: false,
   fieldNormWeight: 1,
   keys: [
-    'frontmatter.title',
+    'data.title',
     {
-      name: 'frontmatter.tags',
+      name: 'data.tags',
       weight: 0.3,
     },
   ],
 };
 
 export default function Articles({ posts }: Props) {
-  const [articles, setArticles] = useState(posts);
+  const rawPosts = posts.map((e) => {
+    return {
+      ...e,
+    };
+  });
+
+  const [articles, setArticles] = useState(rawPosts);
   const [isSearchActive, setIsSearchActive] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -72,7 +77,7 @@ export default function Articles({ posts }: Props) {
     },
   });
 
-  const fuse = new Fuse(posts, fuseOptions);
+  const fuse = new Fuse(rawPosts, fuseOptions);
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.href.split('?')[1]);
@@ -100,7 +105,7 @@ export default function Articles({ posts }: Props) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     if (values.searchType === 'category') {
-      setArticles(posts.filter((post) => post.frontmatter.category === values.search));
+      setArticles(rawPosts.filter((post) => post.data.category === values.search));
     }
     else {
       const result = fuse.search(values.search);
@@ -111,7 +116,7 @@ export default function Articles({ posts }: Props) {
   function resetForm() {
     form.reset();
     setIsSearchActive(false);
-    setArticles(posts);
+    setArticles(rawPosts);
   }
 
   return (
@@ -181,8 +186,13 @@ export default function Articles({ posts }: Props) {
         )}
       </div>
 
-      {articles.map((article) =>
-        <EachArticle frontmatter={article.frontmatter} url={article.url} key={`${article.frontmatter.title}-${article.frontmatter.category}`} />,
+      {articles.map((article) => (
+        <EachArticle
+          frontmatter={article.data}
+          url={article.slug}
+          key={`${article.data.title}-${article.data.category}`}
+        />
+      ),
       )}
     </div>
   );

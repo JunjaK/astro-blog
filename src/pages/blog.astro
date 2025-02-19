@@ -1,14 +1,15 @@
 ---
-import type { BlogFrontMatter } from '@/types/commonType';
-import type { MarkdownInstance } from 'astro';
 import Articles from '@/components/Blog/Articles';
 // Component Imports
 import { Skeleton } from '@/components/ui/skeleton';
 import BaseLayout from '@/layouts/baseLayout.astro';
+import { getCollection } from 'astro:content';
+
 import dayjs from 'dayjs';
 
-const posts: MarkdownInstance<BlogFrontMatter>[] = Object.values(import.meta.glob('./blog/**/*.md', { eager: true }));
-posts.sort((a, b) => dayjs(b.frontmatter.created).unix() - dayjs(a.frontmatter.created).unix());
+const posts = await getCollection('blog');
+// const posts: MarkdownInstance<BlogFrontMatter>[] = Object.values(import.meta.glob('../content/blog/**/*.md', { eager: true }));
+posts.sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix());
 
 ---
 
