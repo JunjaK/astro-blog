@@ -1,10 +1,11 @@
 export interface BlogFrontMatter {
   id?: string;
   title: string;
-  created: string;
-  tags: string[];
+  created: Date;
+  tags?: string[];
   category: string;
   thumbnail: string;
+  updated?: Date;
 }
 
 export type StringKeyType<T> = {
