@@ -1,35 +1,42 @@
 ---
-import BlogFrontmatter from '@/components/Blog/BlogFrontmatter';
-import GiscusComp from '@/components/Blog/GiscusComp';
+import type { CollectionEntry } from 'astro:content';
 import FloatButton from '@/components/layouts/FloatButton';
 import Footer from '@/components/layouts/Footer';
 import Navigation from '@/components/layouts/Navigation';
-import ScrollProgress from '@/components/ui/scroll-progress';
 
-import { Icon } from '@iconify/react';
+import ScrollProgress from '@/components/ui/scroll-progress';
 import { ClientRouter } from 'astro:transitions';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
+import BlogFrontmatter from '../components/Blog/BlogFrontmatter';
+import GiscusComp from '../components/Blog/GiscusComp';
+import CommonScript from '../components/layouts/CommonScript.astro';
+import CommonMeta from '../components/MetaAnalytics/CommonMeta.astro';
+import VendorScript from '../components/MetaAnalytics/VendorScript.astro';
 import { Separator } from '../components/ui/separator';
 import { Skeleton } from '../components/ui/skeleton';
 import '@fontsource/gothic-a1';
 import '@fontsource/m-plus-1p';
 import '@fontsource/roboto';
 import '@/assets/styles/global.css';
-import '@/assets/styles/pages/markdowncss.css';
 import '@/assets/styles/index.scss';
 import 'dayjs/locale/en';
 
 dayjs.extend(dayJsRelativeTime);
 dayjs.locale('en');
 
-const { frontmatter, title } = Astro.props;
+type Props = {
+  post: CollectionEntry<'blog'>['data'];
+  url: string;
+  nav?: {
+    prev: CollectionEntry<'blog'> | null;
+    next: CollectionEntry<'blog'> | null;
+  };
+};
 
-function goBack() {
-  window.history.back();
-}
+const { nav, post, url } = Astro.props;
 
-
+const { title, tags = [], category = '' } = post;
 ---
 
 <html lang="en">
@@ -39,11 +46,10 @@ function goBack() {
   <meta name="generator" content={Astro.generator} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <ClientRouter />
-  {frontmatter?.title
-    ? <title>{frontmatter.title}</title>
-    : <title>{title}</title>}
+  <title>{title}</title>
+  <CommonMeta title={title} description={category} keywords={tags} />
+  <VendorScript />
   <style>
-
 
   </style>
 
@@ -52,20 +58,30 @@ function goBack() {
 <Navigation client:load></Navigation>
 
 <main>
-  <ScrollProgress className="scroll-animation top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:visible />
+
+  <ScrollProgress
+    className="scroll-animation top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30"
+    client:visible
+  />
 
   <div class="markdown-content-wrapper">
-    <div id="go-back" class="text-lg font-bold text-opacity-80 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-gray-50 mb-2 w-[3rem] cursor-pointer">
-      > cd ..
+    <div
+      id="go-back"
+      class="text-lg font-bold text-opacity-80 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-gray-50 mb-2 w-[3rem] cursor-pointer"
+    >
+      {`> cd ..`}
     </div>
     <div class="front-matter-info">
 
-      <BlogFrontmatter frontmatter={frontmatter} client:visible />
+      <BlogFrontmatter frontmatter={post} client:visible />
     </div>
-    <div class="markdown-body">
+    <div class="article-entry">
       <slot></slot>
     </div>
     <Separator className="my-8" />
+    <div>
+
+    </div>
     <div class="giscus-body">
       <GiscusComp client:load>
         <div class="giscus-fallback" slot="fallback">
@@ -80,6 +96,8 @@ function goBack() {
 </main>
 <Footer client:visible />
 <FloatButton client:load />
+<CommonScript />
+
 </body>
 </html>
 

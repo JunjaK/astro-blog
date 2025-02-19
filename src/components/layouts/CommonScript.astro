@@ -1,0 +1,30 @@
+<!-- aos -->
+<script>
+import AOS from '@reimujs/aos';
+
+function aosInit() {
+  AOS.init({
+    duration: 1000,
+    easing: 'ease',
+    once: true,
+    offset: 50,
+  });
+}
+aosInit();
+document.addEventListener('astro:after-swap', aosInit);
+</script>
+<!-- lozad -->
+<script>
+import lozad from 'lozad';
+
+function lozadInit() {
+  const observer = lozad('.lazyload', {
+    loaded: (el) => {
+      el.classList.add('lazyloaded');
+    },
+  });
+  observer.observe();
+}
+lozadInit();
+document.addEventListener('astro:after-swap', lozadInit);
+</script>

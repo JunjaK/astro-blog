@@ -18,7 +18,7 @@ export function EachProject({ title, duration, desc, techStackIcon }: Props) {
       <div className="text-muted-foreground text-sm mt-1">
         {duration}
       </div>
-      <p className="text-neutral-600 dark:text-neutral-300">
+      <p className="text-zinc-700 dark:text-zinc-300">
         {desc}
       </p>
       <div className="flex gap-1 items-center">

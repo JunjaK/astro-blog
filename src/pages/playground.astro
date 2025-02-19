@@ -1,13 +1,16 @@
 ---
 // Component Imports
 import Counter from '@/components/Counter';
+// Full Astro Component Syntax:
+// https://docs.astro.build/basics/astro-components/
+
+import { Code } from 'astro:components';
 import BaseLayout from '../layouts/baseLayout.astro';
 
 const someProps = {
   count: 0,
 };
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+
 ---
 
 <BaseLayout title="playground">
@@ -20,7 +23,32 @@ const someProps = {
         <h1>Hello, React!</h1>
       </Counter>
     </section>
+    <section>
+      <!-- Syntax highlight some JavaScript code. -->
+      <Code
+        code={`const foo = 'bar';`}
+        lang="javascript"
+        theme="catppuccin-frappe"
+      />
+      <!-- Optional: Customize your theme. -->
+      <Code code={`const foo = 'bar';`} lang="javascript" theme="dracula" />
+      <!-- Optional: Enable word wrapping. -->
+      <Code code={`const foo = 'bar';`} lang="js" wrap />
+      <!-- Optional: Output inline code. -->
+      <p>
+        <Code code={`const foo = 'bar';`} lang="js" inline />
+        will be rendered inline.
+      </p>
+      <!-- Optional: defaultColor -->
+      <Code code={`const foo = 'bar';`} lang="js" defaultColor={false} />
+    </section>
   </div>
 
 
 </BaseLayout>
+
+<style is:global>
+    pre.has-focused .line:not(.focused) {
+        filter: blur(1px);
+    }
+</style>

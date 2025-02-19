@@ -1,15 +1,16 @@
 ---
+import CommonScript from '@/components/layouts/CommonScript.astro';
 import FloatButton from '@/components/layouts/FloatButton';
 import Footer from '@/components/layouts/Footer';
-import Navigation from '@/components/layouts/Navigation';
 
+import Navigation from '@/components/layouts/Navigation';
+import ScrollProgress from '@/components/ui/scroll-progress';
 import { ClientRouter } from 'astro:transitions';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
-import ScrollProgress from '../components/ui/scroll-progress';
 import '@fontsource/gothic-a1';
-import '@fontsource/m-plus-1p';
 
+import '@fontsource/m-plus-1p';
 import '@fontsource/roboto';
 import '@/assets/styles/global.css';
 import '@/assets/styles/index.scss';
@@ -26,6 +27,7 @@ const { frontmatter, title } = Astro.props;
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="generator" content={Astro.generator} />
+  <meta name="description" content={title} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <ClientRouter />
   {frontmatter?.title
@@ -50,6 +52,7 @@ const { frontmatter, title } = Astro.props;
 </main>
 <Footer client:idle />
 <FloatButton client:idle />
+<CommonScript />
 </body>
 </html>
 

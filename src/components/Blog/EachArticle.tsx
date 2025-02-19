@@ -13,7 +13,7 @@ interface Props {
   url?: string;
 }
 
-const images = import.meta.glob<{ default: ImageMetadata }>('/src/pages/blog/**/*.{jpeg,jpg,png,gif,webp}');
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/content/blog/**/*.{jpeg,jpg,png,gif,webp}');
 
 export default function EachArticle({ frontmatter, url }: Props) {
   const [imageSrc, setImageSrc] = useState<string | undefined>(darkFallbackImg.src);
@@ -63,7 +63,7 @@ export default function EachArticle({ frontmatter, url }: Props) {
           <div className="article-info">
             <h4 className="title">{frontmatter.title}</h4>
             <div className="desc">
-              <BlogTags tags={frontmatter.tags} />
+              <BlogTags tags={frontmatter.tags ?? []} />
               <p className="text-green-600 dark:text-green-500 ">{frontmatter.category}</p>
               <p className="text-muted-foreground">{created}</p>
             </div>
