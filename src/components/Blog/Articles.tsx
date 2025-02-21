@@ -132,6 +132,7 @@ export default function Articles({ posts }: Props) {
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                     value={field.value}
+                    name={field.name}
 
                   >
                     <FormControl>
@@ -167,6 +168,8 @@ export default function Articles({ posts }: Props) {
               size="icon"
               className="reset-btn rounded-lg"
               type="button"
+              name="search-reset"
+              aria-label="search-reset"
               onClick={resetForm}
             >
               <Icon icon="tabler:rotate" className="h-[1.5rem] w-[1.5rem] "></Icon>

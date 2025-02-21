@@ -50,7 +50,13 @@ export default function Navigation() {
       <nav>
         <div className="nav-content-wrapper layout-background">
           <div className="nav-content">
-            <Button variant="ghost" size="icon" asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              asChild
+              name="to-home"
+              aria-label="to-home"
+            >
               <a href="/">
                 <Icon icon="mynaui:code-waves-solid" className="logo"></Icon>
               </a>
@@ -60,13 +66,23 @@ export default function Navigation() {
 
             <div className="action-btn-wrapper">
               <DrawerNavigation tab={tab}>
-                <Button variant="ghost" size="icon" onClick={toggleMenu} className="md:hidden" asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleMenu}
+                  className="md:hidden"
+                  asChild
+                  aria-label="mobile-drawer-menu"
+                  name="mobile-drawer-menu"
+                >
                   <Icon icon="mynaui:menu" className="logo"></Icon>
                 </Button>
               </DrawerNavigation>
               <Button
                 variant="ghost"
                 size="icon"
+                name="whole-search"
+                aria-label="whole-search"
                 onClick={onClickSearch}
               >
                 <Icon icon="mynaui:search" className="logo"></Icon>

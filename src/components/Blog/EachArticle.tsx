@@ -61,7 +61,7 @@ export default function EachArticle({ frontmatter, url }: Props) {
           />
 
           <div className="article-info">
-            <h4 className="title">{frontmatter.title}</h4>
+            <div className="article-title">{frontmatter.title}</div>
             <div className="desc">
               <BlogTags tags={frontmatter.tags ?? []} />
               <p className="text-green-600 dark:text-green-500 ">{frontmatter.category}</p>

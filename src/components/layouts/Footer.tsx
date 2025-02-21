@@ -15,24 +15,24 @@ export default function Footer(props: Props) {
             © 2025 • Junjak •
           </div>
           <Button variant="ghost" size="icon" asChild>
-            <a href="https://github.com/JunjaK/astro-blog">
+            <a href="https://github.com/JunjaK/astro-blog" aria-label="github-repo">
               <Icon icon="mingcute:git-branch-line" className="icon text-lg ml-1 text-gray-500" />
             </a>
           </Button>
         </div>
         <div className="flex items-center">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild name="github" aria-label="github">
             <a href="https://github.com/JunjaK">
               <Icon icon="mingcute:github-fill" className="icon text-lg ml-1 text-gray-500" />
             </a>
           </Button>
           <Button variant="ghost" size="icon" asChild>
-            <a href="https://www.linkedin.com/in/junjak-063081213">
+            <a href="https://www.linkedin.com/in/junjak-063081213" aria-label="linkedin">
               <Icon icon="mingcute:linkedin-fill" className="icon text-lg ml-1 text-gray-500" />
             </a>
           </Button>
           <Button variant="ghost" size="icon" asChild>
-            <a href="mailto:haring157@gmail.com">
+            <a href="mailto:haring157@gmail.com" aria-label="mailto">
               <Icon icon="mingcute:mail-fill" className="icon text-lg ml-1 text-gray-500" />
             </a>
           </Button>
