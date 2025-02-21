@@ -24,6 +24,8 @@ export default function FloatButton() {
         <RippleButton
           className="rounded-full"
           rippleColor="#ADD8E6"
+          name="scroll-to-top"
+          aria-label="scroll-to-top"
           onClick={onClick}
         >
           <Icon icon="mingcute:large-arrow-up-fill" className="icon">

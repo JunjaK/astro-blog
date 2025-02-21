@@ -53,7 +53,12 @@
   }
 
   .article-info {
-    .title {
+    .article-title {
+      scroll-margin: 5rem;
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.025em;
       max-width: calc($px400 - 19rem);
       @media screen and (max-width: 768px) {
         max-width: calc($px400 - 15rem);
