@@ -4,6 +4,14 @@
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
+  width: calc($px400 - 8rem);
+  @media screen and (max-width: 768px) {
+    width: calc($px400 - 4rem);
+  }
+  //button {
+  //  width: 1.5rem !important;
+  //  height: 1.5rem !important;
+  //}
 
   .search-input {
     width: calc($px400 - 19.5rem);
@@ -13,6 +21,18 @@
 
   }
 
+  .reset-btn {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+}
+
+.article-wrapper {
+  width: calc($px400 - 8rem);
+  @media screen and (max-width: 768px) {
+    width: calc($px400 - 4rem);
+  }
 }
 
 .search-result {
@@ -34,7 +54,10 @@
 
   .article-info {
     .title {
-      max-width: calc($px400 - 15rem);
+      max-width: calc($px400 - 19rem);
+      @media screen and (max-width: 768px) {
+        max-width: calc($px400 - 15rem);
+      }
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -46,7 +69,10 @@
     }
 
     .scroll-area {
-      width: calc($px400 - 15rem);
+      width: calc($px400 - 19rem);
+      @media screen and (max-width: 768px) {
+        width: calc($px400 - 15rem);
+      }
       margin: 0.8rem 0;
     }
 

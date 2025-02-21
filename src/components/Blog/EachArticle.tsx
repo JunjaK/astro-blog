@@ -38,7 +38,7 @@ export default function EachArticle({ frontmatter, url }: Props) {
   return (
     <figure
       className={`${ny(
-        'relative mx-auto min-h-fit w-full cursor-pointer overflow-hidden rounded-2xl p-4',
+        'relative min-h-fit cursor-pointer overflow-hidden rounded-2xl p-4',
         // animation styles
 
         'transition-all duration-200 ease-in-out hover:scale-[103%]',

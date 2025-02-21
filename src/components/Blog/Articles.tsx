@@ -166,7 +166,7 @@ export default function Articles({ posts }: Props) {
             <Button
               variant="outline"
               size="icon"
-              className="rounded-lg"
+              className="reset-btn rounded-lg"
               type="button"
               onClick={resetForm}
             >
