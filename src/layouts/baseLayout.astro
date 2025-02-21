@@ -21,7 +21,7 @@ import 'dayjs/locale/en';
 dayjs.extend(dayJsRelativeTime);
 dayjs.locale('en');
 
-const { frontmatter, title } = Astro.props;
+const { title } = Astro.props;
 ---
 
 <html lang="en">
@@ -32,10 +32,7 @@ const { frontmatter, title } = Astro.props;
   <meta name="description" content={title} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <ClientRouter />
-  {frontmatter?.title
-    ? <title>{frontmatter.title}</title>
-    : <title>{title}</title>}
-  <CommonMeta title={title} description="Except post" keywords={['others']} />
+  <CommonMeta title={`Jun devlog | ${title}`} description="Normal page" keywords={['others']} />
   <VendorScript />
   <style>
 
