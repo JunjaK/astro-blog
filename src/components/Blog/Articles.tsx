@@ -18,11 +18,12 @@ import {
 } from '@/components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Icon } from '@iconify/react';
+import dayjs from 'dayjs';
 import Fuse from 'fuse.js';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { FadeText } from '~/components/ui/fade-text';
 
@@ -60,13 +61,7 @@ const fuseOptions = {
 };
 
 export default function Articles({ posts }: Props) {
-  const rawPosts = posts.map((e) => {
-    return {
-      ...e,
-    };
-  });
-
-  const [articles, setArticles] = useState(rawPosts);
+  const [articles, setArticles] = useState(posts);
   const [isSearchActive, setIsSearchActive] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -77,7 +72,7 @@ export default function Articles({ posts }: Props) {
     },
   });
 
-  const fuse = new Fuse(rawPosts, fuseOptions);
+  const fuse = new Fuse(posts, fuseOptions);
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.href.split('?')[1]);
@@ -105,18 +100,22 @@ export default function Articles({ posts }: Props) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     if (values.searchType === 'category') {
-      setArticles(rawPosts.filter((post) => post.data.category === values.search));
+      setArticles(posts.filter((post) => post.data.category === values.search));
     }
     else {
       const result = fuse.search(values.search);
-      setArticles(result.map((r) => r.item));
+      setArticles(
+        result
+          .map((r) => r.item)
+          .sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix()),
+      );
     }
   }
 
   function resetForm() {
     form.reset();
     setIsSearchActive(false);
-    setArticles(rawPosts);
+    setArticles(posts);
   }
 
   return (

@@ -46,11 +46,10 @@ const { title, tags = [], category = '' } = post;
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="generator" content={Astro.generator} />
-  <meta name="giscus:backlink" content="https://bit.ly/RickRolled">
+  <meta name="giscus:backlink" content="https://bit.ly/RickRolled" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <ClientRouter />
-  <title>{title}</title>
-  <CommonMeta title={title} description={category} keywords={tags} />
+  <CommonMeta title={`Jun devlog | ${title}`} description={`Blog Page | ${category}`} keywords={tags} />
   <VendorScript />
   <style>
 
