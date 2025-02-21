@@ -328,8 +328,6 @@ counter = 1_000
 
 $f(n) = \Theta(g(n)) \land g(n) = \Theta(h(n)) \rightarrow f(n) = \Theta(h(n))$
 
-$\omega(g(n))=\{f(n):\text{存在正常量}c\text{和}n_0\text{，使得对所有}n \geq n_0\text{，有}0\leq cg(n) < f(n)\}$
-
 $$
 f^{(i)}(n) =
 \begin{cases}
