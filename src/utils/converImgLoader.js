@@ -22,7 +22,14 @@ process.argv.forEach((val, index) => {
 function convertToImageLoader(input) {
   const regex = /!\[(.*?)\]\((.*?)\)/g; // 정규식: alt와 url 추출
   return input.replace(regex, (_, alt, url) => {
-    return `<ImageLoader src="${url.replace('assets', convName)}" alt="${alt}" />`;
+    let altUrl = ''
+    if(url.startsWith('assets')) {
+      altUrl = url.replace('assets', convName);
+    }
+    else if(url.startsWith('./assets')) {
+      altUrl = url.replace('./assets', convName);
+    }
+    return `<ImageLoader src="${altUrl)}" alt="${alt}" />`;
   });
 }
 
