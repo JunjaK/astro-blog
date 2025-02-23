@@ -40,11 +40,11 @@ jobs:
     needs: build
     steps:
       - name: Build Docker Image
-        uses: DOCKER_BUILDKIT=1 docker build -t astro-blog
+        run: DOCKER_BUILDKIT=1 docker build -t astro-blog
 
       - name: docker stop & remove pre
-        uses: docker stop astro-blog && docker rm astro-blog
+        run: docker stop astro-blog && docker rm astro-blog
 
       - name: docker run
-        uses: docker run -d -v astro-blog-volume:/home/files --name astro-blog -p 4321:80  astro-blog
+        run: docker run -d -v astro-blog-volume:/home/files --name astro-blog -p 4321:80  astro-blog
   
