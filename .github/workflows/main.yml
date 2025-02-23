@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: astro-blog
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -36,7 +36,7 @@ jobs:
       - name: Build
         run: pnpm build
   deploy:
-    runs-on: self-hosted
+    runs-on: astro-blog
     needs: build
     steps:
       - name: Build Docker Image
