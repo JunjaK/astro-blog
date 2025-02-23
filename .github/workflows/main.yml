@@ -3,12 +3,11 @@ name: Astro Blog
 on:
   push:
     branches:
-      - main  # 배포를 트리거하는 브랜치
+      - master  # 배포를 트리거하는 브랜치
 
 jobs:
   build-and-deploy:
-    runs-on: astro-blog-runner
-
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
