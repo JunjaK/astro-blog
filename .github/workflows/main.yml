@@ -6,7 +6,7 @@ on:
       - master  # 배포를 트리거하는 브랜치
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: self-hosted
     steps:
       - name: Checkout repository
@@ -35,3 +35,16 @@ jobs:
 
       - name: Build
         run: pnpm build
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Build Docker Image
+        uses: DOCKER_BUILDKIT=1 docker build -t astro-blog
+
+      - name: docker stop & remove pre
+        uses: docker stop astro-blog && docker rm astro-blog
+
+      - name: docker run
+        uses: docker run -d -v astro-blog-volume:/home/files --name astro-blog -p 4321:80  astro-blog
+  
