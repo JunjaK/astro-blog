@@ -36,7 +36,11 @@ export function Chronicle() {
         Timeline
       </motion.h2>
       <p className="text-muted-foreground mb-4">
-        현재까지의 경력사항 및 진행한 프로젝트입니다.
+        저는 대학교 & 인턴 2년, 정직원 3년을 포함하여 약 5년 동안 Vue.js를 사용하며 프론트엔드 개발을 해왔습니다.
+        <br />
+        현재는 React, Astro, Next 등 이전에 잘 사용하지 않던, 그리고 새로운 라이브러리들을 경험해보고 있습니다.
+        <br />
+        이하 현재까지의 경력사항 및 진행한 프로젝트입니다.
       </p>
 
       <Timeline>
