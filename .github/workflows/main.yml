@@ -40,7 +40,7 @@ jobs:
     needs: build
     steps:
       - name: Build Docker Image
-        run: DOCKER_BUILDKIT=1 docker build -t astro-blog
+        run: DOCKER_BUILDKIT=1 docker build -t astro-blog .
 
       - name: docker stop & remove pre
         run: docker stop astro-blog && docker rm astro-blog
