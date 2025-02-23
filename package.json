@@ -6,7 +6,7 @@
     "dev": "astro dev --mode dev",
     "build": "astro build --mode prd",
     "preview": "astro preview --mode prd",
-    "conv-img": "node ./src/utils/converImgLoader.js ./src/content/blog/web/react /files/blog/web/react/assets",
+    "conv-img": "node ./src/utils/converImgLoader.js ./src/content/blog/diary/japan-around-trip /files/blog/diary/japan-around-trip/assets",
     "remove-unused": "node ./src/utils/removeUnusedImages.js",
     "add-md-enter": "node ./src/utils/addMdEnter.js",
     "astro": "astro"

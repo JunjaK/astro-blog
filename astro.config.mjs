@@ -27,7 +27,7 @@ const SCSS_Logger = {
 
 export default defineConfig({
   // Enable React to support React JSX components.
-  site: 'https://jun-astro-blog.netlify.app',
+  site: 'https://www.jun-devlog.win',
   integrations: [react(), tailwind({
     applyBaseStyles: false,
   }), sitemap(), expressiveCode({
