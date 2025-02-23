@@ -14,7 +14,7 @@ pnpm dev
 - [Vite](https://vitejs.dev/)
 - Giscus
 - Iconify
-- Fontsources: roboto, gothic-a1, m-plus-1p
+- Fontsources: roboto, gothic-a1, m-plus-1p, Noto sans KR
 - NanoStore
 - Nyxbui
 - Dayjs
@@ -22,3 +22,4 @@ pnpm dev
 - fuse.js
 - antfu/eslitn-config
 - Sass
+- expressive-code
