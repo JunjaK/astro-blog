@@ -133,70 +133,6 @@
       }
     }
   }
-
-  //.markdown-body {
-  //  margin-top: 2rem !important;
-  //  background-color: unset !important;
-  //  font-family: 'Gothic A1', sans-serif !important;
-  //
-  //  hr {
-  //    box-sizing: content-box;
-  //    overflow: hidden;
-  //    border-bottom: 1px solid #3d444db3;
-  //    height: .25em;
-  //    padding: 0;
-  //    margin: 1.5rem 0;
-  //    background-color: #3d444d;
-  //  }
-  //
-  //  h1 {
-  //    margin-bottom: 1rem;
-  //    border-bottom: 1px solid #d2d2d2;
-  //    line-height: 2;
-  //  }
-  //
-  //
-  //  h3 {
-  //    margin-top: 1rem;
-  //  }
-  //
-  //  img {
-  //    border-radius: 1rem;
-  //    margin: 0.5rem 0;
-  //    object-fit: contain;
-  //    left: 0;
-  //  }
-  //
-  //  p {
-  //    margin-top: 1rem;
-  //    line-height: 1.8;
-  //  }
-  //
-  //  &.dark {
-  //    h2 {
-  //      color: $color-green-500;
-  //    }
-  //
-  //    li {
-  //      list-style-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 16 10'><path fill='%23e4e4e7' d='M4 8a4 4 0 1 1 8 0a4 4 0 0 1-8 0m4-2.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5'/></svg>");
-  //
-  //      > p {
-  //        margin-top: 0.5rem !important;
-  //        margin-bottom: 0.5rem !important;
-  //      }
-  //    }
-  //  }
-  //
-  //  &.light {
-  //    h2 {
-  //      color: $color-green-600;
-  //    }
-  //
-  //    li {
-  //      list-style-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 16 10'><path fill='%2327272a' d='M4 8a4 4 0 1 1 8 0a4 4 0 0 1-8 0m4-2.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5'/></svg>");
-  //    }
-  //  }
-  //}
 }
 
 .article-entry {
@@ -480,13 +416,12 @@
 
   svg {
     border-radius: 0.5rem;
-    background: var(--color-mermaid-background);
   }
 }
 
 .giscus-body {
   padding: 3rem 1.5rem 1.5rem 1.5rem;
-  background-color: $color-zinc-800;
+  background-color: #27272a;
   border-radius: 0.5rem;
   @media screen and (max-width: 768px) {
     padding: 2rem 1rem 1rem 1rem;
