@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted
+    runs-on: astro-blog-runner
 
     steps:
       - name: Checkout repository
