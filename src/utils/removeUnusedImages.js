@@ -1,6 +1,6 @@
-const path = require('node:path');
-const fs = require('fs-extra');
-const glob = require('glob');
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as glob from 'glob';
 
 // 마크다운 파일에서 이미지 경로를 추출하는 함수
 function extractImagePathsFromMarkdown(markdownContent) {

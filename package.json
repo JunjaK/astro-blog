@@ -8,6 +8,7 @@
     "preview": "astro preview --mode prd",
     "conv-img": "node ./src/utils/converImgLoader.js ./src/content/blog/web/react /files/blog/web/react/assets",
     "remove-unused": "node ./src/utils/removeUnusedImages.js",
+    "add-md-enter": "node ./src/utils/addMdEnter.js",
     "astro": "astro"
   },
   "dependencies": {
