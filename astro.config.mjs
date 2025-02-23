@@ -33,13 +33,14 @@ export default defineConfig({
   }), sitemap(), expressiveCode({
     themes: ['kanagawa-dragon', 'catppuccin-latte'],
     plugins: [pluginCollapsibleSections(), pluginLineNumbers(), pluginColorChips()],
+
   },
-  ), mdx()],
+  ), mdx({})],
   image: {
     service: passthroughImageService(),
   },
   markdown: {
-    remarkPlugins: [remarkMath, remarkMermaidToHtml],
+    remarkPlugins: [remarkMermaidToHtml, remarkMath],
     rehypePlugins: [rehypeKatex],
     syntaxHighlight: false,
   },

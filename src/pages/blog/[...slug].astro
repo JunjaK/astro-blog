@@ -32,6 +32,8 @@ const { Content } = await post.render();
 <script>
 import mermaid from 'mermaid';
 
+type MermaidTheme = 'default' | 'base' | 'dark' | 'forest' | 'neutral' | 'null' | undefined;
+
 function saveOriginalData() {
   return new Promise<void>((resolve, reject) => {
     try {
@@ -75,7 +77,8 @@ function resetProcessed() {
     }
   });
 }
-async function loadMermaid(theme: string) {
+
+async function loadMermaid(theme: MermaidTheme) {
   mermaid.initialize({
     startOnLoad: false,
     theme,
@@ -84,16 +87,9 @@ async function loadMermaid(theme: string) {
     querySelector: '.language-mermaid',
   });
 }
-function themeSetHandler(e: any) {
-  let theme = e.detail.theme;
-  if (e.detail.theme === 'light') {
-    theme = 'default';
-  }
-  else if (e.detail.theme === 'auto') {
-    theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'default';
-  }
+
+function themeSetHandler() {
+  const theme: MermaidTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'default';
   saveOriginalData()
     .then(() => {
       resetProcessed();
@@ -107,31 +103,15 @@ function mermaidInit() {
   document.body.removeEventListener('theme-set', themeSetHandler);
   document.body.addEventListener('theme-set', themeSetHandler);
 
-  let theme = localStorage.getItem('theme');
-  if (theme === '"light"') {
-    theme = 'default';
-  }
-  else if (theme === '"auto"') {
-    theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'default';
-  }
-  else if (theme === '"dark"') {
-    theme = 'dark';
-  }
-  else {
-    theme = 'default';
-  }
-  if (theme === 'dark' || theme === 'default') {
-    saveOriginalData()
-      .then(() => {
-        resetProcessed();
-      })
-      .then(() => {
-        loadMermaid(theme);
-      })
-      .catch(console.error);
-  }
+  const theme: MermaidTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'default';
+  saveOriginalData()
+    .then(() => {
+      resetProcessed();
+    })
+    .then(() => {
+      loadMermaid(theme);
+    })
+    .catch(console.error);
 }
 document.addEventListener('astro:after-swap', mermaidInit);
 mermaidInit();

@@ -37,6 +37,7 @@ export default antfu({
     'ts/ban-ts-comment': 'off',
     'no-unused-vars': 'warn',
     'no-underscore-dangle': 'off',
+    'unused-imports/no-unused-imports': 'warn',
     'no-console': 'warn',
     'no-debugger': 'warn',
     'ts/consistent-type-definitions': ['off'],
