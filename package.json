@@ -3,9 +3,11 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
+    "dev": "astro dev --mode dev",
+    "build": "astro build --mode prd",
+    "preview": "astro preview --mode prd",
+    "conv-img": "node ./src/utils/converImgLoader.js ./src/content/blog/web/react /files/blog/web/react/assets",
+    "remove-unused": "node ./src/utils/removeUnusedImages.js",
     "astro": "astro"
   },
   "dependencies": {
@@ -69,6 +71,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^3.12.2",
     "@eslint-react/eslint-plugin": "^1.23.2",
+    "@types/fs-extra": "^11.0.4",
     "@types/js-yaml": "^4.0.9",
     "@types/lozad": "^1.16.4",
     "astro-eslint-parser": "^1.1.0",
@@ -77,6 +80,8 @@
     "eslint-plugin-format": "^1.0.1",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
+    "fs-extra": "^11.3.0",
+    "glob": "^11.0.1",
     "hast-util-to-html": "^9.0.5",
     "js-yaml": "^4.1.0",
     "mdast-util-to-hast": "^13.2.0",

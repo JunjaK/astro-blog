@@ -410,10 +410,11 @@
 
 .article-entry img,
 .article-entry video {
+  margin: 1rem auto;
+  border-radius: 0.5rem;
   max-width: 100%;
   height: auto;
   display: block;
-  margin: auto;
   transition: 0.3s;
 }
 
