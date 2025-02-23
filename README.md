@@ -23,3 +23,4 @@ pnpm dev
 - antfu/eslitn-config
 - Sass
 - expressive-code
+- mermaid
