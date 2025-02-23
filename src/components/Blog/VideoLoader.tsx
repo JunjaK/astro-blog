@@ -1,3 +1,4 @@
+import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl.ts';
 // @flow
 import * as React from 'react';
 
@@ -7,7 +8,7 @@ type Props = {
 export default function VideoLoader({ src }: Props) {
   return (
     <div>
-      <video src={src} controls />
+      <video src={getBasePathWithUrl(src)} controls />
     </div>
   );
 }

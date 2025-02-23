@@ -1,7 +1,6 @@
-FROM nginx:alpine AS runtime
+FROM ubuntu/nginx:1.18-22.04_beta
 
 ENV TZ="Asia/Seoul"
 
 COPY ./nginx.conf /etc/nginx/nginx.conf
-COPY ./dist /usr/share/nginx/html
-EXPOSE 4321
+COPY ./dist /var/www/html
