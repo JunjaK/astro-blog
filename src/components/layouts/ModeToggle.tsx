@@ -12,12 +12,15 @@ import * as React from 'react';
 
 export function ModeToggle() {
   const theme = useStore($theme);
+  const event = new Event('theme-set');
 
   React.useEffect(() => {
     localStorage.getItem('theme') && setTheme(localStorage.getItem('theme') ?? 'dark');
   }, []);
 
   React.useEffect(() => {
+    document.body.dispatchEvent(event);
+
     const isDark = theme === 'dark';
     if (isDark) {
       document.documentElement.classList.add('dark');
