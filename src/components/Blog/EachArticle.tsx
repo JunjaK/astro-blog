@@ -1,9 +1,8 @@
 import type { BlogFrontMatter } from '@/types/commonType';
-import darkFallbackImg from '@/assets/images/fallbackImg.svg';
 import { ny } from '@/lib/utils';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import BlogTags from './BlogTags';
 
 dayjs.extend(dayJsRelativeTime);
@@ -13,10 +12,10 @@ interface Props {
   url?: string;
 }
 
-const images = import.meta.glob<{ default: ImageMetadata }>('/src/content/blog/**/*.{jpeg,jpg,png,gif,webp}');
+// const images = import.meta.glob<{ default: ImageMetadata }>('/src/content/blog/**/*.{jpeg,jpg,png,gif,webp}');
 
 export default function EachArticle({ frontmatter, url }: Props) {
-  const [imageSrc, setImageSrc] = useState<string | undefined>(darkFallbackImg.src);
+  // const [imageSrc, setImageSrc] = useState<string | undefined>(darkFallbackImg.src);
 
   const created = useMemo(() => {
     const today = dayjs();
@@ -29,10 +28,10 @@ export default function EachArticle({ frontmatter, url }: Props) {
   }, [frontmatter.created]);
 
   useEffect(() => {
-    images[frontmatter.thumbnail]()
-      .then((e) => {
-        setImageSrc(e.default.src);
-      });
+    // images[frontmatter.thumbnail]()
+    //   .then((e) => {
+    //     setImageSrc(e.default.src);
+    //   });
   }, []);
 
   return (
@@ -53,7 +52,6 @@ export default function EachArticle({ frontmatter, url }: Props) {
       <a href={url}>
         <article className="blog-article">
           <img
-            src={imageSrc}
             alt={frontmatter.title}
             className="rounded-lg"
             width={128}
