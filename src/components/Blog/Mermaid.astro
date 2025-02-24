@@ -9,54 +9,61 @@ const { title = '' } = Astro.props;
 
   <div class="diagram-content">Loading diagram...</div>
   <slot />
-
-  <!--<details>-->
-  <!--  <summary>Source</summary>-->
-  <!--</details>-->
 </figure>
 
 <script>
-  import mermaid from 'mermaid';
-  // Postpone mermaid initialization
+import mermaid from 'mermaid';
 
   type MermaidTheme = 'default' | 'base' | 'dark' | 'forest' | 'neutral' | 'null' | undefined;
 
-  const theme: MermaidTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'default';
+function extractMermaidCode() {
+  const mermaidElements = document.querySelectorAll('figure.expandable-diagram');
 
+  mermaidElements.forEach((element) => {
+    const copyButton = element.querySelector('.copy button');
+
+    if (copyButton == null)
+      return;
+    let code = copyButton.getAttribute('data-code') ?? '';
+
+    code = code.replace(/\u007F/g, '\n');
+    // Construct the `pre` element for the diagram code
+    const preElement = document.createElement('pre');
+    preElement.className = 'language-mermaid';
+    preElement.innerHTML = code;
+    if (preElement.getAttribute('data-original-code') == null) {
+      preElement.setAttribute('data-original-code', code);
+    }
+    // Find the diagram content container and override it's content
+    const diagramContainer = element.querySelector('.diagram-content');
+    if (diagramContainer?.firstChild) {
+      diagramContainer.replaceChild(preElement, diagramContainer.firstChild);
+    }
+
+    const expressiveCode = element.querySelector('.expressive-code');
+    if (expressiveCode) {
+      element.removeChild(expressiveCode);
+    }
+  });
+}
+
+async function themeSetHandler() {
+  const theme: MermaidTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'default';
   mermaid.initialize({ startOnLoad: false, theme });
 
-  function extractMermaidCode() {
-    // Find all mermaid components
-    const mermaidElements = document.querySelectorAll('figure.expandable-diagram');
-    mermaidElements.forEach((element) => {
-      // Find the `copy` button for each component
-      const copyButton = element.querySelector('.copy button');
-      // Extract the code from the `data-code` attribute
-      let code = copyButton.dataset.code;
-      // Replace the U+007f character with `\n` to simulate new lines
-      code = code.replace(/\u007F/g, '\n');
-      // Construct the `pre` element for the diagram code
-      const preElement = document.createElement('pre');
-      preElement.className = 'mermaid not-prose';
-      preElement.innerHTML = code;
-      // Find the diagram content container and override it's content
-      const diagramContainer = element.querySelector('.diagram-content');
-      diagramContainer.replaceChild(preElement, diagramContainer.firstChild);
-    });
-  }
-
-  // Wait for the DOM to be fully loaded
-  document.addEventListener('DOMContentLoaded', async () => {
-    extractMermaidCode();
-    const theme: MermaidTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'default';
-    mermaid.initialize({ startOnLoad: true, theme });
+  await mermaid.run({
+    querySelector: '.language-mermaid',
   });
+}
 
-  document.body.addEventListener('theme-set', async () => {
-    // extractMermaidCode();
-    extractMermaidCode();
+function mermaidInit() {
+  document.body.removeEventListener('theme-set', themeSetHandler);
+  document.body.addEventListener('theme-set', themeSetHandler);
 
-    const theme: MermaidTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'default';
-    mermaid.initialize({ startOnLoad: false, theme });
-  });
+  extractMermaidCode();
+  themeSetHandler();
+}
+
+document.addEventListener('astro:after-swap', mermaidInit);
+document.addEventListener('astro:page-load', mermaidInit);
 </script>
