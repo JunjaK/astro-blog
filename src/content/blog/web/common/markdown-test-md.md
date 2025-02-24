@@ -1,11 +1,11 @@
 ---  
-title: Markdown Test MD
+title: Markdown Test MD  
 created: 2025-02-20  
 updated: 2025-02-20  
 tags: [ 'markdown', 'shiki', 'expressive-code', 'mermaid', 'katex' ]  
 category: Web  
 thumbnail: /files/blog/web/common/assets/code-test4234234.png  
----
+---  
   
 # Code Test  
   
@@ -357,12 +357,12 @@ $$
 $$\sum^{\lfloor lgn \rfloor}_{h=0} \lceil \frac{n}{2^{h+1}} \rceil O(h) = O(n \sum^{\lfloor lgn \rfloor}_{h=0} \frac{h}{2^h}) = O(n \sum^{\infty}_{h=0} \frac{h}{2^h}) =O(n)$$  
   
 ## Mermaid Test  
-
-```mermaid
-pie title NETFLIX
-"Time spent looking for movie" : 90
-"Time spent watching it" : 10
-```
+  
+```mermaid  
+pie title NETFLIX  
+"Time spent looking for movie" : 90  
+"Time spent watching it" : 10  
+```  
   
 ```mermaid  
 sequenceDiagram  
@@ -376,7 +376,7 @@ sequenceDiagram
     Alice->John: Yes... John, how are you?  
   
 ```  
-
+  
 ```mermaid  
 gitGraph:  
     commit "Ashish"  
@@ -393,3 +393,4 @@ gitGraph:
     commit  
   
 ```  
+  
