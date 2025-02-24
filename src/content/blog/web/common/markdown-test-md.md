@@ -1,7 +1,7 @@
 ---  
 title: Markdown Test MD  
 created: 2025-02-20  
-updated: 2025-02-20  
+updated: 2025-02-25  
 tags: ['astro', 'markdown', 'shiki', 'expressive-code', 'mermaid', 'katex' ]  
 category: Web  
 thumbnail: /files/blog/web/common/assets/code-test4234234.png  
