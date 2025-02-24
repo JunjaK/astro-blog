@@ -1,13 +1,13 @@
 ---  
-title: Markdown Test Mdx - Feat. mermaid 
+title: Markdown Test Mdx - Feat. mermaid  
 created: 2025-02-24  
 updated: 2025-02-24  
 tags: [ 'mdx', 'shiki', 'expressive-code', 'mermaid', 'katex' ]  
 category: Web  
 thumbnail: /files/blog/web/common/assets/mdx-mermaid.png  
 ---  
-
-import Mermaid from '@/components/Blog/Mermaid.astro';
+  
+import Mermaid from '@/components/Blog/Mermaid.astro';  
   
   
 # Code Test  
@@ -17,9 +17,9 @@ Astro에서 제공해주고 있는 Shiki를 통해 코드들이 이쁘게 잘 �
 expression code를 적용한 경우 마크다운과는 달리 mermaid가 제대로 적용되지 않습니다.  
 모종의 이유로 mermaid가 적용되기 이전에 expression code가 codeblock을 변형하기 때문으로 추측되는데,  
 아래 블로그에서 제시하는 방법을 참고하여 해당 코드를 변형, 적용했습니다.  
-[Adding Mermaid diagrams to Astro MDX](https://xkonti.tech/blog/astro-mermaid-mdx/)
-
-추가 플러그인은 md와 같이 동일합니다.
+[Adding Mermaid diagrams to Astro MDX](https://xkonti.tech/blog/astro-mermaid-mdx/)  
+  
+추가 플러그인은 md와 같이 동일합니다.  
   
 - astro-expressive-code  
 - expressive-code-color-chips  
@@ -28,146 +28,146 @@ expression code를 적용한 경우 마크다운과는 달리 mermaid가 제대�
 - mermaid  
 - rehype-katex  
 - remark-math  
-
-## Mermaid Test
+  
+## Mermaid Test  
 Mermaid 부분인데, 해당 부분은 .md와 달리 앞서 설명한 바와 같이 따로 처리가 필요하므로,  
-Astro 컴포넌트를 따로 만들어 적용시켜줬습니다.
-### 전처리 컴포넌트
-```astro title="preprocess-mermaid.astro"
----
-export interface Props {
-  title?: string;
-}
-const { title = '' } = Astro.props;
----
-<figure class="expandable-diagram">
-  <figcaption>{title}</figcaption>
+Astro 컴포넌트를 따로 만들어 적용시켜줬습니다.  
+### 전처리 컴포넌트  
+```astro title="preprocess-mermaid.astro"  
+---  
+export interface Props {  
+  title?: string;  
+}  
+const { title = '' } = Astro.props;  
+---  
+<figure class="expandable-diagram">  
+  <figcaption>{title}</figcaption>  
   
-  <div class="diagram-content">Loading diagram...</div> <!-- Loading 부분, CodeBlock의 Mermaid 코드로 대체됩니다. -->
-  <slot /> <!-- Code Block이 들어가는 부분  -->
-</figure>
-
-<script>
-  import mermaid from 'mermaid';
-  type MermaidTheme = 'default' | 'base' | 'dark' | 'forest' | 'neutral' | 'null' | undefined;
-
-  /**
-   * 아래 코드의 로직은 다음과 같습니다.
+  <div class="diagram-content">Loading diagram...</div> <!-- Loading 부분, CodeBlock의 Mermaid 코드로 대체됩니다. -->  
+  <slot /> <!-- Code Block이 들어가는 부분  -->  
+</figure>  
+  
+<script>  
+  import mermaid from 'mermaid';  
+  type MermaidTheme = 'default' | 'base' | 'dark' | 'forest' | 'neutral' | 'null' | undefined;  
+  
+  /**  
+   * 아래 코드의 로직은 다음과 같습니다.  
    * expressive code가 적용된 Dom을 보면 복사하기 버튼이 있는데, 복사하기 버튼의 data-code attribute에서 CodeBlock을 모두 확인할 수 있습니다.  
-   * 이에 해당 data-code를 추출하여 mermaid init을 하고 기존 expressive code dom을 제거합니다.
-   */
-  function extractMermaidCode() {
-    const mermaidElements = document.querySelectorAll('figure.expandable-diagram');
-
-    mermaidElements.forEach((element) => {
-
-      const copyButton = element.querySelector('.copy button');
-
-      if (copyButton == null) return;
-      let code = copyButton.getAttribute('data-code') ?? '';
-      
-      code = code.replace(/\u007F/g, '\n');
-
-      // pre dom 생성 후 내부에 copy btn에 있는 code 삽입
-      const preElement = document.createElement('pre');
-      preElement.className = 'language-mermaid';
-      preElement.innerHTML = code;
-      if (preElement.getAttribute('data-original-code') == null) {
-        preElement.setAttribute('data-original-code', code);
-      }
-
-      // loading 부분을 pre code로 대체 
-      const diagramContainer = element.querySelector('.diagram-content');
-      if (diagramContainer?.firstChild) {
-        diagramContainer.replaceChild(preElement, diagramContainer.firstChild);
-      }
-
-      // 기존 expressive code 제거
-      const expressiveCode = element.querySelector('.expressive-code');
-      if (expressiveCode) {
-        element.removeChild(expressiveCode);
-      }
-    });
-  }
-
-  async function themeSetHandler() {
-    const theme: MermaidTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'default';
-    mermaid.initialize({startOnLoad: false, theme});
-
-    // 앞서 전처리한 pre dom을 통하여 mermaid 실행
-    await mermaid.run({
-      querySelector: '.language-mermaid',
-    });
-  }
-
-  function mermaidInit() {
-    document.body.removeEventListener('theme-set', themeSetHandler)
-    document.body.addEventListener('theme-set', themeSetHandler)
-
-    extractMermaidCode();
-    themeSetHandler()
-  }
-
-  document.addEventListener('astro:after-swap', mermaidInit);
-  document.addEventListener('astro:page-load', mermaidInit);
-</script>
-
-```
-### mdx에서의 전처리 컴포넌트 사용 예
-```mdxjs title="astro mdx mermaid"
-import Mermaid from '@/components/Blog/Mermaid.astro';
-
-<Mermaid>
-```mermaid
-pie title NETFLIX
-"Time spent looking for movie" : 90
-"Time spent watching it" : 10
-```
-</Mermaid>
-```
-
-### expressive code가 적용된 mdx에서의 mermaid 출력.
-<Mermaid>
-  ```mermaid
-  pie title NETFLIX
-  "Time spent looking for movie" : 90
-  "Time spent watching it" : 10
-  ```
-</Mermaid>
-
-<Mermaid>
-  ```mermaid
-  sequenceDiagram
-  Alice ->> Bob: Hello Bob, how are you?
-  Bob-->>John: How about you John?
-  Bob--x Alice: I am good thanks!
-  Bob-x John: I am good thanks!
-  Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+   * 이에 해당 data-code를 추출하여 mermaid init을 하고 기존 expressive code dom을 제거합니다.  
+   */  
+  function extractMermaidCode() {  
+    const mermaidElements = document.querySelectorAll('figure.expandable-diagram');  
   
-  Bob-->Alice: Checking with John...
-  Alice->John: Yes... John, how are you?
+    mermaidElements.forEach((element) => {  
   
-  ```
-</Mermaid>
-
-<Mermaid>
-  ```mermaid
-  gitGraph:
-  commit "Ashish"
-  branch newbranch
-  checkout newbranch
-  commit id:"1111"
-  commit tag:"test"
-  checkout main
-  commit type: HIGHLIGHT
-  commit
-  merge newbranch
-  commit
-  branch b2
-  commit
-  ```
-</Mermaid>
-
+      const copyButton = element.querySelector('.copy button');  
+  
+      if (copyButton == null) return;  
+      let code = copyButton.getAttribute('data-code') ?? '';  
+  
+      code = code.replace(/\u007F/g, '\n');  
+  
+      // pre dom 생성 후 내부에 copy btn에 있는 code 삽입  
+      const preElement = document.createElement('pre');  
+      preElement.className = 'language-mermaid';  
+      preElement.innerHTML = code;  
+      if (preElement.getAttribute('data-original-code') == null) {  
+        preElement.setAttribute('data-original-code', code);  
+      }  
+  
+      // loading 부분을 pre code로 대체  
+      const diagramContainer = element.querySelector('.diagram-content');  
+      if (diagramContainer?.firstChild) {  
+        diagramContainer.replaceChild(preElement, diagramContainer.firstChild);  
+      }  
+  
+      // 기존 expressive code 제거  
+      const expressiveCode = element.querySelector('.expressive-code');  
+      if (expressiveCode) {  
+        element.removeChild(expressiveCode);  
+      }  
+    });  
+  }  
+  
+  async function themeSetHandler() {  
+    const theme: MermaidTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'default';  
+    mermaid.initialize({startOnLoad: false, theme});  
+  
+    // 앞서 전처리한 pre dom을 통하여 mermaid 실행  
+    await mermaid.run({  
+      querySelector: '.language-mermaid',  
+    });  
+  }  
+  
+  function mermaidInit() {  
+    document.body.removeEventListener('theme-set', themeSetHandler)  
+    document.body.addEventListener('theme-set', themeSetHandler)  
+  
+    extractMermaidCode();  
+    themeSetHandler()  
+  }  
+  
+  document.addEventListener('astro:after-swap', mermaidInit);  
+  document.addEventListener('astro:page-load', mermaidInit);  
+</script>  
+  
+```  
+### mdx에서의 전처리 컴포넌트 사용 예  
+```mdxjs title="astro mdx mermaid"  
+import Mermaid from '@/components/Blog/Mermaid.astro';  
+  
+<Mermaid>  
+```mermaid  
+pie title NETFLIX  
+"Time spent looking for movie" : 90  
+"Time spent watching it" : 10  
+```  
+</Mermaid>  
+```  
+  
+### expressive code가 적용된 mdx에서의 mermaid 출력.  
+<Mermaid>  
+  ```mermaid  
+  pie title NETFLIX  
+  "Time spent looking for movie" : 90  
+  "Time spent watching it" : 10  
+  ```  
+</Mermaid>  
+  
+<Mermaid>  
+  ```mermaid  
+  sequenceDiagram  
+  Alice ->> Bob: Hello Bob, how are you?  
+  Bob-->>John: How about you John?  
+  Bob--x Alice: I am good thanks!  
+  Bob-x John: I am good thanks!  
+  Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.  
+  
+  Bob-->Alice: Checking with John...  
+  Alice->John: Yes... John, how are you?  
+  
+  ```  
+</Mermaid>  
+  
+<Mermaid>  
+  ```mermaid  
+  gitGraph:  
+  commit "Ashish"  
+  branch newbranch  
+  checkout newbranch  
+  commit id:"1111"  
+  commit tag:"test"  
+  checkout main  
+  commit type: HIGHLIGHT  
+  commit  
+  merge newbranch  
+  commit  
+  branch b2  
+  commit  
+  ```  
+</Mermaid>  
+  
   
 ## Each Language / Code Test  
 ```plain title="example.txt"  
@@ -503,4 +503,5 @@ C_{21} & C_{22}
 $$  
   
 $$\sum^{\lfloor lgn \rfloor}_{h=0} \lceil \frac{n}{2^{h+1}} \rceil O(h) = O(n \sum^{\lfloor lgn \rfloor}_{h=0} \frac{h}{2^h}) = O(n \sum^{\infty}_{h=0} \frac{h}{2^h}) =O(n)$$  
-
+  
+  

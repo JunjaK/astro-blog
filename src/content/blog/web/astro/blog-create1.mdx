@@ -1,0 +1,110 @@
+---  
+title:  블로그 개발기1 - 프레임워크, 라이브러리 설정  
+created: 2025-02-24  
+tags: ['blog', 'astro', 'react', 'shadcn-ui', 'nyxb-ui']  
+category: Web  
+thumbnail: ./assets/blog-create1-thumb.png  
+  
+---  
+  
+import ImageLoader from '@/components/Blog/ImageLoader.tsx';  
+import VideoLoader from '@/components/Blog/VideoLoader.tsx';  
+  
+  
+  
+  
+  
+<ImageLoader src="/files/blog/web/astro/assets/blog-create1-thumb.png" alt="blog-create1-thumb" />  
+  
+## Intro  
+  
+개발하다가 문제에 봉착해서 해결해놓곤 이에 대하여 기록을 제대로 하지 않아 금방 까먹곤 하는 문제점이 나에게 있다.  
+거기에다 개발자라면 뭔가 나만의 개발 블로그 정도는 있어야하지 않을까 하는 생각과  
+개발 블로그를 만들어 개발 기록 등등을 정리해가면 까먹지도 않고 기록에도 남으니 일석 이조이지 않을까? 하는 마음에 개발 블로그를 만들고자 한다.  
+  
+### 첫 시도  
+  
+처음 만들고자 했던 시도는 22년 7월 정도로 그 때도 앞서 말했던 똑같은 동기로 블로그를 만들어보고자 했었다.  
+하지만 회사 일이 바쁘고, 그 때 회사랑 마찰도 있고 해서 멘탈이 좋지 않았던 시기라 대충 레이아웃 정도만 만들다 흐지부지된 상태.  
+프로젝트 목록에도 있을테지만 미완성이다.  
+  
+  
+  
+그 때 정했던 기술 스택은 당시 beta 상태였던 nuxt3의 content로,  
+이를 이용하여 로컬 content로 저장한 마크다운들을 조금 이쁘게 가공해서 ssg 형태로 사이트를 만들 계획이었다.  
+  
+이것이 그 때 당시 만든 [미완성 사이트](https://jundev-blog.netlify.app/). 투자한 시간은 20~30시간이 채 안되는 말그대로 하다말았다.  
+<ImageLoader src="/files/blog/web/astro/assets/blog-create1-before.png" alt="blog-create1-before" />  
+  
+### 2차 시도 (현재)  
+  
+다녔던 회사는 2024년 8월 말까지 일하다가 퇴사를 하고, 게임하고 여행도 가며 놀다가 너무 인생을 막사는 것 같아 개발 근육도 되살릴겸,  
+만들어보고 싶었던 것을 개발할 겸하여  미뤄뒀던 개발 블로그를 다시 만들기로 결심하였다.  
+  
+  
+  
+처음 시도는 25년 1월 8일.  
+당시에는 간단한 기술 테스트 정도만 진행하다 기타 일정들을 소화하고 본격적으로 착수한 것은 2월 9일부터.  
+  
+오랜만에 본격적으로 개발을 하니 나름 재미가 있었다.  
+  
+  
+  
+이 연재기에서는 블로그 개발하면서 발생한 시행착오, 해결했던 문제, 사용하면서 마음에 들었던 라이브러리 등등을 적어나갈 것이다.  
+  
+## 기술 스택 선정  
+  
+일단 블로그를 만들고자 했는데, 기존의 플랫폼인 medium, velog, tistory 같은 것보다는 직접 하나하나 만들어 가고 싶었다.  
+  
+그래서 구독하고 있는 fireship이라는 IT 유튜버가 극찬을 한다는 Astro에 평소에 관심을 가지고 있었는데, 기술 검증 겸 블로그를 Astro로 만들어 보는 것은 어떨까 싶어 우선 테스트를 진행해보았다.  
+  
+### Astro  
+  
+Astro에서 받은 느낌은 우선 문서화가 잘 되어 있고, 튜토리얼도 괜찮게 설정되어 있는 점. 이것들이 마음에 들었다.  
+  
+그리고 첫 번째 블로그 만들기 시도할 때 쓰던 nuxt content에서, Astro는 더 구체적인 API와 편한 사용 방법 등을 제공하고 있어 뭔가 더 진보된 느낌을 강하게 받아 Astro를 사용하기로 결정.  
+또 Astro의 장점은 [Island](https://docs.astro.build/ko/concepts/islands/) 구조로 Vue, React, Svelte 등 다른 프레임워크로 컴포넌트를 만들어 astro 페이지에 추가하여 사용할 수 있다는 점.  
+Vue만 주구장창 쓰다가 현재 React를 사용해보고 있는데, React를 사용할 수도 있고, 테스트 용으로 다른 프레임워크도 사용해서 끼워 넣을 수 있는 점이 매력있었다.  
+  
+  
+  
+Astro 사용 방법 및 경험에 대해서는 따로 포스트를 작성할 예정이다.  
+  
+### CSS Library  
+  
+CSS Library는 요새 React 진영에서 핫한 Shadcn-ui를 사용하고자 했다.  
+컴포넌트를 둘러보는데 뭔가 내가 원하는 디자인과  살짝 어긋나 awesome-shadcn 이라는 것이 있어 찾아보는데,  
+사용자들이 shadcn-ui를 자유롭게 커스텀해서 제공하고 있는 라이브러리 꽤 많았다.  
+  
+  
+  
+그 중에서 [Nyxb-UI](https://nyxbui.design/)를 찾았는데, 제공하고 있는 컴포넌트들이 애니메이션이 들어간 것이 많아 블로그 용으로 딱이겠다 싶어서 이 라이브러리를 사용하기로 결정.  
+Shadn-cn 기반으로 만들어진 라이브러리라 레이아웃과 문서 형태가 shadcn과 같았고,  
+제공하는 컴포넌트들도 shadcn에서 있는 것들은 기본 제공에다가 추가로 개발한 컴포넌트들이 있는 상태.  
+  
+  
+  
+그 중에서 마음에 드는 몇 가지 컴포넌트들을 사용해서 화면을 구성해봤다.  
+  
+> 만든 초기 Header 디자인  
+  
+<ImageLoader src="/files/blog/web/astro/assets/blog-create1-header.png" alt="blog-create1-header" />  
+  
+> 초기 메인  
+  
+<ImageLoader src="/files/blog/web/astro/assets/blog-create1-main.gif" alt="blog-create1-main" />  
+  
+## 다음 목표  
+  
+우선 레이아웃과 메인 화면을 대충 꾸며봤는데, 이상하게 페이지 라우팅이 정상적으로 작동되지 않는 느낌이 강하게 들었고, 예시로 작성된 dark, light theme 변경이 좀 이상했다.  
+그래서 추가로 개발할 사항들을 포함한 다음 목표는 다음과 같이 설정했다.  
+  
+- 레이아웃 정리  
+- Header 오류 수정 (Shadcn Tabs를 사용했는데 이상하게 반응이 느림)  
+- Footer 추가  
+- 반응형 정리  
+- 페이지 라우팅 오류 분석 및 해결  
+- Home에 요소 추가  
+- Blog 페이지 및 상세 추가  
+  
+  
