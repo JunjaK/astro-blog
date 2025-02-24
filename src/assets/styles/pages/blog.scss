@@ -123,11 +123,18 @@
       width: calc($px400 - 11.5rem);
     }
 
-
+    .scroll-area {
+      width: calc($px400 - 11rem);
+      @media screen and (max-width: 768px) {
+        width: calc($px400 - 7rem);
+      }
+    }
+    
     .tags-wrapper {
       display: flex;
       gap: 0.5rem;
-
+      overflow-x: auto; /* 가로 스크롤 활성화 */
+      white-space: nowrap; /* 줄바꿈 방지 */
       .tag {
         cursor: pointer;
       }
@@ -154,6 +161,7 @@
   }
 
   li {
+    line-break: anywhere;
     &:hover {
       &::marker {
         transition: color 0.2s;
