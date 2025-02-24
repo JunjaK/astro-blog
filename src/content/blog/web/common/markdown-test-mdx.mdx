@@ -1,8 +1,8 @@
 ---  
-title: Markdown Test Mdx - Feat. mermaid  
+title: Mdx Test - Feat. mermaid  
 created: 2025-02-24  
 updated: 2025-02-24  
-tags: [ 'mdx', 'shiki', 'expressive-code', 'mermaid', 'katex' ]  
+tags: [ 'astro', 'mdx', 'shiki', 'expressive-code', 'mermaid', 'katex' ]  
 category: Web  
 thumbnail: /files/blog/web/common/assets/mdx-mermaid.png  
 ---  
@@ -10,11 +10,10 @@ thumbnail: /files/blog/web/common/assets/mdx-mermaid.png
 import Mermaid from '@/components/Blog/Mermaid.astro';  
   
   
-# Code Test  
-## Intro  
+## 시작으로  
 Astro에서 제공해주고 있는 Shiki를 통해 코드들이 이쁘게 잘 나오는지 테스트합니다.  
   
-expression code를 적용한 경우 마크다운과는 달리 mermaid가 제대로 적용되지 않습니다.  
+expression code를 적용한 경우 .mdx에서는 마크다운과는 달리 mermaid가 제대로 적용되지 않았습니다.  
 모종의 이유로 mermaid가 적용되기 이전에 expression code가 codeblock을 변형하기 때문으로 추측되는데,  
 아래 블로그에서 제시하는 방법을 참고하여 해당 코드를 변형, 적용했습니다.  
 [Adding Mermaid diagrams to Astro MDX](https://xkonti.tech/blog/astro-mermaid-mdx/)  
