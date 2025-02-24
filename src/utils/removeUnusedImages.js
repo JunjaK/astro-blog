@@ -1,15 +1,27 @@
-import * as fs from 'node:fs';
+import fs from 'node:fs';
 import * as path from 'node:path';
-import * as glob from 'glob';
+import { glob } from 'glob';
 
 // 마크다운 파일에서 이미지 경로를 추출하는 함수
 function extractImagePathsFromMarkdown(markdownContent) {
   const regex = /!\[.*?\]\((.*?)\)/g; // Markdown 이미지 링크 패턴
+  const regexImageLoader = /<ImageLoader\s+src=["']([^"']+)["']\s+alt=["']([^"']+)["']\s*\/?>/g;
+  const regexThumb = /thumbnail:\s*(\S+)/g;
   const paths = [];
   let match;
-  // eslint-disable-next-line no-cond-assign
+
   while ((match = regex.exec(markdownContent)) !== null) {
     paths.push(match[1]); // 이미지 경로 추가
+  }
+  if (paths.length === 0) {
+    while ((match = regexImageLoader.exec(markdownContent)) !== null) {
+      paths.push(match[1]); // 이미지 경로 추가
+    }
+  }
+  if (paths.length === 0) {
+    while ((match = regexThumb.exec(markdownContent)) !== null) {
+      paths.push(match[1]); // 이미지 경로 추가
+    }
   }
   return paths;
 }
@@ -25,8 +37,7 @@ async function findUnusedImages(markdownGlob, imageFolder, imageExtensions = ['p
     const content = fs.readFileSync(file, 'utf-8');
     const relativePaths = extractImagePathsFromMarkdown(content);
     for (const relPath of relativePaths) {
-      // 경로를 절대경로로 변환하여 추가
-      referencedImages.add(path.resolve(path.dirname(file), relPath));
+      referencedImages.add(relPath);
     }
   }
 
@@ -34,23 +45,33 @@ async function findUnusedImages(markdownGlob, imageFolder, imageExtensions = ['p
   const allImageFiles = glob.sync(`${imageFolder}/**/*.{${imageExtensions.join(',')}}`);
 
   // 참조되지 않은 이미지 필터링
-  const unusedImages = allImageFiles.filter((imagePath) => !referencedImages.has(path.resolve(imagePath)));
+  const unusedImages = allImageFiles.filter((imagePath) => {
+    let check = false;
+    for (const refPath of referencedImages) {
+      const convPath = refPath.replace('./assets', '/assets').replace('/files/blog', 'blog-assets');
+      if (imagePath.includes(convPath)) {
+        check = true;
+        break;
+      }
+    }
+
+    return !check;
+  });
 
   return unusedImages;
 }
-
 // 이 함수로 이미지를 삭제합니다.
 async function deleteUnusedImages(imagePaths) {
   for (const imagePath of imagePaths) {
-    fs.removeSync(imagePath);
+    fs.unlinkSync(path.resolve(imagePath));
     console.log(`Deleted: ${imagePath}`);
   }
 }
 
 // 실행
 (async () => {
-  const markdownGlob = './src/content/blog/**/*.md,mdx'; // 모든 마크다운 파일 탐색
-  const imageFolder = './src/content/blog'; // 이미지 폴더 설정 (수정 가능)
+  const markdownGlob = './src/content/blog/**/*.{md,mdx}'; // 모든 마크다운 파일 탐색
+  const imageFolder = './blog-assets'; // 이미지 폴더 설정 (수정 가능)
 
   const unusedImages = await findUnusedImages(markdownGlob, imageFolder);
 

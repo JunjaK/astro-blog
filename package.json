@@ -6,7 +6,8 @@
     "dev": "astro dev --mode dev",
     "build": "astro build --mode prd",
     "preview": "astro preview --mode prd",
-    "conv-img": "node ./src/utils/converImgLoader.js ./src/content/blog/diary/japan-around-trip /files/blog/diary/japan-around-trip/assets",
+    "__conv-img-jat": "node ./src/utils/converImgLoader.js ./src/content/blog/diary/japan-around-trip /files/blog/diary/japan-around-trip/assets",
+    "conv-img": "node ./src/utils/converImgLoader.js ./src/content/blog/web/astro /files/blog/web/astro/assets",
     "remove-unused": "node ./src/utils/removeUnusedImages.js",
     "add-md-enter": "node ./src/utils/addMdEnter.js",
     "astro": "astro"
