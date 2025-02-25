@@ -1,0 +1,61 @@
+---
+import type React from 'react';
+import { Button } from '@/components/ui/button';
+// Component Imports
+import BaseLayout from '@/layouts/baseLayout.astro';
+import { Icon } from '@iconify/react';
+import { getCollection } from 'astro:content';
+import dayjs from 'dayjs';
+
+const posts = await getCollection('blog');
+posts.sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix());
+
+
+function redirectHome() {
+  return Astro.redirect('/');
+}
+
+
+---
+
+<BaseLayout title="404">
+  <div class="container">
+
+    <div class="noti-wrapper">
+      <div>
+        <div class="noti-404">
+          <div class="text">4</div>
+          <Icon className="notfi-icon mx-auto" icon="mingcute:sad-fill" client:visible></Icon>
+          <div class="text">4</div>
+        </div>
+
+
+        <h2 class="text-center">
+          Page Not Found
+        </h2>
+        <div class="text-center mt-4">
+          <Button variant="default">
+            <a href="/">
+              Back to Home
+            </a>
+          </Button>
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+
+  </div>
+</BaseLayout>
+
+<script>
+  // document.addEventListener('DOMContentLoaded', update);
+  // document.addEventListener('astro:after-swap', update);
+  // function update() {
+  //   document.getElementById('articles-skeleton').classList.add('hidden');
+  //   document.getElementById('articles-wrapper').classList.remove('hidden');
+  // }
+</script>

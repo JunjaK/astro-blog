@@ -198,6 +198,16 @@ export default function Articles({ posts }: Props) {
         />
       ),
       )}
+      {articles.length === 0 && (
+        <div className="empty-result">
+          <div>
+            <Icon icon="mynaui:inbox-x" className="empty-icon" />
+            <div className="desc">
+              검색 결과가 없습니다.
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
