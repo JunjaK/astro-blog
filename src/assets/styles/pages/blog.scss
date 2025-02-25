@@ -28,6 +28,31 @@
 
 }
 
+.empty-result {
+  margin-top: 4rem;
+
+  height: calc(100dvh - 36rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+
+  .empty-icon {
+    font-size: 10rem;
+    text-align: center;
+    margin: 0 auto;
+    color: var(--text-muted);
+  }
+
+  .desc {
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 1rem;
+    color: var(--text-muted);
+  }
+}
+
 .article-wrapper {
   width: calc($px400 - 8rem);
   @media screen and (max-width: 768px) {

@@ -24,14 +24,19 @@ import BaseLayout from '@/layouts/baseLayout.astro';
     <div id="intro">
       <div class="flex justify-center mt-[-21rem]">
         <div class="intro-wrapper">
-          <LetterPullup className="max-sm:text-3xl dark:text-slate-200 text-slate-700 " words="Hello World! I'm Junja" delay={0.05} client:visible />
+          <LetterPullup
+            className="max-sm:text-2xl dark:text-slate-200 text-slate-700 "
+            words="Hello World! I'm Junja"
+            delay={0.05}
+            client:visible
+          />
           <Intro client:visible />
         </div>
       </div>
       <div class="on-spacer"></div>
       <Separator className="my-8" />
         <GradualSpacing
-          className="font-display text-center text-4xl max-sm:text-3xl font-extrabold dark:text-slate-200 text-slate-700"
+          className="font-display text-center text-4xl max-sm:text-2xl font-extrabold dark:text-slate-200 text-slate-700"
           text="Technologies I've worked"
           client:visible
         />

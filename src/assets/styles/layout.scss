@@ -134,3 +134,48 @@ main {
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
 }
+
+
+.noti-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100dvh - 25rem);
+  width: calc($px400 - 8rem);
+  margin: 0 auto;
+
+  .noti-404 {
+    margin-bottom: 1rem;
+    width: 25rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .text {
+      font-size: 10rem;
+      font-weight: bold;
+    }
+
+    .notfi-icon {
+      font-size: 10rem;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    width: calc($px400 - 4rem);
+    .noti-404 {
+      width: 16rem;
+
+      .text {
+        font-size: 6rem;
+      }
+
+      .notfi-icon {
+        font-size: 6rem;
+      }
+    }
+  }
+
+
+}
