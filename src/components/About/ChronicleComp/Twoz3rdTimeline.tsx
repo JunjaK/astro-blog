@@ -36,17 +36,22 @@ export function Twoz3rdTimeline({ isOpen, handleOpenChange }: Props) {
             { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
-      { title: 'FMS 리뉴얼', duration: '2024.02 ~ 2024.08', desc: '기존 Nuxt2로 개발되어있던 FMS를 TS, Vue3, Vite 기반으로 변경하고 디자인, 설계 부분도 변경하여 솔루션화하는 프로젝트입니다.\n웹, 모바일 버전이 있으며 해당 프로젝트 기반으로 Gabia FMS가 구성되었습니다.\n해당 프로젝트에서 프론트엔드 쪽 리드 개발자를 담당하였습니다.', techStackIcon: isHydrated
-        ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
-            { iconUrl: `/images/about/tech-stack/${mode}/wijmo.svg`, techName: 'Wijmo Grid' },
-            { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
-          ]
-        : [] },
+      {
+        title: 'FMS 리뉴얼',
+        duration: '2024.02 ~ 2024.08',
+        desc: '기존 Nuxt2로 개발되어있던 FMS를 TS, Vue3, Vite 기반으로 변경하고 디자인, 설계 부분도 변경하여 솔루션화하는 프로젝트입니다.\n웹, 모바일 버전이 있으며 해당 프로젝트 기반으로 이후 납품될 FMS가 구성되었습니다.\n해당 프로젝트에서 프론트엔드 쪽 리드 개발자를 담당하였습니다.',
+        techStackIcon: isHydrated
+          ? [
+              { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
+              { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+              { iconUrl: `/images/about/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
+              { iconUrl: `/images/about/tech-stack/${mode}/wijmo.svg`, techName: 'Wijmo Grid' },
+              { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+              { iconUrl: `/images/about/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
+              { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            ]
+          : [],
+      },
     ];
   }
 
