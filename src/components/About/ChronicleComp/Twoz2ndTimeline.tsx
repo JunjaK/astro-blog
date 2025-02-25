@@ -35,16 +35,21 @@ export function Twoz2ndTimeline({ isOpen, handleOpenChange }: Props) {
             { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
-      { title: '3D Viewer', duration: '2023.01 ~ 2024.08', desc: 'Unity WebGL을 활용한 3D Viewer.\n초기에는 3D Editor 없이 수동으로 좌표를 통해 배치하여 웹 사이트에 올렸으나, 3D Editor 개발 후 이를 활용하고 여러 기능들을 추가한 프로젝트.\n이 프로젝트 기반으로 각세종 SI의 3D Viewer 등 다른 여러 프로젝트에 도입되었습니다.', techStackIcon: isHydrated
-        ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
-            { iconUrl: `/images/about/tech-stack/${mode}/unity.svg`, techName: 'Unity WebGL' },
-            { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
-          ]
-        : [] },
+      {
+        title: '3D Viewer',
+        duration: '2023.01 ~ 2024.08',
+        desc: 'Unity WebGL을 활용한 3D Viewer.\n초기에는 3D Editor 없이 수동으로 좌표를 통해 배치하여 웹 사이트에 올렸으나, 3D Editor 개발 후 이를 활용하고 여러 기능들을 추가한 프로젝트.\n이 프로젝트 기반으로 다른 3D가 필요한 프로젝트에 도입되었습니다.',
+        techStackIcon: isHydrated
+          ? [
+              { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
+              { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+              { iconUrl: `/images/about/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
+              { iconUrl: `/images/about/tech-stack/${mode}/unity.svg`, techName: 'Unity WebGL' },
+              { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+              { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            ]
+          : [],
+      },
       { title: 'ACUPS SI', duration: '2023.01 ~ 2023.10', desc: 'ACUPS의 상태, 정보들을 모니터링하는 웹 사이트를 구축하는 프로젝트입니다.\nDraw.io를 통하여 계통도를 그리고 웹에서 상태에 따라 색상, 값들을 변경하는 작업을 거쳤습니다.\n프론트엔드 쪽 단독으로 개발을 맡았습니다.', techStackIcon: isHydrated
         ? [
             { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
