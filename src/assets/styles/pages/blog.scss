@@ -121,6 +121,7 @@
   margin-top: 1rem;
 }
 
+
 .markdown-content-wrapper {
   margin-top: 8rem !important;
   height: calc(100dvh - 12.5rem) !important;
@@ -463,5 +464,16 @@
 
   .giscus-fallback {
     width: $px400;
+  }
+}
+
+
+.post-table-of-contents {
+  h3 {
+    margin: 1rem 0;
+  }
+
+  a {
+    color: var(--text-p);
   }
 }

@@ -7,12 +7,17 @@ type Props = {
 
 };
 export default function Footer(props: Props) {
+  const currentYaer = new Date().getFullYear();
   return (
     <footer className="layout-background">
       <div className="footer-wrapper">
         <div className="flex items-center">
           <div className="text-sm text-gray-500">
-            © 2025 • Junjak •
+            &copy;
+            {' '}
+            {currentYaer}
+            {' '}
+            • Junjak •
           </div>
           <Button variant="ghost" size="icon" asChild>
             <a href="https://github.com/JunjaK/astro-blog" aria-label="github-repo">

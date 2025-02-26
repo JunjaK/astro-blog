@@ -38,7 +38,7 @@ export function TechIcon({ iconUrl, techName, backgroundSize, iconSize, hoverSiz
           animate={isHovered ? 'visible' : 'invisible'}
 
         >
-          <img src={iconUrl} className={iconSize || 'w-12 h-12'} alt={techName} />
+          <img src={iconUrl} className={iconSize || 'w-12 h-12'} alt={techName} loading="lazy" />
 
         </motion.div>
         <motion.div
