@@ -1,31 +1,31 @@
 ---  
 title:  블로그 개발기1 - 프레임워크, 라이브러리 설정  
 created: 2025-02-24  
-updated: 2025-02-25
+updated: 2025-02-25  
 tags: ['blog', 'astro', 'react', 'shadcn-ui', 'nyxb-ui']  
 category: Web  
-thumbnail: /files/blog/web/astro/assets/blog-create1-thumb.png
----
-
-import ImageLoader from '@/components/Blog/ImageLoader.astro';
-import VideoLoader from '@/components/Blog/VideoLoader.tsx';
-import TableOfContents from '@/components/Blog/TableOfContents.astro';
-
-<TableOfContents server:defer> 
-- 시작으로
-  - 첫 시도
-  - 2차 시도 (현재)
-- 기술 스택 선정
-  - Astro
-  - CSS Library
-- 다음 목표
-</TableOfContents>
+thumbnail: /files/blog/web/astro/assets/blog-create1-thumb.png  
+---  
+  
+import ImageLoader from '@/components/Blog/ImageLoader.astro';  
+import VideoLoader from '@/components/Blog/VideoLoader.tsx';  
+import TableOfContents from '@/components/Blog/TableOfContents.astro';  
+  
+<TableOfContents server:defer>  
+- 시작으로  
+  - 첫 시도  
+  - 2차 시도 (현재)  
+- 기술 스택 선정  
+  - Astro  
+  - CSS Library  
+- 다음 목표  
+</TableOfContents>  
   
   
 <ImageLoader src="/files/blog/web/astro/assets/blog-create1-thumb.png" alt="blog-create1-thumb" />  
   
-## 시작으로 
-
+## 시작으로  
+  
 개발하다가 문제에 봉착해서 해결해놓곤 이에 대하여 기록을 제대로 하지 않아 금방 까먹곤 하는 문제점이 나에게 있다.  
 거기에다 개발자라면 뭔가 나만의 개발 블로그 정도는 있어야하지 않을까 하는 생각과  
 개발 블로그를 만들어 개발 기록 등등을 정리해가면 까먹지도 않고 기록에도 남으니 일석 이조이지 않을까? 하는 마음에 개발 블로그를 만들고자 한다.  
@@ -107,12 +107,13 @@ Shadn-cn 기반으로 만들어진 라이브러리라 레이아웃과 문서 형
 우선 레이아웃과 메인 화면을 대충 꾸며봤는데, 이상하게 페이지 라우팅이 정상적으로 작동되지 않는 느낌이 강하게 들었고, 예시로 작성된 dark, light theme 변경이 좀 이상했다.  
 그래서 추가로 개발할 사항들을 포함한 다음 목표는 아래와 같이 설정했다.  
   
-- 레이아웃 정리
+- 레이아웃 정리  
   - Header 오류 수정 (Shadcn Tabs를 사용했는데 이상하게 반응이 느림)  
   - Footer 추가  
   - 반응형 정리  
 - 페이지 라우팅 오류 분석 및 해결  
 - Home에 요소 추가  
 - Blog 페이지 및 상세 추가  
+  
   
   

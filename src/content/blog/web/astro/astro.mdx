@@ -80,7 +80,7 @@ Astro가 설명하는 아일랜드 아키텍쳐입니다.
 - 서버 아일랜드  
   - 콘텐츠가 사용 가능할 때까지 렌더링을 지연하도록 지시된 일반적인 서버 렌더링 [Astro 컴포넌트](https://docs.astro.build/ko/basics/astro-components/)입니다.  
   - 서버 아일랜드는 반드시 .astro 파일로만 구동되며 컴포넌트에 `server:defer` 문구를 추가함으로써 서버 아일랜드로 동작하게 할 수 있습니다.  
-    ```astro  title="server.astro"
+    ```astro  title="server.astro"  
     ---  
     import Avatar from '../components/Avatar.astro';  
     ---  
@@ -94,22 +94,22 @@ Astro가 설명하는 아일랜드 아키텍쳐입니다.
   - 클라이언트 아일랜드로 구성되는 컴포넌트들은 React, Vue, Svelte 등의 다양한 프론트엔드 프레임워크를 통해 만들어 화면에 구성할 수 있습니다.  
   - 컴포넌트에 `client:*` 지시어를 통하여 클라이언트 아일랜드로 동작하도록 할 수 있습니다.  
     - 다르게 얘기하자면 `client:*` 지시어를 붙이지 않는 경우, 자바스크립트가 동작하지 않아 html css만 그려지게 됩니다.  
-    - Next.js의 'use client' 구문과 유사합니다.
+    - Next.js의 'use client' 구문과 유사합니다.  
       ```tsx title="Counter.tsx"  
       // React의 useState 훅을 사용한 간단한 카운터 컴포넌트  
       import { useState } from 'react';  
       import './Counter.css';  
-      
+  
       interface CounterProps {  
         children: JSX.Element;  
         count: number;  
       }  
-      
+  
       export default function Counter({ children, count: initialCount }: CounterProps) {  
         const [count, setCount] = useState(initialCount);  
         const add = () => setCount((i) => i + 1);  
         const subtract = () => setCount((i) => i - 1);  
-      
+  
         return (  
           <>  
             <div className="counter">  
@@ -121,7 +121,7 @@ Astro가 설명하는 아일랜드 아키텍쳐입니다.
           </>  
         );  
       }  
-      ```
+      ```  
   
       ```astro title="Playground.astro"  
       ---  
@@ -147,9 +147,9 @@ Astro가 설명하는 아일랜드 아키텍쳐입니다.
           </section>  
         </div>  
       </BaseLayout>  
-      ```
+      ```  
       - client 지시어 넣은 경우: 자바스크립트가 동작 해, 클릭함에 따라 화면이 변경되는 모습을 확인할 수 있습니다.  
-      <ImageLoader src="/files/blog/web/astro/assets/CleanShot_2025-02-26_21.12.22.gif" alt="CleanShot_2025-02-26_21.12.22" /> 
+      <ImageLoader src="/files/blog/web/astro/assets/CleanShot_2025-02-26_21.12.22.gif" alt="CleanShot_2025-02-26_21.12.22" />  
       - 넣지 않은 경우: UI는 그려졌으나, 클릭해도 동작하지 않음을 확인할 수 있습니다.  
       <ImageLoader src="/files/blog/web/astro/assets/CleanShot_2025-02-26_21.10.56.gif" alt="CleanShot_2025-02-26_21.10.56" />  
       - client 지시어를 포함한 Astro의 템플릿 지시어는 [해당 문서](https://docs.astro.build/ko/reference/directives-reference/#%ED%81%B4%EB%9D%BC%EC%9D%B4%EC%96%B8%ED%8A%B8-%EC%A7%80%EC%8B%9C%EC%96%B4) 를 통해 확인할 수 있습니다.  
@@ -595,6 +595,7 @@ export default function DocNav({ tab }: Props) {
 네비게이션 이동 시, 잠깐 다크모드가 해제되는 등의 이슈가 있었습니다.  
   
 <ImageLoader src="/files/blog/web/astro/assets/CleanShot_2025-02-26_22.39.30.png" alt="CleanShot_2025-02-26_22.39.30" />  
+  
   
   
   

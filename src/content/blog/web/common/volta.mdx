@@ -5,22 +5,22 @@ updated: 2025-02-20
 tags: [ 'node', 'npm', 'yarn', 'pnpm', 'volta', 'package-manager' ]  
 category: Web  
 thumbnail: /files/blog/web/common/assets/volta.png  
----
-import ImageLoader from '@/components/Blog/ImageLoader.astro';
-import VideoLoader from '@/components/Blog/VideoLoader.tsx';
-import TableOfContents from '@/components/Blog/TableOfContents.astro';
-
-<TableOfContents server:defer> 
-- 개요
-- 기본 사용법
-  - 설치
-  - 프로젝트에서 사용할 node 버전 지정
-  - 주요 명령어
-- Intellij에서의 통합
-- 사용 경험
-  - 장점
-  - 단점
-</TableOfContents>
+---  
+import ImageLoader from '@/components/Blog/ImageLoader.astro';  
+import VideoLoader from '@/components/Blog/VideoLoader.tsx';  
+import TableOfContents from '@/components/Blog/TableOfContents.astro';  
+  
+<TableOfContents server:defer>  
+- 개요  
+- 기본 사용법  
+  - 설치  
+  - 프로젝트에서 사용할 node 버전 지정  
+  - 주요 명령어  
+- Intellij에서의 통합  
+- 사용 경험  
+  - 장점  
+  - 단점  
+</TableOfContents>  
   
 <ImageLoader src="/files/blog/web/common/assets/volta.png" alt="volta.png" />  
   
@@ -143,4 +143,5 @@ Languages & Framework > Node.js에서 Node interpreter, Package manager 변경
 ### 단점  
 - 명령어가 뭔가 비직관적이다.  
 - 패키지 매니저에 따라 라이브러리 global 설치가 오류가 발생 (pnpm)  
+  
   
