@@ -6,13 +6,20 @@ tags: ['blog', 'astro', 'react', 'shadcn-ui', 'nyxb-ui']
 category: Web  
 thumbnail: /files/blog/web/astro/assets/blog-create1-thumb.png  
   
----  
-  
-import ImageLoader from '@/components/Blog/ImageLoader.tsx';  
-import VideoLoader from '@/components/Blog/VideoLoader.tsx';  
-  
-  
-  
+---
+import ImageLoader from '@/components/Blog/ImageLoader.tsx';
+import VideoLoader from '@/components/Blog/VideoLoader.tsx';
+import TableOfContents from '@/components/Blog/TableOfContents.tsx';
+
+<TableOfContents client:visible>
+- 시작으로
+  - 첫 시도
+  - 2차 시도 (현재)
+- 기술 스택 선정
+  - Astro
+  - CSS Library
+- 다음 목표
+</TableOfContents>
   
   
 <ImageLoader src="/files/blog/web/astro/assets/blog-create1-thumb.png" alt="blog-create1-thumb" />  

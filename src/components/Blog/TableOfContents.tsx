@@ -20,7 +20,7 @@ function parseHtmlToReactElements(htmlString: string): React.ReactElement {
       .replace(/\s+/g, '-');
   };
 
-  const convertToReactElement = (node: Element): React.ReactElement => {
+  const convertToReactElement = (node: Element, index = 0): React.ReactElement => {
     if (node.nodeName === 'UL') {
       return React.createElement(
         'ul',

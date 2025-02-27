@@ -5,12 +5,22 @@ updated: 2025-02-20
 tags: [ 'node', 'npm', 'yarn', 'pnpm', 'volta', 'package-manager' ]  
 category: Web  
 thumbnail: /files/blog/web/common/assets/volta.png  
----  
-  
-import ImageLoader from '@/components/Blog/ImageLoader.tsx';  
-import VideoLoader from '@/components/Blog/VideoLoader.tsx';  
-  
-  
+---
+import ImageLoader from '@/components/Blog/ImageLoader.tsx';
+import VideoLoader from '@/components/Blog/VideoLoader.tsx';
+import TableOfContents from '@/components/Blog/TableOfContents.tsx';
+
+<TableOfContents client:visible>
+- 개요
+- 기본 사용법
+  - 설치
+  - 프로젝트에서 사용할 node 버전 지정
+  - 주요 명령어
+- Intellij에서의 통합
+- 사용 경험
+  - 장점
+  - 단점
+</TableOfContents>
   
 <ImageLoader src="/files/blog/web/common/assets/volta.png" alt="volta.png" />  
   

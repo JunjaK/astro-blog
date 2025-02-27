@@ -4,7 +4,7 @@ export interface BlogFrontMatter {
   created: Date;
   tags?: string[];
   category: string;
-  thumbnail: string;
+  thumbnail?: string;
   updated?: Date;
 }
 

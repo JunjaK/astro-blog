@@ -1,3 +1,5 @@
+/* eslint-disable no-cond-assign */
+
 import fs from 'node:fs';
 import * as path from 'node:path';
 import { glob } from 'glob';
