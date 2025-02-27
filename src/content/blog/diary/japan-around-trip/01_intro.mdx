@@ -6,11 +6,11 @@ tags: ['일본', '여행', '일본 일주']
 category: Diary  
 thumbnail: /files/blog/diary/japan-around-trip/assets/image-20250103023827664.png  
 ---
-import ImageLoader from '@/components/Blog/ImageLoader.tsx';
+import ImageLoader from '@/components/Blog/ImageLoader.astro';
 import VideoLoader from '@/components/Blog/VideoLoader.tsx';
-import TableOfContents from '@/components/Blog/TableOfContents.tsx';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
 
-<TableOfContents client:visible>
+<TableOfContents server:defer> 
 - 시작
   - 일본 일주 방문한 장소
   - 일본 일주 숙소

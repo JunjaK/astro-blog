@@ -6,12 +6,12 @@ tags: [ 'css-framework', 'react', 'shadcn-ui', 'tailwind-css' ]
 category: Web  
 thumbnail: /files/blog/web/react/assets/nyxbui-main.png  
 ---
-import ImageLoader from '@/components/Blog/ImageLoader.tsx';
+import ImageLoader from '@/components/Blog/ImageLoader.astro';
 import VideoLoader from '@/components/Blog/VideoLoader.tsx';
-import TableOfContents from '@/components/Blog/TableOfContents.tsx';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
 
 
-<TableOfContents client:visible>
+<TableOfContents server:defer> 
 - 시작으로
 - Nyxb UI?
   - 컴포넌트 예시

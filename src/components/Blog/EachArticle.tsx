@@ -1,9 +1,9 @@
 import type { BlogFrontMatter } from '@/types/commonType';
-import ImageLoader from '@/components/Blog/ImageLoader.tsx';
+import ImageLoader from '@/components/Blog/ImageLoader';
 import { ny } from '@/lib/utils';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import BlogTags from './BlogTags';
 
 dayjs.extend(dayJsRelativeTime);
@@ -13,11 +13,7 @@ interface Props {
   url?: string;
 }
 
-// const images = import.meta.glob<{ default: ImageMetadata }>('/src/content/blog/**/*.{jpeg,jpg,png,gif,webp}');
-
 export default function EachArticle({ frontmatter, url }: Props) {
-  // const [imageSrc, setImageSrc] = useState<string | undefined>(darkFallbackImg.src);
-
   const created = useMemo(() => {
     const today = dayjs();
     const targetDate = dayjs(frontmatter.created);
@@ -27,13 +23,6 @@ export default function EachArticle({ frontmatter, url }: Props) {
     }
     return targetDate.fromNow();
   }, [frontmatter.created]);
-
-  useEffect(() => {
-    // images[frontmatter.thumbnail]()
-    //   .then((e) => {
-    //     setImageSrc(e.default.src);
-    //   });
-  }, []);
 
   return (
     <figure

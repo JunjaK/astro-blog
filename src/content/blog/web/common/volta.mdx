@@ -6,11 +6,11 @@ tags: [ 'node', 'npm', 'yarn', 'pnpm', 'volta', 'package-manager' ]
 category: Web  
 thumbnail: /files/blog/web/common/assets/volta.png  
 ---
-import ImageLoader from '@/components/Blog/ImageLoader.tsx';
+import ImageLoader from '@/components/Blog/ImageLoader.astro';
 import VideoLoader from '@/components/Blog/VideoLoader.tsx';
-import TableOfContents from '@/components/Blog/TableOfContents.tsx';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
 
-<TableOfContents client:visible>
+<TableOfContents server:defer> 
 - 개요
 - 기본 사용법
   - 설치

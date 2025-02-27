@@ -55,9 +55,9 @@ function processMarkdownFiles(folderPath) {
     content = convertToVideoLoader(content, filePath);
 
     const importCode
-      = `import ImageLoader from '@/components/Blog/ImageLoader.tsx';
+      = `import ImageLoader from '@/components/Blog/ImageLoader.astro';
 import VideoLoader from '@/components/Blog/VideoLoader.tsx';
-import TableOfContents from '@/components/Blog/TableOfContents.tsx';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
 `;
     if (!content.includes(importCode.trim())) {
       const frontmatterEndIndex = content.indexOf('---', 3); // 두 번째 --- 찾기

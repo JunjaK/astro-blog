@@ -105,8 +105,6 @@ const { title, tags = [], category = '' } = post;
 </html>
 
 <script is:inline>
-  import { fromEvent } from 'rxjs';
-
   function getThemePreference() {
     if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
       return localStorage.getItem('theme');
@@ -122,7 +120,8 @@ const { title, tags = [], category = '' } = post;
 
   document.addEventListener('astro:after-swap', update);
   document.addEventListener('DOMContentLoaded', update);
-  const event = fromEvent(document.getElementById('go-back'), 'click').subscribe(() => {
+  document.getElementById('go-back').addEventListener('click', () => {
     window.history.back();
+    console.log('test3432');
   });
 </script>
