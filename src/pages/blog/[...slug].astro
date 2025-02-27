@@ -44,7 +44,7 @@ function saveOriginalData() {
           element.setAttribute('data-original-code', element.innerHTML);
         }
         count--;
-        if (count == 0) {
+        if (count === 0) {
           resolve();
         }
       });
@@ -67,7 +67,7 @@ function resetProcessed() {
             = element.getAttribute('data-original-code') ?? '';
         }
         count--;
-        if (count == 0) {
+        if (count === 0) {
           resolve();
         }
       });
