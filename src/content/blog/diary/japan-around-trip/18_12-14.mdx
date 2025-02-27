@@ -6,11 +6,11 @@ category: Diary
 thumbnail: ./assets/CleanShot_2025-02-26_23.17.08.png
 
 ---
-import ImageLoader from '@/components/Blog/ImageLoader.tsx';
+import ImageLoader from '@/components/Blog/ImageLoader.astro';
 import VideoLoader from '@/components/Blog/VideoLoader.tsx';
-import TableOfContents from '@/components/Blog/TableOfContents.tsx';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
 
-<TableOfContents client:visible>
+<TableOfContents server:defer> 
 - 루트 및 방문한 곳
   - 루트
   - 방문한 곳
@@ -30,19 +30,19 @@ import TableOfContents from '@/components/Blog/TableOfContents.tsx';
 ### 방문한 곳
 
 - 니이가타현 니이가타 시
-- 관광 안내소
-- 켄조 버거 (점심): https://maps.app.goo.gl/ZJg4zPVz5V1oxths5
-- 시로토리 신사
-- 하쿠산 공원
-- 하쿠산 신사
-- 구 사이토 별관 저택
-- 니이가타 만화 애니메이션 정보관 https://maps.app.goo.gl/rvPuee46MjvMSKLb9
-- 가챠 샵
-- 봇치 더 락 전시회
-- 상설관
-- 폰슈칸: https://maps.app.goo.gl/niQSt2DdmZVCbiD47
-- 다루미야 니이가타 베이스 (저녁): https://maps.app.goo.gl/7cJudghm5UJaqt2y5
-- 게스트 하우스 쿠쿠: https://maps.app.goo.gl/J1sMvLnaC1WFEQvd9
+  - 관광 안내소
+  - 켄조 버거 (점심): https://maps.app.goo.gl/ZJg4zPVz5V1oxths5
+  - 시로토리 신사
+  - 하쿠산 공원
+  - 하쿠산 신사
+  - 구 사이토 별관 저택
+  - 니이가타 만화 애니메이션 정보관 https://maps.app.goo.gl/rvPuee46MjvMSKLb9
+    - 가챠 샵
+    - 봇치 더 락 전시회
+    - 상설관
+  - 폰슈칸: https://maps.app.goo.gl/niQSt2DdmZVCbiD47
+  - 다루미야 니이가타 베이스 (저녁): https://maps.app.goo.gl/7cJudghm5UJaqt2y5
+  - 게스트 하우스 쿠쿠: https://maps.app.goo.gl/J1sMvLnaC1WFEQvd9
 
 ## 일정
 

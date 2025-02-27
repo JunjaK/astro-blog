@@ -6,12 +6,12 @@ tags: ['일본', '여행', '일본 일주', '카나자와', '히가시차야마�
 category: Diary  
 thumbnail: /files/blog/diary/japan-around-trip/assets/image-20250109023829004.png  
 ---
-import ImageLoader from '@/components/Blog/ImageLoader.tsx';
+import ImageLoader from '@/components/Blog/ImageLoader.astro';
 import VideoLoader from '@/components/Blog/VideoLoader.tsx';
-import TableOfContents from '@/components/Blog/TableOfContents.tsx';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
 
 
-<TableOfContents client:visible>
+<TableOfContents server:defer> 
 - 루트 및 방문한 곳
   - 루트
   - 방문한 곳

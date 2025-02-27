@@ -7,11 +7,11 @@ category: Web
 thumbnail: /files/blog/web/astro/assets/blog-create1-thumb.png  
   
 ---
-import ImageLoader from '@/components/Blog/ImageLoader.tsx';
+import ImageLoader from '@/components/Blog/ImageLoader.astro';
 import VideoLoader from '@/components/Blog/VideoLoader.tsx';
-import TableOfContents from '@/components/Blog/TableOfContents.tsx';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
 
-<TableOfContents client:visible>
+<TableOfContents server:defer> 
 - 시작으로
   - 첫 시도
   - 2차 시도 (현재)

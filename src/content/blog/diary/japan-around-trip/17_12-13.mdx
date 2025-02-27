@@ -6,12 +6,12 @@ category: Diary
 thumbnail: /files/blog/diary/japan-around-trip/assets/CleanShot_2025-02-24_23.04.07.png  
 ---
 
-import ImageLoader from '@/components/Blog/ImageLoader.tsx';
+import ImageLoader from '@/components/Blog/ImageLoader.astro';
 import VideoLoader from '@/components/Blog/VideoLoader.tsx';
-import TableOfContents from '@/components/Blog/TableOfContents.tsx';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
   
   
-<TableOfContents client:visible>
+<TableOfContents server:defer> 
 - 루트 및 방문한 곳
   - 루트
   - 방문한 곳

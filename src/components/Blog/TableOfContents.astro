@@ -1,0 +1,62 @@
+---
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+---
+
+<Card className="post-table-of-contents">
+  <CardHeader className="py-1">
+    <h3>Table of Contents</h3>
+  </CardHeader>
+  <Separator className="mb-4" />
+  <CardContent className="toc-lists">
+    <slot />
+  </CardContent>
+</Card>
+
+<script>
+const [target] = document.getElementsByClassName('toc-lists');
+
+function createSlug(text: string): string {
+  return text
+    .trim()
+    .replace(/\s+/g, '-');
+}
+
+function convertToElements(node: Element): HTMLElement {
+  if (node.nodeName === 'UL') {
+    const ul = document.createElement('ul');
+    Array.from(node.children).forEach((child) => {
+      ul.appendChild(convertToElements(child as Element));
+    });
+    return ul;
+  }
+
+  if (node.nodeName === 'LI') {
+    const li = document.createElement('li');
+    const childNodes = Array.from(node.childNodes);
+    const textContent = childNodes
+      .find((node) => node.nodeType === Node.TEXT_NODE)
+      ?.textContent
+      ?.trim() || '';
+
+    if (textContent) {
+      const a = document.createElement('a');
+      a.href = `#${createSlug(textContent)}`;
+      a.textContent = textContent;
+      li.appendChild(a);
+    }
+
+    const subList = childNodes.find((node) => node.nodeName === 'UL');
+    if (subList) {
+      li.appendChild(convertToElements(subList as Element));
+    }
+
+    return li;
+  }
+
+  return document.createElement('div');
+}
+
+const replaceNode = convertToElements(target!.firstElementChild!);
+target.replaceChild(replaceNode, target!.firstElementChild!);
+</script>
