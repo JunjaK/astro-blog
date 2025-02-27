@@ -15,6 +15,7 @@ import CommonMeta from '../components/MetaAnalytics/CommonMeta.astro';
 import VendorScript from '../components/MetaAnalytics/VendorScript.astro';
 import { Separator } from '../components/ui/separator';
 import { Skeleton } from '../components/ui/skeleton';
+
 import '@fontsource/gothic-a1';
 import '@fontsource/m-plus-1p';
 import '@fontsource/roboto';
@@ -104,6 +105,8 @@ const { title, tags = [], category = '' } = post;
 </html>
 
 <script is:inline>
+  import { fromEvent } from 'rxjs';
+
   function getThemePreference() {
     if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
       return localStorage.getItem('theme');
@@ -119,7 +122,7 @@ const { title, tags = [], category = '' } = post;
 
   document.addEventListener('astro:after-swap', update);
   document.addEventListener('DOMContentLoaded', update);
-  document.getElementById('go-back').addEventListener('click', () => {
+  const event = fromEvent(document.getElementById('go-back'), 'click').subscribe(() => {
     window.history.back();
   });
 </script>
