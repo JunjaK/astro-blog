@@ -14,11 +14,14 @@ import { Separator } from '@/components/ui/separator';
 </Card>
 
 <script>
+/* eslint-disable regexp/no-obscure-range */
 const [target] = document.getElementsByClassName('toc-lists');
 
 function createSlug(text: string): string {
   return text
     .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9가-힣ㄱ-ㅎㅏ-ㅣぁ-ゔァ-ヴー々〆〤一-龥\s]/gi, '')
     .replace(/\s+/g, '-');
 }
 
