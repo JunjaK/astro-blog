@@ -12,9 +12,11 @@ import BaseLayout from '@/layouts/baseLayout.astro';
 
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
+const description = 'Introduction page of Blog';
+
 ---
 
-<BaseLayout title="Home">
+<BaseLayout title="Home" description={description}>
   <div class="container overflow-x-hidden">
     <div class="mt-[20rem] max-md:mt-[10rem]"></div>
     <div class="flex justify-center ">

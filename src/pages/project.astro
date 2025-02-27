@@ -2,12 +2,10 @@
 // Component Imports
 import BaseLayout from '../layouts/baseLayout.astro';
 
-
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+const description = 'Projects about made by JunjaK.';
 ---
 
-<BaseLayout title="project">
+<BaseLayout title="project" description={description}>
   <div class="container">
     <h1>Project</h1>
     <hr class="title-divider" />
