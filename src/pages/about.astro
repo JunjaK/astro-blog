@@ -10,9 +10,10 @@ import { Separator } from '../components/ui/separator';
 
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
+const description = 'About me: career, tech stack, tools, and hobbies';
 ---
 
-<BaseLayout title="About">
+<BaseLayout title="About" description={description}>
   <div class="container">
     <h1 class="font-black">About</h1>
     <hr class="title-divider" />

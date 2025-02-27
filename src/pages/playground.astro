@@ -6,13 +6,16 @@ import Counter from '@/components/Counter';
 
 import BaseLayout from '../layouts/baseLayout.astro';
 
+
+const description = 'Playground for testing front-end technologies.';
+
 const someProps = {
   count: 0,
 };
 
 ---
 
-<BaseLayout title="playground">
+<BaseLayout title="playground" description={description}>
   <div class="container">
     <h1>Playground</h1>
     <hr class="title-divider" />

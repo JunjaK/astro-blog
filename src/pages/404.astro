@@ -10,15 +10,10 @@ import dayjs from 'dayjs';
 const posts = await getCollection('blog');
 posts.sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix());
 
-
-function redirectHome() {
-  return Astro.redirect('/');
-}
-
-
+const description = 'Page not found';
 ---
 
-<BaseLayout title="404">
+<BaseLayout title="404" description={description}>
   <div class="container">
 
     <div class="noti-wrapper">

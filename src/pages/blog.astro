@@ -10,9 +10,10 @@ import dayjs from 'dayjs';
 const posts = await getCollection('blog');
 posts.sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix());
 
+const description = 'Post list page of the Blog';
 ---
 
-<BaseLayout title="Blog">
+<BaseLayout title="Blog" description={description}>
   <div class="container">
     <h1 class="font-black">Blog</h1>
     <hr class="title-divider" />
