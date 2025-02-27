@@ -1,0 +1,594 @@
+---
+title: Astro에 대해서
+created: 2025-02-26  
+updated: 2025-02-27
+tags: ['blog', 'astro', 'meta-framework']  
+category: Web  
+thumbnail: ./assets/CleanShot_2025-02-26_20.22.28@2x.png
+---
+
+<TableOfContents client:visible>
+- 시작으로
+- 특징
+  - Server Driven
+  - Island
+- Astro 사용 방법
+  - Astro 문법 소개
+    - 컴포넌트 템플릿
+  - 레이아웃 구성하기
+  - 페이지 구성하기
+    - 동적 경로
+- Astro의 장점
+  - 깔끔한 문서화와 번역
+  - 간편한 SSG, SSR 처리
+  - 타 프레임워크와 결합
+- Astro의 단점
+  - 아스트로 컴포넌트 및 클라이언트 아일랜드의 제약
+  - 사용자 풀이 적음
+  - 동적 라우터 이동의 제약
+</TableOfContents>
+
+
+
+![CleanShot_2025-02-26_20.22.28@2x](./assets/CleanShot_2025-02-26_20.22.28@2x.png)
+
+## 시작으로
+
+앞서 작성한 블로그 소개 글에서 언급했듯, 개발 블로그를 만들기 위하여 Astro를 사용해본 경험, 사용법에 대하여 기술하겠습니다.
+
+Astro는 Vue 진영의 Nuxt나 React 진영의 Next와 유사하게 SSR과 SSG에 치중한,   
+블로그 또는 마케팅 사이트 등의 콘텐츠 중심 웹사이트를 구축하기 위해 설계된 메타 프레임워크로  
+[공식 웹사이트](https://docs.astro.build/ko/concepts/why-astro/) 에서 설명한 것과 같이 SEO, 빠른 로딩 속도 등이 필요한 웹 사이트에 적합한 프레임워크입니다.   
+(Nuxt, Next와는 다르게 SPA로는 구동이 불가합니다.)
+
+이하의 내용들은 Astro Docs의 내용을 요약, 설명한 것으로 더 자세히 알아보고 싶으면 [Astro 공식 Docs](https://docs.astro.build/ko/getting-started/)를 참고해주세요.
+
+## 특징
+
+Astro가 가지는 다른 메타 프레임워크와의 차별점은 다음과 같습니다.
+
+1. Server Driven: SSG에 치중, 이에 따른 일부 SSR
+2. Island: 정적 요소 및 서버와 클라이언트를 나눈 아일랜드 구조
+
+### Server Driven
+
+Astro의 특징은 설계 자체가 콘텐츠를 빠르게 보여주기 위하여 SSG에 치중하였으며, 웹 이용자의 TTI(Time to Interactive)를 줄이기 위하여 가능한 한 서버 렌더링을 이용한다는 점이 있습니다.
+조금 더 자세히 말하자면, Astro에서는 최초에 모든 UI 컴포넌트는 Javascript가 제거된 상태로 HTML, CSS만으로 렌더링 된 후  
+서버에서 렌더링된 서버 아일랜드와, Hydration 후 동작하는 클라이언트 아일랜드 부분이 추가되어 최종적으로 웹 사이트가 그려지는 형태를 취하게 됩니다.
+
+Astro의 특징으로 Astro로 만들어진 웹사이트는 성능 및 유저 경험이 좋다는 것이 장점입니다.
+2023년 3월의 과거의 결과이지만, Astro 팀에서 주요 메타 프레임워크의 벤치마크를 실시한 결과,
+Astro가 전반적으로 우세한 것을 확인할 수 있습니다.
+[Benchmark](https://astro.build/blog/2023-web-framework-performance-report/)
+
+![CleanShot_2025-02-26_22.02.57](./assets/CleanShot_2025-02-26_22.02.57.png)
+
+### Island
+
+![CleanShot_2025-02-26_20.47.22@2x](./assets/CleanShot_2025-02-26_20.47.22@2x.png)
+
+Astro가 설명하는 아일랜드 아키텍쳐입니다.
+
+> 아일랜드 아키텍처는 페이지의 대부분을 빠르고 정적인 HTML로 렌더링하고, 페이지에서 상호 작용이나 개인화가 필요한 경우 (예: 이미지 캐러셀) 더 작은 “아일랜드”의 JavaScript를 추가하는 방식으로 작동합니다.
+
+서버 아일랜드와 클라이언트 아일랜드의 특징은 다음과 같습니다.
+
+- 서버 아일랜드
+  - 콘텐츠가 사용 가능할 때까지 렌더링을 지연하도록 지시된 일반적인 서버 렌더링 [Astro 컴포넌트](https://docs.astro.build/ko/basics/astro-components/)입니다.
+  - 서버 아일랜드는 반드시 .astro 파일로만 구동되며 컴포넌트에 `server:defer` 문구를 추가함으로써 서버 아일랜드로 동작하게 할 수 있습니다.
+    ```astro
+    ---
+    import Avatar from '../components/Avatar.astro';
+    ---
+    <Avatar server:defer />
+    ```
+  - 서버 렌더링이 지연되는 동안 대체 콘텐츠를 제공할 수 있습니다.
+  - 더 자세한 내용은 [Astro 서버 아일랜드](https://docs.astro.build/ko/guides/server-islands/) 에서 확인.
+
+- 클라이언트 아일랜드
+  - 위 사진에 보이는 대화형 아일랜드에 해당하는 것으로 자바스크립트가 하이드레이션 되어 동적으로 동작하는 부분입니다.
+  - 클라이언트 아일랜드로 구성되는 컴포넌트들은 React, Vue, Svelte 등의 다양한 프론트엔드 프레임워크를 통해 만들어 화면에 구성할 수 있습니다.
+  - 컴포넌트에 `client:*` 지시어를 통하여 클라이언트 아일랜드로 동작하도록 할 수 있습니다.
+    - 다르게 얘기하자면 `client:*` 지시어를 붙이지 않는 경우, 자바스크립트가 동작하지 않아 html css만 그려지게 됩니다.
+    - Next.js의 'use client' 구문과 유사합니다.
+      ```react title="Counter.tsx"
+      // React의 useState 훅을 사용한 간단한 카운터 컴포넌트
+      import { useState } from 'react';
+      import './Counter.css';
+      
+      interface CounterProps {
+        children: JSX.Element;
+        count: number;
+      }
+      
+      export default function Counter({ children, count: initialCount }: CounterProps) {
+        const [count, setCount] = useState(initialCount);
+        const add = () => setCount((i) => i + 1);
+        const subtract = () => setCount((i) => i - 1);
+      
+        return (
+          <>
+            <div className="counter">
+              <button onClick={subtract}>-</button>
+              <pre>{count}</pre>
+              <button onClick={add}>+</button>
+            </div>
+            <div className="counter-message">{children}</div>
+          </>
+        );
+      }
+      ```
+  
+      ```astro title="Playground.astro"
+      ---
+      import Counter from '@/components/Counter';
+      import BaseLayout from '../layouts/baseLayout.astro';
+      
+      const someProps = {
+        count: 0,
+      };
+      ---
+      
+      <BaseLayout title="playground">
+        <div class="container">
+          <h1>Playground</h1>
+          <hr class="title-divider" />
+          <br />
+          <section>
+            <Counter {...someProps} client:visible> // React 컴포넌트를 사용할 때, client 지시어를 붙이지 않는 경우에는 클릭 이벤트가 동작하지 않음.
+              <h1>Hello, React!</h1>
+            </Counter>
+          </section>
+          <section>
+          </section>
+        </div>
+      </BaseLayout>
+      ```
+    - client 지시어 넣은 경우: 자바스크립트가 동작 해, 클릭함에 따라 화면이 변경되는 모습을 확인할 수 있습니다.
+      ![CleanShot_2025-02-26_21.12.22](./assets/CleanShot_2025-02-26_21.12.22.gif)
+    - 넣지 않은 경우: UI는 그려졌으나, 클릭해도 동작하지 않음을 확인할 수 있습니다.
+      ![CleanShot_2025-02-26_21.10.56](./assets/CleanShot_2025-02-26_21.10.56.gif)
+    - client 지시어를 포함한 Astro의 템플릿 지시어는 [해당 문서](https://docs.astro.build/ko/reference/directives-reference/#%ED%81%B4%EB%9D%BC%EC%9D%B4%EC%96%B8%ED%8A%B8-%EC%A7%80%EC%8B%9C%EC%96%B4) 를 통해 확인할 수 있습니다.
+
+
+
+
+
+## Astro 사용 방법
+
+아래 명령어를 통하여 Astro 프로젝트를 셋업할 수 있습니다.
+
+```shell
+npm create astro@latest
+```
+
+생성되는 폴더 구조 및 해당 설명은 [공식 문서](https://docs.astro.build/ko/basics/project-structure/)를 참고하시면 됩니다.
+
+![CleanShot_2025-02-27_21.56.24@2x](./assets/CleanShot_2025-02-27_21.56.24@2x.png)
+
+vscode, webstorm 등 다양한 편집기에서 .astro 문법을 지원하니 적당히 골라서 쓰시면 됩니다.  
+webstorm 지원은 2024.2 버전부터로 지원하기 시작한지는 얼마되지 않았습니다.
+
+> webstorm에서 Astro 컴포넌트에서 script를 2개 이상 사용한다면 syntax highlighting이 깨지는 이슈가 있습니다.
+
+![CleanShot_2025-02-27_22.15.58](./assets/CleanShot_2025-02-27_22.15.58.png)
+
+### Astro 문법 소개
+
+Astro 컴포넌트에서는 컴포넌트 스크립트와 컴포넌트 템플릿으로 구분되는데 그 역할은 다음과 같습니다.
+
+```astro title="Astro 컴포넌트 구조"
+---
+// Component Script (JS / TS)
+---
+{/* Component Template (HTML, JS/TS 표현식) */}
+<head>
+</head>
+<body>
+
+</body>
+
+<style>
+</style>
+
+<script>
+</script>
+```
+
+- 컴포넌트 스크립트
+  - 다른 컴포넌트 불러오기 (.astro, .tsx, .vue 등등)
+  - 템플릿 참조 변수 생성
+  - 다른 파일 또는 API 등에서 데이터 가져오기
+- 컴포넌트 템플릿
+  - HTML 템플릿 작성
+  - script, style 태그 작성
+
+> 주의점으로 컴포넌트 스크립트 부분은 Server Side이므로 window, document 등의 객체가 없습니다.
+
+#### 컴포넌트 템플릿
+
+컴포넌트 템플릿의 문법은 vue와 jsx의 장점을 골라 가져온 느낌을 받았습니다.
+
+- 변수 사용 및 js 표현식은 `{}` 내부로
+- 조건문: `{test ? (<div>a</div>) :  (<div>b</div>)}`
+- 반복문: `{test.map((item) => <div>{item}</div>)}`
+
+- vue와 동일한 slot 문법
+
+```astro title="ExamplePage.astro"
+---
+// 여기에 컴포넌트 스크립트를 작성합니다!
+import Banner from '../components/Banner.astro';
+import Avatar from '../components/Avatar.astro';
+import ReactPokemonComponent from '../components/ReactPokemonComponent.jsx';
+const myFavoritePokemon = [/* ... */];
+const { title } = Astro.props;
+---
+<!-- HTML 주석을 지원합니다! -->
+{/* JS 주석 구문도 유효합니다! */}
+
+<Banner />
+<h1>Hello, world!</h1>
+
+<!-- 컴포넌트 스크립트의 props 및 기타 변수 사용 -->
+<p>{title}</p>
+
+<!-- 컴포넌트 렌더링을 지연시키고 대체 로딩 콘텐츠 제공 -->
+<Avatar server:defer>
+  <svg slot="fallback" class="generic-avatar" transition:name="avatar">...</svg>
+</Avatar>
+
+<!-- `client:` 지시어를 사용하여 다른 UI 프레임워크 컴포넌트를 포함하고 하이드레이션합니다. -->
+<ReactPokemonComponent client:visible />
+
+<!-- JSX와 유사하게 HTML과 JavaScript 표현식을 혼합합니다. -->
+<ul>
+  {myFavoritePokemon.map((data) => <li>{data.name}</li>)}
+</ul>
+
+<!-- 템플릿 지시어를 사용하여 여러 문자열 또는 객체에서 클래스 이름을 빌드합니다! -->
+<p class:list={["add", "dynamic", { classNames: true }]} />
+```
+
+여기에 더해 [추가적인 지시어](https://docs.astro.build/ko/reference/directives-reference/)가 있습니다.
+
+- `client:*`
+- `server:*`
+- `is:*`
+
+더 자세한 내용은 [공식 문서](https://docs.astro.build/ko/basics/astro-components/)에서 확인할 수 있습니다.
+
+### 레이아웃 구성하기
+
+레이아웃 부분은 다른 프론트엔드 프레임워크와 다를 바 없이 다음과 같이 구성할 수 있습니다.   
+(next.js 구조와 유사하다고 볼 수 있습니다.)
+
+Astro는 컴포넌트에서 Vue에서 흔히 볼 수 있는 `<slot/>` 구조를 사용하여 자식으로 들어갈 내용을 넣습니다.
+
+레이아웃은 페이지와 다르게 react 등 다른 프레임워크로도 만들 수 있으나,
+Astro에서 제공하는 API 활용 및 사이트 성능을 위하여 Astro 컴포넌트로 만드는 것을 권장합니다.
+
+```astro title="ExampleLayout.astro"
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+const { title } = Astro.props;
+---
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <BaseHead title={title}/>
+  </head>
+  <body>
+    <nav>
+      <a href="#">홈</a>
+      <a href="#">블로그</a>
+      <a href="#">연락처</a>
+    </nav>
+    <h1>{title}</h1>
+    <article>
+      <slot /> <!-- 콘텐츠가 여기에 삽입됩니다. -->
+    </article>
+    <Footer />
+  </body>
+  <style>
+    h1 {
+      font-size: 2rem;
+    }
+  </style>
+</html>
+```
+
+생성한 레이아웃을 사용할 각 페이지에서 레이아웃을 import한 후 사용할 수 있습니다.  
+아래 페이지 예시 코드에서 MySiteLayout에 props로 넘기는 title은
+위의 레이아웃 예시 코드의 `const { title } = Astro.props;`에서 받아서 데이터를 활용할 수 있습니다.
+
+```astro title="useLayoutPageExample.astro"
+---
+import ExampleLayout from '../layouts/ExampleLayout.astro';
+---
+<ExampleLayout title="Home Page">
+  <p>레이아웃으로 감싼 페이지입니다!</p>
+</ExampleLayout>
+```
+
+마크다운으로 생성되는 페이지의 레이아웃도 따로 지정할 수 있는데 이에 관한 자세한 내용은 다음 포스트에서 다룰 예정입니다.
+자세한 사항은 [해당 문서](https://docs.astro.build/ko/basics/layouts/)에서 확인하시면 됩니다.
+
+### 페이지 구성하기
+
+페이지는 Astro의 폴더 구조에 따라 `./src/pages` 폴더에 Astro 컴포넌트를 만듦으로써 생성됩니다.  
+다른 메타 프레임워크와 비슷하게 파일 구조 기반으로 경로가 생성됩니다.
+
+>주의점: 페이지는 반드시 Astro 컴포넌트로 만들어야합니다.
+
+페이지는 앞서 문법에서 소개한 컴포넌트 스크립트와 컴포넌트 템플릿 부분을 잘 활용하여 구성하면 됩니다.
+아래의 예시 코드가 제 블로그의 home 화면에 사용되는 Astro 컴포넌트입니다.
+
+```astro title="index.astro"
+---
+import Flickering from '@/components/home/Flickering';
+import InteractiveIconCloud from '@/components/home/InteractiveIconCloud';
+import Intro from '@/components/home/Intro';
+import TerminalInfo from '@/components/home/TerminalInfo';
+import GradualSpacing from '@/components/ui/gradual-spacing';
+import LetterPullup from '@/components/ui/letter-pullup';
+
+import { Separator } from '@/components/ui/separator';
+import BaseLayout from '@/layouts/baseLayout.astro';
+
+
+// Full Astro Component Syntax:
+// https://docs.astro.build/basics/astro-components/
+---
+
+<BaseLayout title="Home">
+  <div class="container overflow-x-hidden">
+    <div class="mt-[20rem] max-md:mt-[10rem]"></div>
+    <div class="flex justify-center ">
+      <TerminalInfo client:visible />
+    </div>
+    <Flickering client:visible />
+    <div id="intro">
+      <div class="flex justify-center mt-[-21rem]">
+        <div class="intro-wrapper">
+          <LetterPullup
+            className="max-sm:text-2xl dark:text-slate-200 text-slate-700 "
+            words="Hello World! I'm Junja"
+            delay={0.05}
+            client:visible
+          />
+          <Intro client:visible />
+        </div>
+      </div>
+      <div class="on-spacer"></div>
+      <Separator className="my-8" />
+        <GradualSpacing
+          className="font-display text-center text-4xl max-sm:text-2xl font-extrabold dark:text-slate-200 text-slate-700"
+          text="Technologies I've worked"
+          client:visible
+        />
+      <div class="flex justify-center">
+
+        <InteractiveIconCloud client:visible />
+      </div>
+    </div>
+
+
+
+  </div>
+
+</BaseLayout>
+
+<script is:inline>
+  setTimeout(() => {
+    if (document.getElementById('intro'))
+      document.getElementById('intro').classList.add('visible');
+    if (document.querySelector('.scroll-animation') && document.querySelector('.container')) {
+      if (window.innerHeight < (document.querySelector('.container').offsetHeight + 224)) {
+        document.querySelector('.scroll-animation').classList.remove('hidden');
+      }
+    }
+  }, 4000);
+</script>
+
+```
+
+#### 동적 경로
+
+Astro에서 동적 경로는 `./src/pages/[slug].astro` 형태로 구성할 수 있는데,  
+SSG 기반이다보니, 해당하는 파일이 존재 또는 생성되어야합니다.
+
+그래서 동적 경로를 사용하는 경우 반드시 getStaticPaths 함수를 선언해주어야 합니다.
+
+```astro title="src/pages/[slug].astro"
+---
+export function getStaticPaths() {
+  return [
+    {params: {slug: 'clifford'}},
+    {params: {slug: 'rover'}},
+    {params: {slug: 'spot'}},
+  ];
+}
+
+const { slug } = Astro.params;
+---
+<div>Good slug, {slug}!</div>
+```
+
+해당 함수를 바탕으로 astro가 실행 또는 빌드될 때 동적으로 경로를 생성하여 html 파일을 만듭니다.
+이런 특성을 가지기 때문에 커뮤니티 사이트 같이 동적으로 페이지가 많이 생성되는 경우에는 Astro가 적합하지 않습니다.
+
+더 자세한 내용은 [다음 문서](https://docs.astro.build/ko/guides/routing/#%EB%8F%99%EC%A0%81-%EA%B2%BD%EB%A1%9C)를 확인하시면 됩니다.
+
+---
+
+
+
+## Astro의 장점
+
+제가 생각하는 Astro의 장점에 대해서 기술합니다.
+
+### 깔끔한 문서화와 번역
+
+사용할 기술의 문서가 얼마나 보기 편하고 잘되어 있냐에 따라 선택이 결정이 된다는 개발자 통계도 있을 정도로
+라이브러리를 사용하는 개발자의 입장에서 공식 문서의 UI/UX는 상당한 부분을 차지한다고 생각합니다.
+
+이 점에서 Astro는 친절한 튜토리얼, 세련되고 깔끔한 공식 문서와 상당한 퀄리티의 번역까지  
+Astro를 사용함에 있어서 공식 문서외 다른 문서를 크게 볼 필요가 없을 정도로 문서화가 잘 되어 있습니다.
+
+![CleanShot_2025-02-26_21.32.44@2x](./assets/CleanShot_2025-02-26_21.32.44@2x.png)
+
+### 간편한 SSG, SSR 처리
+
+Astro는 기본적으로 SSR이 기준이기 때문에, 따로 처리할 부분이 없습니다.  
+자바스크립트가 필요한 클라이언트 아일랜드 부분만 신경을 써주면 되는데, 이것 역시 `client:*` 지시자를 통하여 간편하게 설정할 수 있고,  
+우선 순위까지 지정할 수 있습니다.
+
+추가로 Server Render 부분과 Client Render 부분이 다르다면 지속적으로 경고를 주는 등의 사이트를 구성함에 있어 놓치기 쉬운 부분을 챙길 수 있는 것도 좋은 점이라고 생각합니다.
+
+### 타 프레임워크와 결합
+
+클라이언트 아일랜드로 사용하는 컴포넌트에 한하여 다양한 프론트엔드 프레임워크를 사용할 수 있습니다.   
+성능이 중요시 되는 부분이라면 Qwik나 Svelte를, 복잡한 로직 및 폭 넓은 라이브러리 풀을 이용하고 싶으면 React를 사용하는 등의 취사 선택을 할 수 있는 점이 장점이라고 볼 수 있습니다.
+
+아래는 현재 제가 개발 중인 블로그의 구조인데, 컴포넌트 쪽은 리액트 위주로 구성되어 있습니다.  
+제 블로그에서 Playground 부분에 Vue, Svelete 등 다양한 프레임워크를 사용해볼 예정입니다.
+
+| Components                                                   | Pages & Layouts                                              |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![CleanShot_2025-02-26_21.41.35](./assets/CleanShot_2025-02-26_21.41.35.png) | ![CleanShot_2025-02-26_21.42.09](./assets/CleanShot_2025-02-26_21.42.09.png) |
+
+## Astro의 단점
+
+Astro를 직접 사용함에 있어 아래와 같은 불편한 점을 느꼈습니다.  
+하지만 Astro를 사용함으로 얻는 이점이 더 크다고 생각했기 때문에 블로그는 Astro로 쭉 이어서 만들어나갈 생각입니다.
+
+### 아스트로 컴포넌트 및 클라이언트 아일랜드의 제약
+
+Astro의 아일랜드 구조에 의해 페이지 파일 자체는 무조건 `.astro`  파일로, Astro 컴포넌트를 통해서 구현해야합니다.  
+(예외로, `.markdown`은 페이지가 될 수 있습니다.)
+또한 클라이언트 아일랜드 영역에서는 Astro에서 제공하는 API들을 사용할 수 없습니다.
+
+추가로 Astro 컴포넌트에서도 제약이 있는데, 다음과 같습니다.
+
+- 컴포넌트 스크립트 영역과 컴포넌트 템플릿의 스크립트는 서로 공유가 안되어 컴포넌트 스크립트 영역에 선언된 변수 및 함수를 이용할 수 없습니다.
+- 컴포넌트 스크립트 영역은 React의 useState와 같이 사용자가 동적으로 값을 변경하는 일이 불가합니다. (SSG이기 때문)
+- 필요하다면 하단의 컴포넌트 템플릿에서 document.addEventListener 등의 함수를 이용하여 직접 돔에 접근하여 변경.
+
+```astro title="component.astro"
+---
+// 컴포넌트 스크립트 (JS / TS)
+
+import Counter from '@/components/Counter';
+import BaseLayout from '../layouts/baseLayout.astro';
+
+const someProps = {
+  count: 0,
+};
+
+function redirect() {
+  Astro.redirect('/blog');
+}
+
+---
+<!-- 컴포넌트 템플릿 (HTML + JS 표현식) -->
+
+<BaseLayout title="playground">
+  <div class="container">
+    <h1>Playground</h1>
+    <hr class="title-divider" />
+    <br />
+    <section>
+      <Counter {...someProps} client:visible>
+        <h1 id="playground-counter">Hello, React!</h1>
+      </Counter>
+    </section>
+    <section>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  document.getElementById('playground-counter').addEventListener('click', redirect); // redirect는 undefiend
+</script>
+```
+
+위의 이유로 다른 메타 프레임워크인 Next, Nuxt, 그리고 SPA인 Vue, React에 비해 Javascript가 활용될 수 있는 요소가 제한된다는 점입니다.
+
+### 사용자 풀이 적음
+
+Astro는 2021년에 만들어진 비교적 최신의 프레임워크이기 때문에 React, Vue 진영에 비하면 사용자 수가 적고,  
+이에 따라 관련 라이브러리 및 사용자 문서 등이 부족합니다.  
+개발하다가 봉착하는 여러 어려움을 검색했을 때 나오지 않는 경우도 종종 있어 만드는데 좀 고생했습니다.
+
+### 동적 라우터 이동의 제약
+
+Astro에서는 Next에서 제공해주는 Navagtion API, React, Vue의 Router 라이브러리와 같이 `router.push('/')` 등을 통한 동적 네비게이션이 불가능 합니다.  
+대신 Astro에서는 페이지 라우팅을 anchor 태그를 통해 구현하는데, 실제로 개발함에 있어 이 부분이 큰 제약으로 다가왔습니다.   
+[Astro의 라우팅](https://docs.astro.build/ko/guides/routing/)
+
+```react title="Navigation.tsx"
+import type React from 'react';
+
+import { Button } from '@/components/ui/button.tsx';
+import { Dock, DockIcon } from '@/components/ui/dock';
+
+interface Props {
+  tab: string;
+}
+
+export default function DocNav({ tab }: Props) {
+  function checkRoute(e: string) {
+    return tab === e ? 'default' : 'ghost';
+  }
+  return (
+    <Dock direction="middle" className="doc-nav max-md:hidden">
+      <DockIcon>
+        <Button variant={checkRoute('home')} size="icon" asChild className="nav-btn">
+          <a href="/">
+            Home
+          </a>
+        </Button>
+      </DockIcon>
+      <DockIcon>
+        <Button variant={checkRoute('blog')} size="icon" asChild className="nav-btn">
+          <a href="/blog/">
+            Blog
+          </a>
+        </Button>
+      </DockIcon>
+      <DockIcon>
+        <Button variant={checkRoute('project')} size="icon" asChild className="nav-btn">
+          <a href="/project/">
+            Project
+          </a>
+        </Button>
+      </DockIcon>
+      <DockIcon>
+        <Button variant={checkRoute('playground')} size="icon" asChild className="nav-btn">
+          <a href="/playground/">
+            Playground
+          </a>
+        </Button>
+      </DockIcon>
+      <DockIcon>
+        <Button variant={checkRoute('about')} size="icon" asChild className="nav-btn">
+          <a href="/about/">
+            About
+          </a>
+        </Button>
+      </DockIcon>
+    </Dock>
+  );
+}
+```
+
+억지로 `window.location.href = ${link}` 를 통해 사이트의 경로를 변경해줄 수 있지만,  
+이를 이용할 경우, Astro에서 제공하는 Trainsition 등의 효과는 누릴 수 없어 권장하는 방법은 아닙니다.
+
+블로그에서는 모바일 화면에서 나오는 네비게이션 메뉴 이동에 성능 상의 이유로 위 구문을 사용했는데,  
+네비게이션 이동 시, 잠깐 다크모드가 해제되는 등의 이슈가 있었습니다.
+
+![CleanShot_2025-02-26_22.39.30](./assets/CleanShot_2025-02-26_22.39.30.png)
