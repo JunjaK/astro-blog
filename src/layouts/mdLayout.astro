@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import FloatButton from '@/components/layouts/FloatButton';
+import FloatButton from '@/components/layouts/FloatButton.astro';
 import Footer from '@/components/layouts/Footer';
 import Navigation from '@/components/layouts/Navigation';
 
@@ -122,6 +122,5 @@ const { title, tags = [], category = '' } = post;
   document.addEventListener('DOMContentLoaded', update);
   document.getElementById('go-back').addEventListener('click', () => {
     window.history.back();
-    console.log('test3432');
   });
 </script>

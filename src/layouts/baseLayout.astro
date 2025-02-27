@@ -1,6 +1,6 @@
 ---
 import CommonScript from '@/components/layouts/CommonScript.astro';
-import FloatButton from '@/components/layouts/FloatButton';
+import FloatButton from '@/components/layouts/FloatButton.astro';
 import Footer from '@/components/layouts/Footer';
 
 import Navigation from '@/components/layouts/Navigation';
@@ -44,7 +44,10 @@ const { title } = Astro.props;
 <Navigation client:idle></Navigation>
 
 <main>
-  <ScrollProgress className="scroll-animation hidden top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30" client:idle />
+  <ScrollProgress
+    className="scroll-animation  top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30"
+    client:idle
+  />
 
   <div class="container-wrapper">
     <slot></slot>
@@ -52,7 +55,7 @@ const { title } = Astro.props;
   </div>
 </main>
 <Footer client:idle />
-<FloatButton client:idle />
+<FloatButton />
 <CommonScript />
 </body>
 </html>
@@ -70,14 +73,6 @@ const { title } = Astro.props;
     const isDark = getThemePreference() === 'dark';
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
-    // 스크롤 애니메이션 여부
-    setTimeout(() => {
-      if (document.querySelector('.scroll-animation') && document.querySelector('.container')) {
-        if (window.innerHeight < (document.querySelector('.container').offsetHeight + 224)) {
-          document.querySelector('.scroll-animation').classList.remove('hidden');
-        }
-      }
-    }, 1000);
   }
 
   document.addEventListener('astro:after-swap', update);
