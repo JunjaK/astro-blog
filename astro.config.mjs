@@ -28,14 +28,16 @@ const SCSS_Logger = {
 export default defineConfig({
   // Enable React to support React JSX components.
   site: 'https://www.jun-devlog.win',
-  integrations: [react(), tailwind({
-    applyBaseStyles: false,
-  }), sitemap(), expressiveCode({
-    themes: ['kanagawa-dragon', 'catppuccin-latte'],
-    plugins: [pluginCollapsibleSections(), pluginLineNumbers(), pluginColorChips()],
-
-  },
-  ), mdx({})],
+  integrations: [
+    react(),
+    tailwind({ applyBaseStyles: false }),
+    sitemap(),
+    expressiveCode({
+      themes: ['kanagawa-dragon', 'catppuccin-latte'],
+      plugins: [pluginCollapsibleSections(), pluginLineNumbers(), pluginColorChips()],
+    }),
+    mdx({}),
+  ],
   image: {
     service: passthroughImageService(),
   },
