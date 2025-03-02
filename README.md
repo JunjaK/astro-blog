@@ -1,7 +1,8 @@
-# Astro + React Example
+# Junjak's Blog
 
 ## Intro
-This is Private Dev Blog made with Astro and React.
+This is Private Blog made with Astro and React and etc...
+
 ```shell    
 pnpm i
 pnpm dev
@@ -24,3 +25,7 @@ pnpm dev
 - Sass
 - expressive-code
 - mermaid
+
+## License
+MIT.  
+If you want to use this template, feel free to fork this repository and change the contents.
