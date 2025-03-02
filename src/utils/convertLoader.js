@@ -78,7 +78,7 @@ function processMarkdownFiles(folderPath) {
     content = convertToVideoLoader(content, filePath);
 
     //     const importCode = `import ImageLoader from '@/components/Blog/ImageLoader.astro';
-    // import VideoLoader from '@/components/Blog/VideoLoader.tsx';
+    // import VideoLoader from '@/components/Blog/VideoLoader.astro';
     // import TableOfContents from '@/components/Blog/TableOfContents.astro';`;
     //
     //     if (!content.includes(importCode)) {

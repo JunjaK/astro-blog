@@ -1,0 +1,13 @@
+---
+import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl.ts';
+
+interface Props {
+  src: string;
+}
+
+const { src } = Astro.props;
+---
+
+  <div>
+    <video src={getBasePathWithUrl(src)} controls></video>
+  </div>
