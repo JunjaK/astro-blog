@@ -42,9 +42,12 @@ function convertToElements(node: Element): HTMLElement {
       ?.textContent
       ?.trim() || '';
 
+    console.log(textContent);
+
     if (textContent) {
       const a = document.createElement('a');
       a.href = `#${createSlug(textContent)}`;
+      console.log(a);
       a.textContent = textContent;
       li.appendChild(a);
     }
@@ -60,6 +63,11 @@ function convertToElements(node: Element): HTMLElement {
   return document.createElement('div');
 }
 
-const replaceNode = convertToElements(target!.firstElementChild!);
-target.replaceChild(replaceNode, target!.firstElementChild!);
+function tocInit() {
+  const replaceNode = convertToElements(target!.firstElementChild!);
+  target.replaceChild(replaceNode, target!.firstElementChild!);
+}
+
+document.addEventListener('astro:after-swap', tocInit);
+document.addEventListener('astro:page-load', tocInit);
 </script>
