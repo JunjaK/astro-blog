@@ -7,8 +7,6 @@ import { getCollection } from 'astro:content';
 const projects = await getCollection('project');
 projects.sort((a, b) => a.data.order - b.data.order);
 
-console.log(projects);
-
 const description = 'Projects about made by JunjaK.';
 ---
 
