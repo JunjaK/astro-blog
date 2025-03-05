@@ -33,10 +33,6 @@ export default function Navigation() {
     }
   }, []);
 
-  function changeRoute(e: string) {
-    setTab(e);
-  }
-
   function toggleMenu() {
     setIsMobileMenuOpened(!isMobileMenuOpened);
   }

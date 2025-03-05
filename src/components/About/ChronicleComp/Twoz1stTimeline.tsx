@@ -27,33 +27,33 @@ export function Twoz1stTimeline({ isOpen, handleOpenChange }: Props) {
     return [
       { title: 'Spinel', duration: '2021.03 ~ 2021.08', desc: '각 장비들의 데이터를 수집, 저장, 모니터링하는 프로덕트로, 웹 사이트 구축을 담당했습니다.\n프론트엔드 쪽의 프로젝트 세팅 및 공통 부분도 담당하였습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
-            { iconUrl: `/images/about/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
-            { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
       { title: 'KDIS Push APP Admin', duration: '2021.01 ~ 2021.4', desc: 'KDIS push 알림 앱의 Admin 웹 사이트 구축하는 프로젝트입니다.\n프론트엔드 쪽 프로젝트 세팅 및 공통 부분과 일부 페이지 구축을 담당했습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
-            { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
       { title: 'FMS', duration: '2020.08 ~ 2021.08', desc: '공장의 시설, 자재 등을 관리하는 웹 사이트 구축하는 프로젝트입니다.\n일부 페이지와 차트 부분을 담당하여 개발하였습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
-            { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
     ];

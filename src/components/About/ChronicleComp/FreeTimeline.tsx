@@ -31,27 +31,27 @@ export function FreeTimeline({ isOpen, handleOpenChange }: Props) {
         desc: '국내에 전문적인 주류 리뷰 커뮤니티가 없어 우리가 한번 만들어보자는 생각하에 진행하고 있는 프로젝트.\n구성원은 모두 전/현직 직장인으로 사이드 프로젝트 겸 진행하고 있습니다.\n차별점으로는 주류 리뷰를 좀 더 디테일하게 작성할 수 있다는 점과 주류 위키(현재 개발 중...)를 통하여 술에 대한 정보를 사용자들이 자유롭게 추가할 수 있다는 점입니다.\n프론트엔드 및 마크업 작업을 맡아서 진행 중입니다.',
         techStackIcon: isHydrated
           ? [
-              { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
-              { iconUrl: `/images/about/tech-stack/${mode}/nextdotjs.svg`, techName: 'Next' },
-              { iconUrl: `/images/about/tech-stack/${mode}/graphql.svg`, techName: 'GraphQL' },
-              { iconUrl: `/images/about/tech-stack/${mode}/tailwindcss.svg`, techName: 'Tailwind CSS' },
-              { iconUrl: `/images/about/tech-stack/${mode}/pm2.svg`, techName: 'PM2' },
-              { iconUrl: `/images/about/tech-stack/${mode}/nginx.svg`, techName: 'NGINX' },
-              { iconUrl: `/images/about/tech-stack/${mode}/github.svg`, techName: 'GitHub Action' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/nextdotjs.svg`, techName: 'Next' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/graphql.svg`, techName: 'GraphQL' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/tailwindcss.svg`, techName: 'Tailwind CSS' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/pm2.svg`, techName: 'PM2' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/nginx.svg`, techName: 'NGINX' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/github.svg`, techName: 'GitHub Action' },
             ]
           : [],
       },
 
       { title: 'Blog', duration: '2025.01 ~ Present', desc: '현재 보고 있는 이 블로그로, 위에 소개글에 나와있는대로 새로운 기술을 써서 개인 블로그를 만들어보자라는 마인드로 진행하고 있는 프로젝트.\n시간이 날 때 Blog와 Playground에 게시글을 올릴 예정입니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/astro.svg`, techName: 'Astro' },
-            { iconUrl: `/images/about/tech-stack/${mode}/react.svg`, techName: 'React' },
-            { iconUrl: `/images/about/tech-stack/${mode}/tailwindcss.svg`, techName: 'Tailwind CSS' },
-            { iconUrl: `/images/about/tech-stack/${mode}/framer.svg`, techName: 'Framer' },
-            { iconUrl: `/images/about/tech-stack/${mode}/nginx.svg`, techName: 'NGINX' },
-            { iconUrl: `/images/about/tech-stack/${mode}/docker.svg`, techName: 'Docker' },
-            { iconUrl: `/images/about/tech-stack/${mode}/github.svg`, techName: 'GitHub Action' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/astro.svg`, techName: 'Astro' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/react.svg`, techName: 'React' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/tailwindcss.svg`, techName: 'Tailwind CSS' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/framer.svg`, techName: 'Framer' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/nginx.svg`, techName: 'NGINX' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/docker.svg`, techName: 'Docker' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/github.svg`, techName: 'GitHub Action' },
           ]
         : [] },
     ];

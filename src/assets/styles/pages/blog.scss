@@ -1,4 +1,4 @@
-@use "../variables" as *;
+@use '../variables' as *;
 
 .search-area {
   display: flex;
@@ -18,14 +18,12 @@
     @media screen and (max-width: 768px) {
       width: calc($px400 - 15.5rem);
     }
-
   }
 
   .reset-btn {
     width: 40px !important;
     height: 40px !important;
   }
-
 }
 
 .empty-result {
@@ -35,7 +33,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
 
   .empty-icon {
     font-size: 10rem;
@@ -95,7 +92,6 @@
 
     .category {
       text-decoration: underline;
-
     }
 
     .scroll-area {
@@ -113,14 +109,11 @@
       white-space: nowrap; /* 줄바꿈 방지 */
     }
   }
-
-
 }
 
 .article-wrapper + .article-wrapper {
   margin-top: 1rem;
 }
-
 
 .markdown-content-wrapper {
   margin-top: 8rem !important;
@@ -155,7 +148,7 @@
         width: calc($px400 - 7rem);
       }
     }
-    
+
     .tags-wrapper {
       display: flex;
       gap: 0.5rem;
@@ -231,7 +224,7 @@
 
       cite {
         &:before {
-          content: "—";
+          content: '—';
           padding: 0 0.5em;
         }
       }
@@ -247,7 +240,7 @@
     position: relative;
 
     &:before {
-      content: "";
+      content: '';
       width: 100%;
       border-bottom: 1px solid var(--color-h2-border);
       position: absolute;
@@ -258,7 +251,7 @@
 
     &:after {
       transition: 0.3s;
-      content: "";
+      content: '';
       position: absolute;
       background: var(--color-h2-after);
       width: 1em;
@@ -341,7 +334,6 @@
     overflow-x: auto;
     overflow-y: hidden;
   }
-
 
   .expressive-code {
     margin: 20px 0;
@@ -461,12 +453,10 @@
     padding: 2rem 1rem 1rem 1rem;
   }
 
-
   .giscus-fallback {
     width: $px400;
   }
 }
-
 
 .post-table-of-contents {
   h3 {

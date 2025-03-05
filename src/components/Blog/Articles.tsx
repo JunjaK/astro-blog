@@ -21,7 +21,7 @@ import { Icon } from '@iconify/react';
 import dayjs from 'dayjs';
 import Fuse from 'fuse.js';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -72,7 +72,30 @@ export default function Articles({ posts }: Props) {
     },
   });
 
-  const fuse = new Fuse(posts, fuseOptions);
+  const fuse = useMemo(() => new Fuse(posts, fuseOptions), [posts]);
+
+  const onSubmit = useCallback((values: z.infer<typeof formSchema>) => {
+    setIsSearchActive(true);
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    if (values.searchType === 'category') {
+      setArticles(posts.filter((post) => post.data.category === values.search));
+    }
+    else {
+      const result = fuse.search(values.search);
+      setArticles(
+        result
+          .map((r) => r.item)
+          .sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix()),
+      );
+    }
+  }, [posts, fuse, setArticles, setIsSearchActive]);
+
+  function resetForm() {
+    form.reset();
+    setIsSearchActive(false);
+    setArticles(posts);
+  }
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.href.split('?')[1]);
@@ -93,30 +116,7 @@ export default function Articles({ posts }: Props) {
       form.setValue('searchType', 'title-tag');
       form.setValue('search', '');
     }
-  }, []);
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSearchActive(true);
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    if (values.searchType === 'category') {
-      setArticles(posts.filter((post) => post.data.category === values.search));
-    }
-    else {
-      const result = fuse.search(values.search);
-      setArticles(
-        result
-          .map((r) => r.item)
-          .sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix()),
-      );
-    }
-  }
-
-  function resetForm() {
-    form.reset();
-    setIsSearchActive(false);
-    setArticles(posts);
-  }
+  }, [form, onSubmit]);
 
   return (
     <div>
@@ -199,7 +199,7 @@ export default function Articles({ posts }: Props) {
       ),
       )}
       {articles.length === 0 && (
-        <div className="empty-result">
+        <div className="empty-result" aria-label="empty-result">
           <div>
             <Icon icon="mynaui:inbox-x" className="empty-icon" />
             <div className="desc">

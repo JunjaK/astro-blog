@@ -27,13 +27,13 @@ export function Twoz3rdTimeline({ isOpen, handleOpenChange }: Props) {
     return [
       { title: '사내 공통 모듈화 프로젝트', duration: '2024.03 ~ 2024.08', desc: '사내에서 진행하고 있는 여러 프로젝트에서 반복되는 패턴, 모듈들이 많았지만 파편화되어있고 버전 컨트롤이 어려운 문제점이 있었습니다.\n이를 해결하기 위해 모듈들을 공통화하여 사내 Npm Nexus에 배포, 이를 각 프로젝트에서 npm install 하는 방식으로 변경하는 프로젝트입니다.\nMonorepo로 모듈 내에서 테스트할 수 있는 패키지도 포함하였습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
-            { iconUrl: `/images/about/tech-stack/${mode}/npm.svg`, techName: 'Npm workspace' },
-            { iconUrl: `/images/about/tech-stack/${mode}/sonatype.svg`, techName: 'Sonatype Nexus' },
-            { iconUrl: `/images/about/tech-stack/${mode}/wijmo.svg`, techName: 'Wijmo Grid' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/npm.svg`, techName: 'Npm workspace' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/sonatype.svg`, techName: 'Sonatype Nexus' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/wijmo.svg`, techName: 'Wijmo Grid' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
       {
@@ -42,13 +42,13 @@ export function Twoz3rdTimeline({ isOpen, handleOpenChange }: Props) {
         desc: '기존 Nuxt2로 개발되어있던 FMS를 TS, Vue3, Vite 기반으로 변경하고 디자인, 설계 부분도 변경하여 솔루션화하는 프로젝트입니다.\n웹, 모바일 버전이 있으며 해당 프로젝트 기반으로 이후 납품될 FMS가 구성되었습니다.\n해당 프로젝트에서 프론트엔드 쪽 리드 개발자를 담당하였습니다.',
         techStackIcon: isHydrated
           ? [
-              { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
-              { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-              { iconUrl: `/images/about/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
-              { iconUrl: `/images/about/tech-stack/${mode}/wijmo.svg`, techName: 'Wijmo Grid' },
-              { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-              { iconUrl: `/images/about/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
-              { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/wijmo.svg`, techName: 'Wijmo Grid' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
             ]
           : [],
       },

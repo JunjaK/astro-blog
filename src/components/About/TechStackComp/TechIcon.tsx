@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 const hoveredVariants = {
   visible: {
-    y: 30,
+    y: 35,
     opacity: 1,
   },
   invisible: {

@@ -27,12 +27,12 @@ export function Twoz2ndTimeline({ isOpen, handleOpenChange }: Props) {
     return [
       { title: '3D Editor', duration: '2023.06 ~ 2024.08', desc: 'Unity WebGL을 활용한 3D Editor.\nUnity WebGL에서 제공하는 API(다른 분이 개발)을 활용하여 3D 오브젝트들을 배치 및 컨트롤하는 에디터를 개발하는 프로젝트입니다.\nWeb 쪽은 설계/디자인 포함 단독으로 개발을 진행했습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
-            { iconUrl: `/images/about/tech-stack/${mode}/unity.svg`, techName: 'Unity WebGL' },
-            { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/unity.svg`, techName: 'Unity WebGL' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
       {
@@ -41,61 +41,61 @@ export function Twoz2ndTimeline({ isOpen, handleOpenChange }: Props) {
         desc: 'Unity WebGL을 활용한 3D Viewer.\n초기에는 3D Editor 없이 수동으로 좌표를 통해 배치하여 웹 사이트에 올렸으나, 3D Editor 개발 후 이를 활용하고 여러 기능들을 추가한 프로젝트.\n이 프로젝트 기반으로 다른 3D가 필요한 프로젝트에 도입되었습니다.',
         techStackIcon: isHydrated
           ? [
-              { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
-              { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-              { iconUrl: `/images/about/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
-              { iconUrl: `/images/about/tech-stack/${mode}/unity.svg`, techName: 'Unity WebGL' },
-              { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-              { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/unity.svg`, techName: 'Unity WebGL' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+              { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
             ]
           : [],
       },
       { title: 'ACUPS SI', duration: '2023.01 ~ 2023.10', desc: 'ACUPS의 상태, 정보들을 모니터링하는 웹 사이트를 구축하는 프로젝트입니다.\nDraw.io를 통하여 계통도를 그리고 웹에서 상태에 따라 색상, 값들을 변경하는 작업을 거쳤습니다.\n프론트엔드 쪽 단독으로 개발을 맡았습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
-            { iconUrl: `/images/about/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
-            { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
       { title: 'Viven', duration: '2022.01 ~ 2024.08', desc: '사내의 메타버스 프로덕트인 Viven의 웹 사이트 구축하는 프로젝트입니다.\n특이사항으로는 Viven Unity내에서 UI 중 일부를 웹뷰로 표현하기 때문에 Unity와 WebView 간의 통신이 있습니다.\n프론트엔드 쪽 리드 개발자를 담당하였고, 백엔드도 일부 다루었습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
-            { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/spring.svg`, techName: 'Spring' },
-            { iconUrl: `/images/about/tech-stack/${mode}/postgresql.svg`, techName: 'PostgreSQL' },
-            { iconUrl: `/images/about/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/spring.svg`, techName: 'Spring' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/postgresql.svg`, techName: 'PostgreSQL' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
       { title: 'EMS SI', duration: '2021.11 ~ 2023.04', desc: '테양광 에너지 상태, 정보들을 모니터링하는 웹 사이트를 구축하는 프로젝트입니다.\nDraw.io를 통하여 계통도를 그리고 웹에서 상태에 따라 색상, 값들을 변경하는 작업을 거쳤고, NodeRed를 통하여 공공 API 조회 및 데이터 수집 등을 진행해였습니다.\n해당 프로젝트에서 프론트엔드 쪽 리드 개발자를 담당하였습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
-            { iconUrl: `/images/about/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
-            { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
-            { iconUrl: `/images/about/tech-stack/${mode}/nodered.svg`, techName: 'Node-RED' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/nodered.svg`, techName: 'Node-RED' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
 
       { title: 'Spinel', duration: '2021.09 ~ 2024.08', desc: '인턴 시절에 진행한 프로젝트를 이어 진행하였습니다.\n새로운 기능 개발, 성능 이슈 해결, 솔루션화 등을 진행했습니다.\n해당 프로젝트에서 프론트엔드 쪽 리드 개발자를 담당하였습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
-            { iconUrl: `/images/about/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
-            { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
     ];

@@ -27,37 +27,37 @@ export function UnivTimeline({ isOpen, handleOpenChange }: Props) {
     return [
       { title: '실시간 드론 관제 웹', duration: '2021.03 ~ 2021.06', desc: '대학교 캡스톤 프로젝트로, 당시 인턴 생활을 했던 트웬티온스와 같이 협업하여 진행하였습니다.\n웹 상에서 웹 소켓 통신을 통해 실시간으로 드론의 위치를 지도에 표시해주는 시스템으로, 프로젝트 구성 및 웹소켓 통신 등의 역할을 맡았습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
-            { iconUrl: `/images/about/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
-            { iconUrl: `/images/about/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/socketdotio.svg`, techName: 'Socket IO' },
-            { iconUrl: `/images/about/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
-            { iconUrl: `/images/about/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/antdesign.svg`, techName: 'Ant Design Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/socketdotio.svg`, techName: 'Socket IO' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/swagger.svg`, techName: 'Swagger CodeGen' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
       { title: '내용 기반 유튜브 영상 추천 시스템', duration: '2020.03 ~ 2020.7', desc: '대학교 캡스톤 프로젝트로, 비디오 벡터를 학습한 딥러닝 모델을 통해 유튜브 영상을 입력하면 관련 태그를 분석해 다른 유튜브 영상을 추천하는 시스템입니다.\n해당 프로젝트에서 프론트화면 구성, 웹 영역과 파이썬 영역 연결, 영상 피쳐맵 추출 등의 역할을 맡았습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuetify.svg`, techName: 'Vuetify' },
-            { iconUrl: `/images/about/tech-stack/${mode}/python.svg`, techName: 'Python' },
-            { iconUrl: `/images/about/tech-stack/${mode}/mediapipe.svg`, techName: 'MediaPipe' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuetify.svg`, techName: 'Vuetify' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/python.svg`, techName: 'Python' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/mediapipe.svg`, techName: 'MediaPipe' },
           ]
         : [] },
       { title: 'Nuwbies', duration: '2019.07 ~ 2020.03', desc: '나고야대학 유학 시절에 진행한 일본 대학 커뮤니티 사이트 제작 프로젝트이며, 웹 개발을 본격적으로 시작하게 된 계기가 되어준 프로젝트입니다.\n웹 쪽은 Vue 기반으로 제작하였고, 모바일은 Flutter로 개발하였습니다.\n웹, 모바일, 백엔드 부분을 담당하여 개발을 진행했습니다.', techStackIcon: isHydrated
         ? [
-            { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-            { iconUrl: `/images/about/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
-            { iconUrl: `/images/about/tech-stack/${mode}/vuetify.svg`, techName: 'Vuetify' },
-            { iconUrl: `/images/about/tech-stack/${mode}/flutter.svg`, techName: 'Flutter' },
-            { iconUrl: `/images/about/tech-stack/${mode}/express.svg`, techName: 'Express' },
-            { iconUrl: `/images/about/tech-stack/${mode}/mongodb.svg`, techName: 'MongoDB' },
-            { iconUrl: `/images/about/tech-stack/${mode}/amazons3.svg`, techName: 'Amazon S3' },
-            { iconUrl: `/images/about/tech-stack/${mode}/amazonec2.svg`, techName: 'Amazon EC2' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/webpack.svg`, techName: 'Webpack' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/vuetify.svg`, techName: 'Vuetify' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/flutter.svg`, techName: 'Flutter' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/express.svg`, techName: 'Express' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/mongodb.svg`, techName: 'MongoDB' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/amazons3.svg`, techName: 'Amazon S3' },
+            { iconUrl: `/images/icon/tech-stack/${mode}/amazonec2.svg`, techName: 'Amazon EC2' },
           ]
         : [] },
     ];
