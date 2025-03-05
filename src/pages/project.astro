@@ -1,13 +1,27 @@
 ---
 // Component Imports
-import BaseLayout from '../layouts/baseLayout.astro';
+import EachArticles from '@/components/Project/EachArticles';
+import BaseLayout from '@/layouts/baseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('project');
+projects.sort((a, b) => a.data.order - b.data.order);
+
+console.log(projects);
 
 const description = 'Projects about made by JunjaK.';
 ---
 
 <BaseLayout title="project" description={description}>
   <div class="container">
-    <h1>Project</h1>
+    <h1 class="font-black">Project</h1>
     <hr class="title-divider" />
+
+    <div id="projects-wrapper" class="mt-8">
+      {projects.map((project) => (
+        <EachArticles frontmatter={project.data} url={`/project/${project.slug}`} client:visible />
+      ))}
+    </div>
   </div>
 </BaseLayout>
+

@@ -1,0 +1,105 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import FloatButton from '@/components/layouts/FloatButton.astro';
+import Footer from '@/components/layouts/Footer';
+import Navigation from '@/components/layouts/Navigation';
+
+import ScrollProgress from '@/components/ui/scroll-progress';
+import { ClientRouter } from 'astro:transitions';
+import dayjs from 'dayjs';
+import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
+import CommonScript from '../components/layouts/CommonScript.astro';
+import CommonMeta from '../components/MetaAnalytics/CommonMeta.astro';
+import VendorScript from '../components/MetaAnalytics/VendorScript.astro';
+
+import '@fontsource/gothic-a1';
+import '@fontsource/m-plus-1p';
+import '@fontsource/roboto';
+import '@fontsource-variable/noto-sans-kr';
+
+import '@/assets/styles/global.css';
+import '@/assets/styles/index.scss';
+import 'dayjs/locale/en';
+
+dayjs.extend(dayJsRelativeTime);
+dayjs.locale('en');
+
+type Props = {
+  post: CollectionEntry<'project'>['data'];
+  url: string;
+  nav?: {
+    prev: CollectionEntry<'project'> | null;
+    next: CollectionEntry<'project'> | null;
+  };
+};
+
+const { nav, post, url } = Astro.props;
+
+const { title, techStacks = [], description } = post;
+---
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="generator" content={Astro.generator} />
+  <meta name="giscus:backlink" content="https://bit.ly/RickRolled" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <ClientRouter />
+  <CommonMeta title={`Jun devlog | ${title}`} description={`Project Page | ${description}`} keywords={techStacks} />
+  <VendorScript />
+  <style>
+
+  </style>
+
+</head>
+<body>
+<Navigation client:load></Navigation>
+
+<main>
+
+  <ScrollProgress
+    className="scroll-animation top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30"
+    client:visible
+  />
+
+  <div class="markdown-content-wrapper">
+    <div
+      id="go-back"
+      class="text-lg font-bold text-opacity-80 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-gray-50 mb-2 w-[3rem] cursor-pointer"
+    >
+      {`> cd ..`}
+    </div>
+    <div class="article-entry">
+      <slot></slot>
+    </div>
+    <div class="dummy-container" />
+  </div>
+</main>
+<Footer client:visible />
+<FloatButton />
+<CommonScript />
+
+</body>
+</html>
+
+<script is:inline>
+  function getThemePreference() {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+      return localStorage.getItem('theme');
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function update() {
+    const isDark = getThemePreference() === 'dark';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+  }
+
+  document.addEventListener('astro:after-swap', update);
+  document.addEventListener('DOMContentLoaded', update);
+  document.getElementById('go-back').addEventListener('click', () => {
+    window.history.back();
+  });
+</script>
