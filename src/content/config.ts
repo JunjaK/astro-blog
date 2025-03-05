@@ -17,10 +17,10 @@ const project = defineCollection({
   schema: z.object({
     title: z.string(),
     thumbnail: z.string().optional(),
-    created: z.coerce.date(),
-    category: z.string(),
-    techs: z.array(z.string()).optional(),
-    updated: z.coerce.date().optional(),
+    duration: z.string(),
+    techStacks: z.array(z.string()).optional(),
+    description: z.string().optional(),
+    order: z.number(),
   }),
 });
 
@@ -29,10 +29,10 @@ const playground = defineCollection({
   schema: z.object({
     title: z.string(),
     thumbnail: z.string().optional(),
-    created: z.coerce.date(),
-    category: z.string(),
-    techs: z.array(z.string()).optional(),
-    updated: z.coerce.date().optional(),
+    duration: z.string(),
+    techStacks: z.array(z.string()).optional(),
+    description: z.string().optional(),
+    order: z.number(),
   }),
 });
 

@@ -1,0 +1,68 @@
+@use '../variables' as *;
+
+#projects-wrapper {
+  display: grid;
+  gap: 1.5rem;
+  width: 100%;
+
+  // 기본 (모바일): 1열
+  grid-template-columns: 1fr;
+
+  .project-article {
+    .project-thumbnail {
+      width: 340px;
+      height: 187px;
+      object-fit: cover;
+    }
+    .article-info {
+      padding: 1rem;
+      .article-title {
+        font-size: 1.2rem;
+      }
+      .desc {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-p);
+        line-height: 1.5;
+        margin-bottom: 2rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 4rem;
+      }
+      .tech-stack-wrapper {
+        display: flex;
+
+        .tech-stack-label {
+          width: 6rem;
+          font-size: 0.9rem;
+          color: var(--text-p);
+          margin-top: 0.5rem;
+        }
+        .tech-stack-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          .tech-icon {
+            padding: 0.2rem;
+            width: 1.3rem;
+            height: 1.3rem;
+          }
+        }
+      }
+    }
+  }
+
+  // 600px 이상: 2열
+  @media (min-width: 800px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // 900px 이상: 3열
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
