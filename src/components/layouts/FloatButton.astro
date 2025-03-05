@@ -18,7 +18,7 @@ import { Image } from 'astro:assets';
   </div>
 </div>
 
-<script>
+<script is:inline>
   function updateButtonVisibility() {
     const floatBtn = document.getElementById('floatBtn');
     if (floatBtn) {
@@ -29,8 +29,16 @@ import { Image } from 'astro:assets';
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  function cleanUp() {
+    document.removeEventListener('scroll', updateButtonVisibility);
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    if (scrollTopBtn) {
+      scrollTopBtn.removeEventListener('click', scrollToTop);
+    }
+  }
 
   function initBtn() {
+    cleanUp();
     document.addEventListener('scroll', updateButtonVisibility);
     document.getElementById('scrollTopBtn')?.addEventListener('click', scrollToTop);
   }

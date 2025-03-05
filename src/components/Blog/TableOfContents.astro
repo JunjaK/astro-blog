@@ -42,12 +42,9 @@ function convertToElements(node: Element): HTMLElement {
       ?.textContent
       ?.trim() || '';
 
-    console.log(textContent);
-
     if (textContent) {
       const a = document.createElement('a');
       a.href = `#${createSlug(textContent)}`;
-      console.log(a);
       a.textContent = textContent;
       li.appendChild(a);
     }

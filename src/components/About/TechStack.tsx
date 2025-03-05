@@ -16,23 +16,14 @@ import {
 import { $theme } from '@/store/system.ts';
 
 import { useStore } from '@nanostores/react';
-import { motion, useTransform } from 'framer-motion';
-import { type MotionValue, useScroll } from 'motion/react';
+import { motion } from 'framer-motion';
 // @flow
 import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
-
-function useParallax(value: MotionValue<number>, distance: number) {
-  return useTransform(value, [0, 1], [-distance, distance]);
-}
+import { useEffect, useState } from 'react';
 
 export function TechStack() {
   const theme = useStore($theme);
   const [isHydrated, setIsHydrated] = useState(false);
-
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref });
-  const y = useParallax(scrollYProgress, 300);
 
   useEffect(() => {
     setIsHydrated(true);
@@ -42,16 +33,16 @@ export function TechStack() {
     if (!isHydrated)
       return [];
     return [
-      { iconUrl: `/images/about/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
-      { iconUrl: `/images/about/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
-      { iconUrl: `/images/about/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
-      { iconUrl: `/images/about/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
-      { iconUrl: `/images/about/tech-stack/${mode}/react.svg`, techName: 'React' },
-      { iconUrl: `/images/about/tech-stack/${mode}/tailwindcss.svg`, techName: 'Tailwind CSS' },
-      { iconUrl: `/images/about/tech-stack/${mode}/chartdotjs.svg`, techName: 'Chart.js' },
-      { iconUrl: `/images/about/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
-      { iconUrl: `/images/about/tech-stack/${mode}/pnpm.svg`, techName: 'pnpm' },
-      { iconUrl: `/images/about/tech-stack/${mode}/nodedotjs.svg`, techName: 'Node.js' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/nuxt.svg`, techName: 'Nuxt' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/react.svg`, techName: 'React' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/tailwindcss.svg`, techName: 'Tailwind CSS' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/chartdotjs.svg`, techName: 'Chart.js' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/vite.svg`, techName: 'Vite' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/pnpm.svg`, techName: 'pnpm' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/nodedotjs.svg`, techName: 'Node.js' },
     ];
   }
 
@@ -60,15 +51,15 @@ export function TechStack() {
       return [];
 
     return [
-      { iconUrl: `/images/about/tech-stack/${mode}/react.svg`, techName: 'React' },
-      { iconUrl: `/images/about/tech-stack/${mode}/nextdotjs.svg`, techName: 'Next' },
-      { iconUrl: `/images/about/tech-stack/${mode}/astro.svg`, techName: 'Astro' },
-      { iconUrl: `/images/about/tech-stack/${mode}/framer.svg`, techName: 'Framer' },
-      { iconUrl: `/images/about/tech-stack/${mode}/d3.svg`, techName: 'D3' },
-      { iconUrl: `/images/about/tech-stack/${mode}/threedotjs.svg`, techName: 'Three.js' },
-      { iconUrl: `/images/about/tech-stack/${mode}/graphql.svg`, techName: 'GraphQL' },
-      { iconUrl: `/images/about/tech-stack/${mode}/bun.svg`, techName: 'Bun' },
-      { iconUrl: `/images/about/tech-stack/${mode}/docker.svg`, techName: 'Docker' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/react.svg`, techName: 'React' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/nextdotjs.svg`, techName: 'Next' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/astro.svg`, techName: 'Astro' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/framer.svg`, techName: 'Framer' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/d3.svg`, techName: 'D3' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/threedotjs.svg`, techName: 'Three.js' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/graphql.svg`, techName: 'GraphQL' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/bun.svg`, techName: 'Bun' },
+      { iconUrl: `/images/icon/tech-stack/${mode}/docker.svg`, techName: 'Docker' },
     ];
   }
 

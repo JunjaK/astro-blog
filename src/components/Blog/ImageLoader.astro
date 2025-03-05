@@ -5,9 +5,12 @@ import React from 'react';
 type Props = {
   src?: string;
   alt?: string;
+  class?: string;
+  width?: number;
+  height?: number;
 };
 
-const { src, alt = 'blog-image' } = Astro.props;
+const { src, alt = 'blog-image', class: className, width, height } = Astro.props;
 ---
 
 <img
@@ -15,4 +18,7 @@ const { src, alt = 'blog-image' } = Astro.props;
   alt={alt ?? 'blog-image'}
   loading="lazy"
   onerror={`this.src='/fallbackImg.svg'`}
+  class={className}
+  width={width}
+  height={height}
 />
