@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator.tsx';
 import { $theme } from '@/store/system.ts';
 import { Icon } from '@iconify/react';
 import { useStore } from '@nanostores/react';
+import { motion } from 'framer-motion';
 // @flow
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -15,6 +16,7 @@ type Props = {
   isOpen: StringKeyType<boolean>;
   handleOpenChange: (key: string) => void;
 };
+
 export function UnivTimeline({ isOpen, handleOpenChange }: Props) {
   const theme = useStore($theme);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -63,6 +65,11 @@ export function UnivTimeline({ isOpen, handleOpenChange }: Props) {
     ];
   }
 
+  const collapsibleVariants = {
+    open: { height: 'auto', opacity: 1 },
+    closed: { height: 0, opacity: 0 },
+  };
+
   return (
     <div>
       <Collapsible
@@ -83,29 +90,36 @@ export function UnivTimeline({ isOpen, handleOpenChange }: Props) {
             </Button>
           </CollapsibleTrigger>
         </div>
-        <CollapsibleContent className="space-y-2">
-          <Card className="project-card">
-            <CardTitle className="px-4 pt-4">
-              경희대학교 컴퓨터공학 학사
-            </CardTitle>
-            <CardDescription className="px-4 mt-1 project-card-desc">
-              대학 입학 후 전공 수업을 들으며 어떤 길을 걸어갈까 고민하던 중, 일본 교환학생 시절 때 선배의 권유로 일본 대학 커뮤니티 제작 프로젝트에 참여하면서 웹 개발에 본격적으로 입문하게 되었습니다.
-              {'\n'}
-              비록 프로젝트는 완수하지 못했지만, 웹 부분의 다양한 기술을 경험할 수 있었고 이를 바탕으로 인턴 수행 및 대학 졸업 후 웹 프론트엔드 개발자로 진로를 잡을 수 있었습니다.
-            </CardDescription>
-            <Separator className="mt-4" />
-            <ul className="p-4">
-              {projectList(theme).map((project, idx) => {
-                return (
-                  <li className="" key={`twoz-3rd-project-${project.title}`}>
-                    <EachProject {...project}></EachProject>
-                    {projectList(theme).length - 1 === idx || <Separator className="my-4" /> }
-                  </li>
-                );
-              })}
-            </ul>
-          </Card>
-        </CollapsibleContent>
+        <motion.div
+          initial="closed"
+          animate={isOpen.univ ? 'open' : 'closed'}
+          variants={collapsibleVariants}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
+          <CollapsibleContent className="space-y-2">
+            <Card className="project-card">
+              <CardTitle className="px-4 pt-4">
+                경희대학교 컴퓨터공학 학사
+              </CardTitle>
+              <CardDescription className="px-4 mt-1 project-card-desc">
+                대학 입학 후 전공 수업을 들으며 어떤 길을 걸어갈까 고민하던 중, 일본 교환학생 시절 때 선배의 권유로 일본 대학 커뮤니티 제작 프로젝트에 참여하면서 웹 개발에 본격적으로 입문하게 되었습니다.
+                {'\n'}
+                비록 프로젝트는 완수하지 못했지만, 웹 부분의 다양한 기술을 경험할 수 있었고 이를 바탕으로 인턴 수행 및 대학 졸업 후 웹 프론트엔드 개발자로 진로를 잡을 수 있었습니다.
+              </CardDescription>
+              <Separator className="mt-4" />
+              <ul className="p-4">
+                {projectList(theme).map((project, idx) => {
+                  return (
+                    <li className="" key={`twoz-3rd-project-${project.title}`}>
+                      <EachProject {...project}></EachProject>
+                      {projectList(theme).length - 1 === idx || <Separator className="my-4" /> }
+                    </li>
+                  );
+                })}
+              </ul>
+            </Card>
+          </CollapsibleContent>
+        </motion.div>
       </Collapsible>
     </div>
   );

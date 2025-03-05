@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator.tsx';
 import { $theme } from '@/store/system.ts';
 import { Icon } from '@iconify/react';
 import { useStore } from '@nanostores/react';
+import { motion } from 'framer-motion';
 // @flow
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -15,6 +16,7 @@ type Props = {
   isOpen: StringKeyType<boolean>;
   handleOpenChange: (key: string) => void;
 };
+
 export function Twoz3rdTimeline({ isOpen, handleOpenChange }: Props) {
   const theme = useStore($theme);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -55,6 +57,11 @@ export function Twoz3rdTimeline({ isOpen, handleOpenChange }: Props) {
     ];
   }
 
+  const collapsibleVariants = {
+    open: { height: 'auto', opacity: 1 },
+    closed: { height: 0, opacity: 0 },
+  };
+
   return (
     <div>
       <Collapsible
@@ -75,29 +82,36 @@ export function Twoz3rdTimeline({ isOpen, handleOpenChange }: Props) {
             </Button>
           </CollapsibleTrigger>
         </div>
-        <CollapsibleContent className="space-y-2">
-          <Card className="project-card">
-            <CardTitle className="px-4 pt-4">
-              트웬티온스 선임
-            </CardTitle>
-            <CardDescription className="px-4 mt-1 project-card-desc">
-              선임으로 승진 이후에는 기존의 역할에 이어서 추가로 회사 내의 프론트엔드 쪽에서 공통 부분을 조금 더 집중하여 개발하는 역할을 맡았습니다.
-              {'\n'}
-              아래는 선임시절 맡았던 주요 프로젝트들입니다.
-            </CardDescription>
-            <Separator className="mt-4" />
-            <ul className="p-4">
-              {projectList(theme).map((project, idx) => {
-                return (
-                  <li className="" key={`twoz-3rd-project-${project.title}`}>
-                    <EachProject {...project}></EachProject>
-                    {projectList(theme).length - 1 === idx || <Separator className="my-4" /> }
-                  </li>
-                );
-              })}
-            </ul>
-          </Card>
-        </CollapsibleContent>
+        <motion.div
+          initial="closed"
+          animate={isOpen.twoz3rd ? 'open' : 'closed'}
+          variants={collapsibleVariants}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
+          <CollapsibleContent className="space-y-2">
+            <Card className="project-card">
+              <CardTitle className="px-4 pt-4">
+                트웬티온스 선임
+              </CardTitle>
+              <CardDescription className="px-4 mt-1 project-card-desc">
+                선임으로 승진 이후에는 기존의 역할에 이어서 추가로 회사 내의 프론트엔드 쪽에서 공통 부분을 조금 더 집중하여 개발하는 역할을 맡았습니다.
+                {'\n'}
+                아래는 선임시절 맡았던 주요 프로젝트들입니다.
+              </CardDescription>
+              <Separator className="mt-4" />
+              <ul className="p-4">
+                {projectList(theme).map((project, idx) => {
+                  return (
+                    <li className="" key={`twoz-3rd-project-${project.title}`}>
+                      <EachProject {...project}></EachProject>
+                      {projectList(theme).length - 1 === idx || <Separator className="my-4" /> }
+                    </li>
+                  );
+                })}
+              </ul>
+            </Card>
+          </CollapsibleContent>
+        </motion.div>
       </Collapsible>
     </div>
   );

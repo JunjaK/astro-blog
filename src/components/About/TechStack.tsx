@@ -16,7 +16,7 @@ import {
 import { $theme } from '@/store/system.ts';
 
 import { useStore } from '@nanostores/react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 // @flow
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -63,6 +63,12 @@ export function TechStack() {
     ];
   }
 
+  const tabVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -10 },
+  };
+
   return (
     <div>
       <motion.h2 className="mb-4">
@@ -77,7 +83,6 @@ export function TechStack() {
             >
               Using
             </motion.div>
-
           </TabsTrigger>
           <TabsTrigger value="learn">
             <motion.div
@@ -88,47 +93,59 @@ export function TechStack() {
             </motion.div>
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="use">
-          <motion.div>
-            <Card className="tech-stack-card">
-              <CardHeader>
-                <CardTitle>Using</CardTitle>
-                <CardDescription>
-                  Currently, using these technologies.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-4">
-                  {usingTechList(theme).map((item) => (
-                    <TechIcon key={`using-${item.techName}`} iconUrl={item.iconUrl} techName={item.techName} />
-                  )) }
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </TabsContent>
-        <TabsContent value="learn">
-          <motion.div>
-            <Card className="tech-stack-card">
-              <CardHeader>
-                <CardTitle>Learning</CardTitle>
-                <CardDescription>
-                  Currently, learning these technologies.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-4">
-                  {learningTechList(theme).map((item) => (
-                    <TechIcon key={`using-${item.techName}`} iconUrl={item.iconUrl} techName={item.techName} />
-                  )) }
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </TabsContent>
+        <AnimatePresence mode="wait">
+          <TabsContent value="use">
+            <motion.div
+              variants={tabVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="tech-stack-card">
+                <CardHeader>
+                  <CardTitle>Using</CardTitle>
+                  <CardDescription>
+                    Currently, using these technologies.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-4">
+                    {usingTechList(theme).map((item) => (
+                      <TechIcon key={`using-${item.techName}`} iconUrl={item.iconUrl} techName={item.techName} />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </TabsContent>
+          <TabsContent value="learn">
+            <motion.div
+              variants={tabVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="tech-stack-card">
+                <CardHeader>
+                  <CardTitle>Learning</CardTitle>
+                  <CardDescription>
+                    Currently, learning these technologies.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-4">
+                    {learningTechList(theme).map((item) => (
+                      <TechIcon key={`using-${item.techName}`} iconUrl={item.iconUrl} techName={item.techName} />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </TabsContent>
+        </AnimatePresence>
       </Tabs>
-
     </div>
-
   );
 }
