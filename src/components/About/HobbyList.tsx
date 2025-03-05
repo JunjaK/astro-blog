@@ -101,7 +101,7 @@ export function HobbyList() {
         viewport={{ once: true }}
         className="grid grid-cols-1 gap-8"
       >
-        {hobbies.map((hobby) => (
+        {/* {hobbies.map((hobby) => (
           <motion.div
             key={hobby.title}
             variants={item}
@@ -125,7 +125,7 @@ export function HobbyList() {
               </div>
             ))}
           </motion.div>
-        ))}
+        ))} */}
       </motion.div>
     </div>
   );

@@ -46,8 +46,8 @@ const EachArticles: React.FC<EachArticlesProps> = ({ frontmatter, url }) => {
           <div className="article-info">
             <h3 className="article-title">{frontmatter.title}</h3>
             <p className="desc">
-              {frontmatter.description?.split('<br/>').map((line, index) => (
-                <React.Fragment key={index}>
+              {frontmatter.description?.split('<br/>').map((line) => (
+                <React.Fragment key={frontmatter.title}>
                   {line}
                   <br />
                 </React.Fragment>

@@ -32,7 +32,12 @@ export function Chronicle() {
 
   return (
     <div>
-      <motion.h2>
+      <motion.h2
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="mb-4"
+      >
         Timeline
       </motion.h2>
       <p className="text-muted-foreground mb-4">
