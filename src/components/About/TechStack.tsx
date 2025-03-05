@@ -71,7 +71,12 @@ export function TechStack() {
 
   return (
     <div>
-      <motion.h2 className="mb-4">
+      <motion.h2
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="mb-4"
+      >
         Tech Stack
       </motion.h2>
       <Tabs defaultValue="use" className="tech-stack-tabs">
