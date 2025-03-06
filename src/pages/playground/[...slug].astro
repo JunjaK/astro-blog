@@ -3,7 +3,7 @@ import ProjectLayout from '@/layouts/projectLayout.astro';
 import { type CollectionEntry, getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('project');
+  const posts = await getCollection('playground');
   return posts.map((post) => ({
     params: { slug: post.slug },
     props: {
@@ -12,7 +12,7 @@ export async function getStaticPaths() {
   }));
 }
 type Props = {
-  post: CollectionEntry<'project'>;
+  post: CollectionEntry<'playground'>;
 };
 
 
@@ -20,7 +20,7 @@ const { post } = Astro.props;
 const { Content } = await post.render();
 ---
 
-<ProjectLayout post={post.data} url={`/project/${post.slug}`}>
+<ProjectLayout post={post.data} url={`/playground/${post.slug}`}>
   <Content />
 </ProjectLayout>
 
