@@ -116,6 +116,9 @@ importers:
       d3:
         specifier: ^7.9.0
         version: 7.9.0
+      d3-regression:
+        specifier: ^1.3.10
+        version: 1.3.10
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
@@ -216,6 +219,9 @@ importers:
       '@eslint-react/eslint-plugin':
         specifier: ^1.23.2
         version: 1.23.2(eslint@9.17.0(jiti@2.4.2))(typescript@5.8.2)
+      '@types/d3':
+        specifier: ^7.4.3
+        version: 7.4.3
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
@@ -3056,6 +3062,9 @@ packages:
   d3-random@3.0.1:
     resolution: {integrity: sha512-FXMe9GfxTxqd5D6jFsQ+DJ8BJS4E/fT5mqqdjovykEB2oFbTMDVdg1MGFxfQW+FBOGoB++k8swBrgwSHT1cUXQ==}
     engines: {node: '>=12'}
+
+  d3-regression@1.3.10:
+    resolution: {integrity: sha512-PF8GWEL70cHHWpx2jUQXc68r1pyPHIA+St16muk/XRokETzlegj5LriNKg7o4LR0TySug4nHYPJNNRz/W+/Niw==}
 
   d3-sankey@0.12.3:
     resolution: {integrity: sha512-nQhsBRmM19Ax5xEIPLMY9ZmJ/cDvd1BG3UVvt5h3WRxKg5zGRbvnteTyWAbzeSvlh3tW7ZEmq4VwR5mB3tutmQ==}
@@ -8795,6 +8804,8 @@ snapshots:
   d3-quadtree@3.0.1: {}
 
   d3-random@3.0.1: {}
+
+  d3-regression@1.3.10: {}
 
   d3-sankey@0.12.3:
     dependencies:
