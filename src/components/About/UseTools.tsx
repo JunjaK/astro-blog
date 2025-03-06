@@ -11,7 +11,7 @@ export function UseTools() {
   const tools: ToolCategory[] = [
     {
       title: 'OS',
-      items: ['Mac (주로 웹 개발)', 'Window (게임 등)'],
+      items: ['Mac: 주로 웹 개발', 'Window: 게임 등', 'Linux(Ubuntu): 서버 등'],
     },
     {
       title: 'Browser',

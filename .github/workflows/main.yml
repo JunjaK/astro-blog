@@ -3,7 +3,7 @@ name: Astro Blog
 on:
   push:
     branches:
-      - master  # 배포를 트리거하는 브랜치
+      - master # 배포를 트리거하는 브랜치
 
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install
@@ -41,4 +41,3 @@ jobs:
 
       - name: docker run
         run: docker run -d -v astro-blog-volume:/home/files --name astro-blog -p 4321:80  astro-blog
-  

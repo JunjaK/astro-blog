@@ -5,7 +5,11 @@ import BaseLayout from '@/layouts/baseLayout.astro';
 import { getCollection } from 'astro:content';
 
 const projects = await getCollection('project');
-projects.sort((a, b) => a.data.order - b.data.order);
+projects.sort((a, b) => {
+  const aDate = new Date(a.data.duration.split(' ~ ')[0]);
+  const bDate = new Date(b.data.duration.split(' ~ ')[0]);
+  return bDate.getTime() - aDate.getTime();
+});
 
 const description = 'Projects about made by JunjaK.';
 ---
