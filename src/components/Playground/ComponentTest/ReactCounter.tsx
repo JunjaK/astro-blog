@@ -36,7 +36,7 @@ export default function ReactCounter() {
       <div>
         DoubleCount:
         {' '}
-        {dobuleCount * 2}
+        {dobuleCount}
       </div>
     </>
   );
