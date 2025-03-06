@@ -45,6 +45,9 @@ const EachArticles: React.FC<EachArticlesProps> = ({ frontmatter, url }) => {
 
           <div className="article-info">
             <h3 className="article-title">{frontmatter.title}</h3>
+            <div className="duration">
+              {frontmatter.duration}
+            </div>
             <p className="desc">
               {frontmatter.description?.split('<br/>').map((line) => (
                 <React.Fragment key={frontmatter.title}>
@@ -53,6 +56,7 @@ const EachArticles: React.FC<EachArticlesProps> = ({ frontmatter, url }) => {
                 </React.Fragment>
               ))}
             </p>
+
             <Separator className="my-2" />
             <div className="tech-stack-wrapper">
               <div className="tech-stack-label">

@@ -20,7 +20,6 @@ const project = defineCollection({
     duration: z.string(),
     techStacks: z.array(z.string()).optional(),
     description: z.string().optional(),
-    order: z.number(),
   }),
 });
 
@@ -32,7 +31,6 @@ const playground = defineCollection({
     duration: z.string(),
     techStacks: z.array(z.string()).optional(),
     description: z.string().optional(),
-    order: z.number(),
   }),
 });
 

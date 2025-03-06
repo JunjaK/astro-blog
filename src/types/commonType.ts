@@ -14,7 +14,6 @@ export interface ProjectInfo {
   techStacks?: string[];
   thumbnail?: string;
   description?: string;
-  order: number;
 }
 
 export type StringKeyType<T> = {

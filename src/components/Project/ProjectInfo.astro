@@ -1,0 +1,17 @@
+---
+import type { ProjectInfo } from '@/types/commonType.ts';
+
+interface Props {
+  frontmatter: ProjectInfo;
+}
+
+const { frontmatter } = Astro.props;
+---
+
+<Fragment>
+  <div class="project-info">
+    <h1>{frontmatter.title}</h1>
+    <p>{frontmatter.duration}</p>
+  </div>
+</Fragment>
+

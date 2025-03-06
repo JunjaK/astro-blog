@@ -1,0 +1,39 @@
+---  
+title: Yosul
+duration: 2024-05-24 ~ current
+techStacks: ['typescript', 'react', 'nextdotjs', 'tailwindcss', 'antdesign', 'githubactions', 'nginx', 'pm2', 'graphql']  
+thumbnail: /files/project/yosul/CleanShot_2025-03-06_17.24.18@2x.png
+description: 국내에 전문적인 주류 리뷰 커뮤니티가 없어 한번 만들어보자는 생각하에 진행하고 있는 프로젝트입니다.<br/>구성원은 모두 전/현직 직장으로 사이드 프로젝트로 진행하고 있습니디.<br/>차별점으로는 주류 리뷰를 좀 더 디테일하게 작성할 수 있다는 점과
+---  
+
+import { ProjectCarousel } from '@/components/Project/ProjectCarousel';
+import ProjectInfo from '@/components/Project/ProjectInfo.astro';
+
+<ProjectInfo frontmatter={frontmatter} />
+
+## 설명
+국내에 전문적인 주류 리뷰 커뮤니티가 없어 우리가 한번 만들어보자는 생각하에 진행하고 있는 프로젝트.  
+구성원은 모두 전/현직 직장인으로 사이드 프로젝트로 진행하고 있습니다.  
+차별점으로는 주류 리뷰를 좀 더 디테일하게 작성할 수 있다는 점과 주류 위키(현재 개발 중...)를 통하여 술에 대한 정보를 사용자들이 자유롭게 추가할 수 있다는 점입니다.  
+프론트엔드 개발 및 마크업 작업을 맡아서 현재 개발 진행 중입니다.   
+
+## 프로젝트 화면
+<ProjectCarousel images={[
+  '/files/project/yosul/CleanShot_2025-03-06_17.24.18@2x.png', 
+  '/files/project/yosul/CleanShot_2025-03-06_17.27.32@2x.png', 
+  '/files/project/yosul/CleanShot_2025-03-06_17.27.52@2x.png'
+  ]} client:visible />
+
+### 사이트 링크
+- [Yosul](https://yosul.site/)
+
+## 기술 스택
+- Next.js: 프론트엔드 프레임워크
+- Tailwind CSS: 스타일링
+- Ant Design Mobile: UI 컴포넌트 일부
+- Daisy UI: UI 컴포넌트 일부
+- GraphQL: 데이터 통신
+- Nginx: 서버
+- PM2: 서버 관리
+- Github Actions: 배포 자동화
+

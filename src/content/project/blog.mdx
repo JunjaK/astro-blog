@@ -3,17 +3,86 @@ title: 개인 블로그
 duration: 2025-02-10 ~ current
 techStacks: ['typescript', 'react', 'astro', 'tailwindcss', 'framermotion', 'githubactions', 'docker', 'nginx']  
 thumbnail: /files/project/blog/CleanShot_2025-03-06_02.12.32@2x.png
-order: 1
 description: Astro로 만든 개인 블로그입니다.<br/>저에 대한 간단한 정보와 진행했던 프로젝트들, 그리고 시간 날 때 작성한 블로그 포스트를 확인할 수 있습니다.<br/>Blog, Project, Playground 항목들은 Astro의 Content Api를 활용하여 구현하였으며, 각 게시물은 .mdx 파일로 작성하여 내부에 컴포넌트를 사용할 수 있습니다. 
 ---  
-# 개인 블로그
+
+import { ProjectCarousel } from '@/components/Project/ProjectCarousel';
+import ProjectInfo from '@/components/Project/ProjectInfo.astro';
+
+<ProjectInfo frontmatter={frontmatter} />
+
 ## 설명
 Astro로 만든 개인 블로그입니다.  
 저에 대한 간단한 정보와 진행했던 프로젝트들, 그리고 시간 날 때 작성한 블로그 포스트를 확인할 수 있습니다.  
 Blog, Project, Playground 항목들은 Astro의 Content Api를 활용하여 구현하였으며, 각 게시물은 .mdx 파일로 작성하여 내부에 컴포넌트를 사용할 수 있습니다. 
 ## 프로젝트 화면
+<ProjectCarousel images={[
+  '/files/project/blog/CleanShot_2025-03-06_02.12.32@2x.png', 
+  '/files/project/blog/CleanShot_2025-03-06_15.21.49@2x.png',
+  '/files/project/blog/CleanShot_2025-03-06_15.22.25@2x.png',
+  '/files/project/blog/CleanShot_2025-03-06_15.22.34@2x.png', 
+  '/files/project/blog/CleanShot_2025-03-06_15.22.49@2x.png']} client:visible />
+
 ### 사이트 링크
-[개인 블로그](https://www.jun-devlog.win/)
+- [개인 블로그](https://www.jun-devlog.win/)
+- [Github](https://github.com/JunjaK/astro-blog)
 ## 기술 스택
-## 프로젝트 구조
-## 자동 배포 구현
+- Astro: SSG 프레임워크
+- React: 주요 컴포넌트 제작
+- TailwindCSS: 스타일링
+- Framer Motion: 애니메이션
+- Github Actions: 자동 배포
+- Docker: 컨테이너 이미지 빌드
+- Nginx: 웹 서버
+- Cloudflare: 도메인 관리
+## 배포 및 도메인 연결
+github actions를 활용하여 자동 배포를 구현했습니다.
+- rasberrypi4 리눅스 서버에 action runner 설치 
+- master 브랜치가 push 될 때 runner가 아래 명령어를 수행
+```yaml title=".github/workflows/main.yml"
+name: Astro Blog
+
+on:
+  push:
+    branches:
+      - master # 배포를 트리거하는 브랜치
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 10
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Build Docker Image
+        run: DOCKER_BUILDKIT=1 docker build -t astro-blog .
+
+      - name: docker stop & remove pre
+        run: docker stop astro-blog && docker rm astro-blog
+
+      - name: docker run
+        run: docker run -d -v astro-blog-volume:/home/files --name astro-blog -p 4321:80  astro-blog
+```
+- 도커로 설치한 nginx 컨테이너가 빌드된 SSG 파일들을 웹 서버로 띄워줌
+- 리눅스 서버의 외부 IP와 클라우드 플레이어 도메인을 연결하여 www.jun-devlog.win 도메인으로 접속 가능

@@ -10,9 +10,11 @@
 
   .project-article {
     .project-thumbnail {
-      width: 340px;
-      height: 187px;
       object-fit: cover;
+      margin: 0 auto;
+      width: 100%;
+      min-height: 180px;
+      max-height: 250px;
     }
     .article-info {
       padding: 1rem;
@@ -24,7 +26,7 @@
         font-size: 0.9rem;
         color: var(--text-p);
         line-height: 1.5;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
         display: -webkit-box;
         -webkit-line-clamp: 3;
         line-clamp: 3;
@@ -33,18 +35,24 @@
         text-overflow: ellipsis;
         height: 4rem;
       }
+      .duration {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+      }
       .tech-stack-wrapper {
         display: flex;
+        margin-top: 1rem;
 
         .tech-stack-label {
-          width: 6rem;
+          width: 5rem;
           font-size: 0.9rem;
           color: var(--text-p);
-          margin-top: 0.5rem;
         }
         .tech-stack-list {
           display: flex;
           flex-wrap: wrap;
+          align-items: start;
           gap: 0.5rem;
           .tech-icon {
             padding: 0.2rem;
@@ -59,10 +67,33 @@
   // 600px 이상: 2열
   @media (min-width: 800px) {
     grid-template-columns: repeat(2, 1fr);
+    .project-thumbnail {
+      height: 190px;
+    }
   }
 
   // 900px 이상: 3열
   @media (min-width: 1200px) {
     grid-template-columns: repeat(3, 1fr);
+    .project-thumbnail {
+      height: 187px;
+    }
+  }
+}
+
+.project-carousel {
+  img {
+    margin: 0;
+  }
+}
+.project-info {
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0rem;
+  }
+  p {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0;
   }
 }
