@@ -1,19 +1,32 @@
 {
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "allowJs": true,
-    // 필수, 모든 Astro 템플릿에 포함
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "jsxImportSource": "react",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "~/*": ["./src/*"],
+      "@/*": [
+        "./src/*"
+      ],
+      "~/*": [
+        "./src/*"
+      ],
       "#/*": [
         "./*"
       ]
-    }
+    },
+    "types": [
+      "unplugin-icons/types/astro",
+      "unplugin-icons/types/svelte",
+      "unplugin-icons/types/vue"
+    ],
+    "allowJs": true
   },
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist"
+  ]
 }

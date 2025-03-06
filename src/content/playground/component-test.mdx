@@ -1,0 +1,146 @@
+---  
+title: 컴포넌트 테스트 - Counter
+duration: 2025-03-06 ~ 2025-03-06
+techStacks: ['typescript', 'astro', 'vue', 'svelte', 'react']  
+thumbnail: /files/playground/component-test.png
+description: Astro에서는 Clinet Island로 다른 프레임워크를 사용할 수 있습니다.<br/>이에 Vue, Svelte, React 으로 Counter를 구현하여 잘 동작하는지 테스트 해봅니다.
+---  
+
+import ProjectInfo from '@/components/Project/ProjectInfo.astro';
+import VueCounter from '@/components/Playground/ComponentTest/VueCounter.vue';
+import ReactCounter from '@/components/Playground/ComponentTest/ReactCounter.tsx';
+import SvelteCounter from '@/components/Playground/ComponentTest/SvelteCounter.svelte';
+
+<ProjectInfo frontmatter={frontmatter} />
+
+## 설명
+Astro에서는 Clinet Island로 다른 프레임워크를 사용할 수 있습니다.  
+이에 Vue, Svelte, React 으로 Counter를 구현하여 잘 동작하는지 테스트 해봅니다.  
+## 컴포넌트 테스트
+### Vue
+
+<VueCounter client:visible/>
+
+```vue title="VueCounter.vue"
+<script setup lang="ts">
+import { Icon } from '@iconify/vue';
+import { computed, ref } from 'vue';
+
+const count = ref(0);
+const doubleCount = computed(() => count.value * 2);
+
+function counterChange(arg: 'increment' | 'decrement') {
+  if (arg === 'increment') {
+    count.value++;
+  }
+  else {
+    count.value--;
+  }
+}
+</script>
+
+<template>
+  <div class="flex items-center justify-between mx-auto w-1/2">
+    <button class="text-2xl" @click="counterChange('decrement')">
+      <Icon icon="tabler:minus" />
+    </button>
+    <p class="text-2xl font-bold">
+      {{ count }}
+    </p>
+    <button class="text-2xl" @click="counterChange('increment')">
+      <Icon icon="tabler:plus" />
+    </button>
+  </div>
+
+  <div>
+    DoubleCount: {{ doubleCount }}
+  </div>
+</template>
+
+```
+### Svelte
+
+<SvelteCounter client:visible/>
+
+```svelte title="SvelteCounter.svelte"
+<script lang="ts">
+  import { Icon } from "@iconify/react";
+
+  let counter = $state(0);
+  function counterChange(arg: "increment" | "decrement") {
+    if (arg === "increment") {
+      counter++;
+    } else {
+      counter--;
+    }
+  }
+
+  const doubleCount = $derived(counter * 2);
+</script>
+
+<div class="flex items-center justify-between mx-auto w-1/2">
+  <button class="text-2xl" onclick={() => counterChange("decrement")}>
+    -
+  </button>
+  <p class="text-2xl font-bold">
+    {counter}
+  </p>
+  <button class="text-2xl" onclick={() => counterChange("increment")}>
+    +
+  </button>
+</div>
+
+<div>
+  DoubleCount: {doubleCount}
+</div>
+```
+### React
+
+<ReactCounter client:visible/>
+
+```tsx title="ReactCounter.tsx"
+import { Icon } from '@iconify/react';
+import React, { useMemo, useState } from 'react';
+
+export default function ReactCounter() {
+  const [count, setCount] = useState(0);
+  const dobuleCount = useMemo(() => count * 2, [count]);
+
+  function counterChange(arg: 'increment' | 'decrement') {
+    if (arg === 'increment') {
+      setCount(count + 1);
+    }
+    else {
+      setCount(count - 1);
+    }
+  }
+
+  return (
+    <>
+      <div className="flex items-center justify-between mx-auto w-1/2">
+        <button
+          type="button"
+          className="text-2xl"
+          onClick={() => counterChange('decrement')}
+        >
+          <Icon icon="tabler:minus" />
+        </button>
+        <p className="text-2xl font-bold">{count}</p>
+        <button
+          type="button"
+          className="text-2xl"
+          onClick={() => counterChange('increment')}
+        >
+          <Icon icon="tabler:plus" />
+        </button>
+      </div>
+      <div>
+        DoubleCount:
+        {' '}
+        {dobuleCount * 2}
+      </div>
+    </>
+  );
+}
+
+```

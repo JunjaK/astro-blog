@@ -1,39 +1,28 @@
 ---
 // Component Imports
-import Counter from '@/components/Counter';
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+import EachArticles from '@/components/Project/EachArticles';
+import BaseLayout from '@/layouts/baseLayout.astro';
+import { getCollection } from 'astro:content';
 
-import BaseLayout from '../layouts/baseLayout.astro';
-
+const projects = await getCollection('playground');
+projects.sort((a, b) => {
+  const aDate = new Date(a.data.duration.split(' ~ ')[0]);
+  const bDate = new Date(b.data.duration.split(' ~ ')[0]);
+  return bDate.getTime() - aDate.getTime();
+});
 
 const description = 'Playground for testing front-end technologies.';
-
-const someProps = {
-  count: 0,
-};
-
 ---
 
 <BaseLayout title="playground" description={description}>
   <div class="container">
     <h1>Playground</h1>
     <hr class="title-divider" />
-    <br />
-    <section>
-      <Counter {...someProps} client:visible>
-        <h1>Hello, React!</h1>
-      </Counter>
-    </section>
-    <section>
-    </section>
+
+    <div id="projects-wrapper" class="mt-8">
+      {projects.map((project) => (
+        <EachArticles frontmatter={project.data} url={`/playground/${project.slug}`} client:visible />
+      ))}
+    </div>
   </div>
-
-
 </BaseLayout>
-
-<style is:global>
-    pre.has-focused .line:not(.focused) {
-        filter: blur(1px);
-    }
-</style>
