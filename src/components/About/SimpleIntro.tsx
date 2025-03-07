@@ -56,18 +56,23 @@ export function SimpleIntro() {
           </div>
           <div className="flex items-center justify-center">
             <Button variant="ghost" size="icon" asChild>
-              <a href="https://github.com/JunjaK">
+              <a href="https://github.com/JunjaK" aria-label="GitHub">
                 <Icon icon="mingcute:github-fill" className="icon text-lg ml-1 text-gray-700 dark:text-gray-300" />
               </a>
             </Button>
             <Button variant="ghost" size="icon" asChild>
-              <a href="https://www.linkedin.com/in/junjak-063081213">
+              <a href="https://www.linkedin.com/in/junjak-063081213" aria-label="LinkedIn">
                 <Icon icon="mingcute:linkedin-fill" className="icon text-lg ml-1 text-gray-700 dark:text-gray-300" />
               </a>
             </Button>
             <Button variant="ghost" size="icon" asChild>
-              <a href="mailto:haring157@gmail.com">
+              <a href="mailto:haring157@gmail.com" aria-label="Email">
                 <Icon icon="mingcute:mail-fill" className="icon text-lg ml-1 text-gray-700 dark:text-gray-300" />
+              </a>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <a href="https://silken-physician-30f.notion.site/1adc06a048a580dc97cfdb73e22b1393?pvs=74" aria-label="Resume">
+                <Icon icon="qlementine-icons:resume-16" className="icon text-lg ml-1 text-gray-700 dark:text-gray-300" />
               </a>
             </Button>
           </div>

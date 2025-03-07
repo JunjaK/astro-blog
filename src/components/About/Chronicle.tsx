@@ -46,6 +46,11 @@ export function Chronicle() {
         현재는 React, Astro, Next 등 이전에 잘 사용하지 않던, 그리고 새로운 라이브러리들을 경험해보고 있습니다.
         <br />
         이하 현재까지의 경력사항 및 진행한 프로젝트입니다.
+        <br />
+        더 자세한 사항은
+        {' '}
+        <a href="https://silken-physician-30f.notion.site/1adc06a048a580dc97cfdb73e22b1393?pvs=74" target="_blank" rel="noopener noreferrer" className="resume-link ">이력서</a>
+        를 참고해주세요.
       </p>
 
       <Timeline>

@@ -31,20 +31,20 @@ export function UseTools() {
     },
     {
       title: 'Terminal',
-      items: ['Iterm2', 'Terminus'],
+      items: ['Iterm2: 일반 터미널 작업', 'Terminus: SSH, SFTP 클라이언트 용'],
     },
     {
       title: '기타 맥 프로그램',
       items: [
-        'Homebrew',
-        'Better Touch Tool',
-        'Raycast',
-        'Bartender',
-        'CleanShot X',
-        'PixelSnap',
+        'Homebrew: 앱 패키지 관리',
+        'Better Touch Tool: 맥 트랙패드 제스쳐 및 단축키 개인화',
+        'Raycast: Spotlight 대체 다기능 유틸 프로그램',
+        'Bartender: 우상단 메뉴바 관리 프로그램',
+        'CleanShot X: 스크린샷 및 녹화 프로그램',
+        'PixelSnap: 화면 px 측정 프로그램',
         'ColorSlurp: ColorPicker',
-        'AltTab',
-        'Pastpal',
+        'AltTab: 탭 전환 프로그램',
+        'Pastpal: 클립보드 매니저',
       ],
     },
   ];
@@ -76,10 +76,18 @@ export function UseTools() {
         initial={{ opacity: 0, y: -20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-2xl font-bold mb-6"
+        className="mb-4"
       >
         Use Tools
       </motion.h2>
+      <motion.p
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-muted-foreground"
+      >
+        현재 제가 웹 개발 등 작업을 할 때 주로 사용하는 프로그램들입니다.
+      </motion.p>
       <motion.div
         variants={container}
         initial="hidden"
