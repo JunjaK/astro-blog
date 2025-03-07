@@ -11,7 +11,7 @@ export function UseTools() {
   const tools: ToolCategory[] = [
     {
       title: 'OS',
-      items: ['Mac: 주로 웹 개발', 'Window: 게임 등', 'Linux(Ubuntu): 서버 등'],
+      items: ['Mac: Mostly Web Dev ', 'Window: Game', 'Linux(Ubuntu): Server'],
     },
     {
       title: 'Browser',
@@ -19,7 +19,7 @@ export function UseTools() {
     },
     {
       title: 'IDE',
-      items: ['Cursor(테스트 중)', 'Webstorm(메인)', 'VSCode(서브)'],
+      items: ['Cursor: in Testing', 'Webstorm: Main', 'VSCode: Sub'],
     },
     {
       title: 'AI',
@@ -31,20 +31,20 @@ export function UseTools() {
     },
     {
       title: 'Terminal',
-      items: ['Iterm2: 일반 터미널 작업', 'Terminus: SSH, SFTP 클라이언트 용'],
+      items: ['Iterm2: Main', 'Terminus: SSH, SFTP Client'],
     },
     {
       title: '기타 맥 프로그램',
       items: [
-        'Homebrew: 앱 패키지 관리',
-        'Better Touch Tool: 맥 트랙패드 제스쳐 및 단축키 개인화',
-        'Raycast: Spotlight 대체 다기능 유틸 프로그램',
-        'Bartender: 우상단 메뉴바 관리 프로그램',
-        'CleanShot X: 스크린샷 및 녹화 프로그램',
-        'PixelSnap: 화면 px 측정 프로그램',
+        'Homebrew: App Package Manager',
+        'Better Touch Tool: Mac Trackpad Gesture & Shortcut Customization',
+        'Raycast: Spotlight Alternative Multi-functional Utility Tool',
+        'Bartender: Top Menu Bar Manager',
+        'CleanShot X: ScreenShot & Screen Record Tool',
+        'PixelSnap: Screen px Measuring Tool',
         'ColorSlurp: ColorPicker',
-        'AltTab: 탭 전환 프로그램',
-        'Pastpal: 클립보드 매니저',
+        'AltTab: Tab Handling Tool',
+        'Pastpal: Clipboard Manager',
       ],
     },
   ];
