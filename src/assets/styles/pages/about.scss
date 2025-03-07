@@ -1,4 +1,4 @@
-@use "../variables" as *;
+@use '../variables' as *;
 
 .simple-intro {
   .simple-intro-wrapper {
@@ -14,7 +14,7 @@
         text-align: center;
         font-size: 1.5rem;
         font-weight: 900;
-        margin: 0.3rem 0
+        margin: 0.3rem 0;
       }
       .desc {
         text-align: center;
@@ -25,7 +25,7 @@
     .desc-wrapper {
       width: calc(100% - 20rem);
       @media screen and (max-width: 768px) {
-        width: 100%
+        width: 100%;
       }
       .desc {
         font-size: 0.9rem;
@@ -36,11 +36,9 @@
 
 .tech-stack {
   .tech-stack-tabs {
-    width: 100%
+    width: 100%;
   }
   .tech-stack-card {
-
-
   }
 }
 
@@ -81,13 +79,17 @@
     height: 1rem;
     object-fit: cover;
   }
-
+  .resume-link {
+    color: var(--accent-color);
+    &:hover {
+      color: var(--accent-color);
+      text-decoration: underline;
+    }
+  }
 }
 
 .blog-stack {
-
 }
 
 .hobby {
-
 }
