@@ -49,7 +49,7 @@ export function Chronicle() {
         <br />
         더 자세한 사항은
         {' '}
-        <a href="https://silken-physician-30f.notion.site/1adc06a048a580dc97cfdb73e22b1393?pvs=74" target="_blank" rel="noopener noreferrer" className="resume-link ">이력서</a>
+        <a href="https://junjak.notion.site/resume" target="_blank" rel="noopener noreferrer" className="resume-link ">이력서</a>
         를 참고해주세요.
       </p>
 
