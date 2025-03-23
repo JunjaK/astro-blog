@@ -39,7 +39,7 @@ export function Twoz2ndTimeline({ isOpen, handleOpenChange }: Props) {
         : [] },
       {
         title: '3D Viewer',
-        duration: '2023.01 ~ 2024.08',
+        duration: '2023.03 ~ 2024.08',
         desc: 'Unity WebGL을 활용한 3D Viewer.\n초기에는 3D Editor 없이 수동으로 좌표를 통해 배치하여 웹 사이트에 올렸으나, 3D Editor 개발 후 이를 활용하고 여러 기능들을 추가한 프로젝트.\n이 프로젝트 기반으로 다른 3D가 필요한 프로젝트에 도입되었습니다.',
         techStackIcon: isHydrated
           ? [
@@ -63,7 +63,7 @@ export function Twoz2ndTimeline({ isOpen, handleOpenChange }: Props) {
             { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
-      { title: 'Viven', duration: '2022.01 ~ 2024.08', desc: '사내의 메타버스 프로덕트인 Viven의 웹 사이트 구축하는 프로젝트입니다.\n특이사항으로는 Viven Unity내에서 UI 중 일부를 웹뷰로 표현하기 때문에 Unity와 WebView 간의 통신이 있습니다.\n프론트엔드 쪽 리드 개발자를 담당하였고, 백엔드도 일부 다루었습니다.', techStackIcon: isHydrated
+      { title: 'Viven', duration: '2023.01 ~ 2024.03', desc: '사내의 메타버스 프로덕트인 Viven의 웹 사이트 구축하는 프로젝트입니다.\n특이사항으로는 Viven Unity내에서 UI 중 일부를 웹뷰로 표현하기 때문에 Unity와 WebView 간의 통신이 있습니다.\n프론트엔드 쪽 리드 개발자를 담당하였고, 백엔드도 일부 다루었습니다.', techStackIcon: isHydrated
         ? [
             { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
             { iconUrl: `/images/icon/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
@@ -76,7 +76,7 @@ export function Twoz2ndTimeline({ isOpen, handleOpenChange }: Props) {
             { iconUrl: `/images/icon/tech-stack/${mode}/gitlab.svg`, techName: 'Gitlab CI' },
           ]
         : [] },
-      { title: 'EMS SI', duration: '2021.11 ~ 2023.04', desc: '테양광 에너지 상태, 정보들을 모니터링하는 웹 사이트를 구축하는 프로젝트입니다.\nDraw.io를 통하여 계통도를 그리고 웹에서 상태에 따라 색상, 값들을 변경하는 작업을 거쳤고, NodeRed를 통하여 공공 API 조회 및 데이터 수집 등을 진행해였습니다.\n해당 프로젝트에서 프론트엔드 쪽 리드 개발자를 담당하였습니다.', techStackIcon: isHydrated
+      { title: 'EMS SI', duration: '2022.06 ~ 2023.01', desc: '테양광 에너지 상태, 정보들을 모니터링하는 웹 사이트를 구축하는 프로젝트입니다.\nDraw.io를 통하여 계통도를 그리고 웹에서 상태에 따라 색상, 값들을 변경하는 작업을 거쳤고, NodeRed를 통하여 공공 API 조회 및 데이터 수집 등을 진행해였습니다.\n해당 프로젝트에서 프론트엔드 쪽 리드 개발자를 담당하였습니다.', techStackIcon: isHydrated
         ? [
             { iconUrl: `/images/icon/tech-stack/${mode}/javascript.svg`, techName: 'Javascript' },
             { iconUrl: `/images/icon/tech-stack/${mode}/vuedotjs.svg`, techName: 'Vue' },
