@@ -42,6 +42,5 @@ export default antfu({
     'no-debugger': 'warn',
     'ts/consistent-type-definitions': ['off'],
     'unused-imports/no-unused-vars': ['warn'],
-    'unused-imports/no-unused-imports': ['warn'],
   },
 });
