@@ -3,7 +3,7 @@ title: Zorn - Video Player Test
 duration: 2025-03-30 ~ current
 techStacks: ['Astro']  
 thumbnail: /files/playground/zorn.png
-description: Video Player zorn을 테스트합니다. 
+description: Astro 전용 Video Player zorn을 테스트합니다. 
 ---  
 
 import ProjectInfo from '@/components/Project/ProjectInfo.astro';
@@ -13,12 +13,15 @@ import ZordYoutubeTest from '@/components/Playground/ZornTest/ZordYoutubeTest.as
 <ProjectInfo frontmatter={frontmatter} />
 
 
-## 설명
+## 개요
 - Astro 진영에서 꽤나 잘만든 VideoPlayer 라이브러리인 Zorn을 발견하여 테스트해보기로 결정.
-- 잠시 사용한 결과, 버그가 꽤나 많은 것으로 보여 Contribute 할까 고민 중... 
-- github가 아니라 개인이 만든 저장소라 기록을 남기기 어려워 좀 꺼려지는 점이 있음
+
 
 ## 테스트
+### 기본 테스트
+LifeCycle에 이슈가 있는지 새로고침 시에 아래 에러가 발생함  
+`Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')`
+
 ### 유튜브
 Zorn에서 유튜브 영상을 재생할 때, Invidious를 사용하고 있는데,  
 이에 대한 처리에서 오류가 발생하여 유튜브 영상을 재생하지 못하고 있음.  
@@ -49,8 +52,12 @@ import { Zorn } from '@minpluto/zorn';
 ```
 
 ### 자막
-HTML5 video 하위의 track 태그에서 사용하는 바와 같이 사용함.  
-그런데 자막 언어가 2개 이상 설정되는 경우, 자막 선택 메뉴를 불러오지 못하는 것 같음... 
+<a href="/test">to test</a>
+
+HTML5 video 하위의 track 태그에서 사용하는 바와 같이 사용함.   
+그런데 자막 언어가 2개 이상 설정되는 경우, 자막 선택 메뉴를 불러오지 못하는 것 같음...   
+새로고침 시에는 자막이 잘 나오는데, 페이지 이동 시에는 자막이 나오지 않는 문제가 발생   
+기본 테스트에서 언급한 LifeCycle 문제인 듯?
 
 [track 태그 문서](https://developer.mozilla.org/ko/docs/Web/HTML/Element/track)
 
@@ -98,7 +105,11 @@ import { Zorn } from '@minpluto/zorn';
 
 
 
-### 
+## 평가
+- 디자인도 좋고 기능도 꽤 많음
+- 하지만 버그가 꽤나 많은 것 같음 (위에서 언급한 문제들)
+- 오류 수정 등의 Contribute 할까 고민 중인데, github가 아니라 개인이 만든 저장소라 기록을 남기기 어려워 좀 꺼려지는 점이 있음
+- 일단 블로그 VideoLoader는 복잡한 기능이 필요하지 않으므로 기존 html video 태그에서 zorn으로 교체함.
 
 ## 참고
 
