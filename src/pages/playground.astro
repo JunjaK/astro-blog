@@ -1,6 +1,6 @@
 ---
 // Component Imports
-import EachArticles from '@/components/Project/EachArticles';
+import Articles from '@/components/Playground/Articles';
 import BaseLayout from '@/layouts/baseLayout.astro';
 import { getCollection } from 'astro:content';
 
@@ -19,10 +19,7 @@ const description = 'Playground for testing front-end technologies.';
     <h1>Playground</h1>
     <hr class="title-divider" />
 
-    <div id="projects-wrapper" class="mt-8">
-      {projects.map((project) => (
-        <EachArticles frontmatter={project.data} url={`/playground/${project.slug}`} client:visible />
-      ))}
-    </div>
+    <Articles projects={projects} />
+
   </div>
 </BaseLayout>
