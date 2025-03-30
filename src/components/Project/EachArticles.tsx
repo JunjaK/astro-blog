@@ -23,6 +23,7 @@ const EachArticles: React.FC<EachArticlesProps> = ({ frontmatter, url }) => {
 
   return (
     <figure
+      key={url}
       className={ny(
         'relative min-h-fit cursor-pointer  rounded-2xl',
         // animation styles

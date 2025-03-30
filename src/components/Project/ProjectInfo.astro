@@ -1,5 +1,6 @@
 ---
 import type { ProjectInfo } from '@/types/commonType.ts';
+import ImageLoader from '../Blog/ImageLoader.astro';
 
 interface Props {
   frontmatter: ProjectInfo;
@@ -9,6 +10,7 @@ const { frontmatter } = Astro.props;
 ---
 
 <Fragment>
+  <ImageLoader src={frontmatter.thumbnail} alt={frontmatter.title} />
   <div class="project-info">
     <h1>{frontmatter.title}</h1>
     <p>{frontmatter.duration}</p>
