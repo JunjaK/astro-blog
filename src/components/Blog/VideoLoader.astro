@@ -1,5 +1,6 @@
 ---
 import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl.ts';
+import { Zorn } from '@minpluto/zorn';
 
 interface Props {
   src: string;
@@ -8,6 +9,15 @@ interface Props {
 const { src } = Astro.props;
 ---
 
-  <div>
-    <video src={getBasePathWithUrl(src)} controls></video>
-  </div>
+<Zorn
+  PlayerName="junjak"
+  Video={getBasePathWithUrl(src)}
+  ShowBackAndForward
+  ShowPlaybackRate
+  BigPlayButton
+  Settings={[
+    {
+      playbackRate: [],
+    },
+  ]}
+/>
