@@ -1,0 +1,25 @@
+---
+import { Zorn } from '@minpluto/zorn';
+---
+
+<Zorn
+  PlayerName="Junjak"
+  Video="https://www.jun-devlog.win/files/blog/diary/japan-around-trip/assets/IMG_3043.MOV"
+  Subtitles
+>
+  <slot slot="subtitles">
+    <track
+      default
+      kind="subtitles"
+      src="/vtts/testsub.vtt"
+      label="Korean"
+      srclang="ko"
+    />
+    <track
+      kind="subtitles"
+      src="/vtts/testsub.vtt"
+      label="Japanese"
+      srclang="ja"
+    />
+  </slot>
+</Zorn>

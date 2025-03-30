@@ -1,0 +1,105 @@
+---  
+title: Zorn - Video Player Test
+duration: 2025-03-30 ~ current
+techStacks: ['Astro']  
+thumbnail: /files/playground/zorn.png
+description: Video Player zorn을 테스트합니다. 
+---  
+
+import ProjectInfo from '@/components/Project/ProjectInfo.astro';
+import ZornSubtitleTest from '@/components/Playground/ZornTest/ZornSubtitleTest.astro';
+import ZordYoutubeTest from '@/components/Playground/ZornTest/ZordYoutubeTest.astro';
+
+<ProjectInfo frontmatter={frontmatter} />
+
+
+## 설명
+- Astro 진영에서 꽤나 잘만든 VideoPlayer 라이브러리인 Zorn을 발견하여 테스트해보기로 결정.
+- 잠시 사용한 결과, 버그가 꽤나 많은 것으로 보여 Contribute 할까 고민 중... 
+- github가 아니라 개인이 만든 저장소라 기록을 남기기 어려워 좀 꺼려지는 점이 있음
+
+## 테스트
+### 유튜브
+Zorn에서 유튜브 영상을 재생할 때, Invidious를 사용하고 있는데,  
+이에 대한 처리에서 오류가 발생하여 유튜브 영상을 재생하지 못하고 있음.  
+관련 사항에 대해 이슈 작성하여 답변 대기 중...
+
+[이슈 링크](https://ark.sudovanilla.org/MinPluto/Zorn/issues/3)
+
+
+고장난 Zord 컴포넌트가 있다면 다른 Zord 컴포넌트에 영향을 미쳐 일단 주석 처리...
+
+{/* <ZordYoutubeTest /> */}
+
+
+```astro title="ZordYoutubeTest.astro"
+---
+import { Zorn } from '@minpluto/zorn';
+---
+
+<Zorn
+  YouTube
+  Audio
+  WatchId="uBFTCK1EzM4"
+  YouTubeQuality="137"
+  Invidious="yewtu.be"
+  PlayerName="Junjak"
+/>
+
+```
+
+### 자막
+HTML5 video 하위의 track 태그에서 사용하는 바와 같이 사용함.  
+그런데 자막 언어가 2개 이상 설정되는 경우, 자막 선택 메뉴를 불러오지 못하는 것 같음... 
+
+[track 태그 문서](https://developer.mozilla.org/ko/docs/Web/HTML/Element/track)
+
+<ZornSubtitleTest />
+
+```astro title="ZornSubtitleTest.astro"
+---
+import { Zorn } from '@minpluto/zorn';
+---
+
+<Zorn
+  YouTube
+  Audio
+  WatchId="uBFTCK1EzM4"
+  YouTubeQuality="137"
+  Invidious="yewtu.be"
+  PlayerName="Junjak"
+/>
+
+---
+
+<Zorn
+  PlayerName="Junjak"
+  Video="https://www.jun-devlog.win/files/blog/diary/japan-around-trip/assets/IMG_3043.MOV"
+  Subtitles
+>
+  <slot slot="subtitles">
+    <track
+      default
+      kind="subtitles"
+      src="/vtts/testsub.vtt"
+      label="Korean"
+      srclang="ko"
+    />
+    <track
+      kind="subtitles"
+      src="/vtts/testsub.vtt"
+      label="Japanese"
+      srclang="ja"
+    />
+  </slot>
+</Zorn>
+
+```
+
+
+
+### 
+
+## 참고
+
+[Zorn ](https://zorn.docs.sudovanilla.org/introduction/)
