@@ -8,7 +8,8 @@ description: Astro 전용 Video Player zorn을 테스트합니다.
 
 import ProjectInfo from '@/components/Project/ProjectInfo.astro';
 import ZornSubtitleTest from '@/components/Playground/ZornTest/ZornSubtitleTest.astro';
-import ZordYoutubeTest from '@/components/Playground/ZornTest/ZordYoutubeTest.astro';
+import ZornYoutubeTest from '@/components/Playground/ZornTest/ZornYoutubeTest.astro';
+import {Zorn} from '@minpluto/zorn';
 
 <ProjectInfo frontmatter={frontmatter} />
 
@@ -19,7 +20,7 @@ import ZordYoutubeTest from '@/components/Playground/ZornTest/ZordYoutubeTest.as
 
 ## 테스트
 ### 기본 테스트
-세팅 옵션을 추가하지 않으면 아래 에러가 발생함.
+Settings 옵션을 추가하지 않으면 아래 에러가 발생함.
 `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')`
 
 ### 유튜브
@@ -30,12 +31,10 @@ Zorn에서 유튜브 영상을 재생할 때, Invidious를 사용하고 있는�
 [이슈 링크](https://ark.sudovanilla.org/MinPluto/Zorn/issues/3)
 
 
-고장난 Zord 컴포넌트가 있다면 다른 Zord 컴포넌트에 영향을 미쳐 일단 주석 처리...
-
-{/* <ZordYoutubeTest /> */}
+<Zorn PlayerName="Junjak" Video="https://yewtu.be/f460427f-acd1-402e-a784-74de26a73b06" />
 
 
-```astro title="ZordYoutubeTest.astro"
+```astro title="ZornYoutubeTest.astro"
 ---
 import { Zorn } from '@minpluto/zorn';
 ---
@@ -46,9 +45,12 @@ import { Zorn } from '@minpluto/zorn';
   WatchId="uBFTCK1EzM4"
   YouTubeQuality="137"
   Invidious="yewtu.be"
-  PlayerName="Junjak"
+  PlayerName="Junjak111"
+  ShowBackAndForward
+  ShowPlaybackRate
+  BigPlayButton
+  Settings={[]}
 />
-
 ```
 
 ### 자막
@@ -68,20 +70,13 @@ import { Zorn } from '@minpluto/zorn';
 ---
 
 <Zorn
-  YouTube
-  Audio
-  WatchId="uBFTCK1EzM4"
-  YouTubeQuality="137"
-  Invidious="yewtu.be"
-  PlayerName="Junjak"
-/>
-
----
-
-<Zorn
-  PlayerName="Junjak"
+  PlayerName="Junjak222"
   Video="https://www.jun-devlog.win/files/blog/diary/japan-around-trip/assets/IMG_3043.MOV"
   Subtitles
+  ShowBackAndForward
+  ShowPlaybackRate
+  BigPlayButton
+  Settings={[]}
 >
   <slot slot="subtitles">
     <track
@@ -99,7 +94,6 @@ import { Zorn } from '@minpluto/zorn';
     />
   </slot>
 </Zorn>
-
 ```
 
 
