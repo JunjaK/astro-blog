@@ -7,10 +7,11 @@ interface Props {
 }
 
 const { src } = Astro.props;
+const uuid = crypto.randomUUID();
 ---
 
 <Zorn
-  PlayerName="junjak"
+  PlayerName={uuid}
   Video={getBasePathWithUrl(src)}
   ShowBackAndForward
   ShowPlaybackRate
