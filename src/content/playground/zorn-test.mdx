@@ -1,6 +1,6 @@
 ---  
 title: Zorn - Video Player Test
-duration: 2025-03-30 ~ current
+duration: 2025-03-30 ~ 2025-04-01
 techStacks: ['Astro']  
 thumbnail: /files/playground/zorn.png
 description: Astro 전용 Video Player zorn을 테스트합니다. 
@@ -9,7 +9,8 @@ description: Astro 전용 Video Player zorn을 테스트합니다.
 import ProjectInfo from '@/components/Project/ProjectInfo.astro';
 import ZornSubtitleTest from '@/components/Playground/ZornTest/ZornSubtitleTest.astro';
 import ZornYoutubeTest from '@/components/Playground/ZornTest/ZornYoutubeTest.astro';
-import {Zorn} from '@minpluto/zorn';
+import { Zorn } from '@minpluto/zorn';
+import {Separator} from '@/components/ui/separator.tsx';
 
 <ProjectInfo frontmatter={frontmatter} />
 
@@ -20,7 +21,7 @@ import {Zorn} from '@minpluto/zorn';
 
 ## 테스트
 ### 기본 테스트
-Settings 옵션을 추가하지 않으면 아래 에러가 발생함.
+Settings 옵션을 추가하지 않으면 아래 에러가 발생함.  
 `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')`
 
 ### 유튜브
@@ -28,10 +29,16 @@ Zorn에서 유튜브 영상을 재생할 때, Invidious를 사용하고 있는�
 이에 대한 처리에서 오류가 발생하여 유튜브 영상을 재생하지 못하고 있음.  
 관련 사항에 대해 이슈 작성하여 답변 대기 중...
 
-[이슈 링크](https://ark.sudovanilla.org/MinPluto/Zorn/issues/3)
+[Zorn 이슈 링크](https://ark.sudovanilla.org/MinPluto/Zorn/issues/3)
 
+<Separator/>
 
-<Zorn PlayerName="Junjak" Video="https://yewtu.be/f460427f-acd1-402e-a784-74de26a73b06" />
+개발자 말로는 개인 invidious instance를 구축해서 사용하라고 함.  
+invidious는 유튜브에서 막으려고 하는 움직임이 보여 포기.  
+유튜브는 그냥 iframe으로 갖고 오자.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/HyzlYwjoXOQ?si=QLfSvkz-bcZYhxPD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 
 
 ```astro title="ZornYoutubeTest.astro"
@@ -54,13 +61,22 @@ import { Zorn } from '@minpluto/zorn';
 ```
 
 ### 자막
-<a href="/test">to test</a>
 
 HTML5 video 하위의 track 태그에서 사용하는 바와 같이 사용함.   
 그런데 자막 언어가 2개 이상 설정되는 경우, 자막 선택 메뉴를 불러오지 못하는 것 같음...   
-새로고침 시에는 자막이 잘 나오는데, 페이지 이동 시에는 자막이 나오지 않는 문제가 발생   
+새로고침 시에는 자막이 잘 나오는데, 페이지 이동 시에는 자막이 나오지 않는 문제가 발생  
 
 [track 태그 문서](https://developer.mozilla.org/ko/docs/Web/HTML/Element/track)
+
+
+[Zorn 이슈 링크](https://ark.sudovanilla.org/MinPluto/Zorn/issues/4)
+
+<Separator/>
+
+이슈에서 오류 해결법을 제시해줌.  
+그래서 이제 잘됨.
+
+
 
 <ZornSubtitleTest />
 
@@ -76,11 +92,16 @@ import { Zorn } from '@minpluto/zorn';
   ShowBackAndForward
   ShowPlaybackRate
   BigPlayButton
-  Settings={[]}
+  Settings={[
+    {
+      Type: 'Button',
+      Name: 'Subtitles',
+      Action: 'document.querySelector(\'#zorn-player-Junjak222 #zorn-menu-subtitles\').style.display = \'flex\'',
+    },
+  ]}
 >
   <slot slot="subtitles">
     <track
-      default
       kind="subtitles"
       src="/vtts/testsub.vtt"
       label="Korean"
@@ -94,6 +115,7 @@ import { Zorn } from '@minpluto/zorn';
     />
   </slot>
 </Zorn>
+
 ```
 
 
