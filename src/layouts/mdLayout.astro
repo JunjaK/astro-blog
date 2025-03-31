@@ -113,6 +113,8 @@ const { title, tags = [], category = '' } = post;
   }
 
   function update() {
+    window.currentHistoryIndex = window.history.state.index;
+
     const isDark = getThemePreference() === 'dark';
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
@@ -121,6 +123,7 @@ const { title, tags = [], category = '' } = post;
   document.addEventListener('astro:after-swap', update);
   document.addEventListener('astro:page-load', update);
   document.getElementById('go-back').addEventListener('click', () => {
-    window.history.back();
+    const diffHistory = window.currentHistoryIndex - window.history.state.index - 1;
+    window.history.go(diffHistory);
   });
 </script>

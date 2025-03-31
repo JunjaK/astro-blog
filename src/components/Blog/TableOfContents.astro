@@ -15,8 +15,6 @@ import { Separator } from '@/components/ui/separator';
 
 <script>
 /* eslint-disable regexp/no-obscure-range */
-const [target] = document.getElementsByClassName('toc-lists');
-
 function createSlug(text: string): string {
   return text
     .trim()
@@ -61,10 +59,14 @@ function convertToElements(node: Element): HTMLElement {
 }
 
 function tocInit() {
+  const [target] = document.getElementsByClassName('toc-lists');
+
+  if (!target)
+    return;
+
   const replaceNode = convertToElements(target!.firstElementChild!);
   target.replaceChild(replaceNode, target!.firstElementChild!);
 }
 
-document.addEventListener('astro:after-swap', tocInit);
 document.addEventListener('astro:page-load', tocInit);
 </script>
