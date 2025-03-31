@@ -21,7 +21,7 @@ const description = 'Projects about made by JunjaK.';
 
     <div id="projects-wrapper" class="mt-8">
       {projects.map((project) => (
-        <EachArticles frontmatter={project.data} url={`/playground/${project.slug}`} client:visible />
+        <EachArticles frontmatter={project.data} url={`/project/${project.slug}`} client:visible />
       ))}
     </div>
   </div>
