@@ -50,8 +50,8 @@ const EachArticles: React.FC<EachArticlesProps> = ({ frontmatter, url }) => {
               {frontmatter.duration}
             </div>
             <p className="desc">
-              {frontmatter.description?.split('<br/>').map((line) => (
-                <React.Fragment key={frontmatter.title}>
+              {frontmatter.description?.split('<br/>').map((line, idx) => (
+                <React.Fragment key={`${frontmatter.title}-${idx}`}>
                   {line}
                   <br />
                 </React.Fragment>
@@ -65,7 +65,7 @@ const EachArticles: React.FC<EachArticlesProps> = ({ frontmatter, url }) => {
               </div>
               <div className="tech-stack-list">
                 {techStacks.map((tech) => (
-                  <TechIcon key={tech.techName} iconUrl={tech.iconUrl} techName={tech.techName} />
+                  <TechIcon key={`${frontmatter.title}-${tech.techName}`} iconUrl={tech.iconUrl} techName={tech.techName} />
                 ))}
               </div>
 

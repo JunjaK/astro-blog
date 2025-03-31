@@ -99,7 +99,7 @@ export function TechStack() {
           </TabsTrigger>
         </TabsList>
         <AnimatePresence mode="wait">
-          <TabsContent value="use">
+          <TabsContent value="use" key="using">
             <motion.div
               variants={tabVariants}
               initial="hidden"
@@ -124,7 +124,7 @@ export function TechStack() {
               </Card>
             </motion.div>
           </TabsContent>
-          <TabsContent value="learn">
+          <TabsContent value="learn" key="learning">
             <motion.div
               variants={tabVariants}
               initial="hidden"
@@ -141,8 +141,9 @@ export function TechStack() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-4">
+
                     {learningTechList(theme).map((item) => (
-                      <TechIcon key={`using-${item.techName}`} iconUrl={item.iconUrl} techName={item.techName} />
+                      <TechIcon key={`learning-${item.techName}`} iconUrl={item.iconUrl} techName={item.techName} />
                     ))}
                   </div>
                 </CardContent>

@@ -76,5 +76,5 @@ const { title, description } = Astro.props;
   }
 
   document.addEventListener('astro:after-swap', update);
-  document.addEventListener('DOMContentLoaded', update);
+  document.addEventListener('astro:page-load', update);
 </script>
