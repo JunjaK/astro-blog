@@ -1,0 +1,49 @@
+<script>
+function loadExternalResource(url, type) {
+  return new Promise((resolve, reject) => {
+    let tag;
+
+    if (type === 'css') {
+      tag = document.createElement('link');
+      tag.rel = 'stylesheet';
+      tag.href = url;
+    }
+    else if (type === 'js') {
+      tag = document.createElement('script');
+      tag.src = url;
+    }
+    if (tag) {
+      tag.onload = () => resolve(tag);
+      tag.onerror = () => reject(tag);
+      document.head.appendChild(tag);
+    }
+  });
+}
+
+// 加载 waifu.css live2d.min.js waifu-tips.js
+
+function loadLive2D() {
+  if (location.pathname !== '/playground/live2d')
+    return;
+
+  const live2d_path = '/live2d/';
+
+  if (screen.width >= 768) {
+    Promise.all([
+      loadExternalResource(`${live2d_path}waifu.css`, 'css'),
+      loadExternalResource(`${live2d_path}live2d.min.js`, 'js'),
+      loadExternalResource(`${live2d_path}waifu-tips.js`, 'js'),
+    ]).then(() => {
+      // 配置选项的具体用法见 README.md
+      live2d_widget({
+        waifuPath: `${live2d_path}waifu-tips.json`,
+        apiPath: 'https://live2d.fghrsh.net/api/',
+        cdnPath: 'https://fastly.jsdelivr.net/gh/fghrsh/live2d_api/',
+        tools: ['switch-model', 'switch-texture', 'photo', 'info', 'quit'],
+      });
+    });
+  }
+}
+
+document.addEventListener('astro:page-load', loadLive2D);
+</script>
