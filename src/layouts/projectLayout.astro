@@ -101,7 +101,7 @@ const { title, techStacks = [], description } = post;
   }
 
   document.addEventListener('astro:after-swap', update);
-  document.addEventListener('DOMContentLoaded', update);
+  document.addEventListener('astro:page-load', update);
   document.getElementById('go-back').addEventListener('click', () => {
     window.history.back();
   });
