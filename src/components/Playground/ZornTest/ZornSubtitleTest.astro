@@ -9,11 +9,16 @@ import { Zorn } from '@minpluto/zorn';
   ShowBackAndForward
   ShowPlaybackRate
   BigPlayButton
-  Settings={[]}
+  Settings={[
+    {
+      Type: 'Button',
+      Name: 'Subtitles',
+      Action: 'document.querySelector(\'#zorn-player-Junjak222 #zorn-menu-subtitles\').style.display = \'flex\'',
+    },
+  ]}
 >
   <slot slot="subtitles">
     <track
-      default
       kind="subtitles"
       src="/vtts/testsub.vtt"
       label="Korean"
