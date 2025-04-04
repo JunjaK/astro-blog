@@ -119,23 +119,27 @@
   margin-top: 2rem;
   .nav-button {
     height: fit-content;
-    width: 300px;
+    a {
+      width: 276px !important;
+      @media screen and (max-width: 768px) {
+        width: fit-content !important;
+      }
+    }
     &.prev {
+      text-align: start;
       padding: 1rem 1rem 1rem 0.5rem;
       .content {
         margin-left: 2rem;
-        text-align: start;
       }
     }
     &.next {
+      text-align: right;
       padding: 1rem 0.5rem 1rem 1rem;
       .content {
         margin-right: 2rem;
-        text-align: right;
       }
     }
     @media screen and (max-width: 768px) {
-      width: fit-content;
       padding-bottom: 0.5rem !important;
     }
     .nav-icon {
@@ -149,7 +153,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 228px;
+        max-width: 244px;
         @media screen and (max-width: 768px) {
           display: none;
         }

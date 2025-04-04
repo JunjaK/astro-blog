@@ -21,7 +21,7 @@ export default function BlogNav({ nav }: Props) {
         {nav?.prev && (
           <Button variant="outline" className="prev nav-button">
             <a href={`/blog/${nav.prev.slug}`}>
-              <div className="flex">
+              <div className="flex justify-start">
                 <Icon icon="mingcute:left-line" className="nav-icon" />
                 <h3>이전 글</h3>
               </div>
