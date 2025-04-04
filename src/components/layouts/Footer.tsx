@@ -3,11 +3,9 @@ import { Icon } from '@iconify/react';
 // @flow
 import * as React from 'react';
 
-type Props = {
-
-};
-export default function Footer(props: Props) {
+export default function Footer() {
   const currentYaer = new Date().getFullYear();
+
   return (
     <footer className="layout-background">
       <div className="footer-wrapper">

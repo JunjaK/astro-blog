@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "astro dev --mode dev",
     "build": "astro build --mode prd",
-    "preview": "astro preview --mode prd",
+    "build-dev": "astro build --mode dev",
+    "preview": "astro preview --mode dev",
     "conv-loader": "node ./src/utils/convertLoader.js",
     "remove-unused": "node ./src/utils/removeUnusedImages.js",
     "add-md-enter": "node ./src/utils/addMdEnter.js",
