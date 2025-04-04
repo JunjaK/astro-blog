@@ -1,7 +1,6 @@
 import DocNav from '@/components/layouts/DockNav.tsx';
 import { DrawerNavigation } from '@/components/layouts/DrawerNavigation.tsx';
 import { ModeToggle } from '@/components/layouts/ModeToggle.tsx';
-import { SearchSite } from '@/components/layouts/SearchSite.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Icon } from '@iconify/react';
 import React, { useEffect } from 'react';
@@ -9,7 +8,6 @@ import React, { useEffect } from 'react';
 export default function Navigation() {
   const [tab, setTab] = React.useState('');
   const [isMobileMenuOpened, setIsMobileMenuOpened] = React.useState(false);
-  const [openSearch, setOpenSearch] = React.useState(false);
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -35,10 +33,6 @@ export default function Navigation() {
 
   function toggleMenu() {
     setIsMobileMenuOpened(!isMobileMenuOpened);
-  }
-
-  function onClickSearch() {
-    setOpenSearch(true);
   }
 
   return (
@@ -74,15 +68,6 @@ export default function Navigation() {
                   <Icon icon="mynaui:menu" className="logo"></Icon>
                 </Button>
               </DrawerNavigation>
-              <Button
-                variant="ghost"
-                size="icon"
-                name="whole-search"
-                aria-label="whole-search"
-                onClick={onClickSearch}
-              >
-                <Icon icon="mynaui:search" className="logo"></Icon>
-              </Button>
               <ModeToggle />
             </div>
           </div>
@@ -90,7 +75,6 @@ export default function Navigation() {
         </div>
         <div className="h-1"></div>
       </nav>
-      <SearchSite openSearch={openSearch} setOpenSearch={setOpenSearch} />
     </>
 
   );
