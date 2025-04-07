@@ -13,7 +13,6 @@ export default function ImageLoader({ src, alt = 'blog-image', ...props }: Image
       src={getBasePathWithUrl(src)}
       alt={alt}
       loading="lazy"
-      onError={addDefaultImg}
     />
   );
 }
