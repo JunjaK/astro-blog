@@ -1,4 +1,3 @@
-import type { SyntheticEvent } from 'react';
 import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl.ts';
 import * as React from 'react';
 
@@ -8,9 +7,6 @@ type ImageLoaderProps = {
 } & React.ImgHTMLAttributes<HTMLImageElement>;
 
 export default function ImageLoader({ src, alt = 'blog-image', ...props }: ImageLoaderProps) {
-  const addDefaultImg = (e: SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = '/fallbackImg.svg';
-  };
   return (
     <img
       {...props}

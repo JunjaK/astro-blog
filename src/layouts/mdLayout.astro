@@ -87,7 +87,7 @@ const { title, tags = [], category = '' } = post;
         <div class="blog-nav">
           <BlogNav nav={nav} client:visible />
         </div>
-        <Separator className="my-8" />
+        <Separator className="my-8" client:visible />
 
         <div class="giscus-body">
           <GiscusComp client:load>
