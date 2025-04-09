@@ -1,0 +1,219 @@
+---  
+title: Uplot Test
+duration: 2025-04-09 ~ 2025-04-10
+techStacks: ['typescript','vue']  
+thumbnail: /files/playground/uplot.png
+description: Uplot과 Webworker를 활용한 대용량 데이터 처리하여 차트를 만드는 테스트입니다.
+---  
+
+import ProjectInfo from '@/components/Project/ProjectInfo.astro';
+import Uplot from '@/components/Playground/Uplot/uplot.vue';
+
+<ProjectInfo frontmatter={frontmatter} />
+
+## 설명
+Uplot과 Webworker를 활용한 대용량 데이터 처리하여 차트를 만드는 테스트입니다.  
+Uplot은 Canvas 기반의 차트 라이브러리로 대용량 데이터 처리에 특화되어 있습니다.  
+
+[uPlot Github](https://github.com/leeoniya/uPlot)
+
+## 작업 내용
+- 샘플 데이터 웹 워커를 통해 생성 (하루 단위 1초 데이터 * 3 - 최대 259,200 포인트)
+- 웹 워커를 통해 생성된 데이터를 차트로 표시
+- 차트 크기 변경에 따라 차트 크기 재조정
+- 1초 단위로 실시간 데이터 추가
+
+## 생성된 차트
+<Uplot client:visible />
+
+## 소스코드
+
+```vue title="Uplot.vue"
+<script setup lang="ts">
+import { $theme } from '@/store/system.ts';
+import { useStore } from '@nanostores/vue';
+import dayjs from 'dayjs';
+import Uplot from 'uplot';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+
+import { base, defaultTimeAxes, makeNoiseData } from './chartOptionData';
+import { toolTipCloset } from './tooltipCloset';
+import 'uplot/dist/uPlot.min.css';
+
+const theme = useStore($theme);
+
+const chartRef = ref<HTMLDivElement>();
+const chartContainer = ref<HTMLDivElement>();
+const chart = ref<Uplot>();
+const canvasWidth = ref(100);
+
+let interval: number | null = null;
+let resizeObserver: ResizeObserver | null = null;
+
+const data = ref<[number[], number[], number[], number[]]>([[], [], [], []]);
+const options = ref<Uplot.Options>({
+  ...base,
+  width: canvasWidth.value,
+  height: 600,
+  scales: {
+    '%': {
+      auto: false,
+      range: (min, max) => [0, 100],
+    },
+  },
+  plugins: [
+    toolTipCloset({
+      Uplot,
+      darkMode: true,
+    }),
+  ],
+  series: [
+    {},
+    {
+      label: 'CPU',
+      scale: '%',
+      value: (u, v) => v == null ? '' : `${v.toFixed(2)}%`,
+      stroke: 'red',
+    },
+    {
+      label: 'RAM',
+      scale: '%',
+      value: (u, v) => v == null ? '' : `${v.toFixed(2)}%`,
+      stroke: 'blue',
+    },
+    {
+      label: 'Disk',
+      scale: '%',
+      value: (u, v) => v == null ? '' : `${v.toFixed(2)} %`,
+      stroke: 'green',
+    },
+  ],
+});
+
+onMounted(() => {
+  resizeObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      canvasWidth.value = entry.contentRect.width;
+    }
+  });
+
+  if (chartContainer.value) {
+    resizeObserver.observe(chartContainer.value);
+  }
+
+  const worker = new Worker(new URL('./sampleChart.worker?worker', import.meta.url), {
+    type: 'module',
+  });
+
+  worker.onmessage = (event) => {
+    data.value = event.data.res as [number[], number[], number[], number[]];
+    let cpu = event.data.cpu;
+    let ram = event.data.ram;
+    let disk = event.data.disk;
+
+    const maxValue1 = 3000;
+    const maxValue2 = 5000;
+    const maxValue3 = 8000;
+    const totalSteps = dayjs().endOf('day').unix() - dayjs().startOf('day').unix();
+
+    options.value.axes = [
+      { ...defaultTimeAxes },
+      {
+        scale: '%',
+        values: (u, vals, space) => vals.map((v) => `${+v.toFixed(1)}%`),
+      },
+    ];
+
+    canvasWidth.value = chartContainer.value?.clientWidth ?? 800;
+
+    makeChart();
+
+    interval = setInterval(() => {
+      cpu = makeNoiseData(cpu, maxValue1, totalSteps);
+      ram = makeNoiseData(ram, maxValue2, totalSteps);
+      disk = makeNoiseData(disk, maxValue3, totalSteps);
+      data.value[1].push(cpu / 100);
+      data.value[2].push(ram / 100);
+      data.value[3].push(disk / 100);
+
+      chart.value?.setData(data.value);
+      chart.value?.redraw();
+    }, 1000) as unknown as number;
+  };
+
+  worker.postMessage({});
+});
+
+onUnmounted(() => {
+  if (interval) {
+    clearInterval(interval);
+  }
+  resizeObserver?.disconnect();
+});
+
+watch(theme, () => {
+}, { immediate: false });
+
+watch(canvasWidth, () => {
+  chart.value?.setSize({ width: canvasWidth.value, height: 600 });
+}, { immediate: false });
+
+function makeChart() {
+  if (!options.value?.axes)
+    return;
+
+  options.value.axes[0].stroke = theme.value === 'dark' ? 'white' : 'black';
+  options.value.axes[0].grid = { stroke: theme.value === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' };
+  options.value.axes[1].stroke = theme.value === 'dark' ? 'white' : 'black';
+  options.value.axes[1].grid = { stroke: theme.value === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' };
+  chart.value = new Uplot(options.value, data.value, chartRef.value);
+}
+</script>
+
+<template>
+  <div id="chart-container" ref="chartContainer" class="flex justify-center">
+    <div ref="chartRef" />
+  </div>
+</template>
+```
+
+```js title="sampleChart.worker.js"
+/* eslint-disable no-restricted-globals */
+import dayjs from 'dayjs';
+import { makeNoiseData } from './chartOptionData';
+
+self.addEventListener('message', () => {
+  const res = [
+    [],
+    [],
+    [],
+    [],
+  ];
+  const start = dayjs().startOf('day').unix();
+  const end = dayjs().unix();
+
+  let cpu = 100; // 시작 값
+  let ram = 3000;
+  let disk = 6000;
+  const maxValue1 = 3000; // 최대 값
+  const maxValue2 = 5000;
+  const maxValue3 = 8000;
+  const totalSteps = dayjs().endOf('day').unix() - start;
+
+  for (let i = start; i <= end; i += 1) {
+    cpu = makeNoiseData(cpu, maxValue1, totalSteps);
+    ram = makeNoiseData(ram, maxValue2, totalSteps);
+    disk = makeNoiseData(disk, maxValue3, totalSteps);
+
+    res[0].push(i);
+    res[1].push(cpu / 100);
+    res[2].push(ram / 100);
+    res[3].push(disk / 100);
+  }
+  for (let i = end; i < dayjs().endOf('day').unix(); i += 1) {
+    res[0].push(i);
+  }
+
+  self.postMessage({ res, cpu, ram, disk });
+});
+```
