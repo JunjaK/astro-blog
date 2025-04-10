@@ -94,6 +94,7 @@ onMounted(() => {
     ];
 
     canvasWidth.value = chartContainer.value?.clientWidth ?? 800;
+    options.value.width = canvasWidth.value;
 
     makeChart();
 
