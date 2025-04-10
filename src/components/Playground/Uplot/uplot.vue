@@ -14,7 +14,7 @@ const theme = useStore($theme);
 const chartRef = ref<HTMLDivElement>();
 const chartContainer = ref<HTMLDivElement>();
 const chart = ref<Uplot>();
-const canvasWidth = ref(100);
+const canvasWidth = ref(326);
 
 let interval: number | null = null;
 let resizeObserver: ResizeObserver | null = null;

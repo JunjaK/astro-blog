@@ -521,3 +521,11 @@
     color: var(--text-p);
   }
 }
+
+.video-container {
+  .video-controls {
+    .vc-bottom {
+      flex-wrap: wrap !important;
+    }
+  }
+}
