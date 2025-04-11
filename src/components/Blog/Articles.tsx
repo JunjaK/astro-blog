@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import type { CollectionEntry } from 'astro:content';
 import EachArticle from '@/components/Blog/EachArticle';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Icon } from '@iconify/react';
 import dayjs from 'dayjs';
-import Fuse from 'fuse.js';
+import Fuse, { type IFuseOptions } from 'fuse.js';
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -27,6 +28,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { FadeText } from '~/components/ui/fade-text';
 import CategoryTags from './CategoryTags';
+import SearchLoading from './SearchLoading';
 
 type Props = {
   posts: CollectionEntry<'blog'>[];
@@ -36,36 +38,39 @@ const formSchema = z.object({
   searchType: z.enum(['tag', 'title-content']),
 });
 
-const fuseOptions = {
-  isCaseSensitive: false,
-  includeScore: true,
-  ignoreDiacritics: false,
-  shouldSort: true,
-  includeMatches: false,
-  findAllMatches: false,
-  minMatchCharLength: 2,
-  location: 0,
-  threshold: 0.15,
-  distance: 100,
-  useExtendedSearch: false,
-  ignoreLocation: false,
-  ignoreFieldNorm: false,
-  fieldNormWeight: 1,
-  keys: [
-    'data.title',
-    'data.body',
-    {
-      name: 'data.tags',
-      weight: 0.3,
-    },
-  ],
-};
-
 export default function Articles({ posts }: Props) {
   const [mounted, setMounted] = useState(false);
   const [articles, setArticles] = useState(posts);
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [fuseOptions, setFuseOptions] = useState<IFuseOptions<CollectionEntry<'blog'>>>({
+    isCaseSensitive: false,
+    includeScore: true,
+    ignoreDiacritics: false,
+    shouldSort: true,
+    includeMatches: false,
+    findAllMatches: true,
+    minMatchCharLength: 2,
+    threshold: 0.3,
+    ignoreLocation: true,
+    useExtendedSearch: false,
+    ignoreFieldNorm: false,
+    fieldNormWeight: 1,
+    sortFn: (a, b) => {
+      return dayjs(b.item.created as unknown as string).unix() - dayjs(a.item.created as unknown as string).unix();
+    },
+    keys: [
+      {
+        name: 'data.title',
+        weight: 2,
+      },
+      {
+        name: 'body',
+        weight: 1,
+      },
+    ],
+  });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -74,10 +79,11 @@ export default function Articles({ posts }: Props) {
     },
   });
 
-  const fuse = useMemo(() => new Fuse(posts, fuseOptions), [posts]);
+  const fuse = useMemo(() => new Fuse(posts, fuseOptions), [posts, fuseOptions]);
 
   const onSubmit = useCallback((values: z.infer<typeof formSchema>) => {
     setIsSearchActive(true);
+    setIsSearching(true);
 
     // Update URL query parameters
     const url = new URL(window.location.href);
@@ -90,8 +96,7 @@ export default function Articles({ posts }: Props) {
     const result = values.search === '' ? posts.map((post) => ({ item: post })) : fuse.search(values.search);
 
     const sortedResult = result
-      .map((r) => r.item)
-      .sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix());
+      .map((r) => r.item);
 
     if (selectedCategory !== '' && selectedCategory !== null) {
       url.searchParams.set('category', selectedCategory);
@@ -103,6 +108,9 @@ export default function Articles({ posts }: Props) {
     }
 
     window.history.pushState({}, '', url);
+    setTimeout(() => {
+      setIsSearching(false);
+    }, 500);
   }, [fuse, setArticles, setIsSearchActive, selectedCategory, posts]);
 
   const searchCategory = useCallback((category: string) => {
@@ -131,6 +139,28 @@ export default function Articles({ posts }: Props) {
       onSubmit({ search: form.getValues().search, searchType: form.getValues().searchType });
     }
   }, [selectedCategory]);
+  useEffect(() => {
+    if (!mounted)
+      return;
+
+    let keys = [];
+    if (form.getValues().searchType === 'tag') {
+      keys = ['data.tags'];
+    }
+    else {
+      keys = [
+        {
+          name: 'data.title',
+          weight: 2,
+        },
+        'body',
+      ];
+    }
+    setFuseOptions((item) => ({
+      ...item,
+      keys,
+    }));
+  }, [form.getValues().searchType]);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -149,6 +179,9 @@ export default function Articles({ posts }: Props) {
         onSubmit(form.getValues());
       }
     }
+    else if (category !== null && category !== '') {
+      searchCategory(category);
+    }
     else {
       form.setValue('searchType', 'title-content');
       form.setValue('search', '');
@@ -157,7 +190,7 @@ export default function Articles({ posts }: Props) {
   }, []);
 
   return (
-    <div>
+    <div className="relative">
       <CategoryTags selectedCategory={selectedCategory} onSelectCategory={searchCategory} />
       <div>
         <Form {...form}>
@@ -227,24 +260,26 @@ export default function Articles({ posts }: Props) {
         )}
       </div>
 
-      {articles.map((article) => (
-        <EachArticle
-          frontmatter={article.data}
-          url={`/blog/${article.slug}`}
-          key={`${article.data.title}-${article.data.category}`}
-        />
-      ),
-      )}
-      {articles.length === 0 && (
-        <div className="empty-result" aria-label="empty-result">
-          <div>
-            <Icon icon="mynaui:inbox-x" className="empty-icon" />
-            <div className="desc">
-              검색 결과가 없습니다.
+      <div className="relative">
+        {isSearching && <SearchLoading />}
+        {articles.map((article) => (
+          <EachArticle
+            frontmatter={article.data}
+            url={`/blog/${article.slug}`}
+            key={`${article.data.title}-${article.data.category}`}
+          />
+        ))}
+        {articles.length === 0 && (
+          <div className="empty-result" aria-label="empty-result">
+            <div>
+              <Icon icon="mynaui:inbox-x" className="empty-icon" />
+              <div className="desc">
+                검색 결과가 없습니다.
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

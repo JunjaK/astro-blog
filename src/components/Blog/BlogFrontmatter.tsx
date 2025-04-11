@@ -24,7 +24,7 @@ export default function BlogFrontmatter({ frontmatter }: Props) {
 
   function onSearch(type: 'category' | 'tag', value: string) {
     if (type === 'category') {
-      window.location.href = `/blog?category=${type}&q=${value}`;
+      window.location.href = `/blog?category=${value}`;
     }
     else {
       window.location.href = `/blog?type=${type}&q=${value}`;
