@@ -18,7 +18,7 @@ const description = 'Post list page of the Blog';
     <h1 class="font-black">Blog</h1>
     <hr class="title-divider" />
 
-    <div id="articles-wrapper" class="mt-8">
+    <div id="articles-wrapper" class="mt-4">
       <Articles posts={posts} client:visible>
         <div id="articles-skeleton" class="mt-8" slot="fallback">
           {[...Array.from({ length: 10 })].map((_) => (

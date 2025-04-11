@@ -161,7 +161,7 @@ export function _p(key: string, params: string | number): string {
   for (const k of keys) {
     result = result[k];
   }
-  if (typeof params === 'number' || !isNaN(Number.parseInt(params))) {
+  if (typeof params === 'number' || !Number.isNaN(Number.parseInt(params))) {
     if (params === 1) {
       return result?.one?.replace('%d', params) || key;
     }

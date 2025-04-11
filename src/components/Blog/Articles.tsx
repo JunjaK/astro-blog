@@ -26,14 +26,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { FadeText } from '~/components/ui/fade-text';
+import CategoryTags from './CategoryTags';
 
 type Props = {
   posts: CollectionEntry<'blog'>[];
 };
 const formSchema = z.object({
   search: z.string().min(2).max(50),
-  searchType: z.enum(['category', 'title-tag']),
-
+  searchType: z.enum(['tag', 'title-content']),
 });
 
 const fuseOptions = {
@@ -53,6 +53,7 @@ const fuseOptions = {
   fieldNormWeight: 1,
   keys: [
     'data.title',
+    'data.body',
     {
       name: 'data.tags',
       weight: 0.3,
@@ -61,14 +62,15 @@ const fuseOptions = {
 };
 
 export default function Articles({ posts }: Props) {
+  const [mounted, setMounted] = useState(false);
   const [articles, setArticles] = useState(posts);
   const [isSearchActive, setIsSearchActive] = useState(false);
-
+  const [selectedCategory, setSelectedCategory] = useState('');
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       search: '',
-      searchType: 'title-tag',
+      searchType: 'title-content',
     },
   });
 
@@ -76,50 +78,87 @@ export default function Articles({ posts }: Props) {
 
   const onSubmit = useCallback((values: z.infer<typeof formSchema>) => {
     setIsSearchActive(true);
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    if (values.searchType === 'category') {
-      setArticles(posts.filter((post) => post.data.category === values.search));
+
+    // Update URL query parameters
+    const url = new URL(window.location.href);
+
+    if (values.search !== '') {
+      url.searchParams.set('type', values.searchType);
+      url.searchParams.set('q', values.search);
+    }
+
+    const result = values.search === '' ? posts.map((post) => ({ item: post })) : fuse.search(values.search);
+
+    const sortedResult = result
+      .map((r) => r.item)
+      .sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix());
+
+    if (selectedCategory !== '' && selectedCategory !== null) {
+      url.searchParams.set('category', selectedCategory);
+      setArticles(sortedResult.filter((post) => post.data.category === selectedCategory));
     }
     else {
-      const result = fuse.search(values.search);
-      setArticles(
-        result
-          .map((r) => r.item)
-          .sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix()),
-      );
+      url.searchParams.delete('category');
+      setArticles(sortedResult);
     }
-  }, [posts, fuse, setArticles, setIsSearchActive]);
+
+    window.history.pushState({}, '', url);
+  }, [fuse, setArticles, setIsSearchActive, selectedCategory, posts]);
+
+  const searchCategory = useCallback((category: string) => {
+    if (selectedCategory === category) {
+      setSelectedCategory('');
+    }
+    else {
+      setSelectedCategory(category);
+    }
+  }, [selectedCategory]);
 
   function resetForm() {
     form.reset();
     setIsSearchActive(false);
     setArticles(posts);
+    setSelectedCategory('');
+    // Clear URL query parameters
+    const url = new URL(window.location.href);
+    url.searchParams.delete('type');
+    url.searchParams.delete('q');
+    window.history.pushState({}, '', url);
   }
 
   useEffect(() => {
-    const query = new URLSearchParams(window.location.href.split('?')[1]);
-    const category = query.get('category');
-    const tag = query.get('tag');
-
-    if (category != null) {
-      form.setValue('searchType', 'category');
-      form.setValue('search', category);
-      onSubmit(form.getValues());
+    if (mounted) {
+      onSubmit({ search: form.getValues().search, searchType: form.getValues().searchType });
     }
-    else if (tag != null) {
-      form.setValue('searchType', 'title-tag');
-      form.setValue('search', tag);
-      onSubmit(form.getValues());
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const searchType = url.searchParams.get('type');
+    const searchQuery = url.searchParams.get('q');
+    const category = url.searchParams.get('category');
+
+    if (searchType && searchQuery) {
+      form.setValue('searchType', searchType as 'tag' | 'title-content');
+      form.setValue('search', searchQuery);
+
+      if (category !== null && category !== '') {
+        searchCategory(category);
+      }
+      else {
+        onSubmit(form.getValues());
+      }
     }
     else {
-      form.setValue('searchType', 'title-tag');
+      form.setValue('searchType', 'title-content');
       form.setValue('search', '');
     }
-  }, [form, onSubmit]);
+    setMounted(true);
+  }, []);
 
   return (
     <div>
+      <CategoryTags selectedCategory={selectedCategory} onSelectCategory={searchCategory} />
       <div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="search-area">
@@ -133,19 +172,17 @@ export default function Articles({ posts }: Props) {
                     defaultValue={field.value}
                     value={field.value}
                     name={field.name}
-
                   >
                     <FormControl>
-                      <SelectTrigger className="w-[7rem] rounded-lg">
+                      <SelectTrigger className="w-[9rem] rounded-lg">
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="title-tag">Title & Tag</SelectItem>
-                      <SelectItem value="category">Category</SelectItem>
+                      <SelectItem value="title-content">Title & Content</SelectItem>
+                      <SelectItem value="tag">Tag</SelectItem>
                     </SelectContent>
                   </Select>
-
                   <FormMessage />
                 </FormItem>
               )}

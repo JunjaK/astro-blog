@@ -121,9 +121,6 @@ onUnmounted(() => {
   resizeObserver?.disconnect();
 });
 
-watch(theme, () => {
-}, { immediate: false });
-
 watch(canvasWidth, () => {
   chart.value?.setSize({ width: canvasWidth.value, height: 600 });
 }, { immediate: false });

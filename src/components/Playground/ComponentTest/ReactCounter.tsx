@@ -1,9 +1,11 @@
 import { Icon } from '@iconify/react';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 export default function ReactCounter() {
   const [count, setCount] = useState(0);
-  const dobuleCount = useMemo(() => count * 2, [count]);
+  const dobuleCount = function () {
+    return count * 2;
+  };
 
   function counterChange(arg: 'increment' | 'decrement') {
     if (arg === 'increment') {
@@ -36,7 +38,7 @@ export default function ReactCounter() {
       <div>
         DoubleCount:
         {' '}
-        {dobuleCount}
+        {dobuleCount()}
       </div>
     </>
   );
