@@ -52,7 +52,7 @@ export function SimpleIntro() {
             Frontend Developer
           </div>
           <div className="desc text-zinc-500 dark:text-zinc-400">
-            Currently - Free
+            Currently - QESG
           </div>
           <div className="flex items-center justify-center">
             <Button variant="ghost" size="icon" asChild>

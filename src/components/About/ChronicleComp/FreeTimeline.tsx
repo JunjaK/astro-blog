@@ -43,7 +43,7 @@ export function FreeTimeline({ isOpen, handleOpenChange }: Props) {
             ]
           : [],
       },
-      { title: 'Blog', duration: '2025.01 ~ Present', desc: '현재 보고 있는 이 블로그로, 위에 소개글에 나와있는대로 새로운 기술을 써서 개인 블로그를 만들어보자라는 마인드로 진행하고 있는 프로젝트.\n시간이 날 때 Blog와 Playground에 게시글을 올릴 예정입니다.', techStackIcon: isHydrated
+      { title: 'Blog', duration: '2025.02 ~ Present', desc: '현재 보고 있는 이 블로그로, 위에 소개글에 나와있는대로 새로운 기술을 써서 개인 블로그를 만들어보자라는 마인드로 진행하고 있는 프로젝트.\n시간이 날 때 Blog와 Playground에 게시글을 올릴 예정입니다.', techStackIcon: isHydrated
         ? [
             { iconUrl: `/images/icon/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },
             { iconUrl: `/images/icon/tech-stack/${mode}/astro.svg`, techName: 'Astro' },
@@ -72,7 +72,7 @@ export function FreeTimeline({ isOpen, handleOpenChange }: Props) {
       >
         <div className="flex items-center justify-between collapsible">
           <div className="text-md font-semibold">
-            2024.09 ~ Present
+            2024.09 ~ 2025.04
           </div>
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="sm" className="w-9 p-0">
