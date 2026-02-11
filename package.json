@@ -107,9 +107,5 @@
     "reading-time": "^1.5.0",
     "sass": "^1.97.3",
     "unist-util-visit": "^5.1.0"
-  },
-  "trustedDependencies": [
-    "@parcel/watcher",
-    "unrs-resolver"
-  ]
+  }
 }
