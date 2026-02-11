@@ -23,3 +23,6 @@ bun-debug.log*
 # jetbrains setting folder
 .idea/
 image-assets/
+
+# playwright mcp temp files
+.playwright-mcp/
