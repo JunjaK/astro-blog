@@ -4,56 +4,40 @@ name: Astro Blog
 on:
   push:
     branches:
-      - master # 배포를 트리거하는 브랜치
+      - master
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
+      - name: Setup mise
+        uses: jdx/mise-action@v2
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'pnpm'
-
-      - name: Cache dependencies
+      - name: Cache bun dependencies
         id: cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
-          # cache의 대상을 정합니다. npm에서 의존성이 설치되는 디렉터리인 node_modules를 대상으로 합니다.
-          path: '**/node_modules'
-          # cache를 무효화하를 결정하는 기준은 의존성이 변경되면 함께 변경되는 파일인 package-lock.json을 기준으로 합니다.
-          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yml') }}
-          # key가 유효하지 않은 경우 runner의 운영체제 값과 node라는 suffix를 key로 복구합니다.
-          # 결과적으로 package-lock.json이 변경되지 않았다면 캐싱된 node_modules를 사용합니다.
-          # 만약 복구될 캐시가 없다면 아래에서 사용할 cache-hit는 false가 됩니다.
+          path: |
+            node_modules
+            ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-bun-
 
-      - name: Install Dependencies
+      - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: pnpm install
+        run: bun install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
-  deploy:
-    runs-on: self-hosted
-    needs: build
-    steps:
-      - name: Build Docker Image
+        run: bun run build
+
+      - name: Build Docker image
         run: DOCKER_BUILDKIT=1 docker build -t astro-blog .
 
-      - name: docker stop & remove pre
-        run: docker stop astro-blog && docker rm astro-blog
-
-      - name: docker run
-        run: docker run -d -v astro-blog-volume:/home/files --name astro-blog -p 4321:80  astro-blog
+      - name: Deploy container
+        run: |
+          docker stop astro-blog 2>/dev/null && docker rm astro-blog 2>/dev/null || true
+          docker run -d -v astro-blog-volume:/home/files --name astro-blog -p 4321:80 astro-blog

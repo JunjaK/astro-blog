@@ -3,9 +3,9 @@
 ## Intro
 This is Private Blog made with Astro and React and etc...
 
-```shell    
-pnpm i
-pnpm dev
+```shell
+bun install
+bun dev
 ```
 
 ## Used Library

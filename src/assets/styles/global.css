@@ -1,6 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@config "../../../tailwind.config.mjs";
 @layer base {
     ::-webkit-scrollbar-track {
         background-color: hsl(0 0% 100%);

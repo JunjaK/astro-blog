@@ -2,7 +2,7 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import svelte from '@astrojs/svelte';
-import tailwind from '@astrojs/tailwind';
+import tailwindcss from '@tailwindcss/vite';
 import vue from '@astrojs/vue';
 import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections';
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
@@ -33,7 +33,7 @@ const SCSS_Logger = {
 export default defineConfig({
   // Enable React to support React JSX components.
   site: 'https://www.jun-devlog.win',
-  integrations: [react(), svelte(), vue(), tailwind({ applyBaseStyles: false }), sitemap(), expressiveCode({
+  integrations: [react(), svelte(), vue(), sitemap(), expressiveCode({
     themes: ['kanagawa-dragon', 'catppuccin-latte'],
     plugins: [pluginCollapsibleSections(), pluginLineNumbers(), pluginColorChips()],
   }), mdx({})],
@@ -46,13 +46,13 @@ export default defineConfig({
     syntaxHighlight: false,
   },
   vite: {
-    ssr: {
+ssr: {
       noExternal: ['react-use'],
     },
     optimizeDeps: {
       include: ['react-use'],
     },
-    plugins: [],
+    plugins: [tailwindcss()],
     css: {
       preprocessorOptions: {
         scss: {

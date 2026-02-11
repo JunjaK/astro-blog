@@ -9,7 +9,7 @@ import {
 export default function TerminalInfo() {
   return (
     <Terminal className="">
-      <TypingAnimation>&gt; pnpm dlx blog@latest init</TypingAnimation>
+      <TypingAnimation>&gt; bunx blog@latest init</TypingAnimation>
 
       <AnimatedSpan delay={1500} className="text-green-500">
         <span>✔ Preflight checks.</span>
