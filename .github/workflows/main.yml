@@ -40,4 +40,4 @@ jobs:
       - name: Deploy container
         run: |
           docker stop astro-blog 2>/dev/null && docker rm astro-blog 2>/dev/null || true
-          docker run -d -v astro-blog-volume:/home/files --name astro-blog -p 4321:80 astro-blog
+          docker run -d -v /home/jun/blog-files:/home/files --name astro-blog -p 4321:80 astro-blog

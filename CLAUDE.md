@@ -129,6 +129,13 @@ playground: { title, duration, techStacks?, thumbnail?, description? }
 | Validation | zod 4, react-hook-form, @hookform/resolvers |
 | Utils | dayjs, fuse.js, es-toolkit, rxjs, uuid |
 
+## Image Assets & Deployment
+
+- **Local storage**: `image-assets/` at project root (not in `src/content/`)
+- **Server path**: `/home/jun/blog-files/` on RPi (Docker bind mount → nginx `/files/`)
+- **SSH access**: `ssh raspi` (key-based auth via `~/.ssh/config`)
+- **Skills**: `/publish-images` (rsync + preprocess), `/preprocess-md` (preprocess only)
+
 ## Notes
 
 - `@minpluto/zorn` requires custom registry: `.npmrc` has `@minpluto:registry=https://js.registry.sudovanilla.org/`
