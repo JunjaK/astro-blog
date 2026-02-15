@@ -6,6 +6,7 @@ import { useScroll } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
 import { DiaryImageOverlay } from './DiaryImageOverlay';
+import { DiaryThumbnailStrip } from './DiaryThumbnailStrip';
 import * as THREE from 'three';
 
 // --- Slot layout for 3D image planes ---
@@ -276,25 +277,7 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
           </div>
 
           {/* Image thumbnail strip — fixed above footer */}
-          <div className={`pointer-events-none absolute inset-x-0 bottom-16 z-10 px-4 transition-opacity duration-300 md:px-8 ${allLoaded ? 'opacity-100' : 'opacity-0'}`}>
-            <div className="pointer-events-auto mx-auto flex max-w-2xl gap-1.5 overflow-x-auto">
-              {images.map((img, i) => (
-                <button
-                  key={img.src}
-                  type="button"
-                  onClick={() => handleImageClick(i)}
-                  className="h-8 w-12 shrink-0 overflow-hidden rounded opacity-70 transition hover:opacity-100"
-                >
-                  <img
-                    src={getBasePathWithUrl(img.src)}
-                    alt={img.alt ?? `image-${i + 1}`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', maxWidth: 'none' }}
-                    loading="lazy"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
+          <DiaryThumbnailStrip images={images} visible={allLoaded} onSelect={handleImageClick} />
         </div>
       </section>
 

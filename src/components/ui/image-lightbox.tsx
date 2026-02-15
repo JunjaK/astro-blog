@@ -158,7 +158,7 @@ export function ImageLightbox({
 
           {/* Toolbar (tags) */}
           {toolbarRender && (
-            <div className="absolute top-4 left-1/2 z-[110] -translate-x-1/2">
+            <div className="absolute bottom-6 left-1/2 z-[110] -translate-x-1/2">
               {toolbarRender({ index })}
             </div>
           )}
@@ -220,7 +220,7 @@ export function ImageLightbox({
                 <motion.img
                   src={currentImage.src}
                   alt=""
-                  className="max-h-[90vh] max-w-[90vw] select-none object-contain"
+                  className="max-h-[90vh] max-w-[90vw] select-none rounded-xl object-contain"
                   draggable={false}
                   onDoubleClick={handleDoubleClick}
                   animate={{
