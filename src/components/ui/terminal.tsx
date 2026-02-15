@@ -1,4 +1,4 @@
-import { ny } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { motion, type MotionProps } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -19,7 +19,7 @@ export function AnimatedSpan({
       initial={{ opacity: 0, y: -5 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: delay / 1000 }}
-      className={ny('grid text-sm font-normal tracking-tight', className)}
+      className={cn('grid text-sm font-normal tracking-tight', className)}
       {...props}
     >
       {children}
@@ -85,7 +85,7 @@ export function TypingAnimation({
   return (
     <MotionComponent
       ref={elementRef}
-      className={ny('text-sm font-normal tracking-tight', className)}
+      className={cn('text-sm font-normal tracking-tight', className)}
       {...props}
     >
       {displayedText}
@@ -101,7 +101,7 @@ interface TerminalProps {
 export function Terminal({ children, className }: TerminalProps) {
   return (
     <div
-      className={ny(
+      className={cn(
         'z-0 h-full max-h-[400px] w-full max-w-lg rounded-xl border border-border bg-background',
         className,
       )}

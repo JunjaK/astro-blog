@@ -1,6 +1,6 @@
 import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { ny } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
 interface FlickeringGridProps extends React.HTMLAttributes<HTMLDivElement> {
    squareSize?: number
@@ -176,7 +176,7 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
    return (
       <div
          ref={containerRef}
-         className={ny(`h-full w-full ${className}`)}
+         className={cn(`h-full w-full ${className}`)}
          {...props}
       >
          <canvas

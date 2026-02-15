@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ny } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
 interface TypingAnimationProps {
    text: string
@@ -32,7 +32,7 @@ export default function TypingAnimation({
 
    return (
       <h1
-         className={ny(
+         className={cn(
             "font-display text-center text-4xl font-bold leading-[5rem] tracking-[-0.02em] drop-shadow-sm",
             className,
          )}

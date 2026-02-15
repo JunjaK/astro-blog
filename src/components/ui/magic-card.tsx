@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactElement, ReactNode } from "react"
 import { useEffect, useRef, useState } from "react"
-import { ny } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
 interface MousePosition {
    x: number
@@ -95,7 +95,7 @@ function MagicContainer({ children, className }: MagicContainerProps) {
    }
 
    return (
-      <div className={ny("size-full", className)} ref={containerRef}>
+      <div className={cn("size-full", className)} ref={containerRef}>
          {children}
       </div>
    )
@@ -185,7 +185,7 @@ const MagicCard: React.FC<MagicCardProps> = ({
                "--border-color": `${borderColor}`,
             } as CSSProperties
          }
-         className={ny(
+         className={cn(
             "relative z-0 size-full rounded-2xl p-6",
             "bg-gray-300 dark:bg-gray-700",
             "bg-[radial-gradient(var(--mask-size)_circle_at_var(--mouse-x)_var(--mouse-y),var(--border-color),transparent_100%)]",

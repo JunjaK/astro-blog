@@ -1,7 +1,7 @@
 import type { ProjectInfo, TechIconType } from '@/types/commonType';
 import { TechIcon } from '@/components/About/TechStackComp/TechIcon';
 import ImageLoader from '@/components/Blog/ImageLoader';
-import { ny } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { $theme } from '@/store/system';
 import getTechIcons from '@/utils/getTechIcons';
 import { useStore } from '@nanostores/react';
@@ -24,7 +24,7 @@ const EachArticles: React.FC<EachArticlesProps> = ({ frontmatter, url }) => {
   return (
     <figure
       key={url}
-      className={ny(
+      className={cn(
         'relative min-h-fit cursor-pointer  rounded-2xl',
         // animation styles
         'transition-all duration-200 ease-in-out hover:scale-[103%]',

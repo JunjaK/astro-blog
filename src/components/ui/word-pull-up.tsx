@@ -1,6 +1,6 @@
 import type { Variants } from "framer-motion"
 import { motion } from "framer-motion"
-import { ny } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
 interface WordPullUpProps {
    words: string
@@ -32,7 +32,7 @@ export default function WordPullUp({
          variants={wrapperFramerProps}
          initial="hidden"
          animate="show"
-         className={ny(
+         className={cn(
             "font-display text-center text-4xl font-bold leading-[5rem] tracking-[-0.02em] drop-shadow-sm",
             className,
          )}

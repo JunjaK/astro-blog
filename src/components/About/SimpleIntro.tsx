@@ -5,7 +5,7 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button.tsx';
-import { ny } from '@/lib/utils.ts';
+import { cn } from '@/lib/utils.ts';
 import { Icon } from '@iconify/react';
 import { motion } from 'framer-motion';
 // @flow
@@ -25,7 +25,7 @@ export function SimpleIntro() {
     <motion.section layout className="simple-intro">
       <div className="simple-intro-wrapper">
         <figure
-          className={`${ny(
+          className={`${cn(
             'relative mx-auto h-[23.5rem] max-md:w-full w-[20rem] overflow-hidden rounded-2xl py-4',
             // animation styles
 

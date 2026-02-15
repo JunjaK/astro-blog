@@ -1,5 +1,5 @@
 import React, { type MouseEvent, useEffect, useState } from "react"
-import { ny } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
 interface RippleButtonProps
    extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -56,7 +56,7 @@ export const RippleButton = React.forwardRef<
 
       return (
          <button
-            className={ny(
+            className={cn(
                "relative flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 bg-background px-4 py-2 text-center text-primary",
                className,
             )}

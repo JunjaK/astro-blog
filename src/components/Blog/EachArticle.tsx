@@ -1,6 +1,6 @@
 import type { BlogFrontMatter } from '@/types/commonType';
 import ImageLoader from '@/components/Blog/ImageLoader';
-import { ny } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
 import React, { useMemo } from 'react';
@@ -26,7 +26,7 @@ export default function EachArticle({ frontmatter, url }: Props) {
 
   return (
     <figure
-      className={`${ny(
+      className={`${cn(
         'relative min-h-fit cursor-pointer overflow-hidden rounded-2xl p-4',
         // animation styles
 

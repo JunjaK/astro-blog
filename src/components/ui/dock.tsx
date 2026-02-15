@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react';
-import { ny } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
@@ -54,7 +54,7 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Number.POSITIVE_INFINITY)}
         {...props}
-        className={ny(dockVariants({ className }), {
+        className={cn(dockVariants({ className }), {
           'items-start': direction === 'top',
           'items-center': direction === 'middle',
           'items-end': direction === 'bottom',
@@ -111,7 +111,7 @@ function DockIcon({
     <motion.div
       ref={ref}
       style={{ width }}
-      className={ny(
+      className={cn(
         'flex aspect-square cursor-pointer items-center justify-center rounded-full',
         className,
       )}

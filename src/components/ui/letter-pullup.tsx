@@ -1,4 +1,4 @@
-import { ny } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 interface LetterPullupProps {
@@ -34,7 +34,7 @@ export default function LetterPullup({
           initial="initial"
           animate="animate"
           custom={i}
-          className={ny(
+          className={cn(
             'font-display text-center text-4xl font-bold tracking-[-0.02em] text-black drop-shadow-sm  dark:text-white',
             className,
           )}

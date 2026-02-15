@@ -1,5 +1,5 @@
 import type { Variants } from 'framer-motion';
-import { ny } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 
 interface GradualSpacingProps {
@@ -31,7 +31,7 @@ export default function GradualSpacing({
             exit="hidden"
             variants={framerProps}
             transition={{ duration, delay: i * delayMultiple }}
-            className={ny('drop-shadow-sm ', className)}
+            className={cn('drop-shadow-sm ', className)}
           >
             {char === ' ' ? <span>&nbsp;</span> : char}
           </motion.h1>
