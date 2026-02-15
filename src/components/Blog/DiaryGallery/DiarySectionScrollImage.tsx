@@ -41,6 +41,7 @@ type DiarySectionScrollImageProps = {
   totalImages: number;
   scrollYProgress: MotionValue<number>;
   isMobile: boolean;
+  onImageLoad?: () => void;
 };
 
 export function DiarySectionScrollImage({
@@ -49,6 +50,7 @@ export function DiarySectionScrollImage({
   totalImages,
   scrollYProgress,
   isMobile,
+  onImageLoad,
 }: DiarySectionScrollImageProps) {
   const slots = isMobile ? MOBILE_SLOTS : IMAGE_SLOTS;
   const slot = slots[index % slots.length];
@@ -110,7 +112,7 @@ export function DiarySectionScrollImage({
       style={{
         left: `${slot.xPercent}%`,
         width: `${slot.widthPercent}%`,
-        top: `${10 + staggerOffset * 45}%`,
+        top: `${35 + staggerOffset * 35}%`,
         y,
         opacity,
         rotateX,
@@ -128,6 +130,8 @@ export function DiarySectionScrollImage({
             alt={image.alt ?? ''}
             loading="lazy"
             className="h-auto w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            onLoad={onImageLoad}
+            onError={onImageLoad}
           />
           {image.tags && image.tags.length > 0 && (
             <div className="absolute inset-x-0 bottom-0 flex flex-wrap gap-1.5 bg-gradient-to-t from-black/60 to-transparent p-3 pt-8 opacity-0 transition-opacity duration-300 group-hover:opacity-100 max-md:opacity-80">

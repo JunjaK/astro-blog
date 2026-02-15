@@ -14,9 +14,16 @@ bun run preview       # Preview built site
 bun run all-preprocess-md  # Run all markdown preprocessors (removeUnused → addMdEnter → convertLoader)
 ```
 
+## Documentation
+
+- All design plans and architecture docs go in `_docs/` at project root
+- Before implementing a feature, check `_docs/` for existing plans
+- After planning a feature, save the plan to `_docs/<feature-name>-plan.md`
+
 ## Project Structure
 
 ```
+_docs/                  # Design plans & architecture docs
 src/
 ├── assets/styles/
 │   ├── global.css          # Tailwind 4 entry (@import "tailwindcss", CSS variables, base styles)

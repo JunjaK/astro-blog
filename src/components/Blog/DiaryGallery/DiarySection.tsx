@@ -1,7 +1,8 @@
 import type { DiarySectionProps } from './types';
 import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
+import { Icon } from '@iconify/react';
 import { useScroll } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { PhotoProvider } from 'react-photo-view';
 import { DiaryImageOverlay } from './DiaryImageOverlay';
 import { DiarySectionScrollImage } from './DiarySectionScrollImage';
@@ -38,10 +39,20 @@ export function DiarySection({ images, children, variant = 'css3d' }: DiarySecti
     offset: ['start end', 'end start'],
   });
 
+  const [loadedCount, setLoadedCount] = useState(0);
+  const allLoaded = loadedCount >= images.length;
+  const handleImageLoad = useCallback(() => {
+    setLoadedCount((c) => c + 1);
+  }, []);
+
   const toolbarRender = DiaryImageOverlay({ images });
 
   if (images.length === 0)
     return null;
+
+  if (variant === 'webgl') {
+    return <DiarySectionWebGL images={images}>{children}</DiarySectionWebGL>;
+  }
 
   if (prefersReducedMotion) {
     return (
@@ -69,10 +80,6 @@ export function DiarySection({ images, children, variant = 'css3d' }: DiarySecti
     );
   }
 
-  if (variant === 'webgl') {
-    return <DiarySectionWebGL images={images}>{children}</DiarySectionWebGL>;
-  }
-
   return (
     <PhotoProvider toolbarRender={toolbarRender}>
       <section
@@ -82,12 +89,20 @@ export function DiarySection({ images, children, variant = 'css3d' }: DiarySecti
       >
         {/* Sticky viewport with perspective for CSS 3D */}
         <div
-          className="sticky top-0 flex h-screen items-center justify-center overflow-hidden"
-          style={{ perspective: 1200, perspectiveOrigin: '50% 50%' }}
+          className="sticky top-0 h-screen overflow-hidden"
+          style={{ perspective: 1200, perspectiveOrigin: '50% 60%' }}
         >
+          {/* Loading overlay */}
+          <div
+            className={`absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 transition-opacity duration-300 ${allLoaded ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
+          >
+            <Icon icon="svg-spinners:bars-rotate-fade" className="text-4xl text-white" />
+            <p className="mt-2 text-sm text-white/70">{loadedCount} / {images.length}</p>
+          </div>
+
           {/* Floating images layer — preserve-3d enables child translateZ */}
           <div
-            className="pointer-events-auto absolute inset-0 z-10"
+            className={`pointer-events-auto absolute inset-0 z-10 transition-opacity duration-300 ${allLoaded ? 'opacity-100' : 'opacity-0'}`}
             style={{ transformStyle: 'preserve-3d' }}
           >
             {images.map((image, index) => (
@@ -98,14 +113,15 @@ export function DiarySection({ images, children, variant = 'css3d' }: DiarySecti
                 totalImages={images.length}
                 scrollYProgress={scrollYProgress}
                 isMobile={isMobile}
+                onImageLoad={handleImageLoad}
               />
             ))}
           </div>
 
-          {/* Centered text card */}
-          <div className="relative z-20 mx-4 max-w-2xl md:mx-8">
-            <div className="rounded-2xl border border-white/20 bg-white/85 px-6 py-8 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/85 md:px-10 md:py-10">
-              <div className="prose prose-lg dark:prose-invert prose-headings:mt-0 prose-headings:mb-3 prose-p:my-2 prose-ul:my-2 prose-li:my-0.5">
+          {/* Text card pinned to top */}
+          <div className={`relative z-20 mx-auto max-w-2xl px-4 pt-12 transition-opacity duration-300 md:px-8 md:pt-16 ${allLoaded ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="rounded-2xl border border-white/20 bg-white/80 px-5 py-5 shadow-2xl backdrop-blur-md dark:border-white/10 dark:bg-black/70 md:px-8 md:py-6">
+              <div className="prose prose-base dark:prose-invert prose-headings:mt-0 prose-headings:mb-2 prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5">
                 {children}
               </div>
             </div>

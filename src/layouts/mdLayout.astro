@@ -65,7 +65,7 @@ const { title, tags = [], category = '' } = post;
 
     <main>
       <ScrollProgress
-        className="scroll-animation top-[6.4rem] max-md:top-[4.4rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30"
+        className="scroll-animation top-[4rem] max-md:top-[3.5rem] bg-gradient-to-r from-neutral-200/30 via-neutral-200/70 to-neutral-200/30"
         client:idle
       />
 
@@ -126,8 +126,25 @@ const { title, tags = [], category = '' } = post;
     document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
   }
 
+  function scrollToSection() {
+    const params = new URLSearchParams(window.location.search);
+    const section = parseInt(params.get('section'), 10);
+    if (!section || section < 1) return;
+
+    const headings = document.querySelectorAll('.article-entry h2');
+    const target = headings[section - 1];
+    if (!target) return;
+
+    setTimeout(() => {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+
   document.addEventListener('astro:after-swap', update);
-  document.addEventListener('astro:page-load', update);
+  document.addEventListener('astro:page-load', () => {
+    update();
+    scrollToSection();
+  });
   document.getElementById('go-back').addEventListener('click', () => {
     const diffHistory
     = window.currentHistoryIndex - window.history.state.index - 1;

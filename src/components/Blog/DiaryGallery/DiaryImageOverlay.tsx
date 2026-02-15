@@ -1,4 +1,3 @@
-import type { OverlayRenderProps } from 'react-photo-view/dist/types';
 import type { DiaryImage } from './types';
 
 type DiaryImageOverlayProps = {
@@ -6,7 +5,7 @@ type DiaryImageOverlayProps = {
 };
 
 export function DiaryImageOverlay({ images }: DiaryImageOverlayProps) {
-  return function toolbarRender({ index }: OverlayRenderProps) {
+  return function toolbarRender({ index }: { index: number }) {
     const currentImage = images[index];
     const tags = currentImage?.tags;
 
