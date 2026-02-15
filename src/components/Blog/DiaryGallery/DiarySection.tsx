@@ -1,13 +1,13 @@
+import type { DiarySectionProps } from './types';
+import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import { useScroll } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { PhotoProvider } from 'react-photo-view';
 import { DiaryImageOverlay } from './DiaryImageOverlay';
 import { DiarySectionScrollImage } from './DiarySectionScrollImage';
-import type { DiarySectionProps } from './types';
+import { DiarySectionWebGL } from './DiarySectionWebGL';
 
-export function DiarySection({ images, children }: DiarySectionProps) {
-  if (images.length === 0) return null;
-
+export function DiarySection({ images, children, variant = 'css3d' }: DiarySectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -40,6 +40,9 @@ export function DiarySection({ images, children }: DiarySectionProps) {
 
   const toolbarRender = DiaryImageOverlay({ images });
 
+  if (images.length === 0)
+    return null;
+
   if (prefersReducedMotion) {
     return (
       <PhotoProvider toolbarRender={toolbarRender}>
@@ -49,7 +52,7 @@ export function DiarySection({ images, children }: DiarySectionProps) {
           </div>
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             {images.map((image, index) => {
-              const resolvedSrc = `${import.meta.env.MODE === 'dev' ? 'https://www.jun-devlog.win' : ''}${image.src}`;
+              const resolvedSrc = getBasePathWithUrl(image.src);
               return (
                 <img
                   key={`${image.src}-${index}`}
@@ -66,6 +69,10 @@ export function DiarySection({ images, children }: DiarySectionProps) {
     );
   }
 
+  if (variant === 'webgl') {
+    return <DiarySectionWebGL images={images}>{children}</DiarySectionWebGL>;
+  }
+
   return (
     <PhotoProvider toolbarRender={toolbarRender}>
       <section
@@ -73,10 +80,16 @@ export function DiarySection({ images, children }: DiarySectionProps) {
         className="relative"
         style={{ height: `${scrollHeight}vh` }}
       >
-        {/* Sticky viewport */}
-        <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
-          {/* Floating images layer */}
-          <div className="pointer-events-auto absolute inset-0 z-10">
+        {/* Sticky viewport with perspective for CSS 3D */}
+        <div
+          className="sticky top-0 flex h-screen items-center justify-center overflow-hidden"
+          style={{ perspective: 1200, perspectiveOrigin: '50% 50%' }}
+        >
+          {/* Floating images layer — preserve-3d enables child translateZ */}
+          <div
+            className="pointer-events-auto absolute inset-0 z-10"
+            style={{ transformStyle: 'preserve-3d' }}
+          >
             {images.map((image, index) => (
               <DiarySectionScrollImage
                 key={`${image.src}-${index}`}

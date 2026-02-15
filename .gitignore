@@ -26,3 +26,13 @@ image-assets/
 
 # playwright mcp temp files
 .playwright-mcp/
+
+# playwright test outputs
+playwright-report/
+test-results/
+
+# backup files
+image-assets-backup/
+
+# temp plan files
+plan.md

@@ -1,15 +1,18 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import svelte from '@astrojs/svelte';
-import tailwindcss from '@tailwindcss/vite';
 import vue from '@astrojs/vue';
 import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections';
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
+import tailwindcss from '@tailwindcss/vite';
 import expressiveCode from 'astro-expressive-code';
 // @ts-check
 import { defineConfig, passthroughImageService } from 'astro/config';
 import { pluginColorChips } from 'expressive-code-color-chips';
+import { lookup } from 'mrmime';
 
 import rehypeKatex from 'rehype-katex';
 
@@ -46,13 +49,30 @@ export default defineConfig({
     syntaxHighlight: false,
   },
   vite: {
-ssr: {
+    plugins: [
+      tailwindcss(),
+      {
+        name: 'serve-image-assets',
+        configureServer(server) {
+          server.middlewares.use('/files', (req, res, next) => {
+            const filePath = path.join(process.cwd(), 'image-assets', req.url);
+            if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+              res.setHeader('Content-Type', lookup(filePath) || 'application/octet-stream');
+              fs.createReadStream(filePath).pipe(res);
+            }
+            else {
+              next();
+            }
+          });
+        },
+      },
+    ],
+    ssr: {
       noExternal: ['react-use'],
     },
     optimizeDeps: {
       include: ['react-use'],
     },
-    plugins: [tailwindcss()],
     css: {
       preprocessorOptions: {
         scss: {

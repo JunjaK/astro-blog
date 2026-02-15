@@ -7,7 +7,7 @@ import { glob } from 'glob';
 // 마크다운 파일에서 이미지 경로를 추출하는 함수
 function extractImagePathsFromMarkdown(markdownContent) {
   const regex = /!\[.*?\]\((.*?)\)/g; // Markdown 이미지 링크 패턴
-  const regexImageLoader = /<ImageLoader\s+src=["']([^"']+)["']\s+alt=["']([^"']+)["']\s*\/?>/g;
+  const regexImageLoader = /<ImageLoader\s+src=["']([^"']+)["']\s+alt=["'](?:[^"']+)["']\s*\/?>/g;
   const regexThumb = /thumbnail:\s*(\S+)/g;
   const paths = [];
   let match;
