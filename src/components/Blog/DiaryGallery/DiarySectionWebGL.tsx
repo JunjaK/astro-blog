@@ -1,13 +1,13 @@
 import type { DiaryImage, DiarySectionProps } from './types';
+import { ImageLightbox } from '@/components/ui/image-lightbox';
 import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import { Icon } from '@iconify/react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useScroll } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ImageLightbox } from '@/components/ui/image-lightbox';
+import * as THREE from 'three';
 import { DiaryImageOverlay } from './DiaryImageOverlay';
 import { DiaryThumbnailStrip } from './DiaryThumbnailStrip';
-import * as THREE from 'three';
 
 // --- Slot layout for 3D image planes ---
 type PlaneSlot = {
@@ -22,11 +22,11 @@ type PlaneSlot = {
 function buildSlots(count: number): PlaneSlot[] {
   // 5-slot cycling pattern: center-crossing organic layout
   const patterns: { x: number; z: number; scale: number; rotY: number }[] = [
-    { x: -0.8, z: -0.5, scale: 1.3, rotY: -0.3 },   // Center-left, large, near
-    { x: 2.0, z: -2.0, scale: 1.0, rotY: 0.35 },     // Right, medium, mid
-    { x: 0.3, z: -0.8, scale: 1.2, rotY: -0.25 },    // Center, large, near
-    { x: -2.5, z: -3.5, scale: 0.7, rotY: -0.4 },    // Far-left, small, far
-    { x: 1.2, z: -1.5, scale: 1.0, rotY: 0.28 },     // Center-right, medium, mid-near
+    { x: -0.8, z: -0.5, scale: 1.3, rotY: -0.3 }, // Center-left, large, near
+    { x: 2.0, z: -2.0, scale: 1.0, rotY: 0.35 }, // Right, medium, mid
+    { x: 0.3, z: -0.8, scale: 1.2, rotY: -0.25 }, // Center, large, near
+    { x: -2.5, z: -3.5, scale: 0.7, rotY: -0.4 }, // Far-left, small, far
+    { x: 1.2, z: -1.5, scale: 1.0, rotY: 0.28 }, // Center-right, medium, mid-near
   ];
 
   const PHI = 1.618033988749895;
@@ -167,6 +167,7 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
   const [lightboxVisible, setLightboxVisible] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [loadedCount, setLoadedCount] = useState(0);
+  const [focused, setFocused] = useState(false);
   const allLoaded = loadedCount >= images.length;
   const handleImageLoad = useCallback(() => {
     setLoadedCount((c) => c + 1);
@@ -176,7 +177,8 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
 
   // Lock page scroll while images are loading
   useEffect(() => {
-    if (allLoaded) return;
+    if (allLoaded)
+      return;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = '';
@@ -229,7 +231,13 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
             className={`absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 transition-opacity duration-300 ${allLoaded ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
           >
             <Icon icon="svg-spinners:bars-rotate-fade" className="text-4xl text-white" />
-            <p className="mt-2 text-sm text-white/70">{loadedCount} / {images.length}</p>
+            <p className="mt-2 text-sm text-white/70">
+              {loadedCount}
+              {' '}
+              /
+              {' '}
+              {images.length}
+            </p>
           </div>
 
           {/* Three.js Canvas */}
@@ -264,12 +272,21 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
           {/* Floating text overlay — bordered, scrollable */}
           <div className={`pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-4 pt-16 pb-20 transition-opacity duration-300 md:px-8 ${allLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div
-              className="pointer-events-auto mx-auto max-w-2xl overflow-y-auto rounded-xl border border-white/20 px-5 pt-0 pb-3 md:px-8 md:pt-0 md:pb-4"
+              className={`pointer-events-auto relative mx-auto max-w-2xl overflow-y-auto rounded-xl border border-white/20 px-5 pt-0 pb-3 transition-colors duration-300 md:px-8 md:pt-0 md:pb-4 ${focused ? 'bg-black/80' : ''}`}
               style={{
-                maxHeight: 'calc(100vh - 10rem)',
+                maxHeight: 'calc(100vh - 10rem - 60px)',
                 textShadow: '0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5)',
               }}
             >
+              {/* Focus toggle button */}
+              <button
+                type="button"
+                onClick={() => setFocused((v) => !v)}
+                className={`sticky top-1 z-20 float-right mt-8 rounded-md p-1 transition-colors ${focused ? 'bg-white/20 text-white' : 'text-white/50 hover:text-white/80'}`}
+                title={focused ? 'Exit focus mode' : 'Focus on text'}
+              >
+                <Icon icon={focused ? 'material-symbols:visibility-off' : 'material-symbols:center-focus-strong'} className="text-lg" />
+              </button>
               <div className="prose prose-base prose-invert [&>:first-child]:mt-0 [&>:last-child]:mb-0 prose-headings:mt-0 prose-headings:mb-2 prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5">
                 {children}
               </div>
