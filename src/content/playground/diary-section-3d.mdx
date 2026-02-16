@@ -1,0 +1,96 @@
+---
+title: Diary Section — Three.js vs CSS 3D
+duration: 2025-10 ~ 2026-02
+techStacks: ['typescript', 'react', 'three.js', 'framer-motion']
+thumbnail: /files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg
+description: AI로 생성한 3D 일기 갤러리 섹션의 두 가지 구현 비교. Three.js(WebGL) 버전과 CSS 3D transform 버전.
+---
+
+import ProjectInfo from '@/components/Project/ProjectInfo.astro';
+import { DiarySection } from '@/components/Blog/DiaryGallery';
+
+<ProjectInfo frontmatter={frontmatter} />
+
+## 배경
+
+블로그 일기 포스트에 사용할 3D 이미지 갤러리 섹션을 만들고 싶었다.
+스크롤에 따라 이미지가 3D 공간에서 떠다니며 나타나고 사라지는 연출이 목표.
+전체 코드는 AI(Claude)로 생성했으며, Three.js에 대한 사전 지식이 없는 상태에서 시작했다.
+
+---
+
+## 1. Three.js (WebGL) 버전
+
+`@react-three/fiber` 기반으로 먼저 구현한 버전.
+
+### 구현 내용
+- WebGL Canvas 위에 이미지를 3D plane으로 배치
+- 스크롤 진행도에 따라 plane이 Y축으로 이동 (parallax)
+- 카메라가 스크롤에 따라 dolly + vertical travel
+- `smoothstep` 기반 fade in/out
+- alphaMap DataTexture로 이미지 가장자리 soft fade
+- fog으로 원거리 이미지 자연스럽게 사라짐
+
+### 문제점
+- Three.js 지식 없이 AI에게 전적으로 의존 → 결과물이 형편없었음
+- 단일 Three.js 인스턴스라면 문제없었지만, 일기 페이지에 9개 DiarySection이 각각 독립 WebGL Canvas를 생성하니 GPU 컨텍스트 제한에 도달
+- 이미지 배치와 카메라 동선이 부자연스러움
+- 모바일에서 심각한 성능 저하
+- 스크롤 시 버벅임이 심하고 프레임 드랍이 눈에 띄게 발생
+- 아래 데모는 인스턴스가 하나뿐이라 성능 문제가 전혀 없음 — 실제 일기 페이지처럼 9개가 동시에 존재하면 문제가 드러남
+
+<DiarySection client:visible variant="webgl"
+  images={[
+    { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg", alt: "아사쿠사" },
+    { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.jpeg", alt: "스키야 규동" },
+    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.png", alt: "신마 아카리짱" },
+    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.png", alt: "간다 신사" },
+  ]}
+>
+
+**Three.js 버전 데모** — 스크롤하면 WebGL Canvas 위 3D 공간에서 이미지가 이동합니다.
+
+</DiarySection>
+
+---
+
+## 2. CSS 3D Transform 버전
+
+Three.js 버전의 경험을 바탕으로 CSS 3D transform + framer-motion으로 재구현.
+먼저 Three.js로 만들어보면서 3D 레이아웃과 스크롤 인터랙션의 방향이 잡혀 있었기 때문에, CSS 3D로 옮기니 원하는 결과물에 어느 정도 근접할 수 있었다.
+
+### 구현 내용
+- CSS `perspective` + `translateZ / rotateY`로 3D 깊이감
+- framer-motion `useScroll` + `useTransform`으로 스크롤 기반 애니메이션
+- 이미지별 독립 스크롤 윈도우로 순차적 fade in/out
+- 컨테이너 scale + translateY로 카메라 시뮬레이션
+- `mask-image` gradient로 soft edge fade
+- radial gradient fog (vignette)
+- focus mode 토글, 썸네일 스트립, 라이트박스
+
+### Three.js 대비 개선점
+- WebGL Canvas 없이 브라우저 compositor GPU 가속만 사용 → 컨텍스트 제한 문제 해결
+- 여러 섹션이 한 페이지에 공존해도 성능 문제 없음
+- 모바일 성능 대폭 개선
+- 추가 최적화가 필요하지만 Three.js 버전 대비 스크롤이 어느 정도 매끄럽게 동작
+
+<DiarySection client:visible
+  images={[
+    { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg", alt: "아사쿠사" },
+    { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.jpeg", alt: "스키야 규동" },
+    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.png", alt: "신마 아카리짱" },
+    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.png", alt: "간다 신사" },
+  ]}
+>
+
+**CSS 3D 버전 데모** — 스크롤하면 `perspective`와 `translateZ`로 깊이감이 표현된 이미지들이 순차적으로 나타납니다.
+
+</DiarySection>
+
+---
+
+## 결론
+
+Three.js를 모르는 상태에서 AI만으로 WebGL 기반 구현을 시도한 것은 결과적으로 만족스럽지 못했다.
+하지만 그 과정에서 3D 레이아웃(slot 배치, parallax speed, fade 타이밍)에 대한 감을 잡을 수 있었고, 이를 CSS 3D transform으로 옮기니 훨씬 나은 결과를 얻었다.
+AI 코드 생성도 한 번에 완벽한 결과를 기대하기보단, 먼저 프로토타입을 만들어보고 그 경험을 다음 구현에 반영하는 접근이 효과적이었다.

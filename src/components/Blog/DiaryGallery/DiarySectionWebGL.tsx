@@ -1,13 +1,40 @@
 import type { DiaryImage, DiarySectionProps } from './types';
-import { ImageLightbox } from '@/components/ui/image-lightbox';
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import { Icon } from '@iconify/react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, invalidate, useFrame, useThree } from '@react-three/fiber';
 import { useScroll } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { ImageLightbox } from '@/components/ui/image-lightbox';
+import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import { DiaryImageOverlay } from './DiaryImageOverlay';
 import { DiaryThumbnailStrip } from './DiaryThumbnailStrip';
+
+// --- Texture cache (persists across mounts, avoids re-download & GPU leak) ---
+const textureCache = new Map<string, THREE.Texture>();
+const sharedLoader = new THREE.TextureLoader();
+sharedLoader.crossOrigin = 'anonymous';
+
+// --- Soft-edge alpha map (feathers plane borders so images blend into the scene) ---
+function createEdgeFadeAlphaMap(size = 128, feather = 0.06): THREE.DataTexture {
+  const data = new Uint8Array(size * size * 4);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / (size - 1);
+      const v = y / (size - 1);
+      const dEdge = Math.min(u, 1 - u, v, 1 - v);
+      const alpha = Math.round(THREE.MathUtils.smoothstep(dEdge, 0, feather) * 255);
+      const i = (y * size + x) * 4;
+      data[i] = alpha;     // R
+      data[i + 1] = alpha; // G — alphaMap samples this channel
+      data[i + 2] = alpha; // B
+      data[i + 3] = 255;   // A
+    }
+  }
+  const tex = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+  tex.needsUpdate = true;
+  return tex;
+}
+const edgeFadeMap = createEdgeFadeAlphaMap();
 
 // --- Slot layout for 3D image planes ---
 type PlaneSlot = {
@@ -22,14 +49,15 @@ type PlaneSlot = {
 function buildSlots(count: number): PlaneSlot[] {
   // 5-slot cycling pattern: center-crossing organic layout
   const patterns: { x: number; z: number; scale: number; rotY: number }[] = [
-    { x: -0.8, z: -0.5, scale: 1.3, rotY: -0.3 }, // Center-left, large, near
-    { x: 2.0, z: -2.0, scale: 1.0, rotY: 0.35 }, // Right, medium, mid
-    { x: 0.3, z: -0.8, scale: 1.2, rotY: -0.25 }, // Center, large, near
-    { x: -2.5, z: -3.5, scale: 0.7, rotY: -0.4 }, // Far-left, small, far
-    { x: 1.2, z: -1.5, scale: 1.0, rotY: 0.28 }, // Center-right, medium, mid-near
+    { x: -0.8, z: -0.6, scale: 1.1, rotY: -0.3 }, // Center-left, near
+    { x: 2.0, z: -1.4, scale: 1.0, rotY: 0.35 }, // Right, mid
+    { x: 0.3, z: -0.8, scale: 1.1, rotY: -0.25 }, // Center, near
+    { x: -2.2, z: -1.8, scale: 0.95, rotY: -0.4 }, // Left, mid
+    { x: 1.2, z: -1.0, scale: 1.05, rotY: 0.28 }, // Center-right, mid-near
   ];
 
   const PHI = 1.618033988749895;
+  const sizeBoost = count <= 4 ? 1.4 : 1;
   const slots: PlaneSlot[] = [];
   for (let i = 0; i < count; i++) {
     const pat = patterns[i % patterns.length];
@@ -40,10 +68,10 @@ function buildSlots(count: number): PlaneSlot[] {
     slots.push({
       x: pat.x + drift,
       z: pat.z - cycle * 0.3,
-      baseY: -1.5 - i * 2.0,
+      baseY: -0.5 - i * 2.0,
       speed: 0.6 + depth * 0.8,
       rotY: pat.rotY + drift * 0.1,
-      scale: pat.scale,
+      scale: pat.scale * sizeBoost,
     });
   }
   return slots;
@@ -55,24 +83,39 @@ type ImagePlaneProps = {
   slot: PlaneSlot;
   scrollProgressRef: React.RefObject<{ value: number }>;
   totalTravel: number;
-  onClick: () => void;
+  index: number;
+  onImageClick: (index: number) => void;
   onLoad: () => void;
 };
 
-function ImagePlane({ image, slot, scrollProgressRef, totalTravel, onClick, onLoad }: ImagePlaneProps) {
+function ImagePlane({ image, slot, scrollProgressRef, totalTravel, index, onImageClick, onLoad }: ImagePlaneProps) {
   const meshRef = useRef<THREE.Mesh>(null);
+  const matRef = useRef<THREE.MeshStandardMaterial>(null);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [aspect, setAspect] = useState(1.5);
 
   const resolvedSrc = getBasePathWithUrl(image.src);
 
   useEffect(() => {
-    const loader = new THREE.TextureLoader();
-    loader.crossOrigin = 'anonymous';
-    loader.load(
+    let cancelled = false;
+
+    const cached = textureCache.get(resolvedSrc);
+    if (cached) {
+      setTexture(cached);
+      if (cached.image) {
+        setAspect(cached.image.width / cached.image.height);
+      }
+      onLoad();
+      return;
+    }
+
+    sharedLoader.load(
       resolvedSrc,
       (tex) => {
+        if (cancelled)
+          return;
         tex.colorSpace = THREE.SRGBColorSpace;
+        textureCache.set(resolvedSrc, tex);
         setTexture(tex);
         if (tex.image) {
           setAspect(tex.image.width / tex.image.height);
@@ -81,35 +124,45 @@ function ImagePlane({ image, slot, scrollProgressRef, totalTravel, onClick, onLo
       },
       undefined,
       () => {
-        onLoad();
+        if (!cancelled)
+          onLoad();
       },
     );
+
+    return () => {
+      cancelled = true;
+    };
   }, [resolvedSrc, onLoad]);
 
   const planeWidth = 3.2 * slot.scale;
   const planeHeight = planeWidth / aspect;
 
   useFrame(() => {
-    if (!meshRef.current || !scrollProgressRef.current)
+    const mesh = meshRef.current;
+    const mat = matRef.current;
+    if (!mesh || !mat || !scrollProgressRef.current)
       return;
+
     const progress = scrollProgressRef.current.value;
 
     // Move upward based on scroll
-    const yOffset = progress * totalTravel * slot.speed;
-    meshRef.current.position.y = slot.baseY + yOffset;
+    mesh.position.y = slot.baseY + progress * totalTravel * slot.speed;
 
-    // More dramatic tilt changes with scroll
-    meshRef.current.rotation.x = Math.sin(progress * Math.PI) * 0.12;
-    meshRef.current.rotation.y = slot.rotY + Math.sin(progress * Math.PI * 2) * 0.08;
+    // Tilt changes with scroll
+    mesh.rotation.x = Math.sin(progress * Math.PI) * 0.12;
+    mesh.rotation.y = slot.rotY + Math.sin(progress * Math.PI * 2) * 0.08;
 
-    // Fade via material opacity — wider bounds for larger travel
-    const yPos = meshRef.current.position.y;
-    const fadeIn = THREE.MathUtils.smoothstep(yPos, -8, -4);
-    const fadeOut = THREE.MathUtils.smoothstep(yPos, 5, 9);
-    const opacity = fadeIn * (1 - fadeOut);
-    const mat = meshRef.current.material as THREE.MeshStandardMaterial;
-    mat.opacity = opacity;
+    // Fade via material opacity
+    const yPos = mesh.position.y;
+    const fadeIn = THREE.MathUtils.smoothstep(yPos, -6, -2);
+    const fadeOut = THREE.MathUtils.smoothstep(yPos, 5, 8);
+    mat.opacity = fadeIn * (1 - fadeOut);
   });
+
+  const handleClick = useCallback((e: THREE.Event) => {
+    (e as unknown as Event & { stopPropagation: () => void }).stopPropagation();
+    onImageClick(index);
+  }, [onImageClick, index]);
 
   if (!texture)
     return null;
@@ -119,14 +172,13 @@ function ImagePlane({ image, slot, scrollProgressRef, totalTravel, onClick, onLo
       ref={meshRef}
       position={[slot.x, slot.baseY, slot.z]}
       rotation={[0, slot.rotY, 0]}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
+      onClick={handleClick}
     >
       <planeGeometry args={[planeWidth, planeHeight]} />
       <meshStandardMaterial
+        ref={matRef}
         map={texture}
+        alphaMap={edgeFadeMap}
         transparent
         opacity={1}
         side={THREE.DoubleSide}
@@ -159,6 +211,9 @@ function CameraController({ scrollProgressRef }: CameraControllerProps) {
   return null;
 }
 
+// --- Detect mobile for adaptive quality ---
+const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent);
+
 // --- Main WebGL Section ---
 export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -173,7 +228,9 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
     setLoadedCount((c) => c + 1);
   }, []);
 
-  const scrollHeight = Math.max(300, images.length * 90 + 120);
+  const scrollHeight = images.length <= 4
+    ? Math.max(200, images.length * 50 + 80)
+    : images.length * 60 + 100;
 
   // Lock page scroll while images are loading
   useEffect(() => {
@@ -187,13 +244,15 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start end', 'end start'],
+    offset: ['start center', 'end start'],
   });
 
   // Sync framer-motion MotionValue → mutable ref for Three.js useFrame
+  // invalidate() triggers a single frame render (Canvas is frameloop="demand")
   useEffect(() => {
     const unsubscribe = scrollYProgress.on('change', (v) => {
       scrollProgressRef.current.value = v;
+      invalidate();
     });
     return unsubscribe;
   }, [scrollYProgress]);
@@ -201,16 +260,27 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
   const slots = useMemo(() => buildSlots(images.length), [images.length]);
   const totalTravel = 10 + images.length * 1.5;
 
-  const toolbarRender = DiaryImageOverlay({ images });
-  const lightboxImages = images.map((img) => ({
-    src: getBasePathWithUrl(img.src),
-    key: img.src,
-  }));
+  const toolbarRender = useMemo(() => DiaryImageOverlay({ images }), [images]);
+  const lightboxImages = useMemo(
+    () => images.map((img) => ({
+      src: getBasePathWithUrl(img.src),
+      key: img.src,
+    })),
+    [images],
+  );
 
-  const handleImageClick = (index: number) => {
+  const handleImageClick = useCallback((index: number) => {
     setLightboxIndex(index);
     setLightboxVisible(true);
-  };
+  }, []);
+
+  const handleLightboxClose = useCallback(() => setLightboxVisible(false), []);
+
+  const glConfig = useMemo(() => ({
+    antialias: !isMobile,
+    alpha: false,
+    powerPreference: 'high-performance' as const,
+  }), []);
 
   if (images.length === 0)
     return null;
@@ -244,8 +314,9 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
           <Canvas
             className="!absolute inset-0"
             camera={{ position: [0, 0, 5.5], fov: 55 }}
-            dpr={[1, 1.5]}
-            gl={{ antialias: true, alpha: true }}
+            frameloop="demand"
+            dpr={[1, isMobile ? 1 : 1.5]}
+            gl={glConfig}
           >
             <color attach="background" args={['#0a0a0a']} />
             <fog attach="fog" args={['#0a0a0a', 8, 16]} />
@@ -263,7 +334,8 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
                 slot={slots[index]}
                 scrollProgressRef={scrollProgressRef}
                 totalTravel={totalTravel}
-                onClick={() => handleImageClick(index)}
+                index={index}
+                onImageClick={handleImageClick}
                 onLoad={handleImageLoad}
               />
             ))}
@@ -302,7 +374,7 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
       <ImageLightbox
         images={lightboxImages}
         visible={lightboxVisible}
-        onClose={() => setLightboxVisible(false)}
+        onClose={handleLightboxClose}
         index={lightboxIndex}
         onIndexChange={setLightboxIndex}
         toolbarRender={toolbarRender}

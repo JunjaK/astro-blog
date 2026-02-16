@@ -10,7 +10,9 @@
     "conv-loader": "node ./src/utils/convertLoader.js",
     "remove-unused": "node ./src/utils/removeUnusedImages.js",
     "add-md-enter": "node ./src/utils/addMdEnter.js",
-    "all-preprocess-md": "node ./src/utils/removeUnusedImages.js && node ./src/utils/addMdEnter.js && node ./src/utils/convertLoader.js",
+    "generate-thumbs": "node ./src/utils/generateThumbnails.js",
+    "generate-thumbs:dry": "node ./src/utils/generateThumbnails.js --dry-run",
+    "all-preprocess-md": "node ./src/utils/generateThumbnails.js && node ./src/utils/removeUnusedImages.js && node ./src/utils/addMdEnter.js && node ./src/utils/convertLoader.js",
     "astro": "astro"
   },
   "dependencies": {
@@ -112,6 +114,7 @@
     "mdast-util-to-hast": "^13.2.1",
     "reading-time": "^1.5.0",
     "sass": "^1.97.3",
+    "sharp": "^0.34.5",
     "unist-util-visit": "^5.1.0"
   }
 }
