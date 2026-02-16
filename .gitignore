@@ -24,6 +24,9 @@ bun-debug.log*
 .idea/
 image-assets/
 
+# python venv
+.venv/
+
 # playwright mcp temp files
 .playwright-mcp/
 
