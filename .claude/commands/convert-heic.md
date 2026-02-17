@@ -16,17 +16,23 @@ If no argument provided, ask the user which MDX file to process.
 
 ## Step 1: Determine paths
 
-Derive from the MDX file path:
-- `src/content/<rest>/filename.mdx` → server prefix: `/files/<rest>/assets/`
-- Local image dir: `image-assets/<rest>/assets/`
-- Typora source dir: `/Users/jun/Library/CloudStorage/OneDrive-개인/문서/typoraDoc/Trip/전국일주 일기(2024.11.28 ~ 12.24)/`
-- Typora md file: same `filename.md` in the Typora source dir
+Derive from the MDX file path `src/content/blog/diary/{series}/{file}.mdx`:
+- Server prefix: `/files/blog/diary/{series}/assets/`
+- Local image dir: `image-assets/blog/diary/{series}/assets/`
+- **Typora path derivation**:
+  - Default: `{year}` = `20` + first 2 chars of `{series}` (e.g. `25-01-tokyo` → `2025`)
+  - Typora source dir: `/Users/jun/Library/CloudStorage/OneDrive-개인/문서/typoraDoc/Trip/{year}/{series}/`
+  - **Special case**: `japan-around-trip` → `/Users/jun/Library/CloudStorage/OneDrive-개인/문서/typoraDoc/Trip/전국일주 일기(2024.11.28 ~ 12.24)/`
+- Typora md file: same `{file}.md` in the Typora source dir
 - Typora assets dir: `<Typora source dir>/assets/`
-- Example: `src/content/blog/diary/japan-around-trip/27_12-23.mdx`
+- Example 1: `src/content/blog/diary/japan-around-trip/27_12-23.mdx`
   - Server: `/files/blog/diary/japan-around-trip/assets/`
   - Local: `image-assets/blog/diary/japan-around-trip/assets/`
   - Typora md: `/Users/jun/Library/CloudStorage/OneDrive-개인/문서/typoraDoc/Trip/전국일주 일기(2024.11.28 ~ 12.24)/27_12-23.md`
-  - Typora assets: `/Users/jun/Library/CloudStorage/OneDrive-개인/문서/typoraDoc/Trip/전국일주 일기(2024.11.28 ~ 12.24)/assets/`
+- Example 2: `src/content/blog/diary/25-01-tokyo/01_01-20.mdx`
+  - Server: `/files/blog/diary/25-01-tokyo/assets/`
+  - Local: `image-assets/blog/diary/25-01-tokyo/assets/`
+  - Typora md: `/Users/jun/Library/CloudStorage/OneDrive-개인/문서/typoraDoc/Trip/2025/25-01-tokyo/01_01-20.md`
 
 ## Step 2: Find and convert HEIC files
 
@@ -94,4 +100,4 @@ rm image-assets/to_convert_webp/*.heic
 - Browsers do NOT support HEIC natively. WebP has full modern browser support.
 - `image-assets/to_convert_webp/` is staging only, cleaned after conversion.
 - `sips` on macOS does NOT reliably support WebP output — always use the Python script.
-- The Typora source dir is specifically for the japan-around-trip diary series. For other content types, this step may not apply — skip Steps 4-6 if no matching Typora source exists.
+- Typora path is auto-derived from the series name. For `japan-around-trip`, a special case maps to the Korean directory name. For other series, it uses `typoraDoc/Trip/{year}/{series}/` where year = `20` + first 2 chars of series. Skip Steps 4-5 if no matching Typora source exists.

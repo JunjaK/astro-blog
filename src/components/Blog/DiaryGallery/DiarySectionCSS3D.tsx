@@ -93,13 +93,31 @@ function CSS3DImageCard({
   onLoad,
 }: CSS3DImageCardProps) {
   const imgRef = useRef<HTMLImageElement>(null);
+  const [aspectRatio, setAspectRatio] = useState(0);
+
+  const handleLoad = useCallback(() => {
+    if (imgRef.current) {
+      const { naturalWidth, naturalHeight } = imgRef.current;
+      if (naturalWidth && naturalHeight) {
+        setAspectRatio(naturalWidth / naturalHeight);
+      }
+    }
+    onLoad();
+  }, [onLoad]);
 
   // Handle images already loaded before React hydration attached onLoad
   useEffect(() => {
     if (imgRef.current?.complete) {
-      onLoad();
+      handleLoad();
     }
-  }, [onLoad]);
+  }, [handleLoad]);
+
+  // Boost width for landscape images so they appear at comparable visual size to portrait
+  const effectiveWidth = useMemo(() => {
+    if (!aspectRatio || aspectRatio <= 1.2) return slot.widthPercent;
+    const boost = Math.min(1.6, aspectRatio * 0.85);
+    return Math.min(70, slot.widthPercent * boost);
+  }, [aspectRatio, slot.widthPercent]);
 
   const stagger = index / Math.max(totalImages, 1);
 
@@ -153,7 +171,7 @@ function CSS3DImageCard({
       className="absolute cursor-pointer will-change-transform"
       style={{
         left: `${slot.leftPercent}%`,
-        width: `${slot.widthPercent}%`,
+        width: `${effectiveWidth}%`,
         top: '100px',
         y,
         opacity,
@@ -182,7 +200,7 @@ function CSS3DImageCard({
           loading="eager"
           className="h-auto w-full object-cover"
           draggable={false}
-          onLoad={onLoad}
+          onLoad={handleLoad}
           onError={onLoad}
         />
       </div>
