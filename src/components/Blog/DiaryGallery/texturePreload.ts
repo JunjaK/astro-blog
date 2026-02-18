@@ -17,13 +17,17 @@ async function downscale(tex: THREE.Texture): Promise<void> {
   if (!img || (img.width <= MAX_TEXTURE_SIZE && img.height <= MAX_TEXTURE_SIZE)) return;
 
   const scale = MAX_TEXTURE_SIZE / Math.max(img.width, img.height);
+  // imageOrientation: 'flipY' bakes the vertical flip into the bitmap,
+  // because WebGL's UNPACK_FLIP_Y_WEBGL doesn't work with ImageBitmap.
   const bitmap = await createImageBitmap(img, {
     resizeWidth: Math.round(img.width * scale),
     resizeHeight: Math.round(img.height * scale),
     resizeQuality: 'medium',
+    imageOrientation: 'flipY',
   });
 
   tex.image = bitmap;
+  tex.flipY = false;
   tex.needsUpdate = true;
 }
 
@@ -39,8 +43,12 @@ export function loadTexture(url: string): Promise<THREE.Texture> {
     loader.load(
       url,
       async (tex) => {
-        tex.colorSpace = THREE.SRGBColorSpace;
-        await downscale(tex);
+        try {
+          tex.colorSpace = THREE.SRGBColorSpace;
+          await downscale(tex);
+        } catch {
+          // createImageBitmap can fail on some browsers/cached resources — proceed without downscale
+        }
         textureCache.set(url, tex);
         pendingLoads.delete(url);
         resolve(tex);

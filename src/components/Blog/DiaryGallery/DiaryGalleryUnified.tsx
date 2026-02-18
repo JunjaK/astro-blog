@@ -1,15 +1,15 @@
 import type { DiaryGalleryUnifiedProps, DiaryImage } from './types';
 import { Icon } from '@iconify/react';
 import { Canvas, invalidate, useFrame, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
 import { useScroll } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import * as THREE from 'three';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
 import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import { buildUnifiedSlots, getTotalTravel, type UnifiedSlot } from './buildUnifiedLayout';
 import { DiaryImageOverlay } from './DiaryImageOverlay';
 import { DiaryThumbnailStrip } from './DiaryThumbnailStrip';
-import { UnifiedImagePlane, type MeshRegistry } from './UnifiedImagePlane';
+import { type MeshRegistry, UnifiedImagePlane } from './UnifiedImagePlane';
 import { UnifiedTextOverlay } from './UnifiedTextOverlay';
 import { getScrollState, useUnifiedSectionRanges } from './useUnifiedScroll';
 
@@ -29,7 +29,8 @@ function SceneController({
   const startY = 2;
 
   useFrame(() => {
-    if (!scrollProgressRef.current) return;
+    if (!scrollProgressRef.current)
+      return;
     const progress = scrollProgressRef.current.value;
 
     // Camera movement
@@ -46,7 +47,8 @@ function SceneController({
       const absRelY = Math.abs(relY);
 
       mesh.visible = absRelY < 10;
-      if (!mesh.visible) continue;
+      if (!mesh.visible)
+        continue;
 
       mesh.rotation.x = Math.sin(progress * Math.PI) * 0.12;
       mesh.rotation.y = slots[i].rotY + Math.sin(progress * Math.PI * 2) * 0.08;
@@ -54,7 +56,8 @@ function SceneController({
       if (relY > 0) {
         // Leaving viewport upward — fade out when ~30% visible
         mat.opacity = 1 - THREE.MathUtils.smoothstep(relY, 2.0, 3.5);
-      } else {
+      }
+      else {
         // Entering viewport from below — fade in when ~20% visible
         mat.opacity = 1 - THREE.MathUtils.smoothstep(-relY, 2.5, 4.0);
       }
@@ -165,7 +168,8 @@ export function DiaryGalleryUnified({ sections, children }: DiaryGalleryUnifiedP
   // Thumbnail strip: show current section's media as DiaryImage-compatible items
   const { currentSectionThumbnails, currentVideoIndices } = useMemo(() => {
     const s = sections[currentSection];
-    if (!s) return { currentSectionThumbnails: [] as DiaryImage[], currentVideoIndices: new Set<number>() };
+    if (!s)
+      return { currentSectionThumbnails: [] as DiaryImage[], currentVideoIndices: new Set<number>() };
     const items: DiaryImage[] = s.images.map((img) => ({ src: img.src, alt: img.alt, tags: img.tags }));
     const vidIdx = new Set<number>();
     for (const vid of s.videos ?? []) {
@@ -194,7 +198,8 @@ export function DiaryGalleryUnified({ sections, children }: DiaryGalleryUnifiedP
     [allMedia],
   );
 
-  if (totalImages === 0) return null;
+  if (totalImages === 0)
+    return null;
 
   return (
     <>
@@ -209,7 +214,10 @@ export function DiaryGalleryUnified({ sections, children }: DiaryGalleryUnifiedP
             <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-[#0a0a0a]">
               <Icon icon="svg-spinners:bars-rotate-fade" className="text-4xl text-white" />
               <p className="mt-2 text-sm text-white/70">
-                {loadedCount} / {totalImages}
+                {loadedCount}
+                {' '}
+                /
+                {totalImages}
               </p>
             </div>
           )}
