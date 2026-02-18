@@ -11,6 +11,7 @@ Takes a raw Typora-exported diary MDX file and processes it end-to-end:
 2. Image path normalization (relative → server `/files/` paths)
 3. DiarySection component restructuring
 4. Typora source sync
+5. Gallery thumbnail generation
 
 ## Arguments
 
@@ -94,13 +95,21 @@ Ask the user: **"Which heading marks the start of DiarySection content?"** (defa
 3. **Leave existing** `./assets/*.webp`, `./assets/*.png` as-is
 4. **Update video** tags to use relative `./assets/` paths
 
-## Step 7: Report
+## Step 7: Generate gallery thumbnails
+
+Run `bun run generate-gallery-thumbs` to create 192x192 cover-cropped WebP thumbnails for the gallery strip.
+- Thumbnails go to `image-assets/blog/diary/{series}/assets/thumbnail/`
+- Convention: `/files/.../assets/photo.webp` → `/files/.../assets/thumbnail/photo.webp`
+- Skips thumbnails that are already newer than the original (incremental)
+
+## Step 8: Report
 
 - Number of HEIC files converted to WebP
 - Number of non-HEIC assets copied
 - Number of DiarySection components created
 - Number of paths updated in MDX and Typora source
-- Remind user to run `/publish-images` when server is available
+- Number of gallery thumbnails generated
+- Remind user to run `/publish-images` when server is available (include `thumbnail/` subfolder)
 
 ## Notes
 

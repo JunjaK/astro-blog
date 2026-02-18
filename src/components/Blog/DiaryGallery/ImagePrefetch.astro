@@ -1,0 +1,24 @@
+---
+// Renders <link> tags for gallery images.
+// First section: rel="preload" fetchpriority="high" (loads immediately for faster hero).
+// Remaining sections: rel="prefetch" (low priority, idle-time).
+
+import type { DiaryGallerySectionData } from './types';
+
+interface Props {
+  sections: DiaryGallerySectionData[];
+}
+
+const { sections } = Astro.props;
+const firstSectionCount = sections[0]?.images.length ?? 0;
+const urls = sections.flatMap((s) => s.images.map((img) => img.src));
+const preloadUrls = urls.slice(0, firstSectionCount);
+const prefetchUrls = urls.slice(firstSectionCount);
+---
+
+{preloadUrls.map((url) => (
+  <link rel="preload" as="image" href={url} fetchpriority="high" />
+))}
+{prefetchUrls.map((url) => (
+  <link rel="prefetch" as="image" href={url} />
+))}

@@ -58,6 +58,7 @@ export default defineConfig({
             const filePath = path.join(process.cwd(), 'image-assets', req.url);
             if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
               res.setHeader('Content-Type', lookup(filePath) || 'application/octet-stream');
+              res.setHeader('Cache-Control', 'public, max-age=86400');
               fs.createReadStream(filePath).pipe(res);
             }
             else {

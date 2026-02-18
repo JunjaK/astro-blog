@@ -1,5 +1,5 @@
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl.ts';
 import * as React from 'react';
+import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl.ts';
 
 type ImageLoaderProps = {
   src?: string;

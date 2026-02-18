@@ -17,8 +17,8 @@ const FLAGS = {
 // Size presets per collection
 const PRESETS = {
   blog: { width: 256, height: 256, fit: 'cover' },
-  project: { width: 800, fit: 'inside' },
-  playground: { width: 800, fit: 'inside' },
+  project: { width: 400, fit: 'inside' },
+  playground: { width: 400, fit: 'inside' },
 };
 
 function getCollection(filePath) {

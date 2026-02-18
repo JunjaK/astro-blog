@@ -6,39 +6,12 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import type { UnifiedSlot } from './buildUnifiedLayout';
-
-// --- Shared across all instances ---
-const textureCache = new Map<string, THREE.Texture>();
-const sharedLoader = new THREE.TextureLoader();
-// Images are same-origin (/files/...) — override Three.js default 'anonymous'
-// to avoid CORS check (nginx doesn't send CORS headers).
-sharedLoader.crossOrigin = '';
+import { loadTexture, textureCache } from './texturePreload';
 
 const sharedPlaneGeo = new THREE.PlaneGeometry(1, 1);
 
-function createEdgeFadeAlphaMap(size = 128, feather = 0.06): THREE.DataTexture {
-  const data = new Uint8Array(size * size * 4);
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const u = x / (size - 1);
-      const v = y / (size - 1);
-      const dEdge = Math.min(u, 1 - u, v, 1 - v);
-      const alpha = Math.round(THREE.MathUtils.smoothstep(dEdge, 0, feather) * 255);
-      const i = (y * size + x) * 4;
-      data[i] = alpha;
-      data[i + 1] = alpha;
-      data[i + 2] = alpha;
-      data[i + 3] = 255;
-    }
-  }
-  const tex = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
-  tex.needsUpdate = true;
-  return tex;
-}
-const edgeFadeMap = createEdgeFadeAlphaMap();
-
 // --- Mesh registry type (shared with parent SceneController) ---
-export type MeshRegistryEntry = { mesh: THREE.Mesh; mat: THREE.MeshStandardMaterial };
+export type MeshRegistryEntry = { mesh: THREE.Mesh; mat: THREE.MeshBasicMaterial };
 export type MeshRegistry = Map<number, MeshRegistryEntry>;
 
 // --- Component ---
@@ -60,13 +33,13 @@ export const UnifiedImagePlane = memo(function UnifiedImagePlane({
   onLoad,
 }: UnifiedImagePlaneProps) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const matRef = useRef<THREE.MeshStandardMaterial>(null);
+  const matRef = useRef<THREE.MeshBasicMaterial>(null);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [aspect, setAspect] = useState(1.5);
 
   const resolvedSrc = getBasePathWithUrl(textureSrc);
 
-  // Texture loading
+  // Texture loading — reuses preloaded cache and deduplicates in-flight requests
   useEffect(() => {
     let cancelled = false;
 
@@ -78,22 +51,17 @@ export const UnifiedImagePlane = memo(function UnifiedImagePlane({
       return;
     }
 
-    sharedLoader.load(
-      resolvedSrc,
-      (tex) => {
+    loadTexture(resolvedSrc)
+      .then((tex) => {
         if (cancelled) return;
-        tex.colorSpace = THREE.SRGBColorSpace;
-        textureCache.set(resolvedSrc, tex);
-        setTexture(tex);
         if (tex.image) setAspect(tex.image.width / tex.image.height);
+        setTexture(tex);
         invalidate();
         onLoad();
-      },
-      undefined,
-      () => {
+      })
+      .catch(() => {
         if (!cancelled) onLoad();
-      },
-    );
+      });
 
     return () => { cancelled = true; };
   }, [resolvedSrc, onLoad]);
@@ -127,15 +95,12 @@ export const UnifiedImagePlane = memo(function UnifiedImagePlane({
       geometry={sharedPlaneGeo}
       onClick={handleClick}
     >
-      <meshStandardMaterial
+      <meshBasicMaterial
         ref={matRef}
         map={texture}
-        alphaMap={edgeFadeMap}
         transparent
         opacity={1}
         side={THREE.DoubleSide}
-        roughness={0.3}
-        metalness={0.05}
       />
     </mesh>
   );
