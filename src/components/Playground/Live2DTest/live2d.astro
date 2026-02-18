@@ -25,6 +25,8 @@ function loadExternalResource(url: string, type: 'css' | 'js') {
 function loadLive2D() {
   if (location.pathname !== '/playground/live2d')
     return;
+  if (document.getElementById('waifu'))
+    return;
 
   const live2d_path = '/live2d/';
 
