@@ -2,7 +2,6 @@
 import type { CollectionEntry } from 'astro:content';
 import FloatButton from '@/components/layouts/FloatButton.astro';
 import Footer from '@/components/layouts/Footer';
-import Live2DWidget from '@/components/layouts/Live2DWidget.astro';
 import Navigation from '@/components/layouts/Navigation';
 
 import ScrollProgress from '@/components/ui/scroll-progress';
@@ -83,7 +82,6 @@ const { title, techStacks = [], description } = post;
 <Footer client:visible />
 <FloatButton />
 <CommonScript />
-<Live2DWidget />
 </body>
 </html>
 

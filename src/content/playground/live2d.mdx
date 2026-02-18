@@ -1,31 +1,30 @@
----  
+---
 title: live 2d Test
 duration: 2025-03-07 ~ current
-techStacks: ['typescript','astro']  
+techStacks: ['typescript','astro']
 thumbnail: /files/playground/live2d-test.png
 description: Web Page Live2D Widget 구현 테스트 페이지입니다.
----  
+---
 
 import ProjectInfo from '@/components/Project/ProjectInfo.astro';
-import Live2DTest from '@/components/Playground/Live2DTest/live2d.astro';
+import Live2DWidget from '@/components/layouts/Live2DWidget.astro';
 
 <ProjectInfo frontmatter={frontmatter} />
 
 ## 설명
-아래 라이브러리를 활용한 Web Page Live2D Widget 구현 테스트 페이지입니다.    
+아래 라이브러리를 활용한 Web Page Live2D Widget 구현 테스트 페이지입니다.
 현 페이지 진입 후 약 2초 정도 지나면 좌측 하단에 모델이 로딩되어 나옵니다.
 
-- [GithubLink](https://github.com/stevenjoezhang/live2d-widget)  
+- [GithubLink](https://github.com/stevenjoezhang/live2d-widget)
 - [fork 떠서 작업 중인 repo](https://github.com/JunjaK/live2d-widget)
+
 ## 작업 내용
-- 중국어로 되어 있던 메시지 한글로 변경
-- 기본 로딩 모델링 변경
-- css 일부 수정
+- Cubism 5 지원 (live2d-widgets v1.0)
+- 모델: Frieren, ANIYA, Hiyori (모델 교체 가능)
+- 한/일/영 대사 적용
+- shadcn 디자인 토큰 스타일 적용
+- mingcute 아이콘 적용
+- 드래그 위치 조정 및 localStorage 저장
+- Cache API를 활용한 모델 파일 캐싱
 
-## 추가 작업 예정
-- 내가 원하는 live2d 모델 추가
-- UI 조정 (아이콘 변경 메시지 UI 등)
-
-
-
-<Live2DTest />
+<Live2DWidget />

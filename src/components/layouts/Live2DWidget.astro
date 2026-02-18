@@ -1,9 +1,12 @@
 ---
 // Live2D Widget (Cubism 5)
+// Only renders on pages that include this component (marker-based guard)
 // Re-initializes on each SPA navigation via astro:page-load
 // Model assets are browser-cached so re-init is fast after first load
 // Styles override CDN waifu.css with shadcn design tokens
 ---
+
+<div id="live2d-mount" data-live2d></div>
 
 <style is:global>
   /* --- Toggle button (slide-in tab) --- */
@@ -241,9 +244,10 @@ function cleanup() {
 // Destroy widget before swap so no stale DOM leaks into new page
 document.addEventListener('astro:before-swap', cleanup);
 
-// (Re-)initialize on every page load — initial + SPA navigations
+// (Re-)initialize on every page load — only if marker element exists
 document.addEventListener('astro:page-load', () => {
   if (window.innerWidth < 768) return;
+  if (!document.querySelector('[data-live2d]')) { cleanup(); return; }
 
   // Already initialized on this page (e.g. first load where CDN was fast)
   if (document.getElementById('waifu')) return;
