@@ -106,4 +106,10 @@ function processMarkdownFiles(folderPath) {
   }
 }
 
-processMarkdownFiles('./src/content/blog/**/*.mdx');
+export { convertFrontmatterThumb, convertToImageLoader, convertToVideoLoader };
+
+// CLI execution
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+if (isMainModule) {
+  processMarkdownFiles('./src/content/blog/**/*.mdx');
+}
