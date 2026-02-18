@@ -143,6 +143,18 @@ playground: { title, duration, techStacks?, thumbnail?, description? }
 - **SSH access**: `ssh raspi` (key-based auth via `~/.ssh/config`)
 - **Skills**: `/publish-images` (rsync + preprocess), `/preprocess-md` (preprocess only)
 
+## E2E Testing
+
+- **Framework**: Playwright (`@playwright/test`)
+- **Config**: `playwright.config.ts` (chromium + mobile-chrome projects)
+- **Test files**: `e2e/*.noauth.spec.ts` (no auth), `e2e/*.spec.ts` (auth)
+- **All outputs live under `e2e/`** (gitignored):
+  - `e2e/screenshots/` — debug screenshots
+  - `e2e/etc/` — console logs, misc debug artifacts
+  - `e2e/test-results/` — Playwright test artifacts (traces, diffs)
+  - `e2e/report/` — Playwright HTML report
+- **Never** leave screenshots or debug files in the project root
+
 ## Notes
 
 - `@minpluto/zorn` requires custom registry: `.npmrc` has `@minpluto:registry=https://js.registry.sudovanilla.org/`

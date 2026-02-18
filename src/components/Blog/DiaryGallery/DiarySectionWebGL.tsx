@@ -12,7 +12,8 @@ import { DiaryThumbnailStrip } from './DiaryThumbnailStrip';
 // --- Texture cache (persists across mounts, avoids re-download & GPU leak) ---
 const textureCache = new Map<string, THREE.Texture>();
 const sharedLoader = new THREE.TextureLoader();
-sharedLoader.crossOrigin = 'anonymous';
+// NOTE: Do NOT set crossOrigin='anonymous' — images are same-origin (/files/...)
+// and nginx doesn't send CORS headers.
 
 // --- Soft-edge alpha map (feathers plane borders so images blend into the scene) ---
 function createEdgeFadeAlphaMap(size = 128, feather = 0.06): THREE.DataTexture {

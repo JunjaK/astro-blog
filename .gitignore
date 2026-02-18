@@ -30,9 +30,11 @@ image-assets/
 # playwright mcp temp files
 .playwright-mcp/
 
-# playwright test outputs
-playwright-report/
-test-results/
+# e2e outputs (all under e2e/)
+e2e/screenshots/
+e2e/etc/
+e2e/test-results/
+e2e/report/
 
 # backup files
 image-assets-backup/

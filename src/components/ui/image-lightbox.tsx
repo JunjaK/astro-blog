@@ -3,8 +3,14 @@ import { AnimatePresence, motion, type PanInfo } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+type LightboxItem = {
+  src: string;
+  key?: string;
+  type?: 'image' | 'video';
+};
+
 type ImageLightboxProps = {
-  images: { src: string; key?: string }[];
+  images: LightboxItem[];
   visible: boolean;
   index: number;
   onClose: () => void;
@@ -110,6 +116,7 @@ export function ImageLightbox({
   };
 
   const handleDoubleClick = () => {
+    if (images[index]?.type === 'video') return;
     setZoomed((z) => {
       if (z) setDragOffset({ x: 0, y: 0 });
       return !z;
@@ -128,6 +135,7 @@ export function ImageLightbox({
 
   const currentImage = images[index];
   if (!currentImage) return null;
+  const isVideo = currentImage.type === 'video';
 
   const content = (
     <AnimatePresence>
@@ -217,20 +225,30 @@ export function ImageLightbox({
                   if (e.target === e.currentTarget) onClose();
                 }}
               >
-                <motion.img
-                  src={currentImage.src}
-                  alt=""
-                  className="max-h-[90vh] max-w-[90vw] select-none rounded-xl object-contain"
-                  draggable={false}
-                  onDoubleClick={handleDoubleClick}
-                  animate={{
-                    scale: zoomed ? ZOOM_SCALE : 1,
-                    x: zoomed ? dragOffset.x : 0,
-                    y: zoomed ? dragOffset.y : 0,
-                  }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  style={{ cursor: zoomed ? 'grab' : 'default' }}
-                />
+                {isVideo ? (
+                  <video
+                    src={currentImage.src}
+                    controls
+                    autoPlay
+                    className="max-h-[90vh] max-w-[90vw] select-none rounded-xl"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <motion.img
+                    src={currentImage.src}
+                    alt=""
+                    className="max-h-[90vh] max-w-[90vw] select-none rounded-xl object-contain"
+                    draggable={false}
+                    onDoubleClick={handleDoubleClick}
+                    animate={{
+                      scale: zoomed ? ZOOM_SCALE : 1,
+                      x: zoomed ? dragOffset.x : 0,
+                      y: zoomed ? dragOffset.y : 0,
+                    }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    style={{ cursor: zoomed ? 'grab' : 'default' }}
+                  />
+                )}
               </motion.div>
             </AnimatePresence>
           </div>
