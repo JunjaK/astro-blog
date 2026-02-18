@@ -1,54 +1,281 @@
-<script is:inline>
-(function () {
-  if (screen.width < 768) return;
+---
+// Live2D Widget (Cubism 5)
+// Re-initializes on each SPA navigation via astro:page-load
+// Model assets are browser-cached so re-init is fast after first load
+// Styles override CDN waifu.css with shadcn design tokens
+---
+
+<style is:global>
+  /* --- Toggle button (slide-in tab) --- */
+  #waifu-toggle {
+    background-color: hsl(var(--primary)) !important;
+    border-radius: var(--radius) !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    bottom: 66px !important;
+    padding: 8px !important;
+    transition: margin-left 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 50 !important;
+  }
+
+  #waifu-toggle svg {
+    color: hsl(var(--primary-foreground)) !important;
+    height: 24px !important;
+    width: 24px !important;
+  }
+
+  /* --- Main widget container --- */
+  #waifu {
+    margin-left: -30px !important;
+    transform: translateY(1px) !important;
+    z-index: 50 !important;
+  }
+
+  #waifu.waifu-active {
+    bottom: 24px !important;
+  }
+
+  #waifu:hover {
+    transform: translateY(-4px) !important;
+  }
+
+  /* --- Speech bubble (card style) --- */
+  #waifu-tips {
+    margin-left: 60px !important;
+    animation: none !important;
+    background-color: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: calc(var(--radius) * 2) !important;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
+    color: hsl(var(--card-foreground)) !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  #waifu-tips.waifu-tips-active {
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  #waifu-tips span {
+    color: hsl(var(--chart-2)) !important;
+    font-weight: 500 !important;
+  }
+
+  /* --- Toolbar (vertical icon bar) --- */
+  #waifu-tool {
+    background-color: hsl(var(--popover)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
+    gap: 2px !important;
+    padding: 4px !important;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  #waifu-tool span {
+    border-radius: calc(var(--radius) - 2px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px !important;
+    transition: background-color 0.15s !important;
+  }
+
+  #waifu-tool span:hover {
+    background-color: hsl(var(--accent)) !important;
+  }
+
+  #waifu-tool svg {
+    color: hsl(var(--muted-foreground)) !important;
+    height: 18px !important;
+    width: 18px !important;
+    transition: color 0.15s !important;
+  }
+
+  #waifu-tool span:hover svg {
+    color: hsl(var(--accent-foreground)) !important;
+  }
+</style>
+
+<script>
+const CDN = 'https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.0/dist/';
+const CACHE_NAME = 'live2d-assets-v1';
+
+// Cache-first fetch interceptor for live2d model/config files
+if ('caches' in window) {
+  const nativeFetch = window.fetch.bind(window);
+  window.fetch = async (...args: Parameters<typeof fetch>): Promise<Response> => {
+    const [input] = args;
+    const url = input instanceof Request ? input.url : String(input);
+
+    const shouldCache =
+      url.includes('/live2d/') || url.includes('live2dcubismcore');
+    if (!shouldCache) return nativeFetch(...args);
+
+    try {
+      const cache = await caches.open(CACHE_NAME);
+      const cached = await cache.match(url);
+      if (cached) return cached;
+
+      const response = await nativeFetch(...args);
+      if (response.ok) {
+        cache.put(url, response.clone());
+      }
+      return response;
+    } catch {
+      return nativeFetch(...args);
+    }
+  };
+}
+
+const WIDGET_CONFIG = {
+  waifuPath: '/live2d/waifu-tips.json',
+  cdnPath: '/files/live2d/',
+  cubism5Path: 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js',
+  tools: ['switch-model', 'photo', 'info', 'quit'],
+  logLevel: 'warn',
+  drag: true,
+};
+
+// Mingcute filled icons (https://icones.js.org/collection/mingcute)
+const ICONS: Record<string, string> = {
+  'waifu-tool-switch-model':
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M20 14a1.5 1.5 0 0 1 .144 2.993L20 17H7.621l1.44 1.44a1.5 1.5 0 0 1-2.008 2.224l-.114-.103l-3.829-3.83c-.974-.974-.34-2.617.991-2.725l.14-.006zM14.94 3.44a1.5 1.5 0 0 1 2.007-.104l.114.103l3.829 3.83c.974.974.34 2.617-.991 2.725l-.14.006H4a1.5 1.5 0 0 1-.144-2.993L4 7h12.379l-1.44-1.44a1.5 1.5 0 0 1 0-2.12Z"/></svg>',
+  'waifu-tool-photo':
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zm-7 4a5 5 0 1 0 0 10a5 5 0 0 0 0-10m0 2a3 3 0 1 1 0 6a3 3 0 0 1 0-6m7-3h-1a1 1 0 0 0-.117 1.993L18 8h1a1 1 0 0 0 .117-1.993z"/></svg>',
+  'waifu-tool-info':
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2m-.01 8H11a1 1 0 0 0-.117 1.993L11 12v4.99c0 .52.394.95.9 1.004l.11.006h.49a1 1 0 0 0 .596-1.803L13 16.134V11.01c0-.52-.394-.95-.9-1.004zM12 7a1 1 0 1 0 0 2a1 1 0 0 0 0-2"/></svg>',
+  'waifu-tool-quit':
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m12 14.122l5.303 5.303a1.5 1.5 0 0 0 2.122-2.122L14.12 12l5.304-5.303a1.5 1.5 0 1 0-2.122-2.121L12 9.879L6.697 4.576a1.5 1.5 0 1 0-2.122 2.12L9.88 12l-5.304 5.304a1.5 1.5 0 1 0 2.122 2.12z"/></svg>',
+};
+
+const TOGGLE_ICON =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 19a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1m6.364-2.05l.707.707a1 1 0 0 1-1.414 1.414l-.707-.707a1 1 0 0 1 1.414-1.414m-12.728 0a1 1 0 0 1 1.497 1.32l-.083.094l-.707.707a1 1 0 0 1-1.497-1.32l.083-.094zM12 6a6 6 0 1 1 0 12a6 6 0 0 1 0-12m-8 5a1 1 0 0 1 .117 1.993L4 13H3a1 1 0 0 1-.117-1.993L3 11zm17 0a1 1 0 1 1 0 2h-1a1 1 0 1 1 0-2zM4.929 4.929a1 1 0 0 1 1.32-.083l.094.083l.707.707a1 1 0 0 1-1.32 1.497l-.094-.083l-.707-.707a1 1 0 0 1 0-1.414m14.142 0a1 1 0 0 1 0 1.414l-.707.707a1 1 0 1 1-1.414-1.414l.707-.707a1 1 0 0 1 1.414 0M12 2a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1"/></svg>';
+
+function loadCSS(url: string) {
+  if (document.querySelector(`link[href="${url}"]`)) return Promise.resolve();
+  return new Promise<void>((resolve, reject) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = url;
+    link.onload = () => resolve();
+    link.onerror = () => reject();
+    document.head.appendChild(link);
+  });
+}
+
+function loadModule(url: string) {
+  if (document.querySelector(`script[src="${url}"]`)) return Promise.resolve();
+  return new Promise<void>((resolve, reject) => {
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = url;
+    script.onload = () => resolve();
+    script.onerror = () => reject();
+    document.head.appendChild(script);
+  });
+}
+
+function replaceIcons() {
+  for (const [id, svg] of Object.entries(ICONS)) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = svg;
+  }
+  const toggle = document.getElementById('waifu-toggle');
+  if (toggle) toggle.innerHTML = TOGGLE_ICON;
+}
+
+// --- Drag position persistence ---
+const POSITION_KEY = 'waifu-position';
+
+function savePosition() {
+  const waifu = document.getElementById('waifu');
+  if (!waifu) return;
+  const { left, bottom } = waifu.style;
+  if (left || bottom) {
+    localStorage.setItem(POSITION_KEY, JSON.stringify({ left, bottom }));
+  }
+}
+
+function restorePosition() {
+  const waifu = document.getElementById('waifu');
+  if (!waifu) return;
+  const saved = localStorage.getItem(POSITION_KEY);
+  if (!saved) return;
+  try {
+    const { left, bottom } = JSON.parse(saved);
+    if (left) waifu.style.left = left;
+    if (bottom) waifu.style.bottom = bottom;
+  } catch { /* ignore corrupt data */ }
+}
+
+document.addEventListener('mouseup', savePosition);
+document.addEventListener('touchend', savePosition);
+
+function waitForWidgetReady(maxRetries = 30) {
+  let retries = 0;
+  const check = () => {
+    const tool = document.getElementById('waifu-tool');
+    if (tool && tool.children.length > 0) {
+      replaceIcons();
+      restorePosition();
+    } else if (retries++ < maxRetries) {
+      setTimeout(check, 100);
+    }
+  };
+  check();
+}
+
+function startWidget() {
+  (window as any).initWidget(WIDGET_CONFIG);
+  waitForWidgetReady();
+}
+
+// Remove stale widget DOM left from previous page
+function cleanup() {
+  document.getElementById('waifu')?.remove();
+  document.getElementById('waifu-toggle')?.remove();
+}
+
+// Destroy widget before swap so no stale DOM leaks into new page
+document.addEventListener('astro:before-swap', cleanup);
+
+// (Re-)initialize on every page load — initial + SPA navigations
+document.addEventListener('astro:page-load', () => {
+  if (window.innerWidth < 768) return;
+
+  // Already initialized on this page (e.g. first load where CDN was fast)
   if (document.getElementById('waifu')) return;
 
-  var CDN = 'https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.0/dist/';
+  cleanup();
 
-  function loadCSS(url) {
-    if (document.querySelector('link[href="' + url + '"]')) return Promise.resolve();
-    return new Promise(function (resolve, reject) {
-      var link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = url;
-      link.onload = resolve;
-      link.onerror = reject;
-      document.head.appendChild(link);
-    });
+  if ((window as any).initWidget) {
+    // CDN already loaded — just ensure CSS and re-init
+    loadCSS(`${CDN}waifu.css`);
+    startWidget();
+  } else {
+    // First ever load — fetch CDN
+    Promise.all([
+      loadCSS(`${CDN}waifu.css`),
+      loadModule(`${CDN}waifu-tips.js`),
+    ]).then(() => startWidget());
   }
+});
 
-  function loadModule(url) {
-    if (document.querySelector('script[src="' + url + '"]')) return Promise.resolve();
-    return new Promise(function (resolve, reject) {
-      var script = document.createElement('script');
-      script.type = 'module';
-      script.src = url;
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
-  }
+// Fix: Cubism 5 rendering stalls after display:none (quit).
+// Intercept toggle click in capture phase to do a full re-init.
+document.addEventListener(
+  'click',
+  (e) => {
+    const target = (e.target as Element).closest('#waifu-toggle');
+    if (!target || !(window as any).initWidget) return;
+    e.stopPropagation();
 
-  Promise.all([
-    loadCSS(CDN + 'waifu.css'),
-    loadModule(CDN + 'waifu-tips.js'),
-  ]).then(function () {
-    initWidget({
-      waifuPath: '/live2d/waifu-tips.json',
-      cdnPath: '/live2d/',
-      cubism5Path: 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js',
-      tools: ['photo', 'info', 'quit'],
-      logLevel: 'warn',
-      drag: false,
-    });
-  });
-
-  // SPA persistence: move Live2D DOM nodes to new document on page swap
-  document.addEventListener('astro:before-swap', function (e) {
-    var waifu = document.getElementById('waifu');
-    var toggle = document.getElementById('waifu-toggle');
-    if (waifu) e.newDocument.body.appendChild(waifu);
-    if (toggle) e.newDocument.body.appendChild(toggle);
-  });
-})();
+    cleanup();
+    localStorage.removeItem('waifu-display');
+    startWidget();
+  },
+  true,
+);
 </script>

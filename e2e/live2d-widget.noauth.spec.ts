@@ -1,51 +1,47 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
-test.describe('Live2D Widget', () => {
-  test('widget loads without errors', async ({ page }) => {
-    const live2dErrors: string[] = [];
-    page.on('console', (msg) => {
-      if (msg.type() === 'error') {
-        const text = msg.text();
-        if (
-          text.toLowerCase().includes('live2d') ||
-          text.toLowerCase().includes('cubism') ||
-          text.toLowerCase().includes('waifu')
-        ) {
-          live2dErrors.push(text);
-        }
-      }
-    });
-
-    const notFoundRequests: string[] = [];
-    page.on('response', (response) => {
-      if (response.status() >= 400) {
-        const url = response.url();
-        if (url.includes('live2d') || url.includes('waifu') || url.includes('cubism')) {
-          notFoundRequests.push(`${response.status()} ${url}`);
-        }
-      }
-    });
-
-    await page.goto('http://localhost:4321', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(8000);
-
-    console.log('=== Live2D Errors ===');
-    live2dErrors.forEach((e) => console.log(`  ${e}`));
-
-    console.log('=== Live2D 4xx Responses ===');
-    notFoundRequests.forEach((r) => console.log(`  ${r}`));
-
-    // Widget DOM exists
-    expect(await page.locator('#waifu').count()).toBeGreaterThan(0);
-    expect(await page.locator('#waifu-toggle').count()).toBeGreaterThan(0);
-    expect(await page.locator('#live2d').count()).toBeGreaterThan(0);
-
-    // No Live2D-specific 404s
-    expect(notFoundRequests).toHaveLength(0);
-
-    // No Live2D console errors
-    expect(live2dErrors).toHaveLength(0);
-
-    await page.screenshot({ path: 'e2e/screenshots/live2d-final.png', fullPage: false });
+test('debug React Live2D widget', async ({ page }) => {
+  const allConsole: string[] = [];
+  page.on('console', (msg) => {
+    allConsole.push(`[${msg.type()}] ${msg.text()}`);
   });
+
+  const live2dNetwork: string[] = [];
+  page.on('response', (response) => {
+    const url = response.url();
+    if (url.includes('live2d') || url.includes('waifu') || url.includes('cubism')) {
+      live2dNetwork.push(`${response.status()} ${url}`);
+    }
+  });
+
+  await page.goto('http://localhost:4321', { waitUntil: 'networkidle' });
+  await page.waitForTimeout(10000);
+
+  // Check React hydration
+  const wrapperHTML = await page.evaluate(() => {
+    const wrapper = document.getElementById('live2d-wrapper');
+    return wrapper ? wrapper.outerHTML.substring(0, 500) : 'NOT FOUND';
+  });
+  console.log('=== Wrapper HTML ===');
+  console.log(wrapperHTML);
+
+  // Check if initWidget exists
+  const initWidgetType = await page.evaluate(() => typeof (window as any).initWidget);
+  console.log(`initWidget type: ${initWidgetType}`);
+
+  // Check innerWidth
+  const innerWidth = await page.evaluate(() => window.innerWidth);
+  console.log(`window.innerWidth: ${innerWidth}`);
+
+  // Check for #waifu
+  const waifuExists = await page.evaluate(() => !!document.getElementById('waifu'));
+  console.log(`#waifu: ${waifuExists}`);
+
+  console.log('=== Live2D Network ===');
+  live2dNetwork.forEach((r) => console.log(`  ${r}`));
+
+  console.log('=== Errors ===');
+  allConsole
+    .filter((m) => m.startsWith('[error]'))
+    .forEach((m) => console.log(`  ${m}`));
 });

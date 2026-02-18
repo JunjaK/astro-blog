@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import https from 'node:https';
 import path from 'node:path';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
@@ -62,7 +63,16 @@ export default defineConfig({
               fs.createReadStream(filePath).pipe(res);
             }
             else {
-              next();
+              // Proxy to production server (e.g. live2d models on raspi)
+              const proxyUrl = `https://www.jun-devlog.win/files${req.url}`;
+              https.get(proxyUrl, (proxyRes) => {
+                if (proxyRes.statusCode !== 200) { next(); return; }
+                res.writeHead(proxyRes.statusCode, {
+                  'Content-Type': proxyRes.headers['content-type'] || 'application/octet-stream',
+                  'Cache-Control': 'public, max-age=86400',
+                });
+                proxyRes.pipe(res);
+              }).on('error', () => next());
             }
           });
         },
