@@ -17,7 +17,7 @@ Syncs local `image-assets/` directory to the Raspberry Pi server via rsync and r
 
 2. **Detect changed files via rsync dry-run**:
    ```bash
-   rsync -avz --chmod=F644,D755 --dry-run image-assets/ raspi:/home/jun/blog-files/ 2>/dev/null | grep -E '^[^.]' | head -50
+   rsync -avz --dry-run image-assets/ raspi:/home/jun/blog-files/ 2>/dev/null | grep -E '^[^.]' | head -50
    ```
    - This quickly compares local vs remote without transferring anything
    - Extract unique top-level subdirectories from the output (e.g., `project/japan-travel1/`, `blog/diary/japan-around-trip/`)
@@ -26,16 +26,22 @@ Syncs local `image-assets/` directory to the Raspberry Pi server via rsync and r
 3. **Sync images to server** (incremental by default):
    - **Incremental** (default): Only sync changed subdirectories individually
      ```bash
-     rsync -avz --chmod=F644,D755 --progress image-assets/<subdir>/ raspi:/home/jun/blog-files/<subdir>/
+     rsync -avz --progress image-assets/<subdir>/ raspi:/home/jun/blog-files/<subdir>/
      ```
      Run one rsync per changed subdirectory. This avoids scanning the entire file tree.
    - **Full clean** (when user passes `--full` or `--clean` argument): Sync everything with `--delete`
      ```bash
-     rsync -avz --chmod=F644,D755 --progress --delete image-assets/ raspi:/home/jun/blog-files/
+     rsync -avz --progress --delete image-assets/ raspi:/home/jun/blog-files/
      ```
    - If no changes detected in dry-run, skip rsync entirely and inform the user.
 
-4. **Report results**: Show which directories were synced, number of files transferred, and elapsed time.
+4. **Fix permissions on server**: After syncing, fix permissions for all transferred files:
+   ```bash
+   ssh raspi "find /home/jun/blog-files/ -type f -not -perm 644 -exec chmod 644 {} + && find /home/jun/blog-files/ -type d -not -perm 755 -exec chmod 755 {} +"
+   ```
+   macOS `openrsync` does not support `--chmod`, so permissions must be fixed server-side.
+
+5. **Report results**: Show which directories were synced, number of files transferred, and elapsed time.
 
 ## Notes
 - `image-assets/` is in `.gitignore` — cannot use git to detect changes, hence rsync dry-run

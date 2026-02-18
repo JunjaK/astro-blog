@@ -6,12 +6,12 @@ category: Diary
 thumbnail: /files/blog/diary/25-01-tokyo/assets/20250120_063147954_iOS-thumb.webp  
 ---  
   
-import { DiaryGalleryUnified } from '@/components/Blog/DiaryGallery';
-import DiaryGalleryShell from '@/components/Blog/DiaryGallery/DiaryGalleryShell.astro';
-import ImagePrefetch from '@/components/Blog/DiaryGallery/ImagePrefetch.astro';
-import ImageLoader from '@/components/Blog/ImageLoader.astro';
+import { DiaryGalleryUnified } from '@/components/Blog/DiaryGallery';  
+import DiaryGalleryShell from '@/components/Blog/DiaryGallery/DiaryGalleryShell.astro';  
+import ImagePrefetch from '@/components/Blog/DiaryGallery/ImagePrefetch.astro';  
+import ImageLoader from '@/components/Blog/ImageLoader.astro';  
 import TableOfContents from '@/components/Blog/TableOfContents.astro';  
-
+  
 <TableOfContents>  
 - 루트 및 방문한 곳  
   - 루트  
@@ -21,7 +21,7 @@ import TableOfContents from '@/components/Blog/TableOfContents.astro';
   - 긴자  
   - 우에노  
 </TableOfContents>  
-
+  
 export const gallerySections = [  
   {  
     images: [  
@@ -69,7 +69,7 @@ export const gallerySections = [
 ### 루트  
   
 <ImageLoader src="/files/blog/diary/25-01-tokyo/assets/CleanShot_2026-02-16_23.09.11@2x.png" alt="route" />  
-
+  
 ### 방문한 곳  
   
 - 츠키시마 몬쟈 스트리트  
@@ -89,8 +89,8 @@ export const gallerySections = [
   
 <ImagePrefetch sections={gallerySections} />  
   
-<DiaryGalleryShell>
-<DiaryGalleryUnified client:visible sections={gallerySections}>
+<DiaryGalleryShell>  
+<DiaryGalleryUnified client:visible sections={gallerySections}>  
   
   
 ## 츠키시마 몬쟈 스트리트  
@@ -130,6 +130,6 @@ export const gallerySections = [
   
 오늘 하루는 이걸로 마무리. 아메요코 상점가에서 먹은 야키토리가 좀 아쉬웠지만, 양 구이가 맛있어서 만족  
   
-</DiaryGalleryUnified>
-</DiaryGalleryShell>
+</DiaryGalleryUnified>  
+</DiaryGalleryShell>  
   
