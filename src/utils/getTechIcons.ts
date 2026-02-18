@@ -48,6 +48,8 @@ const techIcons: Record<string, TechStackType> = {
     webpack: { techName: 'Webpack', iconUrl: '/images/icon/tech-stack/dark/webpack.svg' },
     wijmogrid: { techName: 'Wijmo Grid', iconUrl: '/images/icon/tech-stack/dark/wijmo.svg' },
     yarn: { techName: 'Yarn', iconUrl: '/images/icon/tech-stack/dark/yarn.svg' },
+    threedotjs: { techName: 'Three.js', iconUrl: '/images/icon/tech-stack/dark/threedotjs.svg' },
+    framer: { techName: 'Framer Motion', iconUrl: '/images/icon/tech-stack/dark/framer.svg' },
   },
   light: {
     amazonec2: { techName: 'Amazon EC2', iconUrl: '/images/icon/tech-stack/light/amazonec2.svg' },
@@ -96,6 +98,8 @@ const techIcons: Record<string, TechStackType> = {
     webpack: { techName: 'Webpack', iconUrl: '/images/icon/tech-stack/light/webpack.svg' },
     wijmogrid: { techName: 'Wijmo Grid', iconUrl: '/images/icon/tech-stack/light/wijmo.svg' },
     yarn: { techName: 'Yarn', iconUrl: '/images/icon/tech-stack/light/yarn.svg' },
+    threedotjs: { techName: 'Three.js', iconUrl: '/images/icon/tech-stack/light/threedotjs.svg' },
+    framer: { techName: 'Framer Motion', iconUrl: '/images/icon/tech-stack/light/framer.svg' },
   },
 };
 

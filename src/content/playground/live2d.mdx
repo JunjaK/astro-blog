@@ -1,6 +1,6 @@
 ---
 title: live 2d Test
-duration: 2025-03-07 ~ current
+duration: 2025-03-07 ~ 2026-02-19
 techStacks: ['typescript','astro']
 thumbnail: /files/playground/live2d-test.png
 description: Web Page Live2D Widget 구현 테스트 페이지입니다.
@@ -21,10 +21,12 @@ import Live2DWidget from '@/components/layouts/Live2DWidget.astro';
 ## 작업 내용
 - Cubism 5 지원 (live2d-widgets v1.0)
 - 모델: Frieren, ANIYA, Hiyori (모델 교체 가능)
-- 한/일/영 대사 적용
 - shadcn 디자인 토큰 스타일 적용
 - mingcute 아이콘 적용
 - 드래그 위치 조정 및 localStorage 저장
 - Cache API를 활용한 모델 파일 캐싱
+
+## 결과
+- 레이아웃에 상시 보이게 처리하고 싶었는데, Astro로는 그렇게 쓰는 것이 권장하는 방향이 아니라 일단 여기 플레이그라운드에만 추가하기로 함.
 
 <Live2DWidget />

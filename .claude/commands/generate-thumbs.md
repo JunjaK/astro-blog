@@ -13,8 +13,8 @@ Generates downscaled WebP thumbnails from original images referenced in MDX fron
 | Collection | Size | Method |
 |------------|------|--------|
 | blog | 256x256 | Square crop (cover) |
-| project | 800px max width | Aspect ratio preserved |
-| playground | 800px max width | Aspect ratio preserved |
+| project | 400px max width | Aspect ratio preserved |
+| playground | 400px max width | Aspect ratio preserved |
 
 ## Workflow
 

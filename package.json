@@ -12,9 +12,7 @@
     "add-md-enter": "node ./src/utils/addMdEnter.js",
     "generate-thumbs": "node ./src/utils/generateThumbnails.js",
     "generate-thumbs:dry": "node ./src/utils/generateThumbnails.js --dry-run",
-    "generate-gallery-thumbs": "node ./src/utils/generateGalleryThumbs.js",
-    "generate-gallery-thumbs:dry": "node ./src/utils/generateGalleryThumbs.js --dry-run",
-    "all-preprocess-md": "node ./src/utils/generateThumbnails.js && node ./src/utils/generateGalleryThumbs.js && node ./src/utils/removeUnusedImages.js && node ./src/utils/addMdEnter.js && node ./src/utils/convertLoader.js",
+    "all-preprocess-md": "node ./src/utils/generateThumbnails.js && node ./src/utils/removeUnusedImages.js && node ./src/utils/addMdEnter.js && node ./src/utils/convertLoader.js",
     "astro": "astro"
   },
   "dependencies": {

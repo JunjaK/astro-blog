@@ -31,13 +31,16 @@ function convertToImageLoader(input, filePath) {
   const regex = /!\[(.*?)\]\((.*?)\)/g; // 정규식: alt와 url 추출
   const convUrl = filePath.replace('src/content', '/files').split('/').slice(0, -1).join('/');
 
-  return input.replace(regex, (_, alt, url) => {
+  return input.replace(regex, (match, alt, url) => {
     let altUrl = '';
     if (url.startsWith('assets')) {
       altUrl = url.replace('assets', `${convUrl}/assets`);
     }
     else if (url.startsWith('./assets')) {
       altUrl = url.replace('./assets', `${convUrl}/assets`);
+    }
+    else {
+      return match;
     }
     return `<ImageLoader src="${altUrl}" alt="${alt}" />`;
   });
@@ -53,13 +56,16 @@ function convertToVideoLoader(input, filePath) {
   const regex = /<video[^>]*src="([^"]*)"[^>]*><\/video>/g;
   const convUrl = filePath.replace('src/content', '/files').split('/').slice(0, -1).join('/');
 
-  return input.replace(regex, (_, url) => {
+  return input.replace(regex, (match, url) => {
     let altUrl = '';
     if (url.startsWith('assets')) {
       altUrl = url.replace('assets', `${convUrl}/assets`);
     }
     else if (url.startsWith('./assets')) {
       altUrl = url.replace('./assets', `${convUrl}/assets`);
+    }
+    else {
+      return match;
     }
     return `<VideoLoader src="${altUrl}" />`;
   });

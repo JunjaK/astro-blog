@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback } from 'react';
 import type { DiaryImage } from './types';
 import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 
@@ -8,11 +8,6 @@ type DiaryThumbnailStripProps = {
   onSelect: (index: number) => void;
   videoIndices?: Set<number>;
 };
-
-function getThumbnailUrl(src: string): string {
-  const lastSlash = src.lastIndexOf('/');
-  return `${src.slice(0, lastSlash)}/thumbnail${src.slice(lastSlash)}`;
-}
 
 export const DiaryThumbnailStrip = memo(function DiaryThumbnailStrip({ images, visible, onSelect, videoIndices }: DiaryThumbnailStripProps) {
   return (
@@ -46,13 +41,6 @@ const ThumbnailItem = memo(function ThumbnailItem({
   isVideo?: boolean;
   onSelect: (index: number) => void;
 }) {
-  const [useFallback, setUseFallback] = useState(false);
-  const thumbSrc = useFallback ? getBasePathWithUrl(img.src) : getBasePathWithUrl(getThumbnailUrl(img.src));
-
-  const handleError = useCallback(() => {
-    if (!useFallback) setUseFallback(true);
-  }, [useFallback]);
-
   const handleClick = useCallback(() => onSelect(index), [onSelect, index]);
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(index); }
@@ -88,10 +76,9 @@ const ThumbnailItem = memo(function ThumbnailItem({
       className="relative h-12 w-12 shrink-0 cursor-pointer overflow-hidden rounded-lg opacity-70 transition hover:opacity-100"
     >
       <img
-        src={thumbSrc}
+        src={getBasePathWithUrl(img.src)}
         alt=""
         loading="lazy"
-        onError={handleError}
         className="h-full w-full object-cover"
         style={{ height: '100%' }}
       />
