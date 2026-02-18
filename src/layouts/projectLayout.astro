@@ -10,6 +10,7 @@ import Footer from '@/components/layouts/Footer';
 import Navigation from '@/components/layouts/Navigation';
 import ScrollProgress from '@/components/ui/scroll-progress';
 import CommonScript from '../components/layouts/CommonScript.astro';
+import Live2DFrame from '../components/layouts/Live2DFrame.astro';
 import CommonMeta from '../components/MetaAnalytics/CommonMeta.astro';
 import VendorScript from '../components/MetaAnalytics/VendorScript.astro';
 import 'react-photo-view/dist/react-photo-view.css';
@@ -83,6 +84,7 @@ const { title, techStacks = [], description } = post;
 <Footer client:visible />
 <FloatButton />
 <CommonScript />
+<Live2DFrame />
 </body>
 </html>
 

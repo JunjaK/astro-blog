@@ -7,13 +7,12 @@ description: Web Page Live2D Widget 구현 테스트 페이지입니다.
 ---
 
 import ProjectInfo from '@/components/Project/ProjectInfo.astro';
-import Live2DWidget from '@/components/layouts/Live2DWidget.astro';
 
 <ProjectInfo frontmatter={frontmatter} />
 
 ## 설명
 아래 라이브러리를 활용한 Web Page Live2D Widget 구현 테스트 페이지입니다.
-현 페이지 진입 후 약 2초 정도 지나면 좌측 하단에 모델이 로딩되어 나옵니다.
+좌측 하단의 위젯은 모든 페이지에서 상시 표시되며, 페이지 이동 시에도 WebGL 컨텍스트가 유지됩니다.
 
 - [GithubLink](https://github.com/stevenjoezhang/live2d-widget)
 - [fork 떠서 작업 중인 repo](https://github.com/JunjaK/live2d-widget)
@@ -23,10 +22,6 @@ import Live2DWidget from '@/components/layouts/Live2DWidget.astro';
 - 모델: Frieren, ANIYA, Hiyori (모델 교체 가능)
 - shadcn 디자인 토큰 스타일 적용
 - mingcute 아이콘 적용
-- 드래그 위치 조정 및 localStorage 저장
 - Cache API를 활용한 모델 파일 캐싱
-
-## 결과
-- 레이아웃에 상시 보이게 처리하고 싶었는데, Astro로는 그렇게 쓰는 것이 권장하는 방향이 아니라 일단 여기 플레이그라운드에만 추가하기로 함.
-
-<Live2DWidget />
+- iframe + `transition:persist`로 전역 페이지 전환 시 WebGL 컨텍스트 유지
+- postMessage를 통한 부모-iframe 간 다크모드 동기화

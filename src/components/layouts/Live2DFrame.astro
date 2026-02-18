@@ -1,0 +1,83 @@
+---
+// Live2D Widget (iframe, script-only)
+// Creates iframe programmatically after idle. Persists across View Transitions
+// by parking it on <html> during body swap (official swapFunctions API).
+// Hidden on mobile (<768px).
+---
+
+<script>
+  import { swapFunctions } from 'astro:transitions/client';
+
+  const IFRAME_ID = 'live2d-frame';
+  const IFRAME_STYLE =
+    'position:fixed;bottom:0;left:0;width:400px;height:550px;z-index:50;border:none;pointer-events:auto;';
+
+  function createIframe(): HTMLIFrameElement {
+    const iframe = document.createElement('iframe');
+    iframe.id = IFRAME_ID;
+    iframe.src = '/live2d-frame.html';
+    iframe.style.cssText = IFRAME_STYLE;
+    iframe.setAttribute('allowtransparency', 'true');
+    document.body.appendChild(iframe);
+    return iframe;
+  }
+
+  function getIframe(): HTMLIFrameElement | null {
+    return document.getElementById(IFRAME_ID) as HTMLIFrameElement | null;
+  }
+
+  function syncTheme() {
+    const iframe = getIframe();
+    if (!iframe?.contentWindow) return;
+    const isDark = document.documentElement.classList.contains('dark');
+    iframe.contentWindow.postMessage({ type: 'live2d-theme', dark: isDark }, '*');
+  }
+
+  function updateVisibility() {
+    const iframe = getIframe();
+    if (!iframe) return;
+    iframe.style.display = window.innerWidth < 768 ? 'none' : '';
+  }
+
+  // --- Custom swap: park iframe on <html> so body swap doesn't destroy it ---
+  document.addEventListener('astro:before-swap', (e) => {
+    const iframe = getIframe();
+    if (!iframe) return;
+
+    // Move iframe from <body> to <html> — same document, no browsing context loss
+    document.documentElement.appendChild(iframe);
+
+    e.swap = () => {
+      // Reproduce Astro's default swap (official API)
+      swapFunctions.deselectScripts(e.newDocument);
+      swapFunctions.swapRootAttributes(e.newDocument);
+      swapFunctions.swapHeadElements(e.newDocument);
+      const restoreFocus = swapFunctions.saveFocus();
+      swapFunctions.swapBodyElement(e.newDocument.body, document.body);
+      restoreFocus();
+
+      // Move iframe back into the (now-swapped) <body>
+      document.body.appendChild(iframe);
+    };
+  });
+
+  // Theme observer
+  const observer = new MutationObserver(syncTheme);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+
+  document.addEventListener('astro:page-load', () => {
+    updateVisibility();
+    syncTheme();
+  });
+
+  // Defer iframe creation until browser is idle (avoid blocking hydration)
+  if (window.innerWidth >= 768 && !getIframe()) {
+    const idle = window.requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 3000));
+    idle(() => createIframe());
+  }
+
+  window.addEventListener('resize', updateVisibility);
+</script>

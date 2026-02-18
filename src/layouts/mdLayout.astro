@@ -12,6 +12,7 @@ import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
 import BlogFrontmatter from '../components/Blog/BlogFrontmatter';
 import GiscusComp from '../components/Blog/GiscusComp';
 import CommonScript from '../components/layouts/CommonScript.astro';
+import Live2DFrame from '../components/layouts/Live2DFrame.astro';
 import CommonMeta from '../components/MetaAnalytics/CommonMeta.astro';
 import VendorScript from '../components/MetaAnalytics/VendorScript.astro';
 import { Separator } from '../components/ui/separator';
@@ -105,6 +106,7 @@ const { title, tags = [], category = '' } = post;
     <Footer client:visible />
     <FloatButton />
     <CommonScript />
+    <Live2DFrame />
   </body>
 </html>
 
