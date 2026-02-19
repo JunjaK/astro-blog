@@ -32,3 +32,8 @@ export type DiaryGalleryUnifiedProps = {
   sections: DiaryGallerySectionData[];
   children: React.ReactNode;
 };
+
+export type DiarySectionCarouselProps = {
+  sections: DiaryGallerySectionData[];
+  children: React.ReactNode;
+};

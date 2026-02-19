@@ -10,11 +10,36 @@ const pendingLoads = new Map<string, Promise<THREE.Texture>>();
 const loader = new THREE.TextureLoader();
 loader.crossOrigin = '';
 
-const isMobileDevice =
+export const isMobileDevice =
   typeof window !== 'undefined'
   && (/Mobi|Android/i.test(navigator.userAgent) || window.screen.width < 768);
 
-const MAX_TEXTURE_SIZE = isMobileDevice ? 512 : 1024;
+const MAX_TEXTURE_SIZE = isMobileDevice ? 1024 : 2048;
+
+// --- Concurrency-limited loading queue ---
+const CONCURRENCY = isMobileDevice ? 3 : 8;
+let activeLoads = 0;
+const queue: Array<() => void> = [];
+
+function runNext() {
+  while (activeLoads < CONCURRENCY && queue.length > 0) {
+    activeLoads++;
+    const next = queue.shift()!;
+    next();
+  }
+}
+
+function enqueue<T>(fn: () => Promise<T>): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    queue.push(() => {
+      fn().then(resolve, reject).finally(() => {
+        activeLoads--;
+        runNext();
+      });
+    });
+    runNext();
+  });
+}
 
 /** Canvas-based fallback for when createImageBitmap fails (e.g. iOS Safari). */
 function downscaleWithCanvas(
@@ -58,15 +83,9 @@ async function downscale(tex: THREE.Texture): Promise<void> {
   tex.needsUpdate = true;
 }
 
-/** Load a single texture (with deduplication of in-flight requests). */
-export function loadTexture(url: string): Promise<THREE.Texture> {
-  const cached = textureCache.get(url);
-  if (cached) return Promise.resolve(cached);
-
-  const pending = pendingLoads.get(url);
-  if (pending) return pending;
-
-  const promise = new Promise<THREE.Texture>((resolve, reject) => {
+/** Internal: actually load and process a single texture. */
+function loadTextureRaw(url: string): Promise<THREE.Texture> {
+  return new Promise<THREE.Texture>((resolve, reject) => {
     loader.load(
       url,
       async (tex) => {
@@ -74,7 +93,7 @@ export function loadTexture(url: string): Promise<THREE.Texture> {
           tex.colorSpace = THREE.SRGBColorSpace;
           await downscale(tex);
         } catch {
-          // createImageBitmap can fail on some browsers/cached resources — proceed without downscale
+          // proceed without downscale
         }
         textureCache.set(url, tex);
         pendingLoads.delete(url);
@@ -87,7 +106,17 @@ export function loadTexture(url: string): Promise<THREE.Texture> {
       },
     );
   });
+}
 
+/** Load a single texture (with deduplication + concurrency limit). */
+export function loadTexture(url: string): Promise<THREE.Texture> {
+  const cached = textureCache.get(url);
+  if (cached) return Promise.resolve(cached);
+
+  const pending = pendingLoads.get(url);
+  if (pending) return pending;
+
+  const promise = enqueue(() => loadTextureRaw(url));
   pendingLoads.set(url, promise);
   return promise;
 }
