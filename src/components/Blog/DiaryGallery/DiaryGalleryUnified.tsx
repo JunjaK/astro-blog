@@ -69,6 +69,10 @@ function SceneController({
 
 const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent);
 
+// Virtualization: only mount images within this distance (3D units) of camera lookAt Y.
+// Slightly larger than SceneController's visibility threshold (10) for preloading headroom.
+const VIRTUALIZATION_BUFFER = 14;
+
 const GL_CONFIG = {
   antialias: !isMobile,
   alpha: false,
@@ -86,12 +90,13 @@ export function DiaryGalleryUnified({ sections, children }: DiaryGalleryUnifiedP
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [loadedCount, setLoadedCount] = useState(0);
   const [currentSection, setCurrentSection] = useState(0);
+  const [contextLost, setContextLost] = useState(false);
+  const visibleRangeRef = useRef({ start: 0, end: 0 });
 
   // Images only — for 3D scene
   const allImages = useMemo(() => sections.flatMap((s) => s.images), [sections]);
   const sectionImageCounts = useMemo(() => sections.map((s) => s.images.length), [sections]);
   const totalImages = allImages.length;
-  const allLoaded = loadedCount >= totalImages;
 
   // Unified media list for lightbox (images + videos per section)
   // Also builds a mapping: imageGlobalIndex → lightboxIndex
@@ -118,6 +123,33 @@ export function DiaryGalleryUnified({ sections, children }: DiaryGalleryUnifiedP
   const slots = useMemo(() => buildUnifiedSlots(sectionImageCounts), [sectionImageCounts]);
   const totalTravel = useMemo(() => getTotalTravel(sectionImageCounts), [sectionImageCounts]);
   const sectionRanges = useUnifiedSectionRanges(sectionImageCounts);
+
+  // Viewport-based virtualization: only mount images near the camera
+  const computeVisibleRange = useCallback((progress: number) => {
+    const cameraY = 2 - progress * totalTravel;
+    const lookAtY = cameraY - 1;
+    let start = totalImages;
+    let end = -1;
+    for (let i = 0; i < totalImages; i++) {
+      if (Math.abs(slots[i].baseY - lookAtY) < VIRTUALIZATION_BUFFER) {
+        if (i < start) start = i;
+        if (i > end) end = i;
+      }
+    }
+    if (end < start) { start = 0; end = Math.min(totalImages - 1, 7); }
+    return { start, end };
+  }, [slots, totalTravel, totalImages]);
+
+  // Initial visible count (at scroll progress = 0) — used as loading threshold
+  const initialVisibleCount = useMemo(() => {
+    const { start, end } = computeVisibleRange(0);
+    return end - start + 1;
+  }, [computeVisibleRange]);
+
+  const [visibleRange, setVisibleRange] = useState(() => computeVisibleRange(0));
+
+  // Wait for initially visible images (not all) to avoid loading full-res textures at once
+  const allLoaded = loadedCount >= initialVisibleCount;
 
   // Scroll height in vh — images only
   const scrollHeight = useMemo(() => {
@@ -151,10 +183,17 @@ export function DiaryGalleryUnified({ sections, children }: DiaryGalleryUnifiedP
         setCurrentSection(state.sectionIndex);
       }
 
+      // Update virtualization range — only trigger re-render when range actually changes
+      const range = computeVisibleRange(v);
+      if (range.start !== visibleRangeRef.current.start || range.end !== visibleRangeRef.current.end) {
+        visibleRangeRef.current = range;
+        setVisibleRange(range);
+      }
+
       invalidate();
     });
     return unsubscribe;
-  }, [scrollYProgress, sectionRanges]);
+  }, [scrollYProgress, sectionRanges, computeVisibleRange]);
 
   const handleImageLoad = useCallback(() => setLoadedCount((c) => c + 1), []);
 
@@ -164,6 +203,16 @@ export function DiaryGalleryUnified({ sections, children }: DiaryGalleryUnifiedP
   }, [imageToLightboxIndex]);
 
   const handleLightboxClose = useCallback(() => setLightboxVisible(false), []);
+
+  // WebGL context loss — show fallback instead of white screen
+  const handleCanvasCreated = useCallback(({ gl }: { gl: THREE.WebGLRenderer }) => {
+    const canvas = gl.domElement;
+    canvas.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();
+      setContextLost(true);
+    });
+    canvas.addEventListener('webglcontextrestored', () => setContextLost(false));
+  }, []);
 
   // Thumbnail strip: show current section's media as DiaryImage-compatible items
   const { currentSectionThumbnails, currentVideoIndices } = useMemo(() => {
@@ -217,18 +266,26 @@ export function DiaryGalleryUnified({ sections, children }: DiaryGalleryUnifiedP
                 {loadedCount}
                 {' '}
                 /
-                {totalImages}
+                {initialVisibleCount}
               </p>
             </div>
           )}
 
           {/* Three.js Canvas — always mounted to load textures, hidden until ready */}
+          {/* Context loss fallback */}
+          {contextLost && (
+            <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-[#0a0a0a]">
+              <p className="text-sm text-white/70">WebGL context lost — scroll to continue</p>
+            </div>
+          )}
+
           <Canvas
-            className={`!absolute inset-0 ${allLoaded ? '' : 'invisible'}`}
+            className={`!absolute inset-0 ${allLoaded && !contextLost ? '' : 'invisible'}`}
             camera={{ position: [0, 2, 5.5], fov: 55 }}
             frameloop="demand"
             dpr={1}
             gl={GL_CONFIG}
+            onCreated={handleCanvasCreated}
           >
             <color attach="background" args={['#0a0a0a']} />
             <fog attach="fog" args={['#0a0a0a', 8, 16]} />
@@ -240,17 +297,20 @@ export function DiaryGalleryUnified({ sections, children }: DiaryGalleryUnifiedP
               meshRegistryRef={meshRegistryRef}
             />
 
-            {allImages.map((image, globalIndex) => (
-              <UnifiedImagePlane
-                key={`${image.src}-${globalIndex}`}
-                textureSrc={image.src}
-                slot={slots[globalIndex]}
-                globalIndex={globalIndex}
-                meshRegistry={meshRegistryRef}
-                onImageClick={handleImageClick}
-                onLoad={handleImageLoad}
-              />
-            ))}
+            {allImages.map((image, globalIndex) => {
+              if (globalIndex < visibleRange.start || globalIndex > visibleRange.end) return null;
+              return (
+                <UnifiedImagePlane
+                  key={`${image.src}-${globalIndex}`}
+                  textureSrc={image.src}
+                  slot={slots[globalIndex]}
+                  globalIndex={globalIndex}
+                  meshRegistry={meshRegistryRef}
+                  onImageClick={handleImageClick}
+                  onLoad={handleImageLoad}
+                />
+              );
+            })}
           </Canvas>
 
           {/* Radial vignette overlay — only when gallery is active */}

@@ -66,6 +66,17 @@ export const UnifiedImagePlane = memo(function UnifiedImagePlane({
     return () => { cancelled = true; };
   }, [resolvedSrc, onLoad]);
 
+  // Dispose texture on unmount to free GPU memory (virtualization support)
+  useEffect(() => {
+    return () => {
+      const tex = textureCache.get(resolvedSrc);
+      if (tex) {
+        tex.dispose();
+        textureCache.delete(resolvedSrc);
+      }
+    };
+  }, [resolvedSrc]);
+
   // Register mesh + material with parent's SceneController
   useEffect(() => {
     const mesh = meshRef.current;

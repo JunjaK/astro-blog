@@ -10,24 +10,51 @@ const pendingLoads = new Map<string, Promise<THREE.Texture>>();
 const loader = new THREE.TextureLoader();
 loader.crossOrigin = '';
 
-const MAX_TEXTURE_SIZE = 1024;
+const isMobileDevice =
+  typeof window !== 'undefined'
+  && (/Mobi|Android/i.test(navigator.userAgent) || window.screen.width < 768);
+
+const MAX_TEXTURE_SIZE = isMobileDevice ? 512 : 1024;
+
+/** Canvas-based fallback for when createImageBitmap fails (e.g. iOS Safari). */
+function downscaleWithCanvas(
+  img: HTMLImageElement,
+  targetW: number,
+  targetH: number,
+): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = targetW;
+  canvas.height = targetH;
+  const ctx = canvas.getContext('2d')!;
+  ctx.drawImage(img, 0, 0, targetW, targetH);
+  return canvas;
+}
 
 async function downscale(tex: THREE.Texture): Promise<void> {
   const img = tex.image as HTMLImageElement;
   if (!img || (img.width <= MAX_TEXTURE_SIZE && img.height <= MAX_TEXTURE_SIZE)) return;
 
   const scale = MAX_TEXTURE_SIZE / Math.max(img.width, img.height);
-  // imageOrientation: 'flipY' bakes the vertical flip into the bitmap,
-  // because WebGL's UNPACK_FLIP_Y_WEBGL doesn't work with ImageBitmap.
-  const bitmap = await createImageBitmap(img, {
-    resizeWidth: Math.round(img.width * scale),
-    resizeHeight: Math.round(img.height * scale),
-    resizeQuality: 'medium',
-    imageOrientation: 'flipY',
-  });
+  const targetW = Math.round(img.width * scale);
+  const targetH = Math.round(img.height * scale);
 
-  tex.image = bitmap;
-  tex.flipY = false;
+  try {
+    // imageOrientation: 'flipY' bakes the vertical flip into the bitmap,
+    // because WebGL's UNPACK_FLIP_Y_WEBGL doesn't work with ImageBitmap.
+    const bitmap = await createImageBitmap(img, {
+      resizeWidth: targetW,
+      resizeHeight: targetH,
+      resizeQuality: 'medium',
+      imageOrientation: 'flipY',
+    });
+    tex.image = bitmap;
+    tex.flipY = false;
+  } catch {
+    // createImageBitmap fails on iOS Safari — fall back to canvas downscaling.
+    // Canvas path keeps flipY = true (default) since we don't flip manually.
+    tex.image = downscaleWithCanvas(img, targetW, targetH);
+  }
+
   tex.needsUpdate = true;
 }
 
