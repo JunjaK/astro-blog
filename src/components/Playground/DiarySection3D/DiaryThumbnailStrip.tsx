@@ -1,6 +1,5 @@
 import { memo, useCallback } from 'react';
 import type { DiaryImage } from './types';
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 
 type DiaryThumbnailStripProps = {
   images: DiaryImage[];
@@ -76,7 +75,7 @@ const ThumbnailItem = memo(function ThumbnailItem({
       className="relative h-12 w-12 shrink-0 cursor-pointer overflow-hidden rounded-lg opacity-70 transition hover:opacity-100"
     >
       <img
-        src={getBasePathWithUrl(img.src)}
+        src={img.src}
         alt=""
         loading="lazy"
         className="h-full w-full object-cover"

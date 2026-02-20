@@ -21,7 +21,7 @@ const description = 'Playground for testing front-end technologies.';
 
     <div id="projects-wrapper" class="mt-8">
       {projects.map((project) => (
-        <EachArticles frontmatter={project.data} url={`/playground/${project.slug}`} client:visible />
+        <EachArticles frontmatter={project.data} url={`/playground/${project.id}`} client:visible />
       ))}
     </div>
   </div>

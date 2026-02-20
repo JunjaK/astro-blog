@@ -1,6 +1,17 @@
+import { $theme, setTheme } from '@/store/system';
 import Giscus from '@giscus/react';
+import { useStore } from '@nanostores/react';
+import { useEffect } from 'react';
 
 export default function GiscusComp() {
+  const theme = useStore($theme);
+  const giscusTheme = theme === 'dark' ? 'noborder_dark' : 'noborder_light';
+
+  useEffect(() => {
+    const stored = localStorage.getItem('theme');
+    if (stored) setTheme(stored);
+  }, []);
+
   return (
     <Giscus
       id="comments"
@@ -13,7 +24,7 @@ export default function GiscusComp() {
       reactionsEnabled="1"
       emitMetadata="0"
       inputPosition="bottom"
-      theme="noborder_dark"
+      theme={giscusTheme}
       lang="ko"
       loading="lazy"
     />

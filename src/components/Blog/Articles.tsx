@@ -19,11 +19,8 @@ import {
 } from '@/components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Icon } from '@iconify/react';
-import dayjs from 'dayjs';
 
-import Fuse, { type IFuseOptions } from 'fuse.js';
-import * as React from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -31,47 +28,35 @@ import { FadeText } from '~/components/ui/fade-text';
 import CategoryTags from './CategoryTags';
 import SearchLoading from './SearchLoading';
 
+type BlogPost = Omit<CollectionEntry<'blog'>, 'body'>;
+
 type Props = {
-  posts: CollectionEntry<'blog'>[];
+  posts: BlogPost[];
+  categories: string[];
 };
 const formSchema = z.object({
   search: z.string().min(2).max(50),
   searchType: z.enum(['tag', 'title-content']),
 });
 
-export default function Articles({ posts }: Props) {
+type PagefindResult = {
+  id: string;
+  data: () => Promise<{ url: string; excerpt: string; meta: Record<string, string> }>;
+};
+
+type Pagefind = {
+  search: (query: string, options?: { filters?: Record<string, string | string[]> }) => Promise<{ results: PagefindResult[] }>;
+  init: () => Promise<void>;
+};
+
+export default function Articles({ posts, categories }: Props) {
   const [mounted, setMounted] = useState(false);
   const [articles, setArticles] = useState(posts);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [fuseOptions, setFuseOptions] = useState<IFuseOptions<CollectionEntry<'blog'>>>({
-    isCaseSensitive: false,
-    includeScore: true,
-    ignoreDiacritics: false,
-    shouldSort: true,
-    includeMatches: false,
-    findAllMatches: true,
-    minMatchCharLength: 2,
-    threshold: 0.3,
-    ignoreLocation: true,
-    useExtendedSearch: false,
-    ignoreFieldNorm: false,
-    fieldNormWeight: 1,
-    sortFn: (a, b) => {
-      return dayjs(b.item.created as unknown as string).unix() - dayjs(a.item.created as unknown as string).unix();
-    },
-    keys: [
-      {
-        name: 'data.title',
-        weight: 2,
-      },
-      {
-        name: 'body',
-        weight: 1,
-      },
-    ],
-  });
+  const pagefindRef = useRef<Pagefind | null>(null);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -80,13 +65,51 @@ export default function Articles({ posts }: Props) {
     },
   });
 
-  const fuse = useMemo(() => new Fuse(posts, fuseOptions), [posts, fuseOptions]);
+  useEffect(() => {
+    async function loadPagefind() {
+      try {
+        const pagefindPath = `${window.location.origin}/pagefind/pagefind.js`;
+        const pf = await import(/* @vite-ignore */ pagefindPath);
+        await pf.init();
+        pagefindRef.current = pf;
+      }
+      catch {
+        // Pagefind not available (dev mode without prebuilt index)
+      }
+    }
+    loadPagefind();
+  }, []);
 
-  const onSubmit = useCallback((values: z.infer<typeof formSchema>) => {
+  const postsByUrl = useRef(
+    new Map(posts.map((post) => [`/blog/${post.id}/`, post])),
+  );
+
+  const searchWithPagefind = useCallback(async (query: string): Promise<BlogPost[]> => {
+    const pf = pagefindRef.current;
+    if (!pf || !query) return posts;
+
+    const search = await pf.search(query);
+    const results = await Promise.all(
+      search.results.map(async (r) => {
+        const data = await r.data();
+        return postsByUrl.current.get(data.url);
+      }),
+    );
+    return results.filter((r): r is BlogPost => r != null);
+  }, [posts]);
+
+  const searchByTag = useCallback((query: string): BlogPost[] => {
+    if (!query) return posts;
+    const lowerQuery = query.toLowerCase();
+    return posts.filter((post) =>
+      post.data.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)),
+    );
+  }, [posts]);
+
+  const onSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
     setIsSearchActive(true);
     setIsSearching(true);
 
-    // Update URL query parameters
     const url = new URL(window.location.href);
 
     if (values.search !== '') {
@@ -94,25 +117,31 @@ export default function Articles({ posts }: Props) {
       url.searchParams.set('q', values.search);
     }
 
-    const result = values.search === '' ? posts.map((post) => ({ item: post })) : fuse.search(values.search);
-
-    const sortedResult = result
-      .map((r) => r.item);
+    let result: BlogPost[];
+    if (values.search === '') {
+      result = posts;
+    }
+    else if (values.searchType === 'tag') {
+      result = searchByTag(values.search);
+    }
+    else {
+      result = await searchWithPagefind(values.search);
+    }
 
     if (selectedCategory !== '' && selectedCategory !== null) {
       url.searchParams.set('category', selectedCategory);
-      setArticles(sortedResult.filter((post) => post.data.category === selectedCategory));
+      setArticles(result.filter((post) => post.data.category === selectedCategory));
     }
     else {
       url.searchParams.delete('category');
-      setArticles(sortedResult);
+      setArticles(result);
     }
 
     window.history.pushState({}, '', url);
     setTimeout(() => {
       setIsSearching(false);
     }, 500);
-  }, [fuse, setArticles, setIsSearchActive, selectedCategory, posts]);
+  }, [searchWithPagefind, searchByTag, setArticles, setIsSearchActive, selectedCategory, posts]);
 
   const searchCategory = useCallback((category: string) => {
     if (selectedCategory === category) {
@@ -128,7 +157,6 @@ export default function Articles({ posts }: Props) {
     setIsSearchActive(false);
     setArticles(posts);
     setSelectedCategory('');
-    // Clear URL query parameters
     const url = new URL(window.location.href);
     url.searchParams.delete('type');
     url.searchParams.delete('q');
@@ -140,28 +168,6 @@ export default function Articles({ posts }: Props) {
       onSubmit({ search: form.getValues().search, searchType: form.getValues().searchType });
     }
   }, [selectedCategory]);
-  useEffect(() => {
-    if (!mounted)
-      return;
-
-    let keys = [];
-    if (form.getValues().searchType === 'tag') {
-      keys = ['data.tags'];
-    }
-    else {
-      keys = [
-        {
-          name: 'data.title',
-          weight: 2,
-        },
-        'body',
-      ];
-    }
-    setFuseOptions((item) => ({
-      ...item,
-      keys,
-    }));
-  }, [form.getValues().searchType]);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -192,7 +198,7 @@ export default function Articles({ posts }: Props) {
 
   return (
     <div className="relative">
-      <CategoryTags selectedCategory={selectedCategory} onSelectCategory={searchCategory} />
+      <CategoryTags categories={categories} selectedCategory={selectedCategory} onSelectCategory={searchCategory} />
       <div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="search-area">
@@ -266,7 +272,7 @@ export default function Articles({ posts }: Props) {
         {articles.map((article) => (
           <EachArticle
             frontmatter={article.data}
-            url={`/blog/${article.slug}`}
+            url={`/blog/${article.id}`}
             key={`${article.data.title}-${article.data.category}`}
           />
         ))}

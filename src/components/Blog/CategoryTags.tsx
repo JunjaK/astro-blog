@@ -1,9 +1,8 @@
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 
-const categoryList: string[] = ['Web', 'Diary', 'Game'];
-
 type Props = {
+  categories: string[];
   selectedCategory: string;
   onSelectCategory: (category: string) => void;
 };
@@ -36,13 +35,13 @@ function StatedBadge({ category, selectedCategory, onClick }: BadgeProps) {
   );
 }
 
-export default function CategoryTags({ selectedCategory, onSelectCategory }: Props) {
+export default function CategoryTags({ categories, selectedCategory, onSelectCategory }: Props) {
   return (
     <div className="flex flex-wrap gap-2 items-center h-[3rem]">
       <div className="ml-1 font-medium text-sm tracking-wide text-muted-foreground">
         Categories:
       </div>
-      {categoryList.map((category) => (
+      {categories.map((category) => (
         <StatedBadge
           key={category}
           category={category}

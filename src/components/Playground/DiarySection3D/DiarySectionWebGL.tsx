@@ -5,7 +5,6 @@ import { useScroll } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import { DiaryImageOverlay } from './DiaryImageOverlay';
 import { DiaryThumbnailStrip } from './DiaryThumbnailStrip';
 
@@ -95,7 +94,7 @@ function ImagePlane({ image, slot, scrollProgressRef, totalTravel, index, onImag
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [aspect, setAspect] = useState(1.5);
 
-  const resolvedSrc = getBasePathWithUrl(image.src);
+  const resolvedSrc = image.src;
 
   useEffect(() => {
     let cancelled = false;
@@ -264,7 +263,7 @@ export function DiarySectionWebGL({ images, children }: DiarySectionProps) {
   const toolbarRender = useMemo(() => DiaryImageOverlay({ images }), [images]);
   const lightboxImages = useMemo(
     () => images.map((img) => ({
-      src: getBasePathWithUrl(img.src),
+      src: img.src,
       key: img.src,
     })),
     [images],

@@ -10,6 +10,7 @@ import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-s
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
 import tailwindcss from '@tailwindcss/vite';
 import expressiveCode from 'astro-expressive-code';
+import pagefind from 'astro-pagefind';
 // @ts-check
 import { defineConfig, passthroughImageService } from 'astro/config';
 import { pluginColorChips } from 'expressive-code-color-chips';
@@ -40,7 +41,7 @@ export default defineConfig({
   integrations: [react(), svelte(), vue(), sitemap(), expressiveCode({
     themes: ['kanagawa-dragon', 'catppuccin-latte'],
     plugins: [pluginCollapsibleSections(), pluginLineNumbers(), pluginColorChips()],
-  }), mdx({})],
+  }), mdx({}), pagefind()],
   image: {
     service: passthroughImageService(),
   },

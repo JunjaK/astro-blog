@@ -10,6 +10,8 @@ import dayjs from 'dayjs';
 const posts = await getCollection('blog');
 posts.sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix());
 
+const categories = [...new Set(posts.map((p) => p.data.category))];
+const postsForClient = posts.map(({ body, ...rest }) => rest);
 const description = 'Post list page of the Blog';
 ---
 
@@ -19,7 +21,7 @@ const description = 'Post list page of the Blog';
     <hr class="title-divider" />
 
     <div id="articles-wrapper" class="mt-4">
-      <Articles posts={posts} client:visible>
+      <Articles posts={postsForClient} categories={categories} client:visible>
         <div id="articles-skeleton" class="mt-8" slot="fallback">
           {[...Array.from({ length: 10 })].map((_) => (
             <div class="flex items-center space-x-4 h-[9.5rem]">

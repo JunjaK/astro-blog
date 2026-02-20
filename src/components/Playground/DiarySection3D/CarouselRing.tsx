@@ -5,17 +5,15 @@
 import { invalidate, useFrame, type ThreeEvent } from '@react-three/fiber';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import type { CarouselSlot } from './buildCarouselLayout';
 import { isMobileDevice, loadTexture, textureCache } from './texturePreload';
 
 /** On mobile, use pre-generated 384w thumbnail to avoid OOM from decoding full-res images. */
 function resolveTextureSrc(src: string): string {
-  const resolved = getBasePathWithUrl(src);
   if (isMobileDevice) {
-    return resolved.replace(/\.webp$/, '-384w.webp');
+    return src.replace(/\.webp$/, '-384w.webp');
   }
-  return resolved;
+  return src;
 }
 
 

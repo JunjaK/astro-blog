@@ -5,6 +5,7 @@ import FloatButton from '@/components/layouts/FloatButton.astro';
 import Footer from '@/components/layouts/Footer';
 
 import Navigation from '@/components/layouts/Navigation';
+import ThemeInit from '@/components/layouts/ThemeInit.astro';
 import ScrollProgress from '@/components/ui/scroll-progress';
 import { ClientRouter } from 'astro:transitions';
 import dayjs from 'dayjs';
@@ -82,7 +83,11 @@ const { title, tags = [], category = '' } = post;
         <div class="blog-nav">
           <BlogNav nav={nav} client:visible />
         </div>
-        <div class="article-entry">
+        <div class="article-entry" data-pagefind-body>
+          {tags.map((tag) => (
+            <meta data-pagefind-filter={`tag:${tag}`} />
+          ))}
+          <meta data-pagefind-filter={`category:${category}`} />
           <slot />
         </div>
         <div class="blog-nav">
@@ -108,24 +113,9 @@ const { title, tags = [], category = '' } = post;
   </body>
 </html>
 
+<ThemeInit />
+
 <script is:inline>
-  function getThemePreference() {
-    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-      return localStorage.getItem('theme');
-    }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
-  }
-
-  function update() {
-    window.currentHistoryIndex = window.history.state.index;
-
-    const isDark = getThemePreference() === 'dark';
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
-  }
-
   function scrollToSection() {
     const params = new URLSearchParams(window.location.search);
     const section = parseInt(params.get('section'), 10);
@@ -140,9 +130,8 @@ const { title, tags = [], category = '' } = post;
     }, 100);
   }
 
-  document.addEventListener('astro:after-swap', update);
   document.addEventListener('astro:page-load', () => {
-    update();
+    window.currentHistoryIndex = window.history.state.index;
     scrollToSection();
   });
   document.getElementById('go-back').addEventListener('click', () => {

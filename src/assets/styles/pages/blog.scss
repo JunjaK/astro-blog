@@ -519,6 +519,12 @@
 
   a {
     color: var(--text-p);
+    transition: color 0.2s, font-weight 0.2s;
+
+    &.active {
+      color: hsl(var(--primary));
+      font-weight: 600;
+    }
   }
 }
 

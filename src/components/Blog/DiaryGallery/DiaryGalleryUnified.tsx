@@ -5,7 +5,6 @@ import { useScroll } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import { buildUnifiedSlots, getTotalTravel, type UnifiedSlot } from './buildUnifiedLayout';
 import { DiaryImageOverlay } from './DiaryImageOverlay';
 import { DiaryThumbnailStrip } from './DiaryThumbnailStrip';
@@ -240,7 +239,7 @@ export function DiaryGalleryUnified({ sections, children }: DiaryGalleryUnifiedP
   );
   const lightboxItems = useMemo(
     () => allMedia.map((m) => ({
-      src: getBasePathWithUrl(m.src),
+      src: m.src,
       key: m.src,
       type: m.type as 'image' | 'video',
     })),

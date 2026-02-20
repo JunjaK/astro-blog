@@ -1,6 +1,7 @@
 ---
+import MermaidInit from '@/components/layouts/MermaidInit.astro';
 import MdLayout from '@/layouts/mdLayout.astro';
-import { type CollectionEntry, getCollection } from 'astro:content';
+import { type CollectionEntry, getCollection, render } from 'astro:content';
 import dayjs from 'dayjs';
 
 export async function getStaticPaths() {
@@ -8,7 +9,7 @@ export async function getStaticPaths() {
   posts.sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix());
 
   return posts.map((post, index) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
     props: {
       post,
       next: posts[index - 1] || null,
@@ -24,98 +25,11 @@ type Props = {
 
 
 const { post, prev, next } = Astro.props;
-const { Content } = await post.render();
+const { Content } = await render(post);
 ---
 
-<MdLayout post={post.data} nav={{ prev, next }} url={`/blog/${post.slug}`}>
+<MdLayout post={post.data} nav={{ prev, next }} url={`/blog/${post.id}`}>
   <Content />
 </MdLayout>
 
-
-<script>
-import mermaid from 'mermaid';
-
-type MermaidTheme = 'default' | 'base' | 'dark' | 'forest' | 'neutral' | 'null' | undefined;
-
-function saveOriginalData() {
-  return new Promise<void>((resolve, reject) => {
-    try {
-      const els = document.querySelectorAll('.language-mermaid');
-      let count = els.length;
-      els.forEach((element) => {
-        if (element.getAttribute('data-original-code') == null) {
-          element.setAttribute('data-original-code', element.innerHTML);
-        }
-        count--;
-        if (count === 0) {
-          resolve();
-        }
-      });
-    }
-    catch (error) {
-      reject(error);
-    }
-  });
-}
-
-function resetProcessed() {
-  return new Promise<void>((resolve, reject) => {
-    try {
-      const els = document.querySelectorAll('.language-mermaid');
-      let count = els.length;
-      els.forEach((element) => {
-        if (element.getAttribute('data-original-code') != null) {
-          element.removeAttribute('data-processed');
-          element.innerHTML
-            = element.getAttribute('data-original-code') ?? '';
-        }
-        count--;
-        if (count === 0) {
-          resolve();
-        }
-      });
-    }
-    catch (error) {
-      reject(error);
-    }
-  });
-}
-
-async function loadMermaid(theme: MermaidTheme) {
-  mermaid.initialize({
-    startOnLoad: false,
-    theme,
-  });
-  await mermaid.run({
-    querySelector: '.language-mermaid',
-  });
-}
-
-function themeSetHandler() {
-  const theme: MermaidTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'default';
-  saveOriginalData()
-    .then(() => {
-      resetProcessed();
-    })
-    .then(() => {
-      loadMermaid(theme);
-    })
-    .catch(console.error);
-}
-function mermaidInit() {
-  document.body.removeEventListener('theme-set', themeSetHandler);
-  document.body.addEventListener('theme-set', themeSetHandler);
-
-  const theme: MermaidTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'default';
-  saveOriginalData()
-    .then(() => {
-      resetProcessed();
-    })
-    .then(() => {
-      loadMermaid(theme);
-    })
-    .catch(console.error);
-}
-document.addEventListener('astro:after-swap', mermaidInit);
-mermaidInit();
-</script>
+<MermaidInit />

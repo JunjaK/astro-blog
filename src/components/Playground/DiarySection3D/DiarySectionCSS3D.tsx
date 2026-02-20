@@ -3,7 +3,6 @@ import { Icon } from '@iconify/react';
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import { DiaryImageOverlay } from './DiaryImageOverlay';
 import { DiaryThumbnailStrip } from './DiaryThumbnailStrip';
 
@@ -163,7 +162,7 @@ function CSS3DImageCard({
   // Depth-of-field: blur far images
   const blurPx = slot.zDepth > 0.7 ? (slot.zDepth - 0.7) * 3 : 0;
 
-  const resolvedSrc = getBasePathWithUrl(image.src);
+  const resolvedSrc = image.src;
   const handleClick = useCallback(() => onClick(index), [onClick, index]);
 
   return (
@@ -249,7 +248,7 @@ export function DiarySectionCSS3D({ images, children }: DiarySectionProps) {
 
   const toolbarRender = useMemo(() => DiaryImageOverlay({ images }), [images]);
   const lightboxImages = useMemo(
-    () => images.map((img) => ({ src: getBasePathWithUrl(img.src), key: img.src })),
+    () => images.map((img) => ({ src: img.src, key: img.src })),
     [images],
   );
 

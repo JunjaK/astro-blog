@@ -20,7 +20,7 @@ export default function BlogNav({ nav }: Props) {
       <div className="btn-wrapper">
         {nav?.prev && (
           <Button variant="outline" className="prev nav-button">
-            <a href={`/blog/${nav.prev.slug}`}>
+            <a href={`/blog/${nav.prev.id}`}>
               <div className="flex justify-start">
                 <Icon icon="mingcute:left-line" className="nav-icon" />
                 <h3>이전 글</h3>
@@ -42,7 +42,7 @@ export default function BlogNav({ nav }: Props) {
       <div className="btn-wrapper">
         {nav?.next && (
           <Button variant="outline" className="next nav-button">
-            <a href={`/blog/${nav.next.slug}`}>
+            <a href={`/blog/${nav.next.id}`}>
               <div className="flex justify-end">
                 <h3>다음 글</h3>
                 <Icon icon="mingcute:right-line" className="nav-icon" />

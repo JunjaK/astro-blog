@@ -9,7 +9,6 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl.ts';
 import * as React from 'react';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 
@@ -30,12 +29,12 @@ export function ProjectCarousel({ images }: Props) {
           <CarouselContent>
             {images.map((item, index) => (
               <CarouselItem key={item} className="md:basis-1/2 lg:basis-1/3">
-                <PhotoView src={getBasePathWithUrl(item)}>
+                <PhotoView src={item}>
 
                   <div className="cursor-pointer">
                     <Card>
                       <CardContent className="flex items-center justify-center p-2">
-                        <img src={getBasePathWithUrl(item)} alt={`project-${index}`} className="m-0" />
+                        <img src={item} alt={`project-${index}`} className="m-0" />
                       </CardContent>
                     </Card>
                   </div>

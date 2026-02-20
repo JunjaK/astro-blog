@@ -9,7 +9,6 @@ import { Canvas, invalidate } from '@react-three/fiber';
 import { useMotionValueEvent, useScroll } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PhotoSlider } from 'react-photo-view';
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import {
   buildCarouselSlots,
   buildSectionAngleRanges,
@@ -54,7 +53,7 @@ export function DiarySectionCarousel({ sections, children }: DiarySectionCarouse
 
   // PhotoSlider data — use original (non-downscaled) image URLs
   const photoSliderItems = useMemo(
-    () => allImages.map((img) => ({ src: getBasePathWithUrl(img.src), key: img.src })),
+    () => allImages.map((img) => ({ src: img.src, key: img.src })),
     [allImages],
   );
 

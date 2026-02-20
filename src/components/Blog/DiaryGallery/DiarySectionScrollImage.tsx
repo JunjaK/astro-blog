@@ -1,5 +1,4 @@
 import type { DiaryImage } from './types';
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import { motion, type MotionValue, useTransform } from 'framer-motion';
 import { PhotoView } from 'react-photo-view';
 
@@ -104,7 +103,7 @@ export function DiarySectionScrollImage({
   // Depth-of-field: far images get blurred
   const blurAmount = slot.zDepth > 0.6 ? `blur(${(slot.zDepth - 0.6) * 3}px)` : 'none';
 
-  const resolvedSrc = getBasePathWithUrl(image.src);
+  const resolvedSrc = image.src;
 
   return (
     <motion.div

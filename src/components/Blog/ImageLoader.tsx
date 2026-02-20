@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl.ts';
 
 type ImageLoaderProps = {
   src?: string;
@@ -10,7 +9,7 @@ export default function ImageLoader({ src, alt = 'blog-image', ...props }: Image
   return (
     <img
       {...props}
-      src={getBasePathWithUrl(src)}
+      src={src ?? ''}
       alt={alt}
       loading="lazy"
     />

@@ -1,7 +1,4 @@
 ---
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl.ts';
-import React from 'react';
-
 type Props = {
   src?: string;
   alt?: string;
@@ -14,7 +11,7 @@ const { src, alt = 'blog-image', class: className, width, height } = Astro.props
 ---
 
 <img
-  src={getBasePathWithUrl(src)}
+  src={src ?? ''}
   alt={alt ?? 'blog-image'}
   loading="lazy"
   onerror={`this.src='/fallbackImg.svg'`}

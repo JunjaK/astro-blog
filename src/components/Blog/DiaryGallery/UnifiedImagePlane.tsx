@@ -4,7 +4,6 @@
 import { invalidate } from '@react-three/fiber';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { getBasePathWithUrl } from '@/utils/getBasePathWithUrl';
 import type { UnifiedSlot } from './buildUnifiedLayout';
 import { loadTexture, textureCache } from './texturePreload';
 
@@ -37,7 +36,7 @@ export const UnifiedImagePlane = memo(function UnifiedImagePlane({
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [aspect, setAspect] = useState(1.5);
 
-  const resolvedSrc = getBasePathWithUrl(textureSrc);
+  const resolvedSrc = textureSrc;
 
   // Texture loading — reuses preloaded cache and deduplicates in-flight requests
   useEffect(() => {
