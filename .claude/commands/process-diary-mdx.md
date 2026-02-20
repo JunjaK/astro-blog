@@ -1,6 +1,6 @@
 ---
 name: process-diary-mdx
-description: Full diary MDX processing pipeline - HEIC conversion, path normalization, DiarySection restructuring, and Typora sync
+description: Full diary MDX processing pipeline - HEIC conversion, path normalization, DiaryCarousel restructuring, and Typora sync
 user_invocable: true
 ---
 
@@ -9,7 +9,7 @@ user_invocable: true
 Takes a raw Typora-exported diary MDX file and processes it end-to-end:
 1. HEIC → WebP conversion
 2. Image path normalization (relative → server `/files/` paths)
-3. DiarySection component restructuring
+3. DiaryCarousel component restructuring
 4. Typora source sync
 5. Frontmatter thumbnail generation
 
@@ -66,27 +66,28 @@ Copy any existing `.webp`, `.png`, `.jpg`, `.MOV`, `.mp4` files referenced in th
 - `![alt](./assets/image.ext)` → `![alt](/files/blog/diary/{series}/assets/image.ext)`
 - `<video src="url-encoded-path">` → `<video src="/files/blog/diary/{series}/assets/{filename}" ...>`
 
-## Step 5: Restructure MDX with DiarySection
+## Step 5: Restructure MDX with DiaryCarousel
 
-Ask the user: **"Which heading marks the start of DiarySection content?"** (default: `## 일정` or its sub-headings)
+Ask the user: **"Which heading marks the start of DiaryCarousel content?"** (default: `## 일정` or its sub-headings)
 
 ### Structure rules:
 - Content **before** the boundary heading stays as plain markdown (route maps, visit lists, trip purpose)
-- Content **from** the boundary heading onwards gets wrapped in `<DiaryGallery>` + `<DiarySection>` components
-- Each `### sub-heading` under the boundary becomes its own `<DiarySection client:visible images={[...]}>`
-- Import statement at top: `import { DiaryGallery, DiarySection } from '@/components/Blog/DiaryGallery';`
+- Content **from** the boundary heading onwards uses self-closing `<DiaryCarousel />` components
+- Each `### sub-heading` under the boundary becomes its own `<DiaryCarousel client:visible images={[...]} />`
+- No wrapper component needed — each carousel is an independent island
+- Text content goes as plain MDX below the carousel (not as children)
+- Import statement at top: `import { DiaryCarousel } from '@/components/Blog/DiaryGallery';`
 
 ### Image grouping:
 - Images appearing between two `###` sub-headings belong to that section's `images` array
-- First image in each section = hero (full viewport), rest = gallery grid
 - Image format: `{ src: "/files/.../filename.webp", alt: "description" }`
 - Assign meaningful Korean `alt` text based on surrounding context
 - Remove `[toc]` if present
+- Videos use the `videos` prop: `videos={[{ src: "/files/.../video.mp4", poster: "/files/.../poster.webp" }]}`
 
-### DiarySection JSX rules (MDX compatibility):
-- All JSX open/close tags (`<DiaryGallery>`, `<DiarySection>`, `</DiarySection>`, `</DiaryGallery>`) must be at **column 0** (no indentation)
+### DiaryCarousel JSX rules (MDX compatibility):
+- Self-closing `<DiaryCarousel />` tags must be at **column 0** (no indentation)
 - Blank line between JSX tags and markdown content
-- `<video>` tags use `className` (not `class`) and include `controls`, `mx-auto my-4 max-w-full rounded-xl`
 
 ## Step 6: Update Typora source
 
@@ -105,7 +106,7 @@ Run `bun run generate-thumbs` to create downscaled thumbnails for listing pages.
 
 - Number of HEIC files converted to WebP
 - Number of non-HEIC assets copied
-- Number of DiarySection components created
+- Number of DiaryCarousel components created
 - Number of paths updated in MDX and Typora source
 - Number of frontmatter thumbnails generated
 - Remind user to run `/publish-images` when server is available
@@ -116,4 +117,4 @@ Run `bun run generate-thumbs` to create downscaled thumbnails for listing pages.
 - WebP quality 80 for photos.
 - `sips` on macOS does NOT reliably support WebP output — always use the Python script.
 - `image-assets/to_convert_webp/` is staging only, cleaned after conversion.
-- `client:visible` must be on each `<DiarySection>`, NOT on `<DiaryGallery>` (Astro island hydration constraint).
+- Each `<DiaryCarousel />` is a self-closing, independent island with `client:visible`.
