@@ -1,16 +1,16 @@
 import type { StringKeyType } from '@/types/commonType.ts';
-import { EachProject } from '@/components/About/ChronicleComp/EachProject.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { Card, CardDescription, CardTitle } from '@/components/ui/card.tsx';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible.tsx';
-import { Separator } from '@/components/ui/separator.tsx';
-import { $theme } from '@/store/system.ts';
 import { Icon } from '@iconify/react';
 import { useStore } from '@nanostores/react';
 import { motion } from 'framer-motion';
 // @flow
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+import { EachProject } from '@/components/About/ChronicleComp/EachProject.tsx';
+import { Button } from '@/components/ui/button.tsx';
+import { Card, CardDescription, CardTitle } from '@/components/ui/card.tsx';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible.tsx';
+import { Separator } from '@/components/ui/separator.tsx';
+import { $theme } from '@/store/system.ts';
 
 type Props = {
   isOpen: StringKeyType<boolean>;
@@ -29,8 +29,8 @@ export function FreeTimeline({ isOpen, handleOpenChange }: Props) {
     return [
       {
         title: 'Yosul',
-        duration: '2024.06 ~ Present',
-        desc: '국내에 전문적인 주류 리뷰 커뮤니티가 없어 우리가 한번 만들어보자는 생각하에 진행하고 있는 프로젝트.\n구성원은 모두 전/현직 직장인으로 사이드 프로젝트 겸 진행하고 있습니다.\n차별점으로는 주류 리뷰를 좀 더 디테일하게 작성할 수 있다는 점과 주류 위키(현재 개발 중...)를 통하여 술에 대한 정보를 사용자들이 자유롭게 추가할 수 있다는 점입니다.\n프론트엔드 및 마크업 작업을 맡아서 진행 중입니다.',
+        duration: '2024.06 ~ 2025-07',
+        desc: '국내에 전문적인 주류 리뷰 커뮤니티가 없어 우리가 한번 만들어보자는 생각하에 진행하고 있는 프로젝트.\n구성원은 모두 전/현직 직장인으로 사이드 프로젝트 겸 진행하고 있습니다.\n차별점으로는 주류 리뷰를 좀 더 디테일하게 작성할 수 있다는 점입니다.\n프론트엔드 및 마크업 작업을 맡아서 진행했으나, 서로 시간을 내기가 힘들다고 판단하여 중단에 프로젝트를 중단했습니다.',
         techStackIcon: isHydrated
           ? [
               { iconUrl: `/images/icon/tech-stack/${mode}/typescript.svg`, techName: 'Typescript' },

@@ -72,6 +72,7 @@ const { title, techStacks = [], description } = post;
     <div
       id="go-back"
       class="text-lg font-bold text-opacity-80 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-gray-50 mb-2 w-[3rem] cursor-pointer"
+      onclick="history.back()"
     >
       {`> cd ..`}
     </div>
@@ -89,8 +90,3 @@ const { title, techStacks = [], description } = post;
 
 <ThemeInit />
 
-<script is:inline>
-  document.getElementById('go-back').addEventListener('click', () => {
-    window.history.back();
-  });
-</script>

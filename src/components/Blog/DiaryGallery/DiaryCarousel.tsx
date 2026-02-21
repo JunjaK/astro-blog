@@ -1,14 +1,14 @@
+import type { DiaryImage, DiaryVideo } from './types';
 import { useState } from 'react';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselPrevious,
   CarouselNext,
+  CarouselPrevious,
   useCarousel,
 } from '@/components/ui/carousel';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
-import type { DiaryImage, DiaryVideo } from './types';
 
 type DiaryCarouselProps = {
   images: DiaryImage[];
@@ -17,10 +17,14 @@ type DiaryCarouselProps = {
 
 function CounterBadge() {
   const { currentIndex, totalSlides } = useCarousel();
-  if (totalSlides <= 1) return null;
+  if (totalSlides <= 1)
+    return null;
   return (
     <div className="absolute bottom-3 right-3 z-10 rounded-full bg-black/60 px-2.5 py-1 text-xs font-medium text-white/90 backdrop-blur-sm">
-      {currentIndex + 1} / {totalSlides}
+      {currentIndex + 1}
+      {' '}
+      /
+      {totalSlides}
     </div>
   );
 }

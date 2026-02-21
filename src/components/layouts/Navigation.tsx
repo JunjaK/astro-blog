@@ -1,9 +1,9 @@
+import { Icon } from '@iconify/react';
+import React, { useEffect } from 'react';
 import DocNav from '@/components/layouts/DockNav.tsx';
 import { DrawerNavigation } from '@/components/layouts/DrawerNavigation.tsx';
 import { ModeToggle } from '@/components/layouts/ModeToggle.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { Icon } from '@iconify/react';
-import React, { useEffect } from 'react';
 
 export default function Navigation() {
   const [tab, setTab] = React.useState('');

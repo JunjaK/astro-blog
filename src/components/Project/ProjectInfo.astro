@@ -7,10 +7,11 @@ interface Props {
 }
 
 const { frontmatter } = Astro.props;
+const originalImage = frontmatter.thumbnail?.replace(/-thumb\.webp$/, '.png');
 ---
 
 <Fragment>
-  <ImageLoader src={frontmatter.thumbnail} alt={frontmatter.title} />
+  <ImageLoader src={originalImage} alt={frontmatter.title} />
   <div class="project-info">
     <h1>{frontmatter.title}</h1>
     <p>{frontmatter.duration}</p>

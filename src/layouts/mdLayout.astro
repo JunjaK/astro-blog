@@ -1,15 +1,16 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import BlogNav from '@/components/Blog/BlogNav';
-import FloatButton from '@/components/layouts/FloatButton.astro';
-import Footer from '@/components/layouts/Footer';
-
-import Navigation from '@/components/layouts/Navigation';
-import ThemeInit from '@/components/layouts/ThemeInit.astro';
-import ScrollProgress from '@/components/ui/scroll-progress';
 import { ClientRouter } from 'astro:transitions';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
+
+import BlogNav from '@/components/Blog/BlogNav';
+import FloatButton from '@/components/layouts/FloatButton.astro';
+import Footer from '@/components/layouts/Footer';
+import Navigation from '@/components/layouts/Navigation';
+
+import ThemeInit from '@/components/layouts/ThemeInit.astro';
+import ScrollProgress from '@/components/ui/scroll-progress';
 import BlogFrontmatter from '../components/Blog/BlogFrontmatter';
 import GiscusComp from '../components/Blog/GiscusComp';
 import CommonScript from '../components/layouts/CommonScript.astro';
@@ -74,6 +75,7 @@ const { title, tags = [], category = '' } = post;
         <div
           id="go-back"
           class="text-lg font-bold text-opacity-80 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-gray-50 mb-2 w-[5rem] cursor-pointer"
+          onclick="history.go((window._mdEntryIndex ?? 0) - (history.state?.index ?? 0) - 1)"
         >
           {`> cd ..`}
         </div>
@@ -116,27 +118,21 @@ const { title, tags = [], category = '' } = post;
 <ThemeInit />
 
 <script is:inline>
-  function scrollToSection() {
-    const params = new URLSearchParams(window.location.search);
-    const section = parseInt(params.get('section'), 10);
-    if (!section || section < 1) return;
+window._mdEntryIndex = window.history.state?.index ?? 0;
 
-    const headings = document.querySelectorAll('.article-entry h2');
-    const target = headings[section - 1];
-    if (!target) return;
+(function scrollToSection() {
+  const params = new URLSearchParams(window.location.search);
+  const section = Number.parseInt(params.get('section'), 10);
+  if (!section || section < 1)
+    return;
 
-    setTimeout(() => {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-  }
+  const headings = document.querySelectorAll('.article-entry h2');
+  const target = headings[section - 1];
+  if (!target)
+    return;
 
-  document.addEventListener('astro:page-load', () => {
-    window.currentHistoryIndex = window.history.state.index;
-    scrollToSection();
-  });
-  document.getElementById('go-back').addEventListener('click', () => {
-    const diffHistory
-    = window.currentHistoryIndex - window.history.state.index - 1;
-    window.history.go(diffHistory);
-  });
+  setTimeout(() => {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+})();
 </script>

@@ -1,5 +1,5 @@
 ---
-title: live 2d Test
+title: Live 2d Widget
 duration: 2025-03-07 ~ 2026-02-19
 techStacks: ['typescript','astro']
 thumbnail: /files/playground/live2d-test-thumb.webp
@@ -12,8 +12,11 @@ import Live2DWidget from '@/components/layouts/Live2DWidget.astro';
 <ProjectInfo frontmatter={frontmatter} />
 
 ## 설명
-아래 라이브러리를 활용한 Web Page Live2D Widget 구현 테스트 페이지입니다.
-현 페이지 진입 후 약 2초 정도 지나면 좌측 하단에 모델이 로딩되어 나옵니다.
+아래 라이브러리를 활용한 Web Page Live2D Widget 구현 테스트 페이지입니다.  
+모델링 용량이 꽤 커서 나오기까지 시간이 좀 많이 걸립니다.    
+
+무료 모델링 프리렌, 아냐, 히요리 3가지를 추가하였습니다.  
+모델링 교체를 원하면 메뉴 중 제일 상단에 있는 모델링 교체 아이콘을 클릭하면 모델링이 변경됩니다.
 
 - [GithubLink](https://github.com/stevenjoezhang/live2d-widget)
 - [fork 떠서 작업 중인 repo](https://github.com/JunjaK/live2d-widget)
@@ -27,6 +30,8 @@ import Live2DWidget from '@/components/layouts/Live2DWidget.astro';
 - Cache API를 활용한 모델 파일 캐싱
 
 ## 결과
-- 레이아웃에 상시 보이게 처리하고 싶었는데, Astro로는 그렇게 쓰는 것이 권장하는 방향이 아니라 일단 여기 플레이그라운드에만 추가하기로 함.
+- 레이아웃에 상시 보이게 처리하고 싶었는데, Astro는 Route 이동 시, html을 rerender하는 방식이라 상시 보이게 처리하기 까다로움
+- iframe으로 가져오기, head 부분에 넣기, astro:page-load 이벤트 활용 등 여러 방법을 시도했으나 어떤 방식으로든 live-2d init이 발생하고, hydration에 시간이 많이 걸리는데, 그 기간 동안 interaction이 불가한 점, 그리고 제일 큰 문제는 라우트 이동시 계속 위젯이 초기화되는 문제가 발생
+- 결국 playground인 현 페이지에서만 위젯을 넣기로 함.
 
 <Live2DWidget />

@@ -1,29 +1,39 @@
 ---
-title: 일기 갤러리의 진화 — Three.js에서 캐러셀까지
-duration: 2025-10 ~ 2026-02
+title: Diary Section 개발 기록
+duration: 2026-02-14 ~ 2026-02-20
 techStacks: ['typescript', 'react', 'threedotjs', 'framer']
 thumbnail: /files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c-thumb.webp
-description: 일기 포스트용 이미지 갤러리의 4단계 진화 과정. Three.js WebGL → CSS 3D → R3F 링 캐러셀 → 단순 캐러셀로 수렴.
+description: 일기 포스트용 이미지 갤러리의 개발 시항 착오. Three.js WebGL → CSS 3D → R3F 링 캐러셀 → 단순 캐러셀
 ---
 
 import ProjectInfo from '@/components/Project/ProjectInfo.astro';
 import { DiarySection, DiaryGalleryUnified, DiarySectionCarousel } from '@/components/Playground/DiarySection3D';
 import { DiaryCarousel } from '@/components/Blog/DiaryGallery';
+import ImageLoader from '@/components/Blog/ImageLoader';
 
 <ProjectInfo frontmatter={frontmatter} />
 
 ## 배경
 
-블로그 일기 포스트에 사용할 이미지 갤러리를 만들고 싶었다.
-처음에는 스크롤에 따라 이미지가 3D 공간에서 떠다니며 나타나고 사라지는 연출이 목표였다.
-전체 코드는 AI(Claude)로 생성했으며, Three.js에 대한 사전 지식이 없는 상태에서 시작했다.
+블로그 일기 포스트에 사용할 이미지 갤러리를 만들고 싶었다.  
+블로그 방치하고 있다가 설 연휴에 할 것도 없고 해서 시작.
 
-결론부터 말하면 4단계 반복을 거쳐 가장 단순한 형태로 수렴했다:
 
-1. **Three.js (WebGL)** — 무모한 첫 시도
-2. **CSS 3D Transform** — 현실적인 대안
-3. **R3F 링 캐러셀** — 과한 욕심
-4. **DiaryCarousel** — 최종 채택
+이 [템플릿](https://v0.app/templates/3-d-gallery-photography-template-JUFK37Esjlj?via=TRX3Vvo)을 보고 이거처럼 블로그 포스트에 다이나믹하게 이미지와 글을 표시하고 싶었다.
+
+<ImageLoader src="/files/playground/diary-seciton-sample.gif" alt="diary-section-sample" />
+
+Three.js를 통해서 이를 구현하면 좋겠다고 생각했는데, 정작 나는 Three.js에 대하여 모르니까  
+AI(Claude Code)를 통해서 구현하기로 했다.
+
+
+결론부터 말하면 시행착오를 거쳐 가장 단순한 형태로 수렴했다:
+
+1. Three.js 사용하여 3D 공간에 이미지를 배치
+2. CSS 3D Transform 
+3. 통합 Three.js 갤러리
+4. Three.js 링 캐러셀
+5. 단순 이미지 캐러셀.
 
 ---
 
@@ -40,7 +50,6 @@ import { DiaryCarousel } from '@/components/Blog/DiaryGallery';
 - fog으로 원거리 이미지 자연스럽게 사라짐
 
 ### 문제점
-- Three.js 지식 없이 AI에게 전적으로 의존 → 결과물이 형편없었음
 - 단일 Three.js 인스턴스라면 문제없었지만, 일기 페이지에 9개 DiarySection이 각각 독립 WebGL Canvas를 생성하니 GPU 컨텍스트 제한에 도달
 - 이미지 배치와 카메라 동선이 부자연스러움
 - 모바일에서 심각한 성능 저하
@@ -56,7 +65,11 @@ import { DiaryCarousel } from '@/components/Blog/DiaryGallery';
   ]}
 >
 
-**Three.js 버전 데모** — 스크롤하면 WebGL Canvas 위 3D 공간에서 이미지가 이동합니다.
+## Three.js 버전 데모
+스크롤하면 WebGL Canvas 위 3D 공간에서 이미지가 이동합니다.  
+이미지가 부자연스럽게 겹치는 부분이 있어 조금 거슬립니다.  
+지금 이미지가 4개 밖에 없어서  성능 상에 문제가 없지만, 일기 포스트에는 이미지가 보통 20개 정도 있는데, 
+이 경우 상당한 프레임 드랍이 발생했습니다.
 
 </DiarySection>
 
@@ -65,7 +78,8 @@ import { DiaryCarousel } from '@/components/Blog/DiaryGallery';
 ## 2. CSS 3D Transform 버전
 
 Three.js 버전의 경험을 바탕으로 CSS 3D transform + framer-motion으로 재구현.
-먼저 Three.js로 만들어보면서 3D 레이아웃과 스크롤 인터랙션의 방향이 잡혀 있었기 때문에, CSS 3D로 옮기니 원하는 결과물에 어느 정도 근접할 수 있었다.
+먼저 Three.js로 만들어보면서 3D 레이아웃과 스크롤 인터랙션의 방향이 잡혀 있었기 때문에,  
+CSS 3D로 옮기니 원하는 결과물에 어느 정도 근접할 수 있었다.
 
 ### 구현 내용
 - CSS `perspective` + `translateZ / rotateY`로 3D 깊이감
@@ -79,7 +93,6 @@ Three.js 버전의 경험을 바탕으로 CSS 3D transform + framer-motion으로
 ### Three.js 대비 개선점
 - WebGL Canvas 없이 브라우저 compositor GPU 가속만 사용 → 컨텍스트 제한 문제 해결
 - 여러 섹션이 한 페이지에 공존해도 성능 문제 없음
-- 모바일 성능 대폭 개선
 - 추가 최적화가 필요하지만 Three.js 버전 대비 스크롤이 어느 정도 매끄럽게 동작
 
 <DiarySection client:visible
@@ -91,74 +104,19 @@ Three.js 버전의 경험을 바탕으로 CSS 3D transform + framer-motion으로
   ]}
 >
 
-**CSS 3D 버전 데모** — 스크롤하면 `perspective`와 `translateZ`로 깊이감이 표현된 이미지들이 순차적으로 나타납니다.
+## CSS 3D 버전 데모
+스크롤하면 `perspective`와 `translateZ`로 깊이감이 표현된 이미지들이 순차적으로 나타납니다.
+여전히 이미지 부자연스러운 겹침 문제 존재.  
+랜덤하게 이미지 위치 및 사이즈 결정되어 특정 콘텐츠의 경우 제대로 보이지 않는 문제가 있습니다.
 
 </DiarySection>
 
 ---
 
-## 3. R3F 링 캐러셀 (폐기)
+## 3. 통합 Three.js 갤러리
 
-CSS 3D 버전으로 어느 정도 만족스러운 결과를 얻었지만, 욕심이 생겨서 한 단계 더 시도했다.
-
-### 컨셉
-- `@react-three/fiber` 기반 3D 링(원형) 캐러셀
-- 이미지를 원통형으로 배치하고, 섹션 도트를 클릭하면 링이 회전
-- `calc(100dvh - 150px)` 높이의 몰입형 뷰
-- alphaMap으로 이미지 가장자리 soft fade
-- 스크롤이 아닌 클릭 기반 네비게이션
-
-### 구현 시도
-- `CarouselRing.tsx`: R3F Scene — 이미지를 원형으로 배치, `atan2`로 카메라를 향하도록 회전
-- `UnifiedImagePlane.tsx`: 개별 이미지 plane — 텍스처 로딩, alphaMap, opacity 애니메이션
-- `buildCarouselLayout.ts`: 원형 배치 수학 (반지름, 각도 계산)
-- `carouselAlphaMap.ts`: soft-edge DataTexture 생성 (RGBAFormat 필수 — GREEN 채널 이슈 학습)
-- `texturePreload.ts`: 동시성 제한 텍스처 로더, `createImageBitmap` + canvas fallback
-
-### 배운 점
-- **alphaMap은 GREEN 채널을 읽는다**: `RedFormat` DataTexture는 g=0이라 완전 투명해짐. `RGBAFormat`으로 4바이트/픽셀 사용해야 함
-- **`LuminanceFormat`은 WebGL2에서 deprecated**: `INVALID_OPERATION` 에러 발생
-- **Plane 방향**: `rotY = atan2(x, z)`는 바깥을 향함. 안쪽(카메라)을 향하려면 `+ Math.PI`
-- **`frameloop="demand"`**: `invalidate()` 호출 없이는 렌더링 안 됨 — 애니메이션, 텍스처 로드, 사용자 인터랙션마다 수동 호출 필요
-
-### 폐기 사유
-- 여전히 WebGL 의존 → 복수 섹션 = 복수 Canvas 문제 미해결
-- 링 회전 UX가 직관적이지 않았음 — 사용자가 어디를 클릭해야 하는지 헤매는 문제
-- 코드 복잡도 대비 사용자 경험 개선이 미미
-- 모바일에서 3D 링 조작이 불편
-
-<DiarySectionCarousel client:visible
-  sections={[
-    {
-      images: [
-        { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg", alt: "아사쿠사" },
-        { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.jpeg", alt: "스키야 규동" },
-      ],
-    },
-    {
-      images: [
-        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.png", alt: "신마 아카리짱" },
-        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.png", alt: "간다 신사" },
-      ],
-    },
-  ]}
->
-
-## 섹션 1
-
-R3F 링 캐러셀 데모 — 스크롤하면 3D 링이 회전하며 이미지가 전환됩니다. 하단 도트를 클릭해 섹션 이동도 가능합니다.
-
-## 섹션 2
-
-두 번째 섹션입니다. 링 위 이미지를 클릭하면 라이트박스가 열립니다.
-
-</DiarySectionCarousel>
-
----
-
-## 4. 통합 갤러리 시도 (폐기)
-
-링 캐러셀의 "복수 Canvas" 문제를 해결하기 위해, 페이지 전체를 하나의 R3F Canvas로 통합하는 접근도 시도했다.
+링 캐러셀의 "복수 Canvas"가 성능적으로 부하를 많이 일으킨다고 판단하여, 
+페이지 전체를 하나의 Three.js Canvas로 통합하는 접근도 시도했다.
 
 ### 컨셉
 - `DiaryGalleryUnified`: 모든 섹션의 이미지를 하나의 Canvas에 렌더링
@@ -170,7 +128,6 @@ R3F 링 캐러셀 데모 — 스크롤하면 3D 링이 회전하며 이미지가
 - Astro island 아키텍처와 근본적으로 충돌 — `client:visible`로 lazy hydration하는 패턴과 단일 Canvas가 양립 불가
 - 페이지 진입 시 모든 이미지 텍스처를 한번에 로딩해야 하는 문제
 - 텍스트 콘텐츠를 3D Canvas 위에 오버레이하는 것의 접근성 문제
-- 결국 "3D여야 하는가?"라는 근본적 의문 도달
 
 <DiaryGalleryUnified client:visible
   sections={[
@@ -191,7 +148,8 @@ R3F 링 캐러셀 데모 — 스크롤하면 3D 링이 회전하며 이미지가
 
 ## 섹션 1
 
-통합 갤러리 데모 — 모든 섹션의 이미지가 하나의 Canvas에 렌더링됩니다. 스크롤에 따라 카메라가 이동하며 이미지가 순차적으로 나타납니다.
+통합 갤러리 데모 — 모든 섹션의 이미지가 하나의 Canvas에 렌더링됩니다. 
+스크롤에 따라 카메라가 이동하며 이미지가 순차적으로 나타납니다.
 
 ## 섹션 2
 
@@ -201,9 +159,72 @@ R3F 링 캐러셀 데모 — 스크롤하면 3D 링이 회전하며 이미지가
 
 ---
 
+## 4. Three.js 링 캐러셀 
+
+CSS 3D 버전으로는 구현의 한계가 있고, 1번째에서 시도한 Three.js는 모바일에서 crash가 너무 자주 발생하여,  
+예시 템플릿에서 보이는 방식으로 사진을 많이 넣어서 갤러리처럼 보이게 하는 것은 불가능하다고 판단하여 
+다른 방향으로 가보자라는 생각에 다른 예시를 찾아보다가 Three.js 링 [캐러셀 예시](https://3d-carousel.wawasensei.dev/)를 찾아보게 되었다.
+
+
+### 컨셉
+- `@react-three/fiber` 기반 3D 링(원형) 캐러셀
+- 이미지를 원통형으로 배치하고, 섹션 도트를 클릭하면 링이 회전
+- `calc(100dvh - 150px)` 높이의 몰입형 뷰
+- alphaMap으로 이미지 가장자리 soft fade
+- 스크롤이 아닌 클릭 기반 네비게이션
+
+### 구현 시도
+- `CarouselRing.tsx`: R3F Scene — 이미지를 원형으로 배치, `atan2`로 카메라를 향하도록 회전
+- `UnifiedImagePlane.tsx`: 개별 이미지 plane — 텍스처 로딩, alphaMap, opacity 애니메이션
+- `buildCarouselLayout.ts`: 원형 배치 수학 (반지름, 각도 계산)
+- `carouselAlphaMap.ts`: soft-edge DataTexture 생성 (RGBAFormat 필수 — GREEN 채널 이슈 학습)
+- `texturePreload.ts`: 동시성 제한 텍스처 로더, `createImageBitmap` + canvas fallback
+
+<DiarySectionCarousel client:visible
+  sections={[
+    {
+      images: [
+        { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg", alt: "아사쿠사" },
+        { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.jpeg", alt: "스키야 규동" },
+          { src: "/files/blog/diary/japan-around-trip/assets/20241223_020939713_iOS.webp", alt: "마쓰시마 해안 조망 1" },
+        
+      ],
+    },
+    {
+      images: [
+        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.png", alt: "신마 아카리짱" },
+        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.png", alt: "간다 신사" },
+         { src: "/files/blog/diary/25-01-tokyo/assets/20250120_112504045_iOS.webp", alt: "히츠지 양 구이" },
+
+      ],
+    },
+  ]}
+>
+
+## 섹션 1
+
+R3F 링 캐러셀 데모 — 스크롤하면 3D 링이 회전하며 이미지가 전환됩니다. 하단 도트를 클릭해 섹션 이동도 가능합니다.
+
+## 섹션 2
+
+두 번째 섹션입니다. 링 위 이미지를 클릭하면 라이트박스가 열립니다.
+
+</DiarySectionCarousel>
+
+---
+
 ## 5. 최종: DiaryCarousel
 
-3D 갤러리의 4번의 반복 끝에 내린 결론: **단순한 이미지 캐러셀이면 충분하다.**
+Three.js 링 캐러셀의 경우에는 성능 이슈도 어느 정도 해결되어서 모바일 구동도 문제가 없었다.  
+다만 스크롤 방식과 보이는 방식이 PC 브라우저에서는 괜찮았는데, 
+모바일에서는 스크롤 불편, 컨텐츠 보기도 불편하여 과연 이렇게 구현하는게 의미가 있을까하는 의문이 들었다.  
+
+그러던 중 내가 팔로우하고 있는 anthony-fu 의 블로그에서 [하나의 포스트](https://antfu.me/posts/hello-tokyo)가 단순히 캐러셀 + 텍스트 단락으로 구성되어 있는 것을 보고  
+굳이 복잡하게 갈 필요가 있을까 하는 생각이 들었고, 모바일에서는 오히려 단순한 것이 더 보기 편해서 단순하게 가는 것으로 결정햇다.
+
+<ImageLoader src="/files/playground/anthony-fu-blog-post.png" alt="anthony-fu" />
+
+
 
 ### 구현 내용
 - `embla-carousel-react` 기반 캐러셀 (프로젝트에서 이미 사용 중이던 ui/carousel 컴포넌트 재활용)
@@ -228,27 +249,3 @@ R3F 링 캐러셀 데모 — 스크롤하면 3D 링이 회전하며 이미지가
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.png", alt: "간다 신사" },
   ]}
 />
-
----
-
-## 결론
-
-| 버전 | 기술 | 상태 |
-|------|------|------|
-| WebGL | Three.js + R3F | 위 데모로 보존 |
-| CSS 3D | framer-motion + perspective | 위 데모로 보존 |
-| R3F 링 캐러셀 | R3F + 원형 배치 | 위 데모로 보존 |
-| 통합 갤러리 | R3F + 단일 Canvas | 위 데모로 보존 |
-| **DiaryCarousel** | **embla-carousel** | **최종 채택** |
-
-### 교훈
-
-1. **AI 코드 생성의 반복 전략**: 한 번에 완벽한 결과를 기대하기보단, 프로토타입으로 방향을 잡고 다음 반복에 반영하는 방식이 효과적이었다.
-
-2. **복잡도의 함정**: "3D면 더 멋있겠지"라는 욕심이 4번의 반복을 만들었다. 실제 사용자 경험에서 3D 갤러리의 와우 팩터는 잠깐이고, 스크롤 성능 저하와 조작 불편함이 더 크게 다가왔다.
-
-3. **기존 컴포넌트 활용**: 프로젝트에 이미 있는 `Carousel` 컴포넌트를 감싸는 것만으로 충분했다. 새로운 라이브러리나 복잡한 구현이 필요 없었다.
-
-4. **Astro islands 제약 이해**: `client:visible` 기반 lazy hydration은 "섹션별 독립 인스턴스" 패턴을 강제한다. 단일 Canvas 통합 같은 전역적 접근은 이 아키텍처와 충돌한다.
-
-5. **Three.js 학습 비용**: Three.js는 도메인 지식 없이 AI에게만 의존하기엔 너무 low-level이었다. alphaMap 채널, WebGL 컨텍스트 제한, 텍스처 관리 같은 이슈는 기초 지식 없이는 디버깅 자체가 불가능하다.

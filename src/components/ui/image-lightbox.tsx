@@ -1,5 +1,5 @@
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { AnimatePresence, motion, type PanInfo } from 'framer-motion';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -54,7 +54,8 @@ export function ImageLightbox({
 
   const goTo = useCallback(
     (newIndex: number) => {
-      if (newIndex < 0 || newIndex >= images.length) return;
+      if (newIndex < 0 || newIndex >= images.length)
+        return;
       setDirection(newIndex > index ? 1 : -1);
       setZoomed(false);
       setDragOffset({ x: 0, y: 0 });
@@ -64,16 +65,19 @@ export function ImageLightbox({
   );
 
   const goPrev = useCallback(() => {
-    if (canPrev) goTo(index - 1);
+    if (canPrev)
+      goTo(index - 1);
   }, [canPrev, goTo, index]);
 
   const goNext = useCallback(() => {
-    if (canNext) goTo(index + 1);
+    if (canNext)
+      goTo(index + 1);
   }, [canNext, goTo, index]);
 
   // Keyboard navigation
   useEffect(() => {
-    if (!visible) return;
+    if (!visible)
+      return;
     const handler = (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowLeft':
@@ -96,7 +100,8 @@ export function ImageLightbox({
 
   // Body scroll lock
   useEffect(() => {
-    if (!visible) return;
+    if (!visible)
+      return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
@@ -105,36 +110,43 @@ export function ImageLightbox({
   }, [visible]);
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (zoomed) return;
+    if (zoomed)
+      return;
     const { offset, velocity } = info;
     const swipe = Math.abs(offset.x) * velocity.x;
     if (offset.x < -SWIPE_THRESHOLD || swipe < -1000) {
       goNext();
-    } else if (offset.x > SWIPE_THRESHOLD || swipe > 1000) {
+    }
+    else if (offset.x > SWIPE_THRESHOLD || swipe > 1000) {
       goPrev();
     }
   };
 
   const handleDoubleClick = () => {
-    if (images[index]?.type === 'video') return;
+    if (images[index]?.type === 'video')
+      return;
     setZoomed((z) => {
-      if (z) setDragOffset({ x: 0, y: 0 });
+      if (z)
+        setDragOffset({ x: 0, y: 0 });
       return !z;
     });
   };
 
   const handleZoomDrag = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (!zoomed) return;
+    if (!zoomed)
+      return;
     setDragOffset({
       x: dragOffset.x + info.offset.x,
       y: dragOffset.y + info.offset.y,
     });
   };
 
-  if (!visible) return null;
+  if (!visible)
+    return null;
 
   const currentImage = images[index];
-  if (!currentImage) return null;
+  if (!currentImage)
+    return null;
   const isVideo = currentImage.type === 'video';
 
   const content = (
@@ -147,7 +159,8 @@ export function ImageLightbox({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={(e) => {
-            if (e.target === e.currentTarget) onClose();
+            if (e.target === e.currentTarget)
+              onClose();
           }}
         >
           {/* Close button */}
@@ -161,7 +174,10 @@ export function ImageLightbox({
 
           {/* Image counter */}
           <div className="absolute top-4 left-4 z-[110] rounded-full bg-black/50 px-3 py-1.5 text-sm font-medium text-white/80 backdrop-blur-sm">
-            {index + 1} / {images.length}
+            {index + 1}
+            {' '}
+            /
+            {images.length}
           </div>
 
           {/* Toolbar (tags) */}
@@ -204,7 +220,8 @@ export function ImageLightbox({
             ref={imageContainerRef}
             className="relative h-full w-full overflow-hidden"
             onClick={(e) => {
-              if (e.target === e.currentTarget) onClose();
+              if (e.target === e.currentTarget)
+                onClose();
             }}
           >
             <AnimatePresence initial={false} custom={direction} mode="popLayout">
@@ -222,33 +239,36 @@ export function ImageLightbox({
                 onDragEnd={zoomed ? handleZoomDrag : handleDragEnd}
                 className="absolute inset-0 flex items-center justify-center"
                 onClick={(e) => {
-                  if (e.target === e.currentTarget) onClose();
+                  if (e.target === e.currentTarget)
+                    onClose();
                 }}
               >
-                {isVideo ? (
-                  <video
-                    src={currentImage.src}
-                    controls
-                    autoPlay
-                    className="max-h-[90vh] max-w-[90vw] select-none rounded-xl"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                ) : (
-                  <motion.img
-                    src={currentImage.src}
-                    alt=""
-                    className="max-h-[90vh] max-w-[90vw] select-none rounded-xl object-contain"
-                    draggable={false}
-                    onDoubleClick={handleDoubleClick}
-                    animate={{
-                      scale: zoomed ? ZOOM_SCALE : 1,
-                      x: zoomed ? dragOffset.x : 0,
-                      y: zoomed ? dragOffset.y : 0,
-                    }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    style={{ cursor: zoomed ? 'grab' : 'default' }}
-                  />
-                )}
+                {isVideo
+                  ? (
+                      <video
+                        src={currentImage.src}
+                        controls
+                        autoPlay
+                        className="max-h-[90vh] max-w-[90vw] select-none rounded-xl"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    )
+                  : (
+                      <motion.img
+                        src={currentImage.src}
+                        alt=""
+                        className="max-h-[90vh] max-w-[90vw] select-none rounded-xl object-contain"
+                        draggable={false}
+                        onDoubleClick={handleDoubleClick}
+                        animate={{
+                          scale: zoomed ? ZOOM_SCALE : 1,
+                          x: zoomed ? dragOffset.x : 0,
+                          y: zoomed ? dragOffset.y : 0,
+                        }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        style={{ cursor: zoomed ? 'grab' : 'default' }}
+                      />
+                    )}
               </motion.div>
             </AnimatePresence>
           </div>

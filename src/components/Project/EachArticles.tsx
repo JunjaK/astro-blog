@@ -35,7 +35,7 @@ const EachArticles: React.FC<EachArticlesProps> = ({ frontmatter, url }) => {
         'project-article-wrapper',
       )}
     >
-      <a href={url}>
+      <a href={url} className="h-full block">
         <article className="project-article">
 
           <ImageLoader

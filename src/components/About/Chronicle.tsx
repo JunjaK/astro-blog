@@ -1,6 +1,9 @@
 import type { StringKeyType } from '@/types/commonType.ts';
-import { FreeTimeline } from '@/components/About/ChronicleComp/FreeTimeline.tsx';
+import { motion } from 'framer-motion';
 
+// @flow
+import * as React from 'react';
+import { FreeTimeline } from '@/components/About/ChronicleComp/FreeTimeline.tsx';
 import { QesgTimeline } from '@/components/About/ChronicleComp/QesgTimeline';
 import { Twoz1stTimeline } from '@/components/About/ChronicleComp/Twoz1stTimeline.tsx';
 import { Twoz2ndTimeline } from '@/components/About/ChronicleComp/Twoz2ndTimeline.tsx';
@@ -14,9 +17,6 @@ import {
   TimelineItem,
   TimelineLine,
 } from '@/components/ui/timeline';
-import { motion } from 'framer-motion';
-// @flow
-import * as React from 'react';
 
 export function Chronicle() {
   const [isOpen, setIsOpen] = React.useState<StringKeyType<boolean>>({
@@ -42,7 +42,7 @@ export function Chronicle() {
         Timeline
       </motion.h2>
       <p className="text-muted-foreground mb-4">
-        저는 주로 Vue.js를 사용하여 개발해온 4년차 프론트엔드 개발자입니다.
+        저는 주로 Vue.js를 사용하여 개발해온 5년차 프론트엔드 개발자입니다.
         <br />
         업무 외적으로 사이드 프로젝트를 통하여 React, Astro 등의 새로운 라이브러리들을 경험해보고 있습니다.
         <br />

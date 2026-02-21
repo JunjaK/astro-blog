@@ -1,3 +1,7 @@
+import { Icon } from '@iconify/react';
+import { motion } from 'framer-motion';
+// @flow
+import * as React from 'react';
 import profileImg from '@/assets/images/profile.png';
 import {
   Avatar,
@@ -6,10 +10,6 @@ import {
 } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button.tsx';
 import { cn } from '@/lib/utils.ts';
-import { Icon } from '@iconify/react';
-import { motion } from 'framer-motion';
-// @flow
-import * as React from 'react';
 
 const titleFramer = {
   hidden: { opacity: 0, x: -10 },
@@ -148,7 +148,7 @@ export function SimpleIntro() {
             transition={{ delay: 1.4, duration: 0.5 }}
           >
             <p className="desc text-zinc-700 dark:text-zinc-300">
-              최근에는 웹에서 구현하는 동적인 요소에 관심을 가져 🌏3D, 📊 차트 구현 등을 배우고 있습니다.
+              최근에는 AI 활용한 코딩에서 어떻게 생산성을 더 올릴 수 있을 지 고민하고 있습니다.
             </p>
           </motion.div>
 

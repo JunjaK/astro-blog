@@ -11,19 +11,19 @@ export function UseTools() {
   const tools: ToolCategory[] = [
     {
       title: 'OS',
-      items: ['Mac: Mostly Web Dev ', 'Window: Game', 'Linux(Ubuntu): Server'],
+      items: ['Mac: Mostly Web Dev ', 'Window: Game + Web Dev', 'Linux(Ubuntu): Server'],
     },
     {
       title: 'Browser',
-      items: ['Chrome', 'Safari'],
+      items: ['Chrome (PC)', 'Safari (Mobile)'],
     },
     {
       title: 'IDE',
-      items: ['Cursor: in Testing', 'Webstorm: Main', 'VSCode: Sub'],
+      items: ['Cursor: Main', 'VSCode: Sub', 'Antigravity: In test', 'Webstorm: Legacy - Vue2'],
     },
     {
       title: 'AI',
-      items: ['Perflexity', 'ChatGpt', 'Copilot'],
+      items: ['Perflexity: (Daily, Common)', 'Claude Code (Dev)', 'Gemini (Dev)', 'Codex (Dev) '],
     },
     {
       title: 'Text Editor',
@@ -31,7 +31,7 @@ export function UseTools() {
     },
     {
       title: 'Terminal',
-      items: ['Iterm2: Main', 'Terminus: SSH, SFTP Client'],
+      items: ['Iterm2: Main', 'Windows Terminal', 'Terminus: SSH, SFTP Client'],
     },
     {
       title: '기타 맥 프로그램',
@@ -39,7 +39,7 @@ export function UseTools() {
         'Homebrew: App Package Manager',
         'Better Touch Tool: Mac Trackpad Gesture & Shortcut Customization',
         'Raycast: Spotlight Alternative Multi-functional Utility Tool',
-        'Bartender: Top Menu Bar Manager',
+        'Ice: Top Menu Bar Manager',
         'CleanShot X: ScreenShot & Screen Record Tool',
         'PixelSnap: Screen px Measuring Tool',
         'ColorSlurp: ColorPicker',
