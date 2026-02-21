@@ -1,10 +1,10 @@
 import type { ProjectInfo, TechIconType } from '@/types/commonType';
+import { useStore } from '@nanostores/react';
+import React, { useEffect, useState } from 'react';
 import { TechIcon } from '@/components/About/TechStackComp/TechIcon';
 import { cn } from '@/lib/utils';
 import { $theme } from '@/store/system';
 import getTechIcons from '@/utils/getTechIcons';
-import { useStore } from '@nanostores/react';
-import React, { useEffect, useState } from 'react';
 import { Separator } from '../ui/separator';
 
 interface EachArticlesProps {
@@ -58,7 +58,7 @@ const EachArticles: React.FC<EachArticlesProps> = ({ frontmatter, url }) => {
               ))}
             </p>
 
-            <Separator className="my-2" />
+            <Separator className="mb-2" />
             <div className="tech-stack-wrapper">
               <div className="tech-stack-label">
                 Tech Stack:
