@@ -10,25 +10,20 @@ export default function Navigation() {
   const [isMobileMenuOpened, setIsMobileMenuOpened] = React.useState(false);
 
   useEffect(() => {
-    const path = window.location.pathname;
-    if (path === '/') {
-      setTab('home');
+    function detectTab() {
+      const path = window.location.pathname;
+      if (path === '/') setTab('home');
+      else if (path.includes('blog')) setTab('blog');
+      else if (path.includes('project')) setTab('project');
+      else if (path.includes('playground')) setTab('playground');
+      else if (path.includes('about')) setTab('about');
+      else if (path.includes('resume')) setTab('resume');
     }
-    else if (path.includes('blog')) {
-      setTab('blog');
-    }
-    else if (path.includes('project')) {
-      setTab('project');
-    }
-    else if (path.includes('playground')) {
-      setTab('playground');
-    }
-    else if (path.includes('about')) {
-      setTab('about');
-    }
-    else if (path.includes('resume')) {
-      setTab('resume');
-    }
+
+    detectTab();
+    // Re-detect on SPA navigation (Astro View Transitions)
+    document.addEventListener('astro:after-swap', detectTab);
+    return () => document.removeEventListener('astro:after-swap', detectTab);
   }, []);
 
   function toggleMenu() {

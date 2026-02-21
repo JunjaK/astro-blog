@@ -8,9 +8,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import * as React from 'react';
-// @flow
 
 type Props = {
   children: React.ReactNode;
@@ -27,57 +26,30 @@ const NAVIGATION_ITEMS = [
 
 // Animation variants
 const containerVariants = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-  },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 300,
-      damping: 30,
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
+    transition: { type: 'spring' as const, stiffness: 300, damping: 30, staggerChildren: 0.1, delayChildren: 0.2 },
   },
-  exit: {
-    opacity: 0,
-    y: 20,
-  },
+  exit: { opacity: 0, y: 20 },
 };
 
 const headerVariants = {
-  hidden: {
-    opacity: 0,
-    y: 10,
-  },
+  hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 300,
-      damping: 30,
-      delay: 0.1,
-    },
+    transition: { type: 'spring' as const, stiffness: 300, damping: 30, delay: 0.1 },
   },
 };
 
 const itemVariants = {
-  hidden: {
-    opacity: 0,
-    x: -20,
-  },
+  hidden: { opacity: 0, x: -20 },
   visible: {
     opacity: 1,
     x: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 300,
-      damping: 30,
-    },
+    transition: { type: 'spring' as const, stiffness: 300, damping: 30 },
   },
 };
 
