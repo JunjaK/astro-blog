@@ -8,11 +8,27 @@ thumbnail: /files/blog/diary/japan-around-trip/assets/IMG_4450-thumb.webp
 
 import { DiaryCarousel } from '@/components/Blog/DiaryGallery';
 import ImageLoader from '@/components/Blog/ImageLoader.astro';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
+
+<TableOfContents>
+- 루트 및 방문한 곳
+  - 루트
+  - 방문한 곳
+- 일정 
+  - 마쓰시마 해안
+  - 카마보코 체험 & 카레빵
+  - 후쿠우라지마
+  - 고다이지 & 레스트하우스
+  - 재패니즈 레스토랑 e - 전반
+  - 레스토랑 e - 본코스
+</TableOfContents>
 
 ## 루트 및 방문한 곳
 
+### 루트
 <ImageLoader src="/files/blog/diary/japan-around-trip/assets/CleanShot_2026-02-16_19.33.04@2x.png" alt="12월 23일 루트" />
 
+### 방문한 곳
 - 마츠시마 가이칸
   - 리큐 마츠시마 카이간 에키마에 지점
   - 마츠시마 카마보코 총본점
@@ -21,7 +37,10 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 - 센다이시
   - 재패니즈 레스토랑 e
 
-<DiaryCarousel client:visible images={[
+## 일정
+
+
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_020939713_iOS.webp", alt: "마쓰시마 해안 조망 1" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_021000690_iOS.webp", alt: "마쓰시마 해안 조망 2" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_025535368_iOS.webp", alt: "규탄 야키 & 카이센동 세트" },
@@ -30,7 +49,8 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_023543326_iOS.webp", alt: "굴 구이" },
 ]} />
 
-## 마쓰시마 해안
+
+### 마쓰시마 해안
 
 오늘 일정은 일본 3경 중에 하나인 마츠시마 카이칸을 가보는 날.
 전철타고 도착할 때까지만 해도 날씨가 맑아서 좋았다.
@@ -45,14 +65,14 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 추가로 굴 구이도 점장의 추천을 받아 400엔 내고(친구랑 반띵) 먹어봤으나 조금 애매?
 가격이 좀 비싸긴 했으나 나름 나쁘지 않은 식사였다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_032508183_iOS.webp", alt: "카마보코 완성" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_031510305_iOS.webp", alt: "카마보코 굽기 체험" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_031837258_iOS.webp", alt: "카마보코 굽는 중" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_033427184_iOS.webp", alt: "규탄 카레빵" },
 ]} />
 
-## 카마보코 체험 & 카레빵
+### 카마보코 체험 & 카레빵
 
 아점을 먹은 뒤에는 조금 둘러보는데 마츠카마라고 카마보코를 직접 구워먹는 가게가 있길래 호기심에 방문해보았다.
 가마보코는 300엔 정도로 조금 작긴 했지만 관광지 물가 생각하면 납득할만한 가격, 게다기 이런 신기한 체험도 할 수 있으니 나쁘지는 않았다.
@@ -62,7 +82,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 이어서는 규탄 카레빵을 구매하여 먹었고, 생각지도 못했지만 상당히 맛있었다.
 이동하는 길에는 눈바람이 심해서 근처 사쿠사쿠라는 카페에 가서 핫커피 한잔에 눈바람을 피할겸 잠시 쉬었다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_041102014_iOS.webp", alt: "후쿠우라지마 다리" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_041326555_iOS.webp", alt: "후쿠우라지마 진입" },
   { src: "/files/blog/diary/japan-around-trip/assets/IMG_4434_2.webp", alt: "마쓰시마 해안 풍경 1" },
@@ -72,7 +92,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/IMG_4450.webp", alt: "후쿠우라지마에서 본 바다" },
 ]} />
 
-## 후쿠우라지마
+### 후쿠우라지마
 
 눈바람이 좀 그칠 때 즈음에 걸어서 마츠시마 해안이 잘 보이는 후쿠우라지마로 이동.
 입장료는 200엔 정도로 꽤 저렴한 가격.
@@ -81,7 +101,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 나올 때 즈음에는 또 귀신같이 맑아졌다.
 토호쿠 쪽은 니이가타, 아키타에서도 느꼈는데, 날씨가 너무 오락가락하는 것 같다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_051111909_iOS.webp", alt: "고다이지" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_051309667_iOS.webp", alt: "하치만 신사" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_051316464_iOS.webp", alt: "오미쿠지" },
@@ -90,7 +110,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_052908701_iOS.webp", alt: "온센 무스메 굿즈" },
 ]} />
 
-## 고다이지 & 레스트하우스
+### 고다이지 & 레스트하우스
 
 후쿠우라지마를 유람한 뒤에는 고다이지에 방문, 다리로 연결된 작은 섬에 절이 있었고, 신불습합의 영향인지 작은 하치만 신사가 있었고,
 신사답게 오미쿠지하는 곳도 있어, 오미쿠지는 못 참지 하며 100엔 내고 뽑았다.
@@ -100,7 +120,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 여기서 또 반가운 온센 무스메가 보여 굿즈를 1,800엔치 구매.
 이름은 마츠시마 나즈키라고, 이로서 컬렉션이 점점 모여가고 있어 기분이 좋았다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_101056087_iOS.webp", alt: "유리잔에 담긴 물" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_101214482_iOS.webp", alt: "군마이즈미 야마하이모토준마이 아츠캉" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_101420674_iOS.webp", alt: "사키즈케 - 연어알과 버섯 무침" },
@@ -108,7 +128,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_102208226_iOS.webp", alt: "코스 설명 포스트잇" },
 ]} />
 
-## 재패니즈 레스토랑 e - 전반
+### 재패니즈 레스토랑 e - 전반
 
 이후 친구가 눈바람을 좀 많이 맞았는지 컨디션이 안좋다고 해서 복귀 후에 2시간 정도 숙소에서 휴식 기간을 가졌고,
 휴식 후에는 저녁 시간이 다 되어가 재패니즈 레스토랑 e에 방문.
@@ -131,7 +151,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 이때 마스터한테 외국인이라 메뉴 설명을 들어도 요리 재료가 어려워서 잘 이해가 안 된다며, 요리 설명이 적혀있는 문서 같은 게 없냐고 여쭤봤더니 포스트잇에 코스 순서와 요리 재료 등을 직접 적어서 주셨다.
 이전 누락분도 다 챙겨주셨는데, 정말 친절하다고 느꼈다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_103844394_iOS.webp", alt: "스이모노" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_104700970_iOS.webp", alt: "오츠쿠리 - 히라메와 마구로 사시미" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_104800202_iOS.webp", alt: "쥬욘다이 엑스트라 하쿠츠루니시키" },
@@ -143,7 +163,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_112255162_iOS.webp", alt: "가마메시" },
 ]} />
 
-## 레스토랑 e - 본코스
+### 레스토랑 e - 본코스
 
 네 번째 코스는 오츠쿠리(御造り)로, 미야기현산 히라메와 마구로 사시미.
 마구로는 오오토로로 기름기 작살나고 부드러웠으며, 히라메는 쫄깃하고 신선해서 좋았다.
@@ -167,7 +187,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 가마메시에는 켄콘이치 준마이슈 카메노오 나마슈를 곁들였다.
 도정률 70%인 만큼 쌀의 잡맛이 느껴졌지만, 나마의 탄산감과 히야로 마셨기 때문에 거슬리지 않게 다가왔고 밥과도 잘 어울렸다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_114019227_iOS.webp", alt: "미즈카시 - 디저트" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_114208547_iOS.webp", alt: "호시가키 누키챠 튀김" },
   { src: "/files/blog/diary/japan-around-trip/assets/20241223_122508364_iOS.webp", alt: "숙소" },

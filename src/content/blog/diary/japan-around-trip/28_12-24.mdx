@@ -8,22 +8,37 @@ thumbnail: /files/blog/diary/japan-around-trip/assets/20241224_060056238_iOS-thu
 
 import { DiaryCarousel } from '@/components/Blog/DiaryGallery';
 import ImageLoader from '@/components/Blog/ImageLoader.astro';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
+
+<TableOfContents>
+- 루트 및 방문한 곳
+  - 루트
+  - 방문한 곳
+- 일정
+  - 아침 식사
+  - 귀국
+</TableOfContents>
 
 ## 루트 및 방문한 곳
 
+### 루트
 <ImageLoader src="/files/blog/diary/japan-around-trip/assets/CleanShot_2025-03-30_22.02.46.png" alt="12월 24일 루트" />
+
+### 방문한 곳
 
 - 나리타 공항
 - 인천 공항
+  
+## 일정
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/20241223_193159506_iOS.webp", alt: "가마메시 주먹밥" },
     { src: "/files/blog/diary/japan-around-trip/assets/20241223_193427418_iOS.webp", alt: "패미마 컵라멘" },
   ]}
 />
 
-## 아침 식사
+### 아침 식사
 
 아침 일찍 일어나서 우선 여정이 길기에 식사를 하기로 했다.
 먹은 것은 어제 e에서 받은 가마메시 주먹밥과 패미마에서 샀던 컵라멘.
@@ -31,7 +46,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 전자렌지 돌리러가기 귀찮아서 식은 채로 먹었는데 식어도 맛있었다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/20241224_014315818_iOS.webp", alt: "면세점 아키하바라 1" },
     { src: "/files/blog/diary/japan-around-trip/assets/20241224_014333808_iOS.webp", alt: "면세점 아키하바라 2" },
     { src: "/files/blog/diary/japan-around-trip/assets/20241224_014350519_iOS.webp", alt: "면세점 아키하바라 3" },
@@ -40,7 +55,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 귀국
+### 귀국
 
 정들었던 센다이시에서 신칸센을 타고 다시 우에노, 게이세이 선을 타고 나리타 공항으로 돌아왔다.
 수속을 마치고 출국장에서 마주한 면세점 아키하바라

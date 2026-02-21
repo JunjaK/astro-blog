@@ -8,18 +8,39 @@ thumbnail: /files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.34
 
 import { DiaryCarousel } from '@/components/Blog/DiaryGallery';
 import ImageLoader from '@/components/Blog/ImageLoader.astro';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
+
+<TableOfContents>
+- 루트 및 방문한 곳
+  - 루트
+  - 방문한 곳
+- 일정
+  - 우에노역에서 센다이
+  - 닛카 미야기쿄 증류소 도착
+  - 시음 코스
+  - 증류소 견학
+  - 시음
+  - 쇼핑 & 복귀
+  - 스시 요시카네 - 사키즈케 ~ 스이모노
+  - 스시 요시카네 - 사시미 ~ 야키모노
+  - 스시 요시카네 - 무시모노 ~ 마무리
+</TableOfContents>
 
 ## 루트 및 방문한 곳
 
+### 루트
 <ImageLoader src="/files/blog/diary/japan-around-trip/assets/CleanShot_2025-03-30_22.01.59.png" alt="12월 22일 루트" />
 
+### 방문한 곳
 - 미야기현 센다이 시
   - 센다이역
   - 오야도 노노 (숙소)
   - 닛카 미야기쿄 증류소
   - 스시 요시카네
 
-<DiaryCarousel client:visible images={[
+## 일정
+
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.17.24@2x.png", alt: "에키벤" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.18.49@2x.png", alt: "센다이역 도착" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.21.23@2x.png", alt: "센다이역 내부와 산타 공룡" },
@@ -27,7 +48,8 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.24.05@2x.png", alt: "사쿠나미역 도착" },
 ]} />
 
-## 우에노역에서 센다이
+
+### 우에노역에서 센다이
 
 센다이에 있는 닛카 미야기쿄 증류소에 시음 예약이 13:30에 했기 때문에 일찍 출발할 필요가 있었다.
 아침은 에키벤으로 해결하기로 하였다.
@@ -49,7 +71,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 드디어 사쿠나미 역에 도착.
 눈발이 장난아니었다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.24.48@2x.png", alt: "눈에 잠긴 증류소" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.25.15@2x.png", alt: "인포메이션 센터 내부" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.28.35@2x.png", alt: "닛카 위스키 역사 전시" },
@@ -57,21 +79,21 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.29.21@2x.png", alt: "위스키 라인업 소개" },
 ]} />
 
-## 닛카 미야기쿄 증류소 도착
+### 닛카 미야기쿄 증류소 도착
 
 13:00에 있는 셔틀 버스를 타고 닛카 증류소로 진입.
 눈에 잠긴 증류소의 모습은 사뭇 신비롭게 느껴졌다.
 인포메이션 센터 내부는 닛카 위스키의 역사와 만들어지는 과정, 위스키 라인업에 대한 소개가 자세히 적혀있었다.
 건물 디자인과 인테리어, 그리고 분위기 모두 좋았기 때문에 건물 내부만 둘러보는 것으로 꽤나 재미있는 경험이었다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.26.56@2x.png", alt: "유료 시음 번호표" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.29.38@2x.png", alt: "시음할 5개의 위스키" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.31.04@2x.png", alt: "시음 코스 설명 자료" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.32.00@2x.png", alt: "미야기쿄 증류소 역사" },
 ]} />
 
-## 시음 코스
+### 시음 코스
 
 유료 시음으로 받은 번호표.
 1,500엔으로 5종의 위스키를 시음할 수 있는 좋은 코스이므로, 미야기쿄 증류소에 오게 된다면 꼭 예약하여 체험해보기를.
@@ -86,7 +108,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 닛카는 2개의 증류소가 있는데, 자체적으로 서로 맛이 다른 위스키를 섞어 블렌디드 위스키를 만들기 위해 이곳 센다이에 미야기쿄 증류소를 새로 새웠다고.
 1969년에 준공된 것치고는 유지, 보수를 잘하고 있어 낡았다는 인상이 하나도 안들었었다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.34.22@2x.png", alt: "눈 덮인 증류소 풍경" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.35.44@2x.png", alt: "피트" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.37.00@2x.png", alt: "발효 탱크" },
@@ -95,7 +117,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.38.09@2x.png", alt: "나무통 종류 설명" },
 ]} />
 
-## 증류소 견학
+### 증류소 견학
 
 닛카에 대한 설명을 다 들은 뒤, 본격적인 증류소 견학.
 밖에는 더 이상 눈은 내리지 않았지만, 눈이 많이 왔기에 눈으로 뒤덮인 증류소의 풍경을 볼 수 있었다.
@@ -109,7 +131,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 
 위스키를 보관하는 나무통의 종류의 설명도 있었다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.39.07@2x.png", alt: "인포메이션 센터로 복귀" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.40.12@2x.png", alt: "시음 시작" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.41.17@2x.png", alt: "위스키 시음 잔" },
@@ -117,7 +139,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.44.14@2x.png", alt: "닛카 90주년 기념" },
 ]} />
 
-## 시음
+### 시음
 
 증류소 견학을 마치고 이제 시음하러 인포메이션 센터로 이동하여
 
@@ -135,7 +157,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 그렇게 시음을 끝냈는데, 올해가 닛카 90주년이라고.
 뭔가 의미있는 날에 와서 기분이 좀 좋았다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.44.59@2x.png", alt: "위스키 구매" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.46.46@2x.png", alt: "눈 덮인 사쿠나미역 1" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.47.16@2x.png", alt: "눈 덮인 사쿠나미역 2" },
@@ -143,7 +165,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.48.13@2x.png", alt: "숙소" },
 ]} />
 
-## 쇼핑 & 복귀
+### 쇼핑 & 복귀
 
 마지막에는 샵에서 위스키 구매.
 시음세트와 애플 브랜디, 닛카 츠루를 구매했다.
@@ -157,7 +179,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 다시 숙소로 복귀 후, 저녁 시간까지 2시간 정도 시간이 애매하게 남았기에 숙소에서 조금 쉬기로 했다.
 좀 많이 춥기도 했고 눈으로 신발도 젖고 그래서...
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.50.02@2x.png", alt: "오마카세 코스 메뉴" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.55.11@2x.png", alt: "가게 내부" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_01.03.03@2x.png", alt: "지자케 메뉴" },
@@ -167,7 +189,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_01.13.23@2x.png", alt: "스이모노 - 하마구리 맑은 국" },
 ]} />
 
-## 스시 요시카네 오마카세
+### 스시 요시카네 - 사키즈케 ~ 스이모노
 
 시간이 되어 저녁 먹으러 스시 요시카네으로 이동.
 두어달 전에 예약해둔 곳이다. 가격은 13,200엔으로 오마카세 메뉴 중에서는 제일 비싸지만, 오마카세 이외의 메뉴도 다양해서 부담 없이 먹을 수도 있는 곳이었다.
@@ -196,7 +218,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 이어서 스이모노(吸物)로 하마구리(대합) 맑은 국.
 생후(生麩, 글루텐떡)와 채소가 함께 들어있었는데, 맛 자체는 좀 밍밍했지만 아츠캉과 함께 마시니 나쁘지 않았다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_01.14.07@2x.png", alt: "사시미 3종" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_01.14.22@2x.png", alt: "시노기 - 방어 사케카스 구이" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_01.14.36@2x.png", alt: "훈연 방어 스시" },
@@ -204,7 +226,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_01.15.05@2x.png", alt: "히다카미 준마이슈" },
 ]} />
 
-## 사시미 ~ 야키모노
+### 스시 요시카네 - 사시미 ~ 야키모노
 
 본격적인 사시미(刺身) 3종 — 중토로, 마츠카와가레이(松川カレイ, 고급 가자미), 츠부조개.
 모두 신선하고 맛있었다. 특히 마츠카와가레이는 쫄깃한 식감이 인상적.
@@ -220,7 +242,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 이어서 페어링은 미야기현 이시노마키시의 히다카미 준마이슈
 적당한 카라구치로 역시 해산물과 잘어울렸던 것 같다.
 
-<DiaryCarousel client:visible images={[
+<DiaryCarousel client:visible content={[
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_01.15.22@2x.png", alt: "연어알 챠완무시" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_01.15.33@2x.png", alt: "텟카마키" },
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_01.15.54@2x.png", alt: "텟카마키 단면" },
@@ -231,7 +253,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_01.16.52@2x.png", alt: "마무리" },
 ]} />
 
-## 무시모노 ~ 마무리
+### 스시 요시카네 - 무시모노 ~ 마무리
 
 무시모노는 연어알을 올린 챠완무시
 챠완무시는 요새 한국 일식집에도 흔하게 있어서, 큰 차별점 없는 흔한 맛?

@@ -8,11 +8,30 @@ thumbnail: /files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.01
 
 import { DiaryCarousel } from '@/components/Blog/DiaryGallery';
 import ImageLoader from '@/components/Blog/ImageLoader.astro';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
+
+<TableOfContents>
+- 루트 및 방문한 곳
+  - 루트
+  - 방문한 곳
+- 일정
+  - 아사쿠사
+  - 간다 신사
+  - 아키하바라
+  - 아키하바라 점심
+  - 나카메구로
+  - 스타벅스 리저브
+  - 스타벅스 리저브 — 테라스 & 메뉴
+  - 아자부다이 힐즈
+  - 카니지고쿠
+</TableOfContents>
 
 ## 루트 및 방문한 곳
 
+### 루트
 <ImageLoader src="/files/blog/diary/japan-around-trip/assets/CleanShot_2025-03-30_22.01.33.png" alt="12월 21일 루트" />
 
+### 방문한 곳
 - 도쿄도 도쿄
   - 아사쿠사
   - 아키하바라 — 간다 신사, 아키하바라 거리
@@ -20,8 +39,12 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   - 아자부다이 힐즈
   - 신바시 — 타바코 천국, 카니지고쿠
 
+
+
+## 일정
+
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg", alt: "고독한 미식가 몬쟈야키 텟쨩", tags: ["아사쿠사"] },
     { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.jpeg", alt: "스키야 김치 규동정식", tags: ["스키야"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.49.50-1375048.png", alt: "스키야 주문 화면" },
@@ -29,7 +52,8 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 아사쿠사
+
+### 아사쿠사
 
 숙소가 아사쿠사 근처였기에, 아키하바라 쪽 가는 길에 간단하게 아침 센소지 풍경을 조금 둘러보았다.
 숙소 근처에 있는 몬쟈야키 텟쨩은 고독한 미식가 고로상이 출연했다고 해서 한 번 가볼까 했는데, 정해진 일정상 시간 및 동선에서 문제가 있어 아쉽게 가보지는 못했다.
@@ -38,14 +62,14 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 총 940엔으로 규동 프렌차이즈 치곤 가격이 좀 나갔는데, 일본도 물가가 좀 많이 올라구나 싶었다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.png", alt: "신마 아카리짱", tags: ["간다 신사"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.png", alt: "간다 신사 사무소" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.56.03.png", alt: "간다 신사 본당" },
   ]}
 />
 
-## 간다 신사
+### 간다 신사
 
 아침 산책을 간단히 마친 뒤 아키하바라로 이동.
 아키하바라 오타쿠 거리를 가기 전에 간다 신사에 먼저 먹은 밥 소화시킬겸 구경하기로 하였다.
@@ -59,7 +83,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 여기서 200엔하는 엔미쿠지 한번 뽑았는데, 결과는 따로 안적어둬서 까먹었다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.57.04.png", alt: "아키하바라 거리", tags: ["아키하바라"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.13.04.png", alt: "아트리 주문토끼 콜라보" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.58.25.png", alt: "오타쿠 굿즈" },
@@ -69,7 +93,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 아키하바라
+### 아키하바라
 
 간다신사 구경을 마친 뒤, 걸어서 아키바하라로 이동.
 진입부터 씹뜨억할 것으로 가득한 거리.
@@ -84,13 +108,13 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 특이하게도 워해머 관련 건물도 있어 한번 들어가보았다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.00.01.png", alt: "로바타 이시쿠라 카츠동", tags: ["아키하바라", "점심"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.00.08.png", alt: "아키하바라 전봇대 풍경" },
   ]}
 />
 
-## 아키하바라 점심
+### 아키하바라 점심
 
 점심은 줄을 안서는 정식 집인 로바타 이시쿠라에 들어갔다.
 원래는 돈카츠 집 가려고 했었는데 줄이 너무 길어서...
@@ -99,14 +123,14 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 가는 길에 스트릿한 느낌의 전봇대가 있어서 한번 찍어보았다. 이런 감성이 참 괜찮단 말이죠.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.00.19.png", alt: "나카메구로 거리", tags: ["나카메구로"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.01.01.png", alt: "스게카리 공원" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.00.35.png", alt: "사이고우야마 공원" },
   ]}
 />
 
-## 나카메구로
+### 나카메구로
 
 아키바하라 구경을 마친 뒤에는 스타벅스 리저브를 가는 일정이었기에 나카메구로 역으로 이동.
 현장 QR을 통해 입장 대기를 하는 시스템이었는데, 사람들이 상당히 많이 줄을 서 있었다.
@@ -119,7 +143,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 사이고우야마 공원은 리뷰에는 후지산이 보인다고는 했는데, 나에게는 보이지 않았다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.01.17.png", alt: "로스터리 머신", tags: ["스타벅스 리저브"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.01.39.png", alt: "원두 운반관과 인테리어" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.01.49.png", alt: "딸기 파이와 크로아상" },
@@ -128,7 +152,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 스타벅스 리저브 로스터리
+### 스타벅스 리저브 로스터리
 
 2시간 대기한 끝에 드디어 입장.
 거대한 로스터리 머신과 원두를 운반하는 관들이 인상적인 내부.
@@ -136,7 +160,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 메뉴가 준비되기 전까지 가게 내부를 이리저리 둘러보았다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.02.20.png", alt: "야외 테라스", tags: ["스타벅스 리저브"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.02.33.png", alt: "베럴 에이징 콜드브루" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.02.48.png", alt: "딸기 파이" },
@@ -146,7 +170,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 스타벅스 리저브 — 테라스 & 메뉴
+### 스타벅스 리저브 — 테라스 & 메뉴
 
 자리는 쌀쌀했지만 야외 테라스로. 실내는 거의 없었다.
 오크통 숙성 어쩌구 붙은 음료를 내가 많이 좋아해서 시킨 커피였는데, 오크통에 숙성한 만큼 우디하고 카라멜 느낌이 났다.
@@ -158,7 +182,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 커피 맛은 개인적으로는 가격에 비해 아쉬웠다고 생각하지만, 인상적인 인테리어와 스타벅스에서 경험할 수 있는 고급지고 세련된 느낌, 그리고 원두 운반용 관과 로스터리 머신, 곳곳에 비치된 소품들이 주는 분위기로도 2시간 대기와 가격의 가치는 하는 것 같아 올 가치가 있는 곳이라고 생각한다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.03.37.png", alt: "아자부다이 힐즈 거리", tags: ["아자부다이 힐즈"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.03.49.png", alt: "도쿄타워가 보이는 풍경", tags: ["도쿄타워"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.04.02.png", alt: "크리스마스 일루미네이션" },
@@ -166,7 +190,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 아자부다이 힐즈
+### 아자부다이 힐즈
 
 다음 목적지는 아자부다이힐즈.
 30년 이상 걸린 재개발 프로젝트로 유명하고 1년 전에 드디어 오픈했다고 하여 관심을 가져 가보고 싶었는데, 이번 기회에 가보게 되었다.
@@ -178,7 +202,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 신기한 소품들도 많았기에 아이쇼핑으로 올 가치는 있는 듯.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.05.13.png", alt: "카니지고쿠 입구", tags: ["카니지고쿠"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.05.21.png", alt: "킹크랩 구이" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.05.45.png", alt: "카니료우시나베" },
@@ -186,7 +210,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 카니지고쿠
+### 카니지고쿠
 
 아자부 구경을 끝내고, 저녁을 먹기 위해 신바시로 이동.
 예약한 카니지고쿠 방문까지 시간이 남았기에 적당히 시간을 때우다 입장.

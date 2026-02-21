@@ -8,25 +8,49 @@ thumbnail: /files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_23.04
 
 import { DiaryCarousel } from '@/components/Blog/DiaryGallery';
 import ImageLoader from '@/components/Blog/ImageLoader.astro';
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
+
+<TableOfContents>
+- 루트 및 방문한 곳
+  - 루트
+  - 방문한 곳
+- 일정
+  - 아오모리 아침 — 후로후시 온천 여관
+  - 아오모리시로 이동
+  - 신아오모리역 도착
+  - 히로사키역 도착
+  - 히로사키성 (첫번째 스탬프)
+  - 후지타기념정원 (두번째 스탬프)
+  - 히로사키시립관광관 (세번째 스탬프)
+  - 히로사키마치나카정보센터 (네번째 스탬프)
+  - JR히로사키역 쓰가루 라운지 (다섯번째 스탬프)
+  - 우토우 신사
+  - 텐마이 (저녁)
+  - 식후 산책
+</TableOfContents>
 
 ## 루트 및 방문한 곳
 
+### 루트
 <ImageLoader src="/files/blog/diary/japan-around-trip/assets/CleanShot_2025-03-30_22.00.09.png" alt="12월 19일 루트" />
 
+### 방문한 곳
 - 아오모리현 후쿠우라지마 — 코가네자키 후로후시 온천 여관
 - 아오모리현 이시에시 — 신아오모리역
 - 아오모리현 히로사키시 — 히로사키성, 후지타기념정원, 히로사키시립관광관, 히로사키마치나카정보센터
 - 아오모리현 아오모리시 — 우토우 신사, 텐마이, 아스팜, 네부타의집 와랏세
 
+## 일정
+
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_22.29.04.png", alt: "숙소 로비의 후로후시 온천 그림" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_22.32.02.png", alt: "휴게소 풍경" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_22.32.52.png", alt: "사쿠라미쿠 콜라보 드립 커피", tags: ["사쿠라미쿠"] },
   ]}
 />
 
-## 아오모리시로 이동
+### 아오모리시로 이동
 
 오늘은 2일간 정들었던 숙소를 벗어나 아오모리시로 이동하는 날.
 다행히 숙소에서 신아오모리역까지 무료로 송달해주는 서비스가 있어 따로 요금을 지불하지 않았다.
@@ -35,7 +59,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 선물용으로 괜찮겠다 싶어 偕行社珈琲(카이코샤코히) 콜라보 제품을 하나 구매했다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_22.39.49.png", alt: "눈 쌓인 신아오모리 거리 풍경" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_22.48.14.png", alt: "신아오모리역 주변 적설" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_22.41.51.png", alt: "何味館(슌미칸) 입구" },
@@ -47,7 +71,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 신아오모리역 도착
+### 신아오모리역 도착
 
 오전 9시에 출발하여 약 11시 반 정도에 신아오모리역에 도착하였다.
 가는 길에서도 느꼈지만 혼슈 끝단은 정말 눈이 많이 오는 것 같다.
@@ -63,14 +87,14 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 아오모리의 상징 중에 하나인 네부타도 역에 전시되어 있었다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_22.51.13.png", alt: "히로사키역의 유키미쿠", tags: ["유키미쿠"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_22.50.17.png", alt: "흐린 하늘의 히로사키역" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_22.51.45.png", alt: "애니메이션 홍보 패널" },
   ]}
 />
 
-## 히로사키역 도착
+### 히로사키역 도착
 
 아직 체크인 시간이 아니었고, 동선 상의 이유로 신아오모리역에 짐을 맡기고 히로사키역으로 이동.
 맑았던 하늘이 금세 흐려졌다.
@@ -78,7 +102,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 지이상바아상 와카가에루라는 애니메이션이 히로사키시 배경으로 방영되었던지 홍보 패널도 있었다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_23.05.33.png", alt: "히로사키성 천수각", tags: ["히로사키성", "현존 12천수"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_22.54.20.png", alt: "눈 쌓인 성 아래 공원" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_22.56.05.png", alt: "식물 보호 가이드가 있는 공원" },
@@ -91,7 +115,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 히로사키성 (첫번째 스탬프)
+### 히로사키성 (첫번째 스탬프)
 
 히로사키의 첫 목적지는 히로사키성.
 100개의 명성 책자도 구매했겠다 스탬프를 찍기 위해 방문하였다.
@@ -113,7 +137,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 현존 12천수각으로 유명한 성 중 하나다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_23.17.34.png", alt: "후지타기념정원 눈 덮인 정원" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_23.10.05.png", alt: "후지타기념관 서양관 외관" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-07_23.25.13.png", alt: "다이쇼로망 찻집 창가 자리" },
@@ -123,7 +147,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 후지타기념정원 (두번째 스탬프)
+### 후지타기념정원 (두번째 스탬프)
 
 히로사키성에서 나와 본격적으로 캠페인 참가를 위해 이벤트 장소를 찾고 동선을 짰다.
 처음으로 방문할 곳은 가까운 후지타기념관서양관. 성에서 남서쪽에 위치하고 있다.
@@ -142,7 +166,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 우편함에서도 사과 조형을 볼 수 있을 만큼 사과에 대한 진심이 느껴지는 도시.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_20.56.16.png", alt: "유키미쿠 캠페인 홍보", tags: ["유키미쿠"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.00.48.png", alt: "유키미쿠 굿즈 판매" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_20.57.09.png", alt: "사과 조형물" },
@@ -155,7 +179,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 히로사키시립관광관 (세번째 스탬프)
+### 히로사키시립관광관 (세번째 스탬프)
 
 히로사키시립관광관에 세번째 스탬프를 찍으러 이동했다.
 이벤트를 대대적으로 홍보하고 있는 느낌이었고, 유키미쿠 관련 굿즈도 구매할 수 있었다.
@@ -169,7 +193,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 추가로 걸어가다가 망한 것 같은 상점가를 보았는데 형상이 폴아웃4에서 등장할 것만 같은 종합 쇼핑몰 같은 느낌.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.14.52.png", alt: "사쿠라미쿠 전시장", tags: ["사쿠라미쿠"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.11.42.png", alt: "마치나카정보센터 건물" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.13.05.png", alt: "건물 입구 사쿠라미쿠 포스터" },
@@ -181,7 +205,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 히로사키마치나카정보센터 (네번째 스탬프)
+### 히로사키마치나카정보센터 (네번째 스탬프)
 
 그렇게 20여분을 걸어 히로사키마치나카정보센터에 도착했다.
 이곳은 사쿠라미쿠 홍보에 진심인지 건물에도 포스터가 붙어져 있었다.
@@ -192,14 +216,14 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 사쿠라미쿠 외에도 히로사키가 배경인 다른 애니메이션 관련 전시물도 조금조금 씩 볼 수 있었다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.18.21.png", alt: "쓰가루 라운지" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.22.08.png", alt: "캠페인 완료 포토 카드", tags: ["유키미쿠 캠페인"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.23.04.png", alt: "캠페인 완료 화면" },
   ]}
 />
 
-## JR히로사키역 쓰가루 라운지 (다섯번째 스탬프)
+### JR히로사키역 쓰가루 라운지 (다섯번째 스탬프)
 
 아오모리역으로 돌아가기 전, 마지막으로 히로사키역의 쓰가루 라운지에서 스탬프를 받을 수 있었기에
 전철을 타기 전에 방문해서 스탬프를 받고, 스탬프 5개를 모두 채워 캠페인 완료 기념으로 포토 카드 한 장을 받았다.
@@ -207,7 +231,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 예정에 없었던 이런 관광 캠페인 참여하는 것도 여행의 한 재미로 느껴진다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.30.23.png", alt: "눈 덮인 우토우 신사 입구", tags: ["우토우 신사"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.25.11.png", alt: "아오모리역 주변" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.27.18.png", alt: "차광기 토우 조형물" },
@@ -218,7 +242,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 우토우 신사
+### 우토우 신사
 
 중간에 신아오모리역에 들러 짐을 찾은 뒤 아오모리역에 도착.
 우선 숙소 체크인을 마치고 역 근방에서 꽤 규모가 큰 우토우 신사에 가보기로 했다.
@@ -234,7 +258,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 건물이 녹색 조명으로 빛나고 있어 뭔가 기괴했다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.50.02.png", alt: "아오모리 지자케 5종 세트", tags: ["니혼슈", "지자케"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.36.06.png", alt: "텐마이 이자카야 입구" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_21.47.41.png", alt: "오토오시 죽순조림" },
@@ -246,7 +270,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 텐마이 (저녁)
+### 텐마이 (저녁)
 
 저녁 식사겸으로 텐마이라는 이자카야집을 발견하여 이동했다.
 위치가 호텔 입구 쪽에 있어 지도를 보면서 이곳이 맞나 의심을 좀 했다.
@@ -270,7 +294,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 그렇게 안주와 술을 잔뜩 먹으니 8천엔 정도 나왔다.
 
 <DiaryCarousel client:visible
-  images={[
+  content={[
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_22.11.21.png", alt: "아스팜 야경 녹색 조명", tags: ["아스팜", "야경"] },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_22.12.39.png", alt: "공원에서 바라본 밤바다" },
     { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-04-09_22.13.40.png", alt: "아스팜 뒷모습" },
@@ -279,7 +303,7 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
   ]}
 />
 
-## 식후 산책
+### 식후 산책
 
 아까 가는 길에 지나쳤던 아스팜 쪽에 공원이 있어 소화시킬 겸하여 이동했다.
 가까이서 봐도 기괴한 형태.

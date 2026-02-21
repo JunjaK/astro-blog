@@ -2,7 +2,7 @@ import { Icon } from '@iconify/react';
 import React, { useEffect } from 'react';
 import DocNav from '@/components/layouts/DockNav.tsx';
 import { DrawerNavigation } from '@/components/layouts/DrawerNavigation.tsx';
-import { ModeToggle } from '@/components/layouts/ModeToggle.tsx';
+import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
 import { Button } from '@/components/ui/button.tsx';
 
 export default function Navigation() {
@@ -68,7 +68,7 @@ export default function Navigation() {
                   <Icon icon="mynaui:menu" className="logo"></Icon>
                 </Button>
               </DrawerNavigation>
-              <ModeToggle />
+              <AnimatedThemeToggler />
             </div>
           </div>
           <hr className="m-0 h-px w-full border-none bg-gradient-to-r from-neutral-200/0 via-neutral-200/30 to-neutral-200/0" />

@@ -1,5 +1,5 @@
-import type { DiaryImage, DiaryVideo } from './types';
-import { useState } from 'react';
+import type { DiaryContent } from './types';
+import { useEffect, useState } from 'react';
 import {
   Carousel,
   CarouselContent,
@@ -9,10 +9,11 @@ import {
   useCarousel,
 } from '@/components/ui/carousel';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
+import { Lens } from '@/components/ui/lens';
+import { isMobileUA } from '@/utils/device';
 
 type DiaryCarouselProps = {
-  images: DiaryImage[];
-  videos?: DiaryVideo[];
+  content: DiaryContent[];
 };
 
 function CounterBadge() {
@@ -29,17 +30,20 @@ function CounterBadge() {
   );
 }
 
-export function DiaryCarousel({ images, videos }: DiaryCarouselProps) {
+export function DiaryCarousel({ content }: DiaryCarouselProps) {
   const [lightboxVisible, setLightboxVisible] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
 
-  const videoItems = videos ?? [];
-  const totalVideoCount = videoItems.length;
+  useEffect(() => {
+    setIsDesktop(!isMobileUA());
+  }, []);
 
-  const lightboxItems = [
-    ...videoItems.map((v) => ({ src: v.src, type: 'video' as const })),
-    ...images.map((img) => ({ src: img.src, type: 'image' as const })),
-  ];
+  const lightboxItems = content.map((item) =>
+    item.type === 'video'
+      ? { src: item.src, type: 'video' as const }
+      : { src: item.src, type: 'image' as const },
+  );
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index);
@@ -50,33 +54,42 @@ export function DiaryCarousel({ images, videos }: DiaryCarouselProps) {
     <div className="my-6">
       <Carousel opts={{ loop: true, dragFree: true, align: 'start' }}>
         <CarouselContent className="-ml-2">
-          {videoItems.map((video, i) => (
-            <CarouselItem key={`video-${i}`} className="pl-2 basis-1/2 md:basis-1/3 lg:basis-1/4">
+          {content.map((item, i) => (
+            <CarouselItem key={i} className="pl-2 basis-1/2 md:basis-1/3 lg:basis-1/4">
               <div className="relative h-[35vh] overflow-hidden rounded-lg bg-muted">
-                <video
-                  src={video.src}
-                  poster={video.poster}
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="h-full w-full object-cover"
-                  style={{ height: '100%', margin: 0 }}
-                />
-              </div>
-            </CarouselItem>
-          ))}
-          {images.map((img, i) => (
-            <CarouselItem key={`img-${i}`} className="pl-2 basis-1/2 md:basis-1/3 lg:basis-1/4">
-              <div className="relative h-[35vh] overflow-hidden rounded-lg bg-muted">
-                <img
-                  src={img.src}
-                  alt={img.alt ?? ''}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full cursor-pointer object-cover"
-                  style={{ height: '100%', margin: 0 }}
-                  onClick={() => openLightbox(totalVideoCount + i)}
-                />
+                {item.type === 'video' ? (
+                  <video
+                    src={item.src}
+                    poster={item.poster}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="h-full w-full object-cover"
+                    style={{ height: '100%', margin: 0 }}
+                  />
+                ) : isDesktop ? (
+                  <Lens zoomFactor={1.5} lensSize={150} className="h-full">
+                    <img
+                      src={item.src}
+                      alt={item.alt ?? ''}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full cursor-pointer object-cover"
+                      style={{ height: '100%', margin: 0 }}
+                      onClick={() => openLightbox(i)}
+                    />
+                  </Lens>
+                ) : (
+                  <img
+                    src={item.src}
+                    alt={item.alt ?? ''}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full cursor-pointer object-cover"
+                    style={{ height: '100%', margin: 0 }}
+                    onClick={() => openLightbox(i)}
+                  />
+                )}
               </div>
             </CarouselItem>
           ))}
