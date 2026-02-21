@@ -25,7 +25,17 @@ const description = 'Introduction page of Blog';
       length="80vh"
       client:idle
     />
-    <div class="mt-[20rem] max-md:mt-[10rem]"></div>
+    <div class="relative h-[200px] w-full">
+      <div class="relative z-10 flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <span class="text-xs font-semibold tracking-[0.35em] text-slate-800/60 uppercase dark:text-slate-200/60">
+          Private Blog
+        </span>
+        <h1 class="text-foreground text-4xl font-bold md:text-5xl">
+          Jun Devlog
+        </h1>
+      </div>
+    </div>
+    <div class="mt-[5rem] max-md:mt-[10rem]"></div>
     <div class="flex justify-center ">
       <TerminalInfo client:visible />
     </div>
