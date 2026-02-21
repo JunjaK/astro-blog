@@ -7,8 +7,8 @@ on:
       - master
 
 jobs:
-  build-and-deploy:
-    runs-on: self-hosted
+  build:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,6 +34,30 @@ jobs:
       - name: Build
         run: bun run build
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 1
+
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            Dockerfile
+            nginx.conf
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
       - name: Build Docker image
         run: DOCKER_BUILDKIT=1 docker build -t astro-blog .
 
@@ -41,3 +65,9 @@ jobs:
         run: |
           docker stop astro-blog 2>/dev/null && docker rm astro-blog 2>/dev/null || true
           docker run -d -v /home/jun/blog-files:/home/files --name astro-blog -p 4321:80 astro-blog
+
+      - name: Delete build artifact
+        if: always()
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: dist
