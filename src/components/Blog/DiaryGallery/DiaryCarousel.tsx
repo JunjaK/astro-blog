@@ -1,5 +1,5 @@
 import type { DiaryContent } from './types';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Carousel,
   CarouselContent,
@@ -9,8 +9,6 @@ import {
   useCarousel,
 } from '@/components/ui/carousel';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
-import { Lens } from '@/components/ui/lens';
-import { isMobileUA } from '@/utils/device';
 
 type DiaryCarouselProps = {
   content: DiaryContent[];
@@ -33,11 +31,6 @@ function CounterBadge() {
 export function DiaryCarousel({ content }: DiaryCarouselProps) {
   const [lightboxVisible, setLightboxVisible] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    setIsDesktop(!isMobileUA());
-  }, []);
 
   const lightboxItems = content.map((item) =>
     item.type === 'video'
@@ -67,18 +60,6 @@ export function DiaryCarousel({ content }: DiaryCarouselProps) {
                     className="h-full w-full object-cover"
                     style={{ height: '100%', margin: 0 }}
                   />
-                ) : isDesktop ? (
-                  <Lens zoomFactor={1.5} lensSize={150} className="h-full">
-                    <img
-                      src={item.src}
-                      alt={item.alt ?? ''}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full cursor-pointer object-cover"
-                      style={{ height: '100%', margin: 0 }}
-                      onClick={() => openLightbox(i)}
-                    />
-                  </Lens>
                 ) : (
                   <img
                     src={item.src}

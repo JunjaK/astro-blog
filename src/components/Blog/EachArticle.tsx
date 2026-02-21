@@ -1,5 +1,4 @@
 import type { BlogFrontMatter } from '@/types/commonType';
-import ImageLoader from '@/components/Blog/ImageLoader';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
@@ -42,9 +41,10 @@ export default function EachArticle({ frontmatter, url }: Props) {
       <a href={url}>
         <article className="blog-article">
 
-          <ImageLoader
-            src={frontmatter.thumbnail}
+          <img
+            src={frontmatter.thumbnail ?? ''}
             alt={frontmatter.title}
+            loading="lazy"
             className="rounded-lg"
             width={128}
             height={128}

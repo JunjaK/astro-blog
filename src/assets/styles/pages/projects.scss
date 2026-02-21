@@ -55,6 +55,7 @@
       .tech-stack-wrapper {
         display: flex;
         margin-top: auto;
+        overflow: visible;
 
         .tech-stack-label {
           flex-shrink: 0;
@@ -67,7 +68,7 @@
           flex-wrap: nowrap;
           align-items: center;
           gap: 0.5rem;
-          overflow-x: auto;
+          overflow: visible;
           scrollbar-width: thin;
           .tech-icon {
             flex-shrink: 0;

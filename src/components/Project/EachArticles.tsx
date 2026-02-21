@@ -1,6 +1,5 @@
 import type { ProjectInfo, TechIconType } from '@/types/commonType';
 import { TechIcon } from '@/components/About/TechStackComp/TechIcon';
-import ImageLoader from '@/components/Blog/ImageLoader';
 import { cn } from '@/lib/utils';
 import { $theme } from '@/store/system';
 import getTechIcons from '@/utils/getTechIcons';
@@ -38,9 +37,10 @@ const EachArticles: React.FC<EachArticlesProps> = ({ frontmatter, url }) => {
       <a href={url} className="h-full block">
         <article className="project-article">
 
-          <ImageLoader
-            src={frontmatter.thumbnail}
+          <img
+            src={frontmatter.thumbnail ?? ''}
             alt={frontmatter.title}
+            loading="lazy"
             className="rounded-t-2xl project-thumbnail"
           />
 

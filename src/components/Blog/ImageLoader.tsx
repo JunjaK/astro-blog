@@ -1,3 +1,6 @@
+// React island with Lens zoom on hover (desktop only).
+// Use with client:visible in Astro/MDX. For static images without
+// lens, use ImageLoader.astro instead.
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Lens } from '@/components/ui/lens';

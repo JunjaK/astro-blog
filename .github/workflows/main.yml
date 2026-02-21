@@ -23,9 +23,9 @@ jobs:
           path: |
             node_modules
             ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          key: gh-bun-${{ hashFiles('bun.lock') }}
           restore-keys: |
-            ${{ runner.os }}-bun-
+            gh-bun-
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
