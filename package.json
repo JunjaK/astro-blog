@@ -14,7 +14,8 @@
     "generate-thumbs:dry": "node ./src/utils/generateThumbnails.js --dry-run",
     "all-preprocess-md": "node ./src/utils/generateThumbnails.js && node ./src/utils/removeUnusedImages.js && node ./src/utils/addMdEnter.js && node ./src/utils/convertLoader.js",
     "astro": "astro",
-    "test:e2e:ab": "vitest run --config vitest.e2e.config.ts"
+    "test:e2e:ab": "vitest run --config vitest.e2e.config.ts",
+    "bundle-icons": "node scripts/bundle-icons.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
@@ -94,6 +95,12 @@
   "devDependencies": {
     "@antfu/eslint-config": "^3.16.0",
     "@eslint-react/eslint-plugin": "^1.53.1",
+    "@iconify-json/material-symbols": "^1.2.56",
+    "@iconify-json/mingcute": "^1.2.7",
+    "@iconify-json/mynaui": "^1.2.17",
+    "@iconify-json/qlementine-icons": "^1.2.14",
+    "@iconify-json/svg-spinners": "^1.2.4",
+    "@iconify-json/tabler": "^1.2.26",
     "@playwright/test": "^1.58.2",
     "@types/d3": "^7.4.3",
     "@types/fs-extra": "^11.0.4",

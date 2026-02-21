@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button.tsx';
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 // @flow
 import * as React from 'react';
 

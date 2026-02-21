@@ -1,5 +1,5 @@
 import type { StringKeyType } from '@/types/commonType.ts';
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 import { useStore } from '@nanostores/react';
 import { motion } from 'framer-motion';
 // @flow

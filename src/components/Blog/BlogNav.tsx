@@ -1,5 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 import dayjs from 'dayjs';
 import { Button } from '../ui/button';
 

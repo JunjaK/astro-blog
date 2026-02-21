@@ -1,4 +1,4 @@
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 import React, { useEffect } from 'react';
 import DocNav from '@/components/layouts/DockNav.tsx';
 import { DrawerNavigation } from '@/components/layouts/DrawerNavigation.tsx';

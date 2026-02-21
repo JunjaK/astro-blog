@@ -21,8 +21,11 @@
     // Apply immediately to prevent FOUC
     updateTheme();
 
-    // Re-apply on Astro page transitions
-    document.addEventListener('astro:after-swap', updateTheme);
-    document.addEventListener('astro:page-load', updateTheme);
+    // Guard: only register listeners once
+    if (!window.__themeInitDone) {
+      window.__themeInitDone = true;
+      document.addEventListener('astro:after-swap', updateTheme);
+      document.addEventListener('astro:page-load', updateTheme);
+    }
   })();
 </script>

@@ -5,7 +5,7 @@ import { Card, CardDescription, CardTitle } from '@/components/ui/card.tsx';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
 import { $theme } from '@/store/system.ts';
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 import { useStore } from '@nanostores/react';
 import { motion } from 'framer-motion';
 // @flow

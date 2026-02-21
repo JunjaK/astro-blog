@@ -1,5 +1,5 @@
 import type { DiaryImage, DiarySectionProps } from './types';
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ImageLightbox } from '@/components/ui/image-lightbox';

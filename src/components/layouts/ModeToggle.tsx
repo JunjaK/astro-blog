@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { $theme, setTheme } from '@/store/system.ts';
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 import { useStore } from '@nanostores/react';
 import * as React from 'react';
 

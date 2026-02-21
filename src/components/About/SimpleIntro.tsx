@@ -1,4 +1,4 @@
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 import { motion } from 'framer-motion';
 // @flow
 import * as React from 'react';

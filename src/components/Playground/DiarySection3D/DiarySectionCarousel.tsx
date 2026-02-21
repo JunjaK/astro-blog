@@ -4,7 +4,7 @@
 
 import type * as THREE from 'three';
 import type { DiarySectionCarouselProps } from './types';
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 import { Canvas, invalidate } from '@react-three/fiber';
 import { useMotionValueEvent, useScroll } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

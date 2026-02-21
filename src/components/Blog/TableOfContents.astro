@@ -58,14 +58,18 @@ function convertToElements(node: Element): HTMLElement {
   return document.createElement('div');
 }
 
+let tocObserver: IntersectionObserver | null = null;
+
 function observeHeadings() {
+  tocObserver?.disconnect();
+
   const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-lists a');
   if (tocLinks.length === 0) return;
 
   const headings = document.querySelectorAll('.article-entry h2, .article-entry h3');
   if (headings.length === 0) return;
 
-  const observer = new IntersectionObserver(
+  tocObserver = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
@@ -79,7 +83,7 @@ function observeHeadings() {
     { rootMargin: '0px 0px -70% 0px', threshold: 0 },
   );
 
-  headings.forEach((heading) => observer.observe(heading));
+  headings.forEach((heading) => tocObserver!.observe(heading));
 }
 
 function tocInit() {

@@ -45,7 +45,7 @@ const { title, description } = Astro.props;
 </head>
 <body>
 <PelicaCursor />
-<Navigation client:idle></Navigation>
+<Navigation client:idle transition:persist="main-nav"></Navigation>
 
 <main>
   <ScrollProgress
@@ -58,7 +58,7 @@ const { title, description } = Astro.props;
     <div class="dummy-container" />
   </div>
 </main>
-<Footer client:idle />
+<Footer client:idle transition:persist="main-footer" />
 <FloatButton />
 <CommonScript />
 </body>

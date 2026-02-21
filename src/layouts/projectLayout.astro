@@ -62,7 +62,7 @@ const { title, techStacks = [], description } = post;
 </head>
 <body>
 <PelicaCursor />
-<Navigation client:idle></Navigation>
+<Navigation client:idle transition:persist="main-nav"></Navigation>
 
 <main>
 
@@ -85,7 +85,7 @@ const { title, techStacks = [], description } = post;
     <div class="dummy-container" />
   </div>
 </main>
-<Footer client:visible />
+<Footer client:idle transition:persist="main-footer" />
 <FloatButton />
 <CommonScript />
 </body>

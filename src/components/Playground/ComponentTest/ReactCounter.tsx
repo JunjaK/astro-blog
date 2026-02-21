@@ -1,4 +1,4 @@
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 import React, { useState } from 'react';
 
 export default function ReactCounter() {

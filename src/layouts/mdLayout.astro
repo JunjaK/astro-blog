@@ -66,7 +66,7 @@ const { title, tags = [], category = '' } = post;
   </head>
   <body>
     <PelicaCursor />
-    <Navigation client:idle />
+    <Navigation client:idle transition:persist="main-nav" />
 
     <main>
       <ScrollProgress
@@ -101,7 +101,7 @@ const { title, tags = [], category = '' } = post;
         <Separator className="my-8" client:visible />
 
         <div class="giscus-body">
-          <GiscusComp client:load>
+          <GiscusComp client:visible>
             <div class="giscus-fallback" slot="fallback">
               <Skeleton className="h-[1rem] w-full]" />
               <Skeleton className="h-[1rem] w-full" />
@@ -112,7 +112,7 @@ const { title, tags = [], category = '' } = post;
         <div class="dummy-container"></div>
       </div>
     </main>
-    <Footer client:visible />
+    <Footer client:idle transition:persist="main-footer" />
     <FloatButton />
     <CommonScript />
   </body>

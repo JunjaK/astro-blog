@@ -1,5 +1,5 @@
 import type { DiaryGalleryUnifiedProps, DiaryImage } from './types';
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 import { Canvas, invalidate, useFrame, useThree } from '@react-three/fiber';
 import { useScroll } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

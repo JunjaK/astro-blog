@@ -1,7 +1,7 @@
 // Text overlay that parses children by <h2> headings and crossfades between sections.
 // Children arrive as static <astro-slot> HTML from MDX.
 
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 import { AnimatePresence, motion } from 'framer-motion';
 import { memo, useEffect, useRef, useState } from 'react';
 

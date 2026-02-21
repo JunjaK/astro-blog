@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 

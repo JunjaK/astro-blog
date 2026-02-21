@@ -1,7 +1,7 @@
 import BoxReveal from '@/components/ui/box-reveal';
 import { Button } from '@/components/ui/button';
 import { FadeText } from '@/components/ui/fade-text';
-import { Icon } from '@iconify/react';
+import { Icon } from '@/components/ui/icon';
 
 export default function Intro() {
   return (

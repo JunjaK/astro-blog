@@ -19,31 +19,26 @@ import FloatButtonImg from '@/assets/images/floatButtonImg.svg';
   </div>
 </div>
 
-<script is:inline>
-  function updateButtonVisibility() {
-    const floatBtn = document.getElementById('floatBtn');
-    if (floatBtn) {
-      floatBtn.style.opacity = window.scrollY === 0 ? '0' : '1';
-    }
+<script>
+function updateButtonVisibility() {
+  const floatBtn = document.getElementById('floatBtn');
+  if (floatBtn) {
+    floatBtn.style.opacity = window.scrollY === 0 ? '0' : '1';
   }
+}
 
-  function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  function cleanUp() {
-    document.removeEventListener('scroll', updateButtonVisibility);
-    const scrollTopBtn = document.getElementById('scrollTopBtn');
-    if (scrollTopBtn) {
-      scrollTopBtn.removeEventListener('click', scrollToTop);
-    }
-  }
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-  function initBtn() {
-    cleanUp();
-    document.addEventListener('scroll', updateButtonVisibility);
-    document.getElementById('scrollTopBtn')?.addEventListener('click', scrollToTop);
-  }
+function initBtn() {
+  document.removeEventListener('scroll', updateButtonVisibility);
+  document.getElementById('scrollTopBtn')?.removeEventListener('click', scrollToTop);
 
-  document.addEventListener('astro:after-swap', initBtn);
-  document.addEventListener('DOMContentLoaded', initBtn);
+  document.addEventListener('scroll', updateButtonVisibility);
+  document.getElementById('scrollTopBtn')?.addEventListener('click', scrollToTop);
+}
+
+initBtn();
+document.addEventListener('astro:after-swap', initBtn);
 </script>
