@@ -88,27 +88,6 @@ export function DrawerNavigation({ children, tab }: Props) {
     return tab === route ? 'default' : 'outline';
   }, [tab]);
 
-  const moveToPage = React.useCallback((path: string) => {
-    // Astro의 View Transitions API를 활용
-    const url = path === '' ? '/' : `/${path}/`;
-
-    // 현재 URL과 같은 경우 불필요한 네비게이션 방지
-    if (window.location.pathname === url) {
-      setIsOpen(false);
-      return;
-    }
-
-    // View Transitions API 지원 여부 확인
-    if (document.startViewTransition) {
-      document.startViewTransition(() => {
-        window.location.href = url;
-      });
-    }
-    else {
-      window.location.href = url;
-    }
-  }, []);
-
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
@@ -144,10 +123,15 @@ export function DrawerNavigation({ children, tab }: Props) {
                   >
                     <Button
                       variant={checkRoute(id)}
-                      onClick={() => moveToPage(path)}
+                      asChild
                       className="w-full"
                     >
-                      {label}
+                      <a
+                        href={path === '' ? '/' : `/${path}/`}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {label}
+                      </a>
                     </Button>
                   </motion.div>
                 ))}

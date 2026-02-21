@@ -6,6 +6,7 @@ import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
 
 import BlogNav from '@/components/Blog/BlogNav';
 import FloatButton from '@/components/layouts/FloatButton.astro';
+import FrierenCursor from '@/components/layouts/FrierenCursor.astro';
 import Footer from '@/components/layouts/Footer';
 import Navigation from '@/components/layouts/Navigation';
 
@@ -60,9 +61,11 @@ const { title, tags = [], category = '' } = post;
       keywords={tags}
     />
     <VendorScript />
+    <ThemeInit />
     <style></style>
   </head>
   <body>
+    <FrierenCursor />
     <Navigation client:idle />
 
     <main>
@@ -114,8 +117,6 @@ const { title, tags = [], category = '' } = post;
     <CommonScript />
   </body>
 </html>
-
-<ThemeInit />
 
 <script is:inline>
 window._mdEntryIndex = window.history.state?.index ?? 0;

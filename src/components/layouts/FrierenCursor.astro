@@ -1,0 +1,129 @@
+---
+/**
+ * Global Frieren pixel-art cursor.
+ * Pure vanilla JS — zero framework, zero hydration.
+ * Persists across View Transitions via transition:persist.
+ *
+ * States: normal | link | text | loading
+ */
+---
+
+<div id="frieren-cursor" transition:persist="frieren-cursor">
+  <div class="frieren-sprite" data-cursor="normal"></div>
+  <div class="frieren-sprite" data-cursor="link"></div>
+  <div class="frieren-sprite" data-cursor="text"></div>
+  <div class="frieren-sprite" data-cursor="loading"></div>
+</div>
+
+<style>
+  #frieren-cursor {
+    pointer-events: none;
+    position: fixed;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
+  }
+  #frieren-cursor.active {
+    opacity: 1;
+  }
+  .frieren-sprite {
+    width: 48px;
+    height: 48px;
+    image-rendering: pixelated;
+    background-size: calc(48px * 8) 48px;
+    animation: frieren-anim 4s steps(8) infinite;
+    display: none;
+  }
+  [data-cursor="normal"]  { background-image: url('/cursors/frieren-normal.png'); }
+  [data-cursor="link"]    { background-image: url('/cursors/frieren-link.png'); }
+  [data-cursor="text"]    { background-image: url('/cursors/frieren-text.png'); }
+  [data-cursor="loading"] { background-image: url('/cursors/frieren-loading.png'); }
+
+  @keyframes frieren-anim {
+    from { background-position: 0 0; }
+    to { background-position: -384px 0; }
+  }
+</style>
+
+<script>
+import { isMobileUA } from "@/utils/device";
+
+if (!isMobileUA()) {
+  if (!document.getElementById("frieren-cursor-hide")) {
+    const s = document.createElement("style");
+    s.id = "frieren-cursor-hide";
+    s.textContent = "*, *::before, *::after { cursor: none !important; }";
+    document.head.appendChild(s);
+  }
+
+  let el = document.getElementById("frieren-cursor")!;
+  let sprites = Object.fromEntries(
+    Array.from(el.querySelectorAll<HTMLElement>(".frieren-sprite")).map(
+      (s) => [s.dataset.cursor!, s]
+    )
+  );
+
+  const LINK_SEL = 'a, button, [role="button"], [tabindex]';
+  const TEXT_SEL = 'input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="password"], input[type="number"], textarea, [contenteditable="true"]';
+
+  let currentState = "normal";
+  let isLoading = false;
+
+  function show(state: string) {
+    if (state === currentState) return;
+    sprites[currentState].style.display = "none";
+    currentState = state;
+    sprites[currentState].style.display = "block";
+  }
+
+  // Initial state
+  sprites["normal"].style.display = "block";
+
+  function detectState(target: Element): string {
+    if (isLoading) return "loading";
+    if (target.closest(TEXT_SEL)) return "text";
+    if (target.closest(LINK_SEL)) return "link";
+    return "normal";
+  }
+
+  // Re-acquire refs after swap (fallback if persist fails)
+  document.addEventListener("astro:after-swap", () => {
+    const next = document.getElementById("frieren-cursor");
+    if (next && next !== el) {
+      el = next;
+      sprites = Object.fromEntries(
+        Array.from(el.querySelectorAll<HTMLElement>(".frieren-sprite")).map(
+          (s) => [s.dataset.cursor!, s]
+        )
+      );
+      sprites[currentState].style.display = "block";
+    }
+  });
+
+  // Loading state during View Transitions
+  document.addEventListener("astro:before-preparation", () => {
+    isLoading = true;
+    show("loading");
+  });
+  document.addEventListener("astro:after-swap", () => {
+    isLoading = false;
+  });
+
+  document.addEventListener("mousemove", (e: MouseEvent) => {
+    el.style.left = e.clientX + "px";
+    el.style.top = e.clientY + "px";
+    el.classList.add("active");
+    show(detectState(e.target as Element));
+  });
+
+  document.addEventListener("mouseleave", () => {
+    el.classList.remove("active");
+  });
+
+  document.addEventListener("mouseenter", (e: MouseEvent) => {
+    el.style.left = e.clientX + "px";
+    el.style.top = e.clientY + "px";
+    el.classList.add("active");
+  });
+}
+</script>

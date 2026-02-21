@@ -3,8 +3,8 @@ import Flickering from '@/components/home/Flickering';
 import InteractiveIconCloud from '@/components/home/InteractiveIconCloud';
 import Intro from '@/components/home/Intro';
 import TerminalInfo from '@/components/home/TerminalInfo';
-import GradualSpacing from '@/components/ui/gradual-spacing';
-import LetterPullup from '@/components/ui/letter-pullup';
+import { TextAnimate } from '@/components/ui/text-animate';
+import { LightRays } from '@/components/ui/light-rays';
 
 import { Separator } from '@/components/ui/separator';
 import BaseLayout from '@/layouts/baseLayout.astro';
@@ -17,7 +17,14 @@ const description = 'Introduction page of Blog';
 ---
 
 <BaseLayout title="Home" description={description}>
-  <div class="container overflow-x-hidden">
+  <div class="container overflow-x-hidden relative">
+    <LightRays
+      className="!fixed inset-0 z-0"
+      count={8}
+      speed={16}
+      length="80vh"
+      client:idle
+    />
     <div class="mt-[20rem] max-md:mt-[10rem]"></div>
     <div class="flex justify-center ">
       <TerminalInfo client:visible />
@@ -26,10 +33,11 @@ const description = 'Introduction page of Blog';
     <div id="intro">
       <div class="flex justify-center mt-[-21rem]">
         <div class="intro-wrapper">
-          <LetterPullup
-            className="max-sm:text-2xl dark:text-slate-200 text-slate-700 "
-            words="Hello World! I'm Junja"
-            delay={0.05}
+          <TextAnimate
+            className="font-display text-center text-4xl font-bold tracking-[-0.02em] max-sm:text-2xl dark:text-slate-200 text-slate-700"
+            by="character"
+            animation="slideUp"
+            text="Hello World! I'm Junja"
             client:visible
           />
           <Intro client:visible />
@@ -37,8 +45,10 @@ const description = 'Introduction page of Blog';
       </div>
       <div class="on-spacer"></div>
       <Separator className="my-8" />
-        <GradualSpacing
+        <TextAnimate
           className="font-display text-center text-4xl max-sm:text-2xl font-extrabold dark:text-slate-200 text-slate-700"
+          by="character"
+          animation="slideLeft"
           text="Technologies I've worked"
           client:visible
         />

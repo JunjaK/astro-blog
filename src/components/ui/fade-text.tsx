@@ -1,5 +1,5 @@
-import type { Variants } from "framer-motion"
-import { motion } from "framer-motion"
+import type { Variants } from "motion/react"
+import { motion } from "motion/react"
 import { useMemo } from "react"
 
 interface FadeTextProps {
