@@ -1,4 +1,6 @@
 ---
+import fs from 'node:fs';
+import path from 'node:path';
 import type { ProjectInfo } from '@/types/commonType.ts';
 import ImageLoader from '../Blog/ImageLoader.astro';
 
@@ -7,7 +9,19 @@ interface Props {
 }
 
 const { frontmatter } = Astro.props;
-const originalImage = frontmatter.thumbnail?.replace(/-thumb\.webp$/, '.png');
+
+function resolveOriginalImage(thumbnail: string | undefined): string | undefined {
+  if (!thumbnail) return undefined;
+  const basePath = thumbnail.replace(/-thumb\.webp$/, '');
+  if (basePath === thumbnail) return thumbnail;
+  const localBase = path.resolve('image-assets', basePath.replace(/^\/files\//, ''));
+  for (const ext of ['.png', '.jpeg', '.jpg', '.webp', '.gif']) {
+    if (fs.existsSync(localBase + ext)) return basePath + ext;
+  }
+  return thumbnail;
+}
+
+const originalImage = resolveOriginalImage(frontmatter.thumbnail);
 ---
 
 <Fragment>

@@ -54,74 +54,79 @@
 </style>
 
 <script>
-import { isMobileUA } from "@/utils/device";
+import { isMobileUA } from '@/utils/device';
 
 if (!isMobileUA()) {
-  let el = document.getElementById("pelica-cursor")!;
+  let el = document.getElementById('pelica-cursor')!;
   let sprites = Object.fromEntries(
-    Array.from(el.querySelectorAll<HTMLElement>(".pelica-sprite")).map(
-      (s) => [s.dataset.cursor!, s]
-    )
+    Array.from(el.querySelectorAll<HTMLElement>('.pelica-sprite')).map(
+      (s) => [s.dataset.cursor!, s],
+    ),
   );
 
   const LINK_SEL = 'a, button, [role="button"], [tabindex]';
   const TEXT_SEL = 'input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="password"], input[type="number"], textarea, [contenteditable="true"]';
 
-  let currentState = "normal";
+  let currentState = 'normal';
   let isLoading = false;
 
   function show(state: string) {
-    if (state === currentState) return;
-    sprites[currentState].style.display = "none";
+    if (state === currentState)
+      return;
+    sprites[currentState].style.display = 'none';
     currentState = state;
-    sprites[currentState].style.display = "block";
+    sprites[currentState].style.display = 'block';
   }
 
-  sprites["normal"].style.display = "block";
+  sprites.normal.style.display = 'block';
 
   function detectState(target: Element): string {
-    if (isLoading) return "loading";
-    if (target.closest(TEXT_SEL)) return "text";
-    if (target.closest(LINK_SEL)) return "link";
-    return "normal";
+    if (isLoading)
+      return 'loading';
+    if (target.closest(TEXT_SEL))
+      return 'text';
+    if (target.closest(LINK_SEL))
+      return 'link';
+    return 'normal';
   }
 
-  document.addEventListener("astro:after-swap", () => {
-    const next = document.getElementById("pelica-cursor");
+  document.addEventListener('astro:after-swap', () => {
+    const next = document.getElementById('pelica-cursor');
     if (next && next !== el) {
       el = next;
       sprites = Object.fromEntries(
-        Array.from(el.querySelectorAll<HTMLElement>(".pelica-sprite")).map(
-          (s) => [s.dataset.cursor!, s]
-        )
+        Array.from(el.querySelectorAll<HTMLElement>('.pelica-sprite')).map(
+          (s) => [s.dataset.cursor!, s],
+        ),
       );
-      sprites[currentState].style.display = "block";
+      sprites[currentState].style.display = 'block';
     }
   });
 
-  document.addEventListener("astro:before-preparation", () => {
+  document.addEventListener('astro:before-preparation', () => {
     isLoading = true;
-    show("loading");
+    show('loading');
   });
-  document.addEventListener("astro:after-swap", () => {
+  document.addEventListener('astro:after-swap', () => {
     isLoading = false;
   });
 
-  document.addEventListener("mousemove", (e: MouseEvent) => {
-    el.style.left = e.clientX + "px";
-    el.style.top = e.clientY + "px";
-    el.classList.add("active");
+  document.addEventListener('mousemove', (e: MouseEvent) => {
+    el.style.left = `${e.clientX}px`;
+    el.style.top = `${e.clientY}px`;
+    el.classList.add('active');
     show(detectState(e.target as Element));
   });
 
-  document.addEventListener("mouseleave", () => {
-    el.classList.remove("active");
+  document.addEventListener('mouseleave', () => {
+    el.classList.remove('active');
   });
 
-  document.addEventListener("mouseenter", (e: MouseEvent) => {
-    el.style.left = e.clientX + "px";
-    el.style.top = e.clientY + "px";
-    el.classList.add("active");
+  document.addEventListener('mouseenter', (e: MouseEvent) => {
+    el.style.left = `${e.clientX}px`;
+    el.style.top = `${e.clientY}px`;
+
+    el.classList.add('active');
   });
 }
 </script>
