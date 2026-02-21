@@ -18,7 +18,7 @@ type Props = {
 
 export function ProjectCarousel({ images }: Props) {
   return (
-    <div className="flex justify-center items-center project-carousel">
+    <div className="flex justify-center items-center project-carousel" data-no-lightbox>
       <PhotoProvider>
         <Carousel
           opts={{

@@ -3,10 +3,9 @@ import Flickering from '@/components/home/Flickering';
 import InteractiveIconCloud from '@/components/home/InteractiveIconCloud';
 import Intro from '@/components/home/Intro';
 import TerminalInfo from '@/components/home/TerminalInfo';
-import { TextAnimate } from '@/components/ui/text-animate';
 import { LightRays } from '@/components/ui/light-rays';
-
 import { Separator } from '@/components/ui/separator';
+import { TextAnimate } from '@/components/ui/text-animate';
 import BaseLayout from '@/layouts/baseLayout.astro';
 
 
@@ -18,13 +17,15 @@ const description = 'Introduction page of Blog';
 
 <BaseLayout title="Home" description={description}>
   <div class="container overflow-x-hidden relative">
-    <LightRays
-      className="!fixed inset-0 z-0"
-      count={8}
-      speed={16}
-      length="80vh"
-      client:idle
-    />
+    <div class="light-rays-gate">
+      <LightRays
+        className="!fixed inset-0 z-0"
+        count={8}
+        speed={16}
+        length="80vh"
+        client:visible
+      />
+    </div>
     <div class="relative h-[200px] w-full">
       <div class="relative z-10 flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
         <span class="text-xs font-semibold tracking-[0.35em] text-slate-800/60 uppercase dark:text-slate-200/60">
@@ -73,6 +74,17 @@ const description = 'Introduction page of Blog';
   </div>
 
 </BaseLayout>
+
+<style>
+  .light-rays-gate {
+    display: none;
+  }
+  @media (pointer: fine) and (min-width: 768px) {
+    .light-rays-gate {
+      display: block;
+    }
+  }
+</style>
 
 <script is:inline>
   setTimeout(() => {

@@ -44,7 +44,7 @@ export function DiaryCarousel({ content }: DiaryCarouselProps) {
   };
 
   return (
-    <div className="my-6">
+    <div className="my-6" data-no-lightbox>
       <Carousel opts={{ loop: true, dragFree: true, align: 'start' }}>
         <CarouselContent className="-ml-2">
           {content.map((item, i) => (

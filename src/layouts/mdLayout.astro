@@ -6,6 +6,7 @@ import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
 
 import BlogNav from '@/components/Blog/BlogNav';
 import FloatButton from '@/components/layouts/FloatButton.astro';
+import ImageFullscreen from '@/components/layouts/ImageFullscreen.astro';
 import PelicaCursor from '@/components/layouts/PelicaCursor.astro';
 import Footer from '@/components/layouts/Footer';
 import Navigation from '@/components/layouts/Navigation';
@@ -66,6 +67,7 @@ const { title, tags = [], category = '' } = post;
   </head>
   <body>
     <PelicaCursor />
+    <ImageFullscreen />
     <Navigation client:idle transition:persist="main-nav" />
 
     <main>

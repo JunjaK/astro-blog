@@ -1,0 +1,392 @@
+---
+/**
+ * Global fullscreen image viewer with zoom & pan.
+ * Pure vanilla JS — zero framework, zero hydration.
+ * Persists across View Transitions via transition:persist.
+ *
+ * Activation: any <img data-lightbox> outside [data-no-lightbox] containers.
+ * Also handles clicks on [data-lightbox-trigger] (e.g. React ImageLoader's Lens overlay).
+ */
+---
+
+<div id="img-fullscreen" transition:persist="img-fullscreen">
+  <div class="ifs-backdrop"></div>
+  <img class="ifs-img" />
+  <button class="ifs-close" aria-label="Close fullscreen">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  </button>
+  <div class="ifs-zoom-badge">1.0x</div>
+</div>
+
+<style>
+  #img-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+  }
+  #img-fullscreen.open {
+    display: flex;
+    opacity: 1;
+  }
+  #img-fullscreen.opening {
+    display: flex;
+  }
+  .ifs-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+  }
+  .ifs-img {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    transform-origin: 0 0;
+    will-change: transform;
+    user-select: none;
+    -webkit-user-drag: none;
+    touch-action: none;
+  }
+  .ifs-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    backdrop-filter: blur(4px);
+    transition: background 0.15s;
+  }
+  .ifs-close:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
+  .ifs-zoom-badge {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.6);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.75rem;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .ifs-zoom-badge.visible {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  const root = document.getElementById('img-fullscreen')!;
+  const backdrop = root.querySelector<HTMLElement>('.ifs-backdrop')!;
+  const img = root.querySelector<HTMLImageElement>('.ifs-img')!;
+  const closeBtn = root.querySelector<HTMLButtonElement>('.ifs-close')!;
+  const badge = root.querySelector<HTMLElement>('.ifs-zoom-badge')!;
+
+  const MIN_ZOOM = 1;
+  const MAX_ZOOM = 5;
+  const ZOOM_STEP = 0.15;
+
+  let isOpen = false;
+  let scale = 1;
+  let tx = 0;
+  let ty = 0;
+
+  // Drag state
+  let dragging = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let dragStartTx = 0;
+  let dragStartTy = 0;
+
+  // Pinch state
+  let lastPinchDist = 0;
+  let pinchActive = false;
+
+  // Badge hide timer
+  let badgeTimer = 0;
+
+  // --- Helpers ---
+
+  function applyTransform() {
+    img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+  }
+
+  function clampPan() {
+    if (scale <= 1) {
+      tx = 0;
+      ty = 0;
+      return;
+    }
+    const rect = img.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    // img natural rendered size (at scale=1)
+    const nw = img.offsetWidth;
+    const nh = img.offsetHeight;
+    // Scaled size
+    const sw = nw * scale;
+    const sh = nh * scale;
+    // Image center offset (from CSS flex centering)
+    const cx = (vw - nw) / 2;
+    const cy = (vh - nh) / 2;
+
+    // Max pan so image edge doesn't go past center of viewport
+    const maxTx = Math.max(0, (sw - vw) / 2);
+    const maxTy = Math.max(0, (sh - vh) / 2);
+
+    tx = Math.max(-maxTx, Math.min(maxTx, tx));
+    ty = Math.max(-maxTy, Math.min(maxTy, ty));
+  }
+
+  function showBadge() {
+    badge.textContent = `${scale.toFixed(1)}x`;
+    badge.classList.add('visible');
+    clearTimeout(badgeTimer);
+    badgeTimer = window.setTimeout(() => badge.classList.remove('visible'), 1200);
+  }
+
+  function updateCursor() {
+    if (scale > 1) {
+      img.style.cursor = dragging ? 'grabbing' : 'grab';
+    } else {
+      img.style.cursor = '';
+    }
+  }
+
+  // --- Open / Close ---
+
+  function open(src: string) {
+    if (isOpen) return;
+    isOpen = true;
+    scale = 1;
+    tx = 0;
+    ty = 0;
+
+    img.src = src;
+    img.style.transform = '';
+    img.style.cursor = '';
+    badge.classList.remove('visible');
+
+    document.body.style.overflow = 'hidden';
+    root.classList.add('opening');
+    // Force reflow then add open for transition
+    root.offsetHeight;
+    root.classList.add('open');
+    root.classList.remove('opening');
+  }
+
+  function close() {
+    if (!isOpen) return;
+    isOpen = false;
+    root.classList.remove('open');
+    document.body.style.overflow = '';
+    clearTimeout(badgeTimer);
+    // After transition, hide
+    setTimeout(() => {
+      if (!isOpen) {
+        root.style.display = 'none';
+        img.src = '';
+      }
+    }, 200);
+  }
+
+  // --- Click delegation ---
+
+  function findLightboxSrc(target: Element): string | null {
+    // Skip if inside a no-lightbox container
+    if (target.closest('[data-no-lightbox]')) return null;
+
+    // Direct img[data-lightbox]
+    const lbImg = target.closest('img[data-lightbox]') as HTMLImageElement | null;
+    if (lbImg) return lbImg.src;
+
+    // Click on lightbox-trigger container (e.g. Lens overlay) — find the img inside
+    const trigger = target.closest('[data-lightbox-trigger]');
+    if (trigger) {
+      const inner = trigger.querySelector('img[data-lightbox]') as HTMLImageElement | null;
+      if (inner) return inner.src;
+    }
+
+    return null;
+  }
+
+  document.addEventListener('click', (e) => {
+    if (isOpen) return;
+    const src = findLightboxSrc(e.target as Element);
+    if (src) {
+      e.preventDefault();
+      e.stopPropagation();
+      open(src);
+    }
+  });
+
+  // --- Close handlers ---
+
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    close();
+  });
+
+  backdrop.addEventListener('click', () => {
+    if (scale <= 1) close();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (isOpen && e.key === 'Escape') close();
+  });
+
+  // --- Wheel zoom ---
+
+  root.addEventListener('wheel', (e) => {
+    if (!isOpen) return;
+    e.preventDefault();
+
+    const rect = img.getBoundingClientRect();
+    // Cursor position relative to image top-left (pre-transform)
+    const cx = (e.clientX - rect.left) / scale;
+    const cy = (e.clientY - rect.top) / scale;
+
+    const prev = scale;
+    const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+    scale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, scale + delta));
+
+    // Adjust translate so point under cursor stays fixed
+    tx += cx * (prev - scale);
+    ty += cy * (prev - scale);
+
+    clampPan();
+    applyTransform();
+    updateCursor();
+    showBadge();
+  }, { passive: false });
+
+  // --- Double-click toggle ---
+
+  img.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    const rect = img.getBoundingClientRect();
+
+    if (scale > 1) {
+      // Reset to 1x
+      scale = 1;
+      tx = 0;
+      ty = 0;
+    } else {
+      // Zoom to 2x toward click point
+      const cx = (e.clientX - rect.left) / scale;
+      const cy = (e.clientY - rect.top) / scale;
+      const prev = scale;
+      scale = 2;
+      tx += cx * (prev - scale);
+      ty += cy * (prev - scale);
+      clampPan();
+    }
+
+    applyTransform();
+    updateCursor();
+    showBadge();
+  });
+
+  // --- Drag to pan ---
+
+  img.addEventListener('pointerdown', (e) => {
+    if (!isOpen || scale <= 1) return;
+    dragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    dragStartTx = tx;
+    dragStartTy = ty;
+    img.setPointerCapture(e.pointerId);
+    updateCursor();
+  });
+
+  document.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    tx = dragStartTx + (e.clientX - dragStartX);
+    ty = dragStartTy + (e.clientY - dragStartY);
+    clampPan();
+    applyTransform();
+  });
+
+  document.addEventListener('pointerup', () => {
+    if (dragging) {
+      dragging = false;
+      updateCursor();
+    }
+  });
+
+  // --- Pinch zoom (mobile) ---
+
+  function pinchDist(e: TouchEvent): number {
+    const [a, b] = [e.touches[0], e.touches[1]];
+    return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  }
+
+  function pinchCenter(e: TouchEvent): { x: number; y: number } {
+    const [a, b] = [e.touches[0], e.touches[1]];
+    return { x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 };
+  }
+
+  root.addEventListener('touchstart', (e) => {
+    if (!isOpen || e.touches.length !== 2) return;
+    e.preventDefault();
+    pinchActive = true;
+    lastPinchDist = pinchDist(e);
+  }, { passive: false });
+
+  root.addEventListener('touchmove', (e) => {
+    if (!pinchActive || e.touches.length !== 2) return;
+    e.preventDefault();
+
+    const dist = pinchDist(e);
+    const delta = (dist - lastPinchDist) * 0.005;
+    lastPinchDist = dist;
+
+    const center = pinchCenter(e);
+    const rect = img.getBoundingClientRect();
+    const cx = (center.x - rect.left) / scale;
+    const cy = (center.y - rect.top) / scale;
+
+    const prev = scale;
+    scale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, scale + delta));
+
+    tx += cx * (prev - scale);
+    ty += cy * (prev - scale);
+    clampPan();
+    applyTransform();
+    updateCursor();
+    showBadge();
+  }, { passive: false });
+
+  root.addEventListener('touchend', () => {
+    pinchActive = false;
+  });
+
+  // --- View Transitions ---
+
+  document.addEventListener('astro:before-swap', () => {
+    if (isOpen) close();
+  });
+</script>

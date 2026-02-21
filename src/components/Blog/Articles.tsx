@@ -21,6 +21,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Icon } from '@/components/ui/icon';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -56,6 +57,14 @@ export default function Articles({ posts, categories }: Props) {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const pagefindRef = useRef<Pagefind | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const virtualizer = useWindowVirtualizer({
+    count: articles.length,
+    estimateSize: () => 176,
+    overscan: 5,
+    scrollMargin: listRef.current?.offsetTop ?? 0,
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -138,10 +147,11 @@ export default function Articles({ posts, categories }: Props) {
     }
 
     window.history.pushState({}, '', url);
+    virtualizer.scrollToOffset(0);
     setTimeout(() => {
       setIsSearching(false);
     }, 500);
-  }, [searchWithPagefind, searchByTag, setArticles, setIsSearchActive, selectedCategory, posts]);
+  }, [searchWithPagefind, searchByTag, setArticles, setIsSearchActive, selectedCategory, posts, virtualizer]);
 
   const searchCategory = useCallback((category: string) => {
     if (selectedCategory === category) {
@@ -161,6 +171,7 @@ export default function Articles({ posts, categories }: Props) {
     url.searchParams.delete('type');
     url.searchParams.delete('q');
     window.history.pushState({}, '', url);
+    virtualizer.scrollToOffset(0);
   }
 
   useEffect(() => {
@@ -269,20 +280,38 @@ export default function Articles({ posts, categories }: Props) {
 
       <div className="relative">
         {isSearching && <SearchLoading />}
-        {articles.map((article) => (
-          <EachArticle
-            frontmatter={article.data}
-            url={`/blog/${article.id}`}
-            key={`${article.data.title}-${article.data.category}`}
-          />
-        ))}
-        {articles.length === 0 && (
+        {articles.length > 0 ? (
+          <div
+            ref={listRef}
+            style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}
+          >
+            {virtualizer.getVirtualItems().map((virtualRow) => {
+              const article = articles[virtualRow.index];
+              return (
+                <div
+                  key={`${article.data.title}-${article.data.category}`}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
+                  }}
+                >
+                  <EachArticle
+                    frontmatter={article.data}
+                    url={`/blog/${article.id}`}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ) : (
           <div className="empty-result" aria-label="empty-result">
             <div>
               <Icon icon="mynaui:inbox-x" className="empty-icon" />
-              <div className="desc">
-                검색 결과가 없습니다.
-              </div>
+              <div className="desc">검색 결과가 없습니다.</div>
             </div>
           </div>
         )}

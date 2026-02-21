@@ -24,10 +24,16 @@ export default function ImageLoader({ src, alt = 'blog-image', ...props }: Image
       src={src ?? ''}
       alt={alt}
       loading="lazy"
+      data-lightbox=""
+      className={`cursor-zoom-in ${props.className ?? ''}`}
     />
   );
 
   if (!isDesktop) return img;
 
-  return <Lens zoomFactor={1.5} lensSize={150}>{img}</Lens>;
+  return (
+    <div data-lightbox-trigger>
+      <Lens zoomFactor={1.5} lensSize={150}>{img}</Lens>
+    </div>
+  );
 }

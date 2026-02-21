@@ -17,7 +17,8 @@ const { src, alt = 'blog-image', class: className, width, height } = Astro.props
   alt={alt ?? 'blog-image'}
   loading="lazy"
   onerror={`this.src='/fallbackImg.svg'`}
-  class={className}
+  class:list={['cursor-zoom-in', className]}
   width={width}
   height={height}
+  data-lightbox
 />

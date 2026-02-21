@@ -5,6 +5,7 @@ import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
 
 import CommonScript from '@/components/layouts/CommonScript.astro';
 import FloatButton from '@/components/layouts/FloatButton.astro';
+import ImageFullscreen from '@/components/layouts/ImageFullscreen.astro';
 import PelicaCursor from '@/components/layouts/PelicaCursor.astro';
 import Footer from '@/components/layouts/Footer';
 import Navigation from '@/components/layouts/Navigation';
@@ -45,6 +46,7 @@ const { title, description } = Astro.props;
 </head>
 <body>
 <PelicaCursor />
+<ImageFullscreen />
 <Navigation client:idle transition:persist="main-nav"></Navigation>
 
 <main>
