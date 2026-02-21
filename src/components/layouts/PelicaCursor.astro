@@ -1,0 +1,127 @@
+---
+/**
+ * Global Pelica pixel-art cursor.
+ * Pure vanilla JS — zero framework, zero hydration.
+ * Persists across View Transitions via transition:persist.
+ *
+ * States: normal | link | text | loading
+ */
+---
+
+<div id="pelica-cursor" transition:persist="pelica-cursor">
+  <div class="pelica-sprite" data-cursor="normal"></div>
+  <div class="pelica-sprite" data-cursor="link"></div>
+  <div class="pelica-sprite" data-cursor="text"></div>
+  <div class="pelica-sprite" data-cursor="loading"></div>
+</div>
+
+<style>
+  #pelica-cursor {
+    pointer-events: none;
+    position: fixed;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
+  }
+  #pelica-cursor.active {
+    opacity: 1;
+  }
+  .pelica-sprite {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+    background-size: calc(32px * 12) 32px;
+    animation: pelica-anim 3s steps(12) infinite;
+    display: none;
+  }
+  [data-cursor="normal"]  { background-image: url('/cursors/pelica-normal.png'); }
+  [data-cursor="link"]    { background-image: url('/cursors/pelica-link.png'); }
+  [data-cursor="text"]    { background-image: url('/cursors/pelica-text.png'); }
+  [data-cursor="loading"] { background-image: url('/cursors/pelica-loading.png'); }
+
+  @keyframes pelica-anim {
+    from { background-position: 0 0; }
+    to { background-position: -768px 0; }
+  }
+</style>
+
+<style is:global>
+  @media (pointer: fine) {
+    *, *::before, *::after {
+      cursor: none !important;
+    }
+  }
+</style>
+
+<script>
+import { isMobileUA } from "@/utils/device";
+
+if (!isMobileUA()) {
+  let el = document.getElementById("pelica-cursor")!;
+  let sprites = Object.fromEntries(
+    Array.from(el.querySelectorAll<HTMLElement>(".pelica-sprite")).map(
+      (s) => [s.dataset.cursor!, s]
+    )
+  );
+
+  const LINK_SEL = 'a, button, [role="button"], [tabindex]';
+  const TEXT_SEL = 'input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="password"], input[type="number"], textarea, [contenteditable="true"]';
+
+  let currentState = "normal";
+  let isLoading = false;
+
+  function show(state: string) {
+    if (state === currentState) return;
+    sprites[currentState].style.display = "none";
+    currentState = state;
+    sprites[currentState].style.display = "block";
+  }
+
+  sprites["normal"].style.display = "block";
+
+  function detectState(target: Element): string {
+    if (isLoading) return "loading";
+    if (target.closest(TEXT_SEL)) return "text";
+    if (target.closest(LINK_SEL)) return "link";
+    return "normal";
+  }
+
+  document.addEventListener("astro:after-swap", () => {
+    const next = document.getElementById("pelica-cursor");
+    if (next && next !== el) {
+      el = next;
+      sprites = Object.fromEntries(
+        Array.from(el.querySelectorAll<HTMLElement>(".pelica-sprite")).map(
+          (s) => [s.dataset.cursor!, s]
+        )
+      );
+      sprites[currentState].style.display = "block";
+    }
+  });
+
+  document.addEventListener("astro:before-preparation", () => {
+    isLoading = true;
+    show("loading");
+  });
+  document.addEventListener("astro:after-swap", () => {
+    isLoading = false;
+  });
+
+  document.addEventListener("mousemove", (e: MouseEvent) => {
+    el.style.left = e.clientX + "px";
+    el.style.top = e.clientY + "px";
+    el.classList.add("active");
+    show(detectState(e.target as Element));
+  });
+
+  document.addEventListener("mouseleave", () => {
+    el.classList.remove("active");
+  });
+
+  document.addEventListener("mouseenter", (e: MouseEvent) => {
+    el.style.left = e.clientX + "px";
+    el.style.top = e.clientY + "px";
+    el.classList.add("active");
+  });
+}
+</script>
