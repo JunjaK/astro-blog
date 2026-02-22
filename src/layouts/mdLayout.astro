@@ -6,10 +6,10 @@ import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
 
 import BlogNav from '@/components/Blog/BlogNav';
 import FloatButton from '@/components/layouts/FloatButton.astro';
-import ImageFullscreen from '@/components/layouts/ImageFullscreen.astro';
-import PelicaCursor from '@/components/layouts/PelicaCursor.astro';
 import Footer from '@/components/layouts/Footer';
+import ImageFullscreen from '@/components/layouts/ImageFullscreen.astro';
 import Navigation from '@/components/layouts/Navigation';
+import PelicaCursor from '@/components/layouts/PelicaCursor.astro';
 
 import ThemeInit from '@/components/layouts/ThemeInit.astro';
 import ScrollProgress from '@/components/ui/scroll-progress';
@@ -103,7 +103,7 @@ const { title, tags = [], category = '' } = post;
         <Separator className="my-8" client:visible />
 
         <div class="giscus-body">
-          <GiscusComp client:visible>
+          <GiscusComp client:load>
             <div class="giscus-fallback" slot="fallback">
               <Skeleton className="h-[1rem] w-full]" />
               <Skeleton className="h-[1rem] w-full" />

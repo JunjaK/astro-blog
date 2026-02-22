@@ -1,7 +1,8 @@
-import { $theme, setTheme } from '@/store/system';
 import Giscus from '@giscus/react';
 import { useStore } from '@nanostores/react';
+
 import { useEffect } from 'react';
+import { $theme, setTheme } from '@/store/system';
 
 export default function GiscusComp() {
   const theme = useStore($theme);
@@ -9,7 +10,8 @@ export default function GiscusComp() {
 
   useEffect(() => {
     const stored = localStorage.getItem('theme');
-    if (stored) setTheme(stored);
+    if (stored)
+      setTheme(stored);
   }, []);
 
   return (
