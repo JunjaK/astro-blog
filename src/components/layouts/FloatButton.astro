@@ -1,6 +1,4 @@
 ---
-import { Image } from 'astro:assets';
-import FloatButtonImg from '@/assets/images/floatButtonImg.svg';
 ---
 
 
@@ -12,9 +10,9 @@ import FloatButtonImg from '@/assets/images/floatButtonImg.svg';
       aria-label="scroll-to-top"
       id="scrollTopBtn"
     >
-      <Image src={FloatButtonImg} alt="float-button" width={24} height={24}>
-
-      </Image>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M19.512 9.098C20.583 10.169 19.825 12 18.31 12H16v8a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-8H5.69c-1.515 0-2.273-1.831-1.202-2.902l6.451-6.452a1.5 1.5 0 0 1 2.121 0z"/>
+      </svg>
       <span class="pointer-events-none absolute inset-0"></span></button>
   </div>
 </div>
