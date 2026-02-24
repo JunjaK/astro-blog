@@ -1,11 +1,11 @@
 site:
-  url: https://example.com # same as `site` in astro.config.mjs
-  title: My Blog
-  subtitle: My Blog Subtitle
-  description: D-Sketon's blog
-  keywords: D-Sketon, blog, astro, theme
-  author: D-Sketon
-  language: zh-CN
+  url: https://www.jun-devlog.win
+  title: Jun Devlog
+  subtitle: Personal Developer Blog
+  description: Personal developer blog by Jun — web development, game development, and more
+  keywords: Jun, devlog, blog, web development, frontend, astro, react
+  author: Jun
+  language: en
 
 footer:
   since: 2020 # 2020 - current year

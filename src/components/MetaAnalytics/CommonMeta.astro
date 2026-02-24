@@ -1,6 +1,4 @@
 ---
-import { BASE_URL } from '../../utils/config';
-
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 type Props = {
@@ -8,14 +6,25 @@ type Props = {
   description: string;
   keywords?: string | string[];
   image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  tags?: string[];
 };
 
 const {
   title,
   description,
   keywords = title,
-  image = `${BASE_URL}/images/banner.jpg`,
+  image,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  tags = [],
 } = Astro.props;
+
+const siteName = 'Jun Devlog';
+const resolvedImage = new URL(image || '/og_banner.png', Astro.site).toString();
 ---
 
 <!-- Global Metadata -->
@@ -24,8 +33,14 @@ const {
   name="viewport"
   content="width=device-width, initial-scale=1, shrink-to-fit=no"
 />
-<link rel="shortcut icon" href=`${BASE_URL}/favicon.ico` />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={siteName}
+  href={new URL('/rss.xml', Astro.site)}
+/>
 <meta name="naver-site-verification" content="3e850a69b6936ef8efc7e19a3cc82a3ec1ae0fc0" />
 <meta name="generator" content={Astro.generator} />
 
@@ -40,17 +55,29 @@ const {
   name="keywords"
   content={Array.isArray(keywords) ? keywords.join(',') : keywords}
 />
+<meta name="author" content="Jun" />
 
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
 <meta property="og:url" content={Astro.url} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:locale" content="en_US" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+<meta property="og:image" content={resolvedImage} />
+{type === 'article' && publishedTime && (
+  <meta property="article:published_time" content={publishedTime.toISOString()} />
+)}
+{type === 'article' && modifiedTime && (
+  <meta property="article:modified_time" content={modifiedTime.toISOString()} />
+)}
+{type === 'article' && tags.map((tag) => (
+  <meta property="article:tag" content={tag} />
+))}
 
 <!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={Astro.url} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={resolvedImage} />

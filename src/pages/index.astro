@@ -11,11 +11,11 @@ import BaseLayout from '@/layouts/baseLayout.astro';
 
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
-const description = 'Introduction page of Blog';
+const description = 'Personal developer blog by Jun — web development, game development, and more';
 
 ---
 
-<BaseLayout title="Home" description={description}>
+<BaseLayout title="Home" description={description} keywords={['Jun', 'devlog', 'blog', 'web development', 'frontend']}>
   <div class="container overflow-x-hidden relative">
     <div class="light-rays-gate">
       <LightRays

@@ -17,6 +17,7 @@ import BlogFrontmatter from '../components/Blog/BlogFrontmatter';
 import GiscusComp from '../components/Blog/GiscusComp';
 import CommonScript from '../components/layouts/CommonScript.astro';
 import CommonMeta from '../components/MetaAnalytics/CommonMeta.astro';
+import JsonLd from '../components/MetaAnalytics/JsonLd.astro';
 import VendorScript from '../components/MetaAnalytics/VendorScript.astro';
 import { Separator } from '../components/ui/separator';
 
@@ -45,21 +46,39 @@ type Props = {
 
 const { nav, post, url } = Astro.props;
 
-const { title, tags = [], category = '' } = post;
+const { title, tags = [], category = '', description: postDesc, thumbnail, created, updated } = post;
+const blogDescription = postDesc || [title, category, ...tags].filter(Boolean).join(' | ');
 ---
 
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content={Astro.generator} />
     <meta name="giscus:backlink" content="https://bit.ly/RickRolled" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <ClientRouter />
     <CommonMeta
-      title={`Jun devlog | ${title}`}
-      description={`Blog Page | ${category}`}
+      title={`Jun Devlog | ${title}`}
+      description={blogDescription}
       keywords={tags}
+      type="article"
+      image={thumbnail}
+      publishedTime={created}
+      modifiedTime={updated}
+      tags={tags}
+    />
+    <JsonLd
+      schema={{
+        type: 'article',
+        title,
+        description: blogDescription,
+        image: thumbnail,
+        publishedTime: created,
+        modifiedTime: updated,
+        tags,
+      }}
+      breadcrumbs={[
+        { name: 'Home', url: '/' },
+        { name: 'Blog', url: '/blog' },
+        { name: title, url: Astro.url.pathname },
+      ]}
     />
     <VendorScript />
     <ThemeInit />

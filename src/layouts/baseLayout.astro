@@ -12,7 +12,7 @@ import Navigation from '@/components/layouts/Navigation';
 import ThemeInit from '@/components/layouts/ThemeInit.astro';
 import ScrollProgress from '@/components/ui/scroll-progress';
 import CommonMeta from '../components/MetaAnalytics/CommonMeta.astro';
-
+import JsonLd from '../components/MetaAnalytics/JsonLd.astro';
 import VendorScript from '../components/MetaAnalytics/VendorScript.astro';
 import '@fontsource/gothic-a1';
 import '@fontsource/m-plus-1p';
@@ -24,18 +24,26 @@ import 'dayjs/locale/en';
 dayjs.extend(dayJsRelativeTime);
 dayjs.locale('en');
 
-const { title, description } = Astro.props;
+type Props = {
+  title: string;
+  description: string;
+  keywords?: string[];
+};
+
+const { title, description, keywords } = Astro.props;
 ---
 
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="generator" content={Astro.generator} />
-  <meta name="description" content={title} />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <ClientRouter />
-  <CommonMeta title={`Jun devlog | ${title}`} description={description} keywords={['others']} />
+  <CommonMeta title={`Jun Devlog | ${title}`} description={description} keywords={keywords} />
+  <JsonLd
+    schema={{ type: 'website', title: `Jun Devlog | ${title}`, description }}
+    breadcrumbs={[
+      { name: 'Home', url: '/' },
+      ...(Astro.url.pathname !== '/' ? [{ name: title, url: Astro.url.pathname }] : []),
+    ]}
+  />
   <VendorScript />
   <ThemeInit />
   <style>

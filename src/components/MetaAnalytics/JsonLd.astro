@@ -1,0 +1,94 @@
+---
+type WebSiteSchema = {
+  type: 'website';
+  title: string;
+  description: string;
+};
+
+type ArticleSchema = {
+  type: 'article';
+  title: string;
+  description: string;
+  image?: string;
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  author?: string;
+  tags?: string[];
+};
+
+type BreadcrumbItem = {
+  name: string;
+  url: string;
+};
+
+type Props = {
+  schema: WebSiteSchema | ArticleSchema;
+  breadcrumbs?: BreadcrumbItem[];
+};
+
+const { schema, breadcrumbs } = Astro.props;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') || 'https://www.jun-devlog.win';
+const pageUrl = new URL(Astro.url.pathname, siteUrl).toString();
+
+function buildJsonLd() {
+  const items: Record<string, unknown>[] = [];
+
+  if (schema.type === 'website') {
+    items.push({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      'name': schema.title,
+      'description': schema.description,
+      'url': pageUrl,
+    });
+  }
+
+  if (schema.type === 'article') {
+    const article: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      'headline': schema.title,
+      'description': schema.description,
+      'url': pageUrl,
+      'author': {
+        '@type': 'Person',
+        'name': schema.author || 'Jun',
+      },
+    };
+
+    if (schema.image) {
+      article.image = schema.image.startsWith('http')
+        ? schema.image
+        : `${siteUrl}${schema.image}`;
+    }
+    if (schema.publishedTime) article.datePublished = schema.publishedTime.toISOString();
+    if (schema.modifiedTime) article.dateModified = schema.modifiedTime.toISOString();
+    else if (schema.publishedTime) article.dateModified = schema.publishedTime.toISOString();
+    if (schema.tags?.length) article.keywords = schema.tags;
+
+    items.push(article);
+  }
+
+  if (breadcrumbs?.length) {
+    items.push({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': breadcrumbs.map((item, index) => ({
+        '@type': 'ListItem',
+        'position': index + 1,
+        'name': item.name,
+        'item': item.url.startsWith('http') ? item.url : `${siteUrl}${item.url}`,
+      })),
+    });
+  }
+
+  return items;
+}
+
+const jsonLdItems = buildJsonLd();
+---
+
+{jsonLdItems.map((item) => (
+  <script type="application/ld+json" set:html={JSON.stringify(item)} />
+))}

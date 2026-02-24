@@ -38,7 +38,9 @@ const SCSS_Logger = {
 export default defineConfig({
   // Enable React to support React JSX components.
   site: 'https://www.jun-devlog.win',
-  integrations: [react(), svelte(), vue(), sitemap(), expressiveCode({
+  integrations: [react(), svelte(), vue(), sitemap({
+    filter: (page) => !page.includes('/404'),
+  }), expressiveCode({
     themes: ['kanagawa-dragon', 'catppuccin-latte'],
     plugins: [pluginCollapsibleSections(), pluginLineNumbers(), pluginColorChips()],
   }), mdx({}), pagefind()],

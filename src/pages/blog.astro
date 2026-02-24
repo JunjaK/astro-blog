@@ -12,10 +12,11 @@ posts.sort((a, b) => dayjs(b.data.created).unix() - dayjs(a.data.created).unix()
 
 const categories = [...new Set(posts.map((p) => p.data.category))];
 const postsForClient = posts.map(({ body, ...rest }) => rest);
-const description = 'Post list page of the Blog';
+const allTags = [...new Set(posts.flatMap((p) => p.data.tags || []))];
+const description = 'Articles on web development, game development, and developer diary';
 ---
 
-<BaseLayout title="Blog" description={description}>
+<BaseLayout title="Blog" description={description} keywords={allTags}>
   <div class="container">
     <h1 class="font-black">Blog</h1>
     <hr class="title-divider" />
