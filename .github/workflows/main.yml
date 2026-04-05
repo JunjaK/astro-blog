@@ -51,6 +51,7 @@ jobs:
           sparse-checkout: |
             Dockerfile
             nginx.conf
+          sparse-checkout-cone-mode: false
 
       - name: Download build artifact
         uses: actions/download-artifact@v8
