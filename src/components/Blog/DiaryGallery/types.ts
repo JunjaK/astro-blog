@@ -14,3 +14,12 @@ export type DiaryVideo = {
 };
 
 export type DiaryContent = DiaryImage | DiaryVideo;
+
+export type PolaroidImage = {
+  src: string;
+  title: string;
+  description: string;
+  caption?: string;
+  alt?: string;
+  rotate?: number;
+};

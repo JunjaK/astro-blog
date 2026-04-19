@@ -17,7 +17,7 @@ export default function GiscusComp() {
   return (
     <Giscus
       id="comments"
-      repo="JunjaK/astro-blog"
+      repo="Junjak-Personal/astro-blog"
       repoId="R_kgDONnXaZQ"
       category="General"
       categoryId="DIC_kwDONnXaZc4Cm4-Q"

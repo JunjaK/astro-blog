@@ -15,6 +15,7 @@ type ImageLightboxProps = {
   index: number;
   onClose: () => void;
   onIndexChange: (index: number) => void;
+  titleRender?: (props: { index: number }) => React.ReactNode;
   toolbarRender?: (props: { index: number }) => React.ReactNode;
 };
 
@@ -42,6 +43,7 @@ export function ImageLightbox({
   index,
   onClose,
   onIndexChange,
+  titleRender,
   toolbarRender,
 }: ImageLightboxProps) {
   const [direction, setDirection] = useState(0);
@@ -179,6 +181,13 @@ export function ImageLightbox({
             /
             {images.length}
           </div>
+
+          {/* Title (top-center) */}
+          {titleRender && (
+            <div className="pointer-events-none absolute left-1/2 top-4 z-[110] max-w-[60vw] -translate-x-1/2 text-center">
+              {titleRender({ index })}
+            </div>
+          )}
 
           {/* Toolbar (tags) */}
           {toolbarRender && (

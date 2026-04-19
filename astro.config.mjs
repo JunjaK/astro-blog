@@ -82,10 +82,11 @@ export default defineConfig({
       },
     ],
     ssr: {
-      noExternal: ['react-use'],
+      noExternal: ['react-use', 'tegaki'],
     },
     optimizeDeps: {
       include: ['react-use'],
+      exclude: ['tegaki', 'tegaki/react', 'tegaki/fonts/caveat'],
     },
     css: {
       preprocessorOptions: {
