@@ -1,2 +1,2 @@
 export { DiaryCarousel } from './DiaryCarousel';
-export { PolaroidGallery } from './PolaroidGallery';
+export { PolaroidLightbox } from './PolaroidLightbox';

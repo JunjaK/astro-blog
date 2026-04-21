@@ -6,7 +6,7 @@ category: Diary
 thumbnail: /files/blog/diary/25-01-tokyo/01-21/00B7A56D-B822-4EC0-ACC0-27EACC9C7143_1_105_c-thumb.webp
 ---
 
-import { PolaroidGallery } from '@/components/Blog/DiaryGallery';
+import PolaroidGallery from '@/components/Blog/DiaryGallery/PolaroidGallery.astro';
 import ImageLoader from '@/components/Blog/ImageLoader.astro';
 import TableOfContents from '@/components/Blog/TableOfContents.astro';
 
@@ -31,7 +31,7 @@ import TableOfContents from '@/components/Blog/TableOfContents.astro';
 
 ###
 
-<PolaroidGallery client:visible
+<PolaroidGallery
   items={[
     {
       src: "/files/blog/diary/25-01-tokyo/01-21/00B7A56D-B822-4EC0-ACC0-27EACC9C7143_1_105_c.webp",

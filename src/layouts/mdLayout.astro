@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
 
 import BlogNav from '@/components/Blog/BlogNav';
+import { PolaroidLightbox } from '@/components/Blog/DiaryGallery';
 import FloatButton from '@/components/layouts/FloatButton.astro';
 import Footer from '@/components/layouts/Footer';
 import ImageFullscreen from '@/components/layouts/ImageFullscreen.astro';
@@ -135,6 +136,7 @@ const blogDescription = postDesc || [title, category, ...tags].filter(Boolean).j
     </main>
     <Footer client:idle transition:persist="main-footer" />
     <FloatButton />
+    <PolaroidLightbox client:idle />
     <CommonScript />
   </body>
 </html>
