@@ -6,9 +6,68 @@ category: Diary
 thumbnail: /files/blog/diary/25-01-tokyo/01-21/00B7A56D-B822-4EC0-ACC0-27EACC9C7143_1_105_c-thumb.webp
 ---
 
-import PolaroidGallery from '@/components/Blog/DiaryGallery/PolaroidGallery.astro';
-import ImageLoader from '@/components/Blog/ImageLoader.astro';
+import PolaroidGalleryScrapbook from '@/components/Blog/DiaryGallery/PolaroidGalleryScrapbook.astro';
 import TableOfContents from '@/components/Blog/TableOfContents.astro';
+
+export const dayTwoItems = [
+  {
+    src: "/files/blog/diary/25-01-tokyo/01-21/00B7A56D-B822-4EC0-ACC0-27EACC9C7143_1_105_c.webp",
+    title: "제목 1",
+    description: "이날 아침 첫 장면은 빌딩 숲 사이로 들어오는 겨울빛이 유난히 차갑고 맑게 느껴졌던 순간이었다. 역 앞 공기는 생각보다 건조했고, 사람들은 빠르게 지나갔지만 풍경은 이상할 만큼 정지된 것처럼 보였다. 여행 첫날의 긴장이 조금 남아 있어서 발걸음은 조심스러웠고, 그래서인지 간판 하나와 그림자 하나까지도 더 또렷하게 들어왔다. 지나가며 본 회색 건물 벽면, 차가운 유리 반사, 그리고 그 아래의 작은 움직임들이 전부 하루의 시작을 기록하는 메모처럼 남았다. 나중에 다시 사진을 보니 그때의 체온과 공기 밀도까지 같이 저장된 것처럼 느껴졌다. 건물 아래로 내려오니 유리문 앞에서 잠깐 멈춰 서 있는 사람들, 안쪽 카페에서 새어 나오던 냄새, 지나가던 자전거 바퀴 소리 같은 아주 작은 요소들이 사진 안에는 직접 보이지 않는데도 이상하게 같이 떠오른다. 아마 여행 사진이 좋은 이유는 정확한 장면 기록보다도, 그 장면을 둘러싸고 있던 촉감과 속도를 다시 불러오는 힘 때문일 것이다. 그래서 이 컷은 단순한 풍경 사진이라기보다, 도쿄에서의 두 번째 날을 시작하던 내 시선의 온도와 거리감을 그대로 남겨둔 일종의 메모처럼 느껴진다. 조금 멀리 떨어져 바라본 빌딩의 수직선과 사람들의 움직임이 대비되면서, 도시가 가진 차가움과 여행자가 느끼는 들뜸이 한 프레임 안에서 묘하게 공존하고 있었다.",
+    caption: "tokyo, 01-21",
+  },
+  {
+    src: "/files/blog/diary/25-01-tokyo/01-21/0406A399-3632-4B72-B8CE-310C3F898E6E_1_102_o.webp",
+    title: "제목 2",
+    description: "사진에 대한 설명을 여기에 작성.",
+    caption: "morning",
+  },
+  {
+    src: "/files/blog/diary/25-01-tokyo/01-21/110E953F-FCC6-4650-8E3A-636CC5F03D42_1_105_c.webp",
+    title: "제목 3",
+    description: "사진에 대한 설명을 여기에 작성.",
+    caption: "street",
+  },
+  {
+    src: "/files/blog/diary/25-01-tokyo/01-21/12379520-B4DF-471A-8C6D-F1579AE2D357_1_105_c.webp",
+    title: "제목 4",
+    description: "사진에 대한 설명을 여기에 작성.",
+  },
+  {
+    src: "/files/blog/diary/25-01-tokyo/01-21/142E45A6-1053-4BE2-A5EA-6FF1DC912D74_1_102_o.webp",
+    title: "제목 5",
+    description: "사진에 대한 설명을 여기에 작성.",
+    caption: "shibuya",
+  },
+  {
+    src: "/files/blog/diary/25-01-tokyo/01-21/1AC0FB94-A4D6-46CC-8117-46B40BA066B6_1_102_o.webp",
+    title: "제목 6",
+    description: "사진에 대한 설명을 여기에 작성.",
+  },
+  {
+    src: "/files/blog/diary/25-01-tokyo/01-21/1FB79E8D-43E8-4121-8978-B7B42A7CA59C_1_105_c.webp",
+    title: "제목 7",
+    description: "사진에 대한 설명을 여기에 작성.",
+    caption: "coffee",
+  },
+  {
+    src: "/files/blog/diary/25-01-tokyo/01-21/224163E3-A2A9-40F9-B597-DEF0A6C6A693_1_102_o.webp",
+    title: "제목 8",
+    description: "사진에 대한 설명을 여기에 작성.",
+    caption: "station",
+  },
+  {
+    src: "/files/blog/diary/25-01-tokyo/01-21/2FB7B575-4946-4B65-84E8-B22971567840_1_105_c.webp",
+    title: "제목 9",
+    description: "사진에 대한 설명을 여기에 작성.",
+  },
+  {
+    src: "/files/blog/diary/25-01-tokyo/01-21/310CE3E9-2005-46F0-9E0C-A08ADC3D907B_1_105_c.webp",
+    title: "제목 10",
+    description: "사진에 대한 설명을 여기에 작성.",
+    caption: "night walk",
+  },
+];
 
 <TableOfContents>
 - 루트 및 방문한 곳
@@ -21,54 +80,14 @@ import TableOfContents from '@/components/Blog/TableOfContents.astro';
 
 ### 루트
 
-{/* <ImageLoader src="/files/blog/diary/25-01-tokyo/01-21/route.png" alt="route" /> */}
-
 ### 방문한 곳
 
 -
 
 ## 일정
 
-###
+둘째 날 기록은 우선 사진 중심으로 정리한다.
 
-<PolaroidGallery
-  items={[
-    {
-      src: "/files/blog/diary/25-01-tokyo/01-21/00B7A56D-B822-4EC0-ACC0-27EACC9C7143_1_105_c.webp",
-      title: "제목 1",
-      description: "사진에 대한 설명을 여기에 작성.",
-      caption: "tokyo, 01-21",
-    },
-    {
-      src: "/files/blog/diary/25-01-tokyo/01-21/0406A399-3632-4B72-B8CE-310C3F898E6E_1_102_o.webp",
-      title: "제목 2",
-      description: "사진에 대한 설명을 여기에 작성.",
-      caption: "morning",
-    },
-    {
-      src: "/files/blog/diary/25-01-tokyo/01-21/110E953F-FCC6-4650-8E3A-636CC5F03D42_1_105_c.webp",
-      title: "제목 3",
-      description: "사진에 대한 설명을 여기에 작성.",
-      caption: "street",
-    },
-    {
-      src: "/files/blog/diary/25-01-tokyo/01-21/12379520-B4DF-471A-8C6D-F1579AE2D357_1_105_c.webp",
-      title: "제목 4",
-      description: "사진에 대한 설명을 여기에 작성.",
-    },
-    {
-      src: "/files/blog/diary/25-01-tokyo/01-21/142E45A6-1053-4BE2-A5EA-6FF1DC912D74_1_102_o.webp",
-      title: "제목 5",
-      description: "사진에 대한 설명을 여기에 작성.",
-      caption: "shibuya",
-    },
-    {
-      src: "/files/blog/diary/25-01-tokyo/01-21/1AC0FB94-A4D6-46CC-8117-46B40BA066B6_1_102_o.webp",
-      title: "제목 6",
-      description: "사진에 대한 설명을 여기에 작성.",
-    },
-  ]}
-/>
-
+<PolaroidGalleryScrapbook items={dayTwoItems} />
 
 여기에 섹션 본문을 작성.

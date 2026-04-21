@@ -22,6 +22,12 @@ type ImageLightboxProps = {
 const SWIPE_THRESHOLD = 50;
 const ZOOM_SCALE = 2;
 
+function normalizeIndex(index: number, length: number) {
+  if (length <= 0)
+    return 0;
+  return ((index % length) + length) % length;
+}
+
 const slideVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? '100%' : '-100%',
@@ -51,30 +57,32 @@ export function ImageLightbox({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
-  const canPrev = index > 0;
-  const canNext = index < images.length - 1;
+  const canNavigate = images.length > 1;
 
   const goTo = useCallback(
-    (newIndex: number) => {
-      if (newIndex < 0 || newIndex >= images.length)
+    (newIndex: number, navDirection?: -1 | 1) => {
+      if (images.length === 0)
         return;
-      setDirection(newIndex > index ? 1 : -1);
+      const nextIndex = normalizeIndex(newIndex, images.length);
+      if (nextIndex === index && images.length === 1)
+        return;
+      setDirection(navDirection ?? (nextIndex > index ? 1 : -1));
       setZoomed(false);
       setDragOffset({ x: 0, y: 0 });
-      onIndexChange(newIndex);
+      onIndexChange(nextIndex);
     },
     [index, images.length, onIndexChange],
   );
 
   const goPrev = useCallback(() => {
-    if (canPrev)
-      goTo(index - 1);
-  }, [canPrev, goTo, index]);
+    if (canNavigate)
+      goTo(index - 1, -1);
+  }, [canNavigate, goTo, index]);
 
   const goNext = useCallback(() => {
-    if (canNext)
-      goTo(index + 1);
-  }, [canNext, goTo, index]);
+    if (canNavigate)
+      goTo(index + 1, 1);
+  }, [canNavigate, goTo, index]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -197,7 +205,7 @@ export function ImageLightbox({
           )}
 
           {/* Prev button */}
-          {canPrev && (
+          {canNavigate && (
             <button
               type="button"
               onClick={(e) => {
@@ -211,7 +219,7 @@ export function ImageLightbox({
           )}
 
           {/* Next button */}
-          {canNext && (
+          {canNavigate && (
             <button
               type="button"
               onClick={(e) => {

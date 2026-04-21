@@ -1,0 +1,503 @@
+---
+import type { PolaroidImage } from './types';
+import TegakiRenderer from 'tegaki/astro';
+import caveatBundle from 'tegaki/fonts/caveat';
+
+interface Props {
+  items: PolaroidImage[];
+}
+
+const { items } = Astro.props;
+const isDenseLayout = items.length >= 9;
+
+function seeded(seed: number): number {
+  const x = Math.sin(seed * 63.117) * 15731.743;
+  return x - Math.floor(x);
+}
+
+function round4(value: number): number {
+  return Math.round(value * 10000) / 10000;
+}
+
+function pickRotate(index: number): number {
+  return round4(-13 + seeded(index + 11) * 26);
+}
+
+function pickShift(index: number): number {
+  return round4((seeded(index + 71) - 0.5) * 28);
+}
+
+function pickLift(index: number): number {
+  return round4((seeded(index + 131) - 0.5) * 24);
+}
+
+function pickOverlap(index: number): number {
+  if (index === 0)
+    return 0;
+  return round4(-4.4 - seeded(index + 191) * 3.8);
+}
+
+function pickMobileShift(index: number): number {
+  return round4((seeded(index + 251) - 0.5) * 26);
+}
+
+function pickMobileRotate(index: number): number {
+  return round4(-9 + seeded(index + 311) * 18);
+}
+
+function pickNoteRotate(index: number): number {
+  return round4(-8 + seeded(index + 371) * 16);
+}
+---
+
+<TegakiRenderer font={caveatBundle} bundle loadFont />
+
+<div
+  class="scrapbook-polaroid-shell"
+  data-no-lightbox
+  data-polaroid-gallery="scrapbook"
+  data-density={isDenseLayout ? 'dense' : 'regular'}
+  data-items={JSON.stringify(items)}
+>
+  <div class="scrapbook-polaroid-stage">
+    <div class="scrapbook-polaroid-stage__board">
+      {items.map((item, index) => {
+        const rotate = item.rotate ?? pickRotate(index);
+        const shift = pickShift(index);
+        const lift = pickLift(index);
+        const overlap = pickOverlap(index);
+        const mobileShift = pickMobileShift(index);
+        const mobileRotate = pickMobileRotate(index);
+        const noteRotate = pickNoteRotate(index);
+
+        return (
+          <button
+            type="button"
+            class="scrapbook-polaroid-card"
+            data-polaroid-card
+            data-polaroid-index={index}
+            aria-label={item.title}
+            style={`--sb-rotate:${rotate}deg; --sb-shift:${shift}%; --sb-lift:${lift}px; --sb-overlap:${overlap}rem; --sb-mobile-shift:${mobileShift}%; --sb-mobile-rotate:${mobileRotate}deg; --sb-note-rotate:${noteRotate}deg; z-index:${40 - index};`}
+          >
+            <span class="scrapbook-polaroid-card__note" aria-hidden="true"></span>
+            <span class="scrapbook-polaroid-card__tape scrapbook-polaroid-card__tape--left" aria-hidden="true"></span>
+            <span class="scrapbook-polaroid-card__tape scrapbook-polaroid-card__tape--right" aria-hidden="true"></span>
+            <div class="scrapbook-polaroid-card__body">
+              <div class="scrapbook-polaroid-card__photo">
+                <img
+                  src={item.src}
+                  alt={item.alt ?? item.title}
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+              <div class="scrapbook-polaroid-card__caption-row">
+                {item.caption && (
+                  <div class="scrapbook-polaroid-card__caption">
+                    <TegakiRenderer
+                      class="scrapbook-handwriting"
+                      data-scrapbook-caption
+                      font="Caveat Tegaki 3dc76002"
+                      text={item.caption}
+                      time={{ mode: 'uncontrolled', delay: round4(index * 0.18) }}
+                      quality={{ clipText: 1.35, pixelRatio: 1.05 }}
+                      showOverlay
+                      style="font-size: clamp(1.08rem, 2.6vw, 1.42rem); line-height: 1.02; color: inherit;"
+                    />
+                  </div>
+                )}
+                <span class="scrapbook-polaroid-card__tag">#{String(index + 1).padStart(2, '0')}</span>
+              </div>
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  </div>
+</div>
+
+<style>
+  .scrapbook-polaroid-shell {
+    --sb-ink: #57534e;
+    --sb-muted: rgba(87, 83, 78, 0.74);
+    --sb-paper: #f6f1e8;
+    --sb-note: linear-gradient(180deg, rgba(249, 249, 247, 0.96), rgba(236, 235, 232, 0.92));
+    --sb-tape: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(214, 211, 209, 0.68));
+    --sb-card-shadow: 0 24px 32px rgba(39, 39, 42, 0.14), 0 4px 12px rgba(39, 39, 42, 0.08);
+    --sb-note-shadow: 0 12px 20px rgba(39, 39, 42, 0.09);
+    --sb-photo-bg: #d6d3d1;
+    --sb-paper-speck: rgba(120, 94, 59, 0.08);
+    --sb-paper-wear: rgba(176, 148, 107, 0.18);
+    --sb-film-glow: rgba(255, 204, 136, 0.12);
+    --sb-film-shadow: rgba(52, 30, 12, 0.2);
+    --sb-board-gap-y: 1.35rem;
+    --sb-board-gap-x: 0.28rem;
+    --sb-board-pad-top: 0.35rem;
+    --sb-board-pad-side: 0.04rem;
+    --sb-board-pad-bottom: 0.45rem;
+    --sb-card-width: clamp(16.2rem, 24.8vw, 19.1rem);
+    --sb-mobile-card-width: min(43.5vw, 10.7rem);
+    --sb-mobile-gap-y: 0.48rem;
+    --sb-mobile-gap-x: 0.08rem;
+    --sb-mobile-lift-row-two: -1.35rem;
+    --sb-mobile-lift-row-three: -1rem;
+    width: min(100vw - 1rem, 76rem);
+    margin: 2rem 0 3.2rem;
+    margin-left: calc(50% - min(100vw - 1rem, 76rem) / 2);
+  }
+
+  .scrapbook-polaroid-shell[data-density='dense'] {
+    --sb-board-gap-y: 1.05rem;
+    --sb-board-gap-x: 0.14rem;
+    --sb-board-pad-top: 0.1rem;
+    --sb-card-width: clamp(14.2rem, 21.2vw, 16.4rem);
+    --sb-mobile-card-width: min(38.5vw, 9.35rem);
+    --sb-mobile-gap-y: 0.24rem;
+    --sb-mobile-gap-x: 0.04rem;
+    --sb-mobile-lift-row-two: -1.6rem;
+    --sb-mobile-lift-row-three: -1.22rem;
+  }
+
+  :global(.dark) .scrapbook-polaroid-shell,
+  :global([data-theme='dark']) .scrapbook-polaroid-shell {
+    --sb-ink: #f5f5f5;
+    --sb-muted: rgba(228, 228, 231, 0.72);
+    --sb-paper: #18181b;
+    --sb-note: linear-gradient(180deg, rgba(57, 61, 69, 0.78), rgba(29, 31, 37, 0.88));
+    --sb-tape: linear-gradient(180deg, rgba(99, 102, 110, 0.52), rgba(63, 65, 72, 0.34));
+    --sb-card-shadow: 0 22px 32px rgba(0, 0, 0, 0.32), 0 4px 12px rgba(0, 0, 0, 0.2);
+    --sb-note-shadow: 0 12px 20px rgba(0, 0, 0, 0.24);
+    --sb-photo-bg: #3f3f46;
+    --sb-paper-speck: rgba(255, 240, 212, 0.04);
+    --sb-paper-wear: rgba(255, 220, 171, 0.08);
+    --sb-film-glow: rgba(221, 160, 84, 0.08);
+    --sb-film-shadow: rgba(0, 0, 0, 0.28);
+  }
+
+  .scrapbook-polaroid-stage {
+    position: relative;
+    overflow: visible;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .scrapbook-polaroid-stage__board {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--sb-board-gap-y) var(--sb-board-gap-x);
+    padding: var(--sb-board-pad-top) var(--sb-board-pad-side) var(--sb-board-pad-bottom);
+  }
+
+  .scrapbook-polaroid-card {
+    position: relative;
+    width: var(--sb-card-width);
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    transform: translate(var(--sb-shift), var(--sb-lift)) rotate(var(--sb-rotate));
+    transition:
+      transform 360ms cubic-bezier(0.16, 0.84, 0.32, 1),
+      filter 240ms ease;
+  }
+
+  .scrapbook-polaroid-card:hover {
+    transform: translate(var(--sb-shift), calc(var(--sb-lift) - 8px)) rotate(calc(var(--sb-rotate) * 0.15)) scale(1.04);
+    filter: saturate(1.08) contrast(1.02);
+    z-index: 90 !important;
+  }
+
+  .scrapbook-polaroid-card:focus,
+  .scrapbook-polaroid-card:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .scrapbook-polaroid-card__note {
+    position: absolute;
+    inset: 0.9rem 0.8rem 0.8rem 0.5rem;
+    border-radius: 0.3rem;
+    background: var(--sb-note);
+    box-shadow: var(--sb-note-shadow);
+    transform: translate(-0.5rem, 0.45rem) rotate(var(--sb-note-rotate));
+  }
+
+  .scrapbook-polaroid-card__tape {
+    position: absolute;
+    top: -0.5rem;
+    z-index: 3;
+    height: 1.2rem;
+    width: 4rem;
+    background: var(--sb-tape);
+    mix-blend-mode: multiply;
+    opacity: 0.9;
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--sb-ink) 12%, transparent);
+  }
+
+  .scrapbook-polaroid-card__tape--left {
+    left: 1rem;
+    transform: rotate(-9deg);
+  }
+
+  .scrapbook-polaroid-card__tape--right {
+    right: 1.1rem;
+    width: 3.3rem;
+    transform: rotate(12deg);
+  }
+
+  .scrapbook-polaroid-card__body {
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    border-radius: 0.2rem;
+    background: var(--sb-paper);
+    padding: 0.8rem 0.8rem 0.95rem;
+    box-shadow: var(--sb-card-shadow);
+  }
+
+  .scrapbook-polaroid-card__body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 18% 14%, var(--sb-paper-wear), transparent 30%),
+      radial-gradient(circle at 82% 78%, color-mix(in srgb, var(--sb-paper-speck) 92%, transparent), transparent 34%),
+      linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--sb-paper-speck) 82%, transparent) 48%, transparent 100%);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .scrapbook-polaroid-card__photo {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--sb-photo-bg);
+    box-shadow: inset 0 0 0 1px rgba(82, 82, 91, 0.08);
+  }
+
+  .scrapbook-polaroid-card__photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 22% 18%, var(--sb-film-glow), transparent 34%),
+      radial-gradient(circle at 78% 76%, var(--sb-film-shadow), transparent 42%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(26, 18, 9, 0.16));
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .scrapbook-polaroid-card__photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    object-fit: cover;
+    filter: sepia(0.18) saturate(0.84) contrast(0.92) brightness(0.96) hue-rotate(-6deg);
+    transform: scale(1.03);
+  }
+
+  .scrapbook-polaroid-card__caption-row {
+    position: relative;
+    display: block;
+    min-height: 3.9rem;
+    padding-top: 0.8rem;
+    color: var(--sb-ink);
+  }
+
+  .scrapbook-polaroid-card__caption {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding-right: 2.8rem;
+  }
+
+  .scrapbook-polaroid-card__tag {
+    position: absolute;
+    right: 0;
+    bottom: 0.05rem;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: var(--sb-muted);
+    opacity: 1;
+  }
+
+  .scrapbook-handwriting {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 1.45rem;
+    color: var(--sb-ink);
+    text-shadow: 0 1px 0 color-mix(in srgb, var(--sb-ink) 12%, transparent);
+  }
+
+  .scrapbook-handwriting :global([data-tegaki='overlay']) {
+    color: color-mix(in srgb, var(--sb-ink) 32%, transparent) !important;
+    -webkit-text-fill-color: color-mix(in srgb, var(--sb-ink) 32%, transparent) !important;
+  }
+
+  @media (max-width: 768px) {
+    .scrapbook-polaroid-shell {
+      width: min(100vw - 0.55rem, 24.5rem);
+      margin-left: calc(50% - min(100vw - 0.55rem, 24.5rem) / 2);
+      margin-bottom: 2.4rem;
+    }
+
+    .scrapbook-polaroid-stage {
+      padding: 0;
+    }
+
+    .scrapbook-polaroid-stage__board {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: var(--sb-mobile-gap-y) var(--sb-mobile-gap-x);
+      padding: 0.05rem 0 0.38rem;
+    }
+
+    .scrapbook-polaroid-card {
+      display: block;
+      width: var(--sb-mobile-card-width);
+      margin: 0;
+      transform: translateX(var(--sb-mobile-shift)) rotate(var(--sb-mobile-rotate));
+    }
+
+    .scrapbook-polaroid-card:nth-child(n + 3) {
+      margin-top: var(--sb-mobile-lift-row-two);
+    }
+
+    .scrapbook-polaroid-card:nth-child(n + 5) {
+      margin-top: var(--sb-mobile-lift-row-three);
+    }
+
+    .scrapbook-polaroid-shell[data-density='dense'] .scrapbook-polaroid-stage__board {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      justify-content: unset;
+      align-items: start;
+      gap: 0.14rem 0;
+      padding: 0.02rem 0 0.22rem;
+    }
+
+    .scrapbook-polaroid-shell[data-density='dense'] .scrapbook-polaroid-card {
+      width: auto;
+      margin-top: 0;
+      justify-self: center;
+      grid-column: span 4;
+      transform: translateX(calc(var(--sb-mobile-shift) * 0.58)) rotate(calc(var(--sb-mobile-rotate) * 0.82));
+    }
+
+    .scrapbook-polaroid-shell[data-density='dense'] .scrapbook-polaroid-card:nth-child(-n + 4) {
+      grid-column: span 3;
+    }
+
+    .scrapbook-polaroid-shell[data-density='dense'] .scrapbook-polaroid-card:nth-child(n + 5):nth-child(-n + 7) {
+      margin-top: -1.55rem;
+    }
+
+    .scrapbook-polaroid-shell[data-density='dense'] .scrapbook-polaroid-card:nth-child(n + 8) {
+      margin-top: -1.18rem;
+    }
+
+    .scrapbook-polaroid-shell[data-density='dense'] .scrapbook-polaroid-card__caption {
+      padding-right: 0;
+    }
+
+    .scrapbook-polaroid-shell[data-density='dense'] .scrapbook-polaroid-card__caption-row {
+      min-height: 1.85rem;
+      padding-top: 0.34rem;
+    }
+
+    .scrapbook-polaroid-shell[data-density='dense'] .scrapbook-polaroid-card__tag {
+      position: static;
+      display: block;
+      margin-top: 0.08rem;
+      text-align: right;
+      font-size: 0.48rem;
+      letter-spacing: 0.08em;
+    }
+
+    .scrapbook-polaroid-shell[data-density='dense'] .scrapbook-polaroid-card__body {
+      padding: 0.42rem 0.42rem 0.56rem;
+    }
+
+    .scrapbook-polaroid-shell[data-density='dense'] .scrapbook-handwriting {
+      min-height: 0.96rem;
+    }
+
+    .scrapbook-polaroid-card__body {
+      padding: 0.55rem 0.55rem 0.7rem;
+    }
+
+    .scrapbook-polaroid-card__caption-row {
+      min-height: 2.45rem;
+      padding-top: 0.48rem;
+    }
+
+    .scrapbook-polaroid-card__tag {
+      right: 0;
+      bottom: 0;
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+    }
+
+    .scrapbook-handwriting {
+      min-height: 1.15rem;
+      justify-content: flex-start;
+    }
+  }
+</style>
+
+<script>
+  import { openPolaroidLightbox } from '@/store/polaroid';
+
+  function replayCaption(button: HTMLButtonElement) {
+    const caption = button.querySelector<HTMLElement>('[data-scrapbook-caption]');
+    const engine = (caption as HTMLElement & { __tegakiEngine?: { restart: () => void } | undefined }).__tegakiEngine;
+    engine?.restart();
+  }
+
+  if (!(window as Window & { __scrapbookTegakiReadyBound?: boolean }).__scrapbookTegakiReadyBound) {
+    (window as Window & { __scrapbookTegakiReadyBound?: boolean }).__scrapbookTegakiReadyBound = true;
+    document.addEventListener('tegaki:ready', (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (!target.closest('[data-polaroid-gallery="scrapbook"]')) return;
+
+      const detail = (event as CustomEvent<{ engine?: { restart: () => void } }>).detail;
+      if (!detail?.engine) return;
+      (target as HTMLElement & { __tegakiEngine?: { restart: () => void } }).__tegakiEngine = detail.engine;
+    });
+  }
+
+  function bindScrapbook(root: ParentNode = document) {
+    root.querySelectorAll<HTMLElement>('[data-polaroid-gallery="scrapbook"]').forEach((gallery) => {
+      if (gallery.dataset.polaroidBound === 'true') return;
+      gallery.dataset.polaroidBound = 'true';
+      const items = JSON.parse(gallery.dataset.items ?? '[]');
+
+      gallery.querySelectorAll<HTMLButtonElement>('[data-polaroid-index]').forEach((button) => {
+        if (button.dataset.scrapbookBound === 'true') return;
+        button.dataset.scrapbookBound = 'true';
+
+        button.addEventListener('click', () => {
+          const index = Number.parseInt(button.dataset.polaroidIndex ?? '0', 10);
+          replayCaption(button);
+          openPolaroidLightbox(items, index);
+        });
+        button.addEventListener('mouseenter', () => replayCaption(button));
+        button.addEventListener('focus', () => replayCaption(button));
+        button.addEventListener('touchstart', () => replayCaption(button), { passive: true });
+      });
+    });
+  }
+
+  bindScrapbook();
+  document.addEventListener('astro:page-load', () => bindScrapbook());
+</script>
