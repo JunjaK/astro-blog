@@ -1,0 +1,67 @@
+.lyrics-block {
+  --lyrics-translation-color: var(--muted-foreground);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.lyrics-toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.lyrics-stanza {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  outline: none;
+}
+
+.lyrics-stanza:hover,
+.lyrics-stanza:focus-visible {
+  background-color: color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+.lyrics-stanza .ja {
+  line-height: 2;
+  font-size: 1rem;
+}
+
+.lyrics-stanza .ja rt {
+  display: none;
+  font-size: 0.65em;
+  color: var(--muted-foreground);
+}
+
+.lyrics-stanza.is-expanded .ja rt {
+  display: revert;
+}
+
+.lyrics-stanza .ko {
+  margin-top: 0.75rem;
+  padding-left: 0.875rem;
+  border-left: 2px solid var(--border);
+  color: var(--lyrics-translation-color);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.lyrics-stanza .chevron {
+  display: inline-flex;
+  margin-left: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.lyrics-stanza.is-expanded .chevron {
+  transform: rotate(180deg);
+}
+
+.lyrics-stanza-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
