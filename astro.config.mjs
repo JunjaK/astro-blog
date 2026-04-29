@@ -20,6 +20,7 @@ import rehypeKatex from 'rehype-katex';
 
 import remarkMath from 'remark-math';
 
+import remarkLyricsBlock from './src/plugins/remarkLyricsBlock.mjs';
 import remarkMermaidToHtml from './src/plugins/remarkMermaidToHtml.mjs';
 
 // https://astro.build/config
@@ -48,7 +49,7 @@ export default defineConfig({
     service: passthroughImageService(),
   },
   markdown: {
-    remarkPlugins: [remarkMermaidToHtml, remarkMath],
+    remarkPlugins: [remarkMermaidToHtml, remarkMath, remarkLyricsBlock],
     rehypePlugins: [rehypeKatex],
     syntaxHighlight: false,
   },
