@@ -11,6 +11,11 @@ const blog = defineCollection({
     tags: z.array(z.string()).optional(),
     updated: z.coerce.date().optional(),
     description: z.string().optional(),
+    artist: z.string().optional(),
+    album: z.string().optional(),
+    releaseYear: z.number().optional(),
+    appleMusicUrl: z.string().url().optional(),
+    youtubeMusicUrl: z.string().url().optional(),
   }),
 });
 
