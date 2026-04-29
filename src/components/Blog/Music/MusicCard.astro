@@ -1,0 +1,65 @@
+---
+interface Props {
+  appleMusicUrl: string;
+  youtubeMusicUrl?: string;
+  artist?: string;
+  album?: string;
+  releaseYear?: number;
+}
+
+const {
+  appleMusicUrl,
+  youtubeMusicUrl,
+  artist,
+  album,
+  releaseYear,
+} = Astro.props;
+
+const embedSrc = appleMusicUrl.replace(
+  /^https:\/\/music\.apple\.com\//,
+  'https://embed.music.apple.com/',
+);
+
+const captionParts = [artist, album, releaseYear].filter(Boolean);
+const caption = captionParts.join(' · ');
+---
+
+<div class="music-card my-8 flex flex-col gap-3">
+  <div class="rounded-xl overflow-hidden border border-border">
+    <iframe
+      src={embedSrc}
+      allow="autoplay *; encrypted-media *;"
+      loading="lazy"
+      width="100%"
+      height="175"
+      frameborder="0"
+      title={`${artist ?? ''} ${album ?? ''} - Apple Music`}
+    />
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <a
+      class="inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-sm"
+      href={appleMusicUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Apple Music ↗
+    </a>
+
+    {youtubeMusicUrl && (
+      <a
+        class="inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-sm"
+        href={youtubeMusicUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        YouTube Music ↗
+      </a>
+    )}
+  </div>
+
+  {caption && (
+    <p class="text-sm text-muted-foreground">{caption}</p>
+  )}
+</div>
