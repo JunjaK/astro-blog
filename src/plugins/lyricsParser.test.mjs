@@ -8,8 +8,13 @@ test('parses single stanza with ruby and translation', () => {
 걷기 시작한`;
   const result = parseLyrics(input);
   assert.equal(result.length, 1);
-  assert.equal(result[0].ja, '<ruby>歩<rt>あゆ</rt></ruby>き<ruby>始<rt>はじ</rt></ruby>めた');
-  assert.equal(result[0].ko, '걷기 시작한');
+  assert.deepEqual(result[0].ja, [[
+    { k: '歩', r: 'あゆ' },
+    'き',
+    { k: '始', r: 'はじ' },
+    'めた',
+  ]]);
+  assert.deepEqual(result[0].ko, ['걷기 시작한']);
 });
 
 test('splits multiple stanzas on blank lines', () => {
@@ -22,19 +27,19 @@ test('splits multiple stanzas on blank lines', () => {
 달린다`;
   const result = parseLyrics(input);
   assert.equal(result.length, 2);
-  assert.equal(result[0].ko, '걷는다');
-  assert.equal(result[1].ko, '달린다');
+  assert.deepEqual(result[0].ko, ['걷는다']);
+  assert.deepEqual(result[1].ko, ['달린다']);
 });
 
-test('preserves multi-line stanza with <br/>', () => {
+test('preserves multi-line stanza as line arrays', () => {
   const input = `line1
 line2
 ||
 줄1
 줄2`;
   const result = parseLyrics(input);
-  assert.equal(result[0].ja, 'line1<br/>line2');
-  assert.equal(result[0].ko, '줄1<br/>줄2');
+  assert.deepEqual(result[0].ja, [['line1'], ['line2']]);
+  assert.deepEqual(result[0].ko, ['줄1', '줄2']);
 });
 
 test('preserves full-width spaces and punctuation', () => {
@@ -42,7 +47,14 @@ test('preserves full-width spaces and punctuation', () => {
 ||
 어디까지 가는 걸까`;
   const result = parseLyrics(input);
-  assert.match(result[0].ja, /どこまで<ruby>往<rt>ゆ<\/rt><\/ruby>くの　<ruby>何<rt>なに<\/rt><\/ruby>の<ruby>為<rt>ため<\/rt><\/ruby>/);
+  assert.deepEqual(result[0].ja, [[
+    'どこまで',
+    { k: '往', r: 'ゆ' },
+    'くの　',
+    { k: '何', r: 'なに' },
+    'の',
+    { k: '為', r: 'ため' },
+  ]]);
 });
 
 test('honors backslash-escaped pipe', () => {
@@ -50,7 +62,7 @@ test('honors backslash-escaped pipe', () => {
 ||
 ko`;
   const result = parseLyrics(input);
-  assert.equal(result[0].ja, 'a|b');
+  assert.deepEqual(result[0].ja, [['a|b']]);
 });
 
 test('throws on stanza missing || separator', () => {
@@ -84,6 +96,6 @@ test('trims leading and trailing whitespace', () => {
   const input = `\n\n  a\n||\n  b\n\n`;
   const result = parseLyrics(input);
   assert.equal(result.length, 1);
-  assert.equal(result[0].ja, '  a');
-  assert.equal(result[0].ko, '  b');
+  assert.deepEqual(result[0].ja, [['  a']]);
+  assert.deepEqual(result[0].ko, ['  b']);
 });

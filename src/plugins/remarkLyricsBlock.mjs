@@ -1,5 +1,19 @@
+import { parse as acornParse } from 'acorn';
 import { visit } from 'unist-util-visit';
 import { parseLyrics } from './lyricsParser.mjs';
+
+function buildExpressionEstree(sourceExpression) {
+  const program = acornParse(`(${sourceExpression})`, {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  });
+  const expression = program.body[0].expression;
+  return {
+    type: 'Program',
+    body: [{ type: 'ExpressionStatement', expression }],
+    sourceType: 'module',
+  };
+}
 
 function remarkLyricsBlock() {
   return function transformer(tree, file) {
@@ -25,6 +39,8 @@ function remarkLyricsBlock() {
         throw new Error(`[remarkLyricsBlock] ${filename}: ${err.message}`);
       }
 
+      const stanzasSource = JSON.stringify(stanzas);
+
       const replacement = {
         type: 'mdxJsxFlowElement',
         name: 'Lyrics',
@@ -34,7 +50,10 @@ function remarkLyricsBlock() {
             name: 'stanzas',
             value: {
               type: 'mdxJsxAttributeValueExpression',
-              value: JSON.stringify(stanzas),
+              value: stanzasSource,
+              data: {
+                estree: buildExpressionEstree(stanzasSource),
+              },
             },
           },
           {

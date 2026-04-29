@@ -1,18 +1,42 @@
 import type { KeyboardEvent } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useState } from 'react';
+import { Fragment, useCallback, useState } from 'react';
 import { Icon } from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import './lyrics.css';
 
+type RubyToken = { k: string; r: string };
+type Token = string | RubyToken;
 type Stanza = {
-  ja: string;
-  ko: string;
+  ja: Token[][];
+  ko: string[];
 };
 
 type Props = {
   stanzas: Stanza[];
 };
+
+function isRuby(token: Token): token is RubyToken {
+  return typeof token !== 'string';
+}
+
+function JaLine({ tokens }: { tokens: Token[] }) {
+  return (
+    <>
+      {tokens.map((token, i) =>
+        isRuby(token)
+          ? (
+              <ruby key={i}>
+                {token.k}
+                <rt>{token.r}</rt>
+              </ruby>
+            )
+          : (
+              <Fragment key={i}>{token}</Fragment>
+            ))}
+    </>
+  );
+}
 
 export default function Lyrics({ stanzas }: Props) {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
@@ -72,10 +96,14 @@ export default function Lyrics({ stanzas }: Props) {
             onKeyDown={(event) => onKeyDown(event, index)}
           >
             <div className="lyrics-stanza-header">
-              <div
-                className="ja flex-1"
-                dangerouslySetInnerHTML={{ __html: stanza.ja }}
-              />
+              <div className="ja flex-1">
+                {stanza.ja.map((line, i) => (
+                  <Fragment key={i}>
+                    {i > 0 && <br />}
+                    <JaLine tokens={line} />
+                  </Fragment>
+                ))}
+              </div>
               <span className="chevron" aria-hidden="true">
                 <Icon icon="mingcute:down-line" width={20} height={20} />
               </span>
@@ -91,10 +119,14 @@ export default function Lyrics({ stanzas }: Props) {
                   transition={{ duration: 0.2, ease: 'easeOut' }}
                   style={{ overflow: 'hidden' }}
                 >
-                  <div
-                    className="ko"
-                    dangerouslySetInnerHTML={{ __html: stanza.ko }}
-                  />
+                  <div className="ko">
+                    {stanza.ko.map((line, i) => (
+                      <Fragment key={i}>
+                        {i > 0 && <br />}
+                        {line}
+                      </Fragment>
+                    ))}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
