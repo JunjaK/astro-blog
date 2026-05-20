@@ -48,6 +48,12 @@ function pickMobileRotate(index: number): number {
 function pickNoteRotate(index: number): number {
   return round4(-8 + seeded(index + 371) * 16);
 }
+
+function resolveThumb(item: PolaroidImage): string {
+  if (typeof item.thumb === 'string') return item.thumb;
+  if (item.thumb === true) return item.src.replace(/\.[^./]+$/, '-thumb.webp');
+  return item.src;
+}
 ---
 
 <TegakiRenderer font={caveatBundle} bundle loadFont />
@@ -85,7 +91,7 @@ function pickNoteRotate(index: number): number {
             <div class="scrapbook-polaroid-card__body">
               <div class="scrapbook-polaroid-card__photo">
                 <img
-                  src={item.src}
+                  src={resolveThumb(item)}
                   alt={item.alt ?? item.title}
                   loading="eager"
                   decoding="async"

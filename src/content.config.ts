@@ -14,8 +14,8 @@ const blog = defineCollection({
     artist: z.string().optional(),
     album: z.string().optional(),
     releaseYear: z.number().optional(),
-    appleMusicUrl: z.string().url().optional(),
-    youtubeMusicUrl: z.string().url().optional(),
+    appleMusicUrl: z.url().optional(),
+    youtubeMusicUrl: z.url().optional(),
   }),
 });
 

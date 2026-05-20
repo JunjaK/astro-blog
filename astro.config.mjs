@@ -83,10 +83,9 @@ export default defineConfig({
       },
     ],
     ssr: {
-      noExternal: ['react-use', 'tegaki'],
+      noExternal: ['tegaki'],
     },
     optimizeDeps: {
-      include: ['react-use'],
       exclude: ['tegaki', 'tegaki/react', 'tegaki/fonts/caveat'],
     },
     css: {

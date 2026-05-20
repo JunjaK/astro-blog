@@ -1,6 +1,6 @@
 # Astro Blog - jun-devlog
 
-Personal developer blog built with Astro 5, featuring multi-framework islands (React 19, Vue 3.5, Svelte 5).
+Personal developer blog built with Astro 6, featuring multi-framework islands (React 19, Vue 3.5, Svelte 5).
 
 **Site:** https://www.jun-devlog.win
 **Node:** 24 (mise) | **Package Manager:** bun
@@ -158,7 +158,6 @@ playground: { title, duration, techStacks?, thumbnail?, description? }
 ## Notes
 
 - `@minpluto/zorn` requires custom registry: `.npmrc` has `@minpluto:registry=https://js.registry.sudovanilla.org/`
-- `react-use` needs `ssr.noExternal` + `optimizeDeps.include` in Vite config
 - SCSS mixed-decls warnings are suppressed via custom logger in astro.config.mjs
 - zod v4 is used as direct dependency; Astro ecosystem packages internally use their own zod v3
 - Image service is `passthroughImageService()` (no build-time optimization)

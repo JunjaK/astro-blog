@@ -19,6 +19,7 @@ export type PolaroidImage = {
   src: string;
   title: string;
   description: string;
+  thumb?: boolean | string;
   caption?: string;
   alt?: string;
   rotate?: number;

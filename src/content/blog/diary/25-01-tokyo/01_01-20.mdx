@@ -1,247 +1,250 @@
----
-title: 『25-01 도쿄여행』 1일차 - 몬자야키, 긴자, 우에노
-created: 2026-02-17
-tags: ['일본', '여행', '도쿄', '몬자야키', '긴자', '이토야 문구점', '아메요코 상점가', '히츠지']
-category: Diary
-thumbnail: /files/blog/diary/25-01-tokyo/assets/20250120_063147954_iOS-thumb.webp
----
-
-import PolaroidGalleryScrapbook from '@/components/Blog/DiaryGallery/PolaroidGalleryScrapbook.astro';
-import ImageLoader from '@/components/Blog/ImageLoader.astro';
-import TableOfContents from '@/components/Blog/TableOfContents.astro';
-
-export const purposeItems = [
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_020826538_iOS.webp",
-    title: "도쿄로 가는 길",
-    description: "공항에서 하루가 시작되던 순간. 이번 여행의 들뜬 공기와 아직 정돈되지 않은 긴장이 같이 남아 있던 장면이다.",
-    caption: "airport",
-    alt: "공항",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_035637959_iOS.webp",
-    title: "낯선 거리의 첫 컷",
-    description: "도쿄에 도착하고 처음 마주한 거리 풍경. 본격적인 일정이 시작되기 전의 차가운 공기를 기억하려고 남겼다.",
-    caption: "arrival",
-    alt: "거리",
-  },
-];
-
-export const monjaStreetItems = [
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_045235359_iOS.webp",
-    title: "츠키시마 몬쟈 스트리트",
-    description: "점심을 먹으러 향한 츠키시마의 첫 인상. 거리 전체가 몬쟈를 중심으로 돌아가는 느낌이었다.",
-    caption: "tsukishima",
-    alt: "츠키시마 몬쟈 스트리트",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_045428486_iOS.webp",
-    title: "모헤지 입구",
-    description: "웨이팅이 길기로 유명한 모헤지 앞. 운 좋게도 큰 대기 없이 바로 들어갈 수 있었다.",
-    caption: "moheji",
-    alt: "모헤지 입구",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_063147954_iOS.webp",
-    title: "가게 앞 풍경",
-    description: "식사를 마치고 다시 본 가게 입구. 배도 부르고 기분도 좋아서 사진이 더 넉넉하게 보였다.",
-    caption: "after lunch",
-    alt: "모헤지 입구2",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_052312067_iOS.webp",
-    title: "시라코 버터 소테",
-    description: "추천 메뉴 중 하나였던 시라코 버터 소테. 강한 버터 향과 짭짤한 감칠맛이 먼저 기억난다.",
-    caption: "shirako",
-    alt: "시라코 버터 소테",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_052645307_iOS.webp",
-    title: "몬쟈 스트리트 풍경 1",
-    description: "식당 사이사이로 이어지던 거리 풍경. 여행 초반 특유의 설렘이 아직 많이 남아 있었다.",
-    caption: "street 01",
-    alt: "몬쟈 스트리트 풍경 1",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_055227328_iOS.webp",
-    title: "몬쟈 스트리트 풍경 2",
-    description: "식사를 마치고 천천히 걸으며 본 두 번째 거리 컷. 겨울 낮빛이 꽤 선명하게 남아 있다.",
-    caption: "street 02",
-    alt: "몬쟈 스트리트 풍경 2",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/CleanShot_2026-02-21_17.41.28@2x.png",
-    title: "몬쟈가 익어가던 순간",
-    description: "원래는 짧은 영상으로 남긴 장면이었는데, 철판 위에서 몬쟈가 익어가던 분위기를 포스터 컷으로 남겼다.",
-    caption: "sizzle",
-    alt: "몬쟈 굽는 영상",
-  },
-];
-
-export const ginzaItems = [
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_071735381_iOS.webp",
-    title: "이토야 문구점 외관",
-    description: "친구 부부와 헤어진 뒤 가장 먼저 향한 곳. 긴자에서 따로 시간을 쓰기로 하자마자 바로 이동했다.",
-    caption: "ginza",
-    alt: "이토야 문구점 외관",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_071842544_iOS.webp",
-    title: "이토야 문구점 내부 1",
-    description: "층마다 다른 테마로 채워진 문구점 내부. 작은 물건 하나까지도 구경하는 재미가 컸다.",
-    caption: "itoya 01",
-    alt: "이토야 문구점 내부 1",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_072058157_iOS.webp",
-    title: "이토야 문구점 내부 2",
-    description: "다양한 종이와 필기구를 보다 보니 예전에 문구류를 좋아하던 감각이 다시 살아나는 느낌이었다.",
-    caption: "itoya 02",
-    alt: "이토야 문구점 내부 2",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_072627988_iOS.webp",
-    title: "이토야 문구점 소품",
-    description: "문구류 말고도 방을 꾸밀 수 있는 소품이 많아서 한참을 머물렀다.",
-    caption: "details",
-    alt: "이토야 문구점 소품",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_075849553_iOS.webp",
-    title: "이토야 자석",
-    description: "참지 못하고 결국 사버린 작은 자석. 여행 뒤에도 기억을 남기는 역할을 하게 됐다.",
-    caption: "souvenir",
-    alt: "이토야 문구점 자석",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_080003757_iOS.webp",
-    title: "긴자 거리 풍경",
-    description: "문구점에서 나와 다시 본 긴자 거리. 쇼윈도와 사람들 흐름이 긴자답게 정돈돼 있었다.",
-    caption: "street",
-    alt: "긴자 거리 풍경",
-  },
-];
-
-export const uenoItems = [
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_093928366_iOS.webp",
-    title: "아메요코 상점가",
-    description: "저녁 일정 전 잠깐 둘러본 아메요코. 시장의 밀도와 소음이 단번에 체감되는 구간이었다.",
-    caption: "ueno",
-    alt: "아메요코 상점가",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_100950826_iOS.webp",
-    title: "아메요코 거리 풍경",
-    description: "가게 간판과 사람들 흐름이 겹쳐 있는 상점가의 공기. 조금 정신없지만 그래서 더 기억에 남았다.",
-    caption: "ameyoko",
-    alt: "아메요코 상점가 풍경",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_123329479_iOS.webp",
-    title: "히츠지 양고기",
-    description: "2차로 들어간 시노바즈 브류어리 히츠지에서 가장 인상 깊었던 양고기 한 접시.",
-    caption: "hitsuji",
-    alt: "히츠지 양고기",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_112504045_iOS.webp",
-    title: "히츠지 양 구이",
-    description: "이날 가장 만족한 메뉴. 부드럽게 구워낸 양고기가 생각보다 훨씬 맛있었다.",
-    caption: "lamb grill",
-    alt: "히츠지 양 구이",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_112507962_iOS.webp",
-    title: "히츠지 크래프트 맥주",
-    description: "양고기와 같이 마신 크래프트 맥주. 메뉴 조합이 꽤 잘 맞아서 만족도가 더 올라갔다.",
-    caption: "craft beer",
-    alt: "히츠지 크래프트 맥주",
-  },
-  {
-    src: "/files/blog/diary/25-01-tokyo/assets/20250120_121539492_iOS.webp",
-    title: "양 대창 스튜",
-    description: "나머지 메뉴는 평범했지만, 이렇게 한 장면으로 남겨두니 그날 식탁의 분위기까지 같이 떠오른다.",
-    caption: "stew",
-    alt: "히츠지 양 대창 스튜",
-  },
-];
-
-<TableOfContents>
-- 루트 및 방문한 곳
-  - 루트
-  - 방문한 곳
-- 일정
-  - 츠키시마 몬쟈 스트리트
-  - 긴자
-  - 우에노
-</TableOfContents>
-
-## 루트 및 방문한 곳
-
-### 루트
-
-<ImageLoader src="/files/blog/diary/25-01-tokyo/assets/CleanShot_2026-02-16_23.09.11@2x.png" alt="route" />
-
-### 방문한 곳
-
-- 우에노
-- 이케부쿠로
-- 긴자
--
-
-## 일정
-
-### 여행 목적
-
-<PolaroidGalleryScrapbook items={purposeItems} />
-
-친구가 저번에 같이 갔던 도쿄 여행 경험이 좋았는지, 신혼 여행으로 도쿄 가이드를 부탁받아버렸다.
-개백수였던 나는 딱히 할 일도 없었고, 친구따라 여행이나 가볼까하는 마음에 냉큼 승낙해서 결정된 1월 도쿄 여행.
-나중에 되니 좀 과소비했다는 생각이 들어 후회도 든다..
-(여행 준비기에는 테슬라 대박이라서 돈 써도 되겠지 하는 생각이 강했다. 지금은 안타깝게도 아니지만,)
-
-### 츠키시마 몬쟈 스트리트
-
-<PolaroidGalleryScrapbook items={monjaStreetItems} />
-
-친구가 도쿄의 몬자야키를 먹어보고 싶다고 해서 찾은 가게.
-츠키시마 몬쟈 스트리트의 가장 유명한 모헤지에 방문했다.
-
-운 좋게도 웨이팅 없이 바로 들어가서 주문을 할 수 있었는데, 사람이 많아서 준비되는데 시간이 오래 걸렸다.
-시킨 것은 추천 목록에 있던 멘타이 몬쟈와 고모쿠 몬쟈, 시라코 버터 소테 구이.
-특이하게도 지콘도 판매하고 있길래 못참고 구매했다.
-
-맛은 몬쟈 중에서도 맛있는 맛. 특히 누룽지라고 해야하나 타기 직전의 반죽을 긁어 먹는 것이 상당히 맛있었다.
-왜 구글 맵에서 7천개의 많은 리뷰를 가졌지만 4.8점이라는 높은 점수를 유지하고 있는지를 알 수 있는 가격과 맛, 그리고 서비스였다고 생각한다.
-
-### 긴자
-
-<PolaroidGalleryScrapbook items={ginzaItems} />
-
-긴자에서 친구 부부와는 헤어져 각자의 시간을 가지기로 하여, 나는 방문하고 싶었던 이토야 문구점으로 이동했다.
-구매욕을 자극하는 작은 소품들과 문구류가 나열되어 있어 구경하는 맛이 있는 문구점
-
-문구류 말고도 방을 꾸밀 수 있는 다양한 소품들도 있어서 참지 못하고 자석 하나를 구매했다.
-문구류는 중/고등학생때 관심을 많이 가졌었고, 대학 입학 이후로는 흥미를 많이 잃었는데, 다시 이렇게 다양한 종류를 보니 재미는 있었다.
-
-### 우에노
-
-<PolaroidGalleryScrapbook items={uenoItems} />
-
-다시 저녁에는 같이 밥을 먹기 위해 합류.
-타베로그 기준으로 평점 3.4 정도의 야키토리 이자카야인 야키톤 다이오 우에노점을 예약해서 방문 해봤는데,
-3.4치고 맛이 상당히 아쉬워서 꼬지 모둠 하나 + 생맥 한잔 씩만 시키고 런했다.
-구글도 4.3 정도로 나쁘지 않았는데..
-
-이후에는 아메요코 상점가를 좀 구경했는데, 아메카지 제품들이 꽤 많았고, 상당이 선정적인 티셔츠가 대놓고 걸려 있어서 좀 당황스러웠었다.
-외국인(동남아, 중국 등등)이 많이 장사를 하는 모습이 좀 신기하게 다가왔다.
-
-2차를 어디로 갈지 찾다가 발견한 가게가 여기 시노바즈 브류어리 히츠지.
-양 구이와 양 대창 스튜, 양 로스트 비프를 시켰는데, 나머지는 그냥저냥이었지만, 양 구이가 정말 맛있었다.
-조금 비싼 양고기 가게도 들러보았지면 여기가 좀 엄청 부드럽게 양고기를 잘 구워져 양 구이만 추가로 더 주문하고 그랬었다.
-양념도 맛있었고, 맥주도 크래프트 종류가 꽤 많아서 상당히 만족한 가게.
-
-오늘 하루는 이걸로 마무리. 아메요코 상점가에서 먹은 야키토리가 좀 아쉬웠지만, 양 구이가 맛있어서 만족
+---  
+title: 『25-01 도쿄여행』 1일차 - 몬자야키, 긴자, 우에노  
+created: 2026-02-17  
+tags: ['일본', '여행', '도쿄', '몬자야키', '긴자', '이토야 문구점', '아메요코 상점가', '히츠지']  
+category: Diary  
+thumbnail: /files/blog/diary/25-01-tokyo/assets/20250120_063147954_iOS-thumb.webp  
+---  
+  
+import PolaroidGalleryScrapbook from '@/components/Blog/DiaryGallery/PolaroidGalleryScrapbook.astro';  
+import ImageLoader from '@/components/Blog/ImageLoader.astro';  
+import TableOfContents from '@/components/Blog/TableOfContents.astro';  
+  
+export const purposeItems = [  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_020826538_iOS.webp",  
+    thumb: true,  
+    title: "나리타 공항",  
+    caption: "Narita Airport",  
+    alt: "공항",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_035637959_iOS.webp",  
+    thumb: true,  
+    title: "우에노 공원",  
+    caption: "Ueno Park",  
+    alt: "거리",  
+  },  
+];  
+  
+export const monjaStreetItems = [  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_045235359_iOS.webp",  
+    thumb: true,  
+    title: "츠키시마 몬쟈 스트리트",  
+    caption: "Tsukishima Monja Street",  
+    alt: "츠키시마 몬쟈 스트리트",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_045428486_iOS.webp",  
+    thumb: true,  
+    title: "모헤지 입구",  
+    caption: "Moheji Entrance",  
+    alt: "모헤지 입구",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_063147954_iOS.webp",  
+    thumb: true,  
+    title: "모헤지 입구2",  
+    caption: "Moheji Entrance 2",  
+    alt: "모헤지 입구2",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_052312067_iOS.webp",  
+    thumb: true,  
+    title: "몬자야키1",  
+    caption: "Monja Yaki 1",  
+    alt: "몬자야키1",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_052645307_iOS.webp",  
+    thumb: true,  
+    title: "몬자야키2",  
+    caption: "Monja Yaki 2",  
+    alt: "몬자야키2",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_055227328_iOS.webp",  
+    thumb: true,  
+    title: "버섯 버터 구이",  
+    caption: "Mushroom Butter Yaki",  
+    alt: "버섯 버터 구이",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/CleanShot_2026-02-21_17.41.28@2x.png",  
+    thumb: true,  
+    title: "몬자야키3",  
+    caption: "Monja Yaki 3",  
+    alt: "몬자야키3",  
+  },  
+];  
+  
+export const ginzaItems = [  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_071735381_iOS.webp",  
+    thumb: true,  
+    title: "이토야 문구점 외관",  
+    caption: "Ginza Itoya",  
+    alt: "이토야 문구점 외관",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_071842544_iOS.webp",  
+    thumb: true,  
+    title: "이토야 문구점 내부 1",  
+    caption: "Itoya Interior 1",  
+    alt: "이토야 문구점 내부 1",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_072058157_iOS.webp",  
+    thumb: true,  
+    title: "이토야 문구점 내부 2",  
+    caption: "Itoya Interior 2",  
+    alt: "이토야 문구점 내부 2",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_072627988_iOS.webp",  
+    thumb: true,  
+    title: "이토야 문구점 만년필",  
+    caption: "Pens",  
+    alt: "이토야 문구점 만년필",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_075849553_iOS.webp",  
+    thumb: true,  
+    title: "이토야 문구점 소품1",  
+    caption: "Details 1",  
+    alt: "이토야 문구점 소품1",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_080003757_iOS.webp",  
+    thumb: true,  
+    title: "이토야 문구점 소품2",  
+    caption: "Details 2",  
+    alt: "이토야 문구점 소품2",  
+  },  
+];  
+  
+export const uenoItems = [  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_093928366_iOS.webp",  
+    thumb: true,  
+    title: "아메요코 상점가",  
+    caption: "Ueno Ameyoko",  
+    alt: "아메요코 상점가",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_100950826_iOS.webp",  
+    thumb: true,  
+    title: "이자카야 야키토리",  
+    description: "타베로그 평점 좋아서 갔으나 그저 그런...",  
+    caption: "Yakitori",  
+    alt: "이자카야 야키토리",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_123329479_iOS.webp",  
+    thumb: true,  
+    title: "히츠지 입구",  
+    caption: "Hitsuji Entrance",  
+    alt: "히츠지 입구",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_112504045_iOS.webp",  
+    thumb: true,  
+    title: "양 대창 스튜",  
+    caption: "Lamb Stew",  
+    alt: "양 대창 스튜",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_112507962_iOS.webp",  
+    thumb: true,  
+    title: "양 로스트 비프",  
+    caption: "Lamb Roasted Beef",  
+    alt: "양 로스트 비프",  
+  },  
+  {  
+    src: "/files/blog/diary/25-01-tokyo/assets/20250120_121539492_iOS.webp",  
+    thumb: true,  
+    title: "양 구이",  
+    description: "양이 너무 부드러워 제일 맛있었다. 이 메뉴 하나로 여기 올만한 가치가 있다고 생각되는 메뉴.",  
+    caption: "Lamb Grilled",  
+    alt: "양 구이",  
+  },  
+];  
+  
+<TableOfContents>  
+- 루트 및 방문한 곳  
+  - 루트  
+  - 방문한 곳  
+- 일정  
+  - 츠키시마 몬쟈 스트리트  
+  - 긴자  
+  - 우에노  
+</TableOfContents>  
+  
+## 루트 및 방문한 곳  
+  
+### 루트  
+  
+<ImageLoader src="/files/blog/diary/25-01-tokyo/assets/CleanShot_2026-02-16_23.09.11@2x.png" alt="route" />  
+  
+### 방문한 곳  
+  
+- 우에노  
+- 이케부쿠로  
+- 긴자  
+- 아메요코 상점가 
+  
+## 일정  
+  
+### 여행 목적  
+  
+<PolaroidGalleryScrapbook items={purposeItems} />  
+  
+친구가 저번에 같이 갔던 도쿄 여행 경험이 좋았는지, 신혼 여행으로 도쿄 가이드를 부탁받아버렸다.  
+개백수였던 나는 딱히 할 일도 없었고, 친구따라 여행이나 가볼까하는 마음에 냉큼 승낙해서 결정된 1월 도쿄 여행.  
+나중에 되니 좀 과소비했다는 생각이 들어 후회도 든다..  
+(여행 준비기에는 테슬라 대박이라서 돈 써도 되겠지 하는 생각이 강했다. 지금은 안타깝게도 아니지만,)  
+  
+### 츠키시마 몬쟈 스트리트  
+  
+<PolaroidGalleryScrapbook items={monjaStreetItems} />  
+  
+친구가 도쿄의 몬자야키를 먹어보고 싶다고 해서 찾은 가게.  
+츠키시마 몬쟈 스트리트의 가장 유명한 모헤지에 방문했다.  
+  
+운 좋게도 웨이팅 없이 바로 들어가서 주문을 할 수 있었는데, 사람이 많아서 준비되는데 시간이 오래 걸렸다.  
+시킨 것은 추천 목록에 있던 멘타이 몬쟈와 고모쿠 몬쟈, 시라코 버터 소테 구이.  
+특이하게도 지콘도 판매하고 있길래 못참고 구매했다.  
+  
+맛은 몬쟈 중에서도 맛있는 맛. 특히 누룽지라고 해야하나 타기 직전의 반죽을 긁어 먹는 것이 상당히 맛있었다.  
+왜 구글 맵에서 7천개의 많은 리뷰를 가졌지만 4.8점이라는 높은 점수를 유지하고 있는지를 알 수 있는 가격과 맛, 그리고 서비스였다고 생각한다.  
+  
+### 긴자  
+  
+<PolaroidGalleryScrapbook items={ginzaItems} />  
+  
+긴자에서 친구 부부와는 헤어져 각자의 시간을 가지기로 하여, 나는 방문하고 싶었던 이토야 문구점으로 이동했다.  
+구매욕을 자극하는 작은 소품들과 문구류가 나열되어 있어 구경하는 맛이 있는 문구점  
+  
+문구류 말고도 방을 꾸밀 수 있는 다양한 소품들도 있어서 참지 못하고 자석 하나를 구매했다.  
+문구류는 중/고등학생때 관심을 많이 가졌었고, 대학 입학 이후로는 흥미를 많이 잃었는데, 다시 이렇게 다양한 종류를 보니 재미는 있었다.  
+  
+### 우에노  
+  
+<PolaroidGalleryScrapbook items={uenoItems} />  
+  
+다시 저녁에는 같이 밥을 먹기 위해 합류.  
+타베로그 기준으로 평점 3.4 정도의 야키토리 이자카야인 야키톤 다이오 우에노점을 예약해서 방문 해봤는데,  
+3.4치고 맛이 상당히 아쉬워서 꼬지 모둠 하나 + 생맥 한잔 씩만 시키고 런했다.  
+구글도 4.3 정도로 나쁘지 않았는데..  
+  
+이후에는 아메요코 상점가를 좀 구경했는데, 아메카지 제품들이 꽤 많았고, 상당이 선정적인 티셔츠가 대놓고 걸려 있어서 좀 당황스러웠었다.  
+외국인(동남아, 중국 등등)이 많이 장사를 하는 모습이 좀 신기하게 다가왔다.  
+  
+2차를 어디로 갈지 찾다가 발견한 가게가 여기 시노바즈 브류어리 히츠지.  
+양 구이와 양 대창 스튜, 양 로스트 비프를 시켰는데, 나머지는 그냥저냥이었지만, 양 구이가 정말 맛있었다.  
+조금 비싼 양고기 가게도 들러보았지면 여기가 좀 엄청 부드럽게 양고기를 잘 구워져 양 구이만 추가로 더 주문하고 그랬었다.  
+양념도 맛있었고, 맥주도 크래프트 종류가 꽤 많아서 상당히 만족한 가게.  
+  
+오늘 하루는 이걸로 마무리. 아메요코 상점가에서 먹은 야키토리가 좀 아쉬웠지만, 양 구이가 맛있어서 만족  
+  

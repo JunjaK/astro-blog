@@ -1,9 +1,18 @@
 import { FlickeringGrid } from '@/components/ui/flickering-grid';
-import { useMemo } from 'react';
-import { useWindowSize } from 'react-use';
+import { useEffect, useMemo, useState } from 'react';
+
+function useWindowWidth() {
+  const [width, setWidth] = useState(() => (typeof window === 'undefined' ? 1200 : window.innerWidth));
+  useEffect(() => {
+    const onResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return width;
+}
 
 export default function Flickering() {
-  const { width } = useWindowSize();
+  const width = useWindowWidth();
 
   const calcWidth = useMemo(() => {
     if (width < 768) {
