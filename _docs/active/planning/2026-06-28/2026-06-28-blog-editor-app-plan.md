@@ -169,7 +169,7 @@ team: Leader + Architect-FE + Architect-BE + Architect-Infra + UI/UX Master
 
 **✅ 전부 확정 — 남은 결정 없음.** 블로그 SSG 유지 · **스택=React**(Vite+ alpha·editor 한정 + @tiptap/react·**Novel 베이스** + TanStack Query + Zustand + **shadcn 정본**+Magic UI 절제 + PWA) · Hono가 `/editor`·`/editor-api` 서빙·쿠키 인증(D5) · **DB(RPi SQLite)=편집 SoT(TipTap JSON), git/MDX=발행 투영, `DB≠MDX`=draft**(D8) · IndexedDB/캐시 없음(D7) · 이미지=`/files/media` 평면·이동 없음(D3) · 발행=비동기+완료 표시(D6) · **레거시 포함 편집**(역변환, 마일스톤②, D4) · 동시접속 버전 가드(D9) · **단일 repo 대칭 `blog/`+`editor/`**(D10) · **노출=Cloudflare 공개 + 앱 로그인, 보안 경량**(D1, §7).
 
-**착수 순서**: **step 0**(blog→`blog/` 이동 + CI/Docker 마이그레이션 검증) → **마일스톤①**(신규 생성·발행) → **②**(에디터 출생 글 편집) → **③**(레거시 역변환 임포트).
+**착수 순서**: ✅ **step 0 완료**(blog→`blog/` 이동 + editor 초기세팅 + prd/blog·prd/editor 배포 검증, 2026-06-29 — [handoff](../../handoff/2026-06-29-blog-editor-step0-handoff.md)) → **마일스톤①**(신규 생성·발행) → **②**(에디터 출생 글 편집) → **③**(레거시 역변환 임포트).
 
 ## 12. 미해결/확인 필요
 

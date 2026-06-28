@@ -10,5 +10,8 @@
 ### Processing
 _(none)_
 
+### Handoff
+- [step 0 — 모노레포 분리 + editor 초기세팅 + 브랜치 배포](./handoff/2026-06-29-blog-editor-step0-handoff.md) — 2026-06-29 · ✅ 완료(blog/editor 분리, 두 배포 success, 라이브 블로그 200 확인)
+
 ## Complete
 _(none)_
