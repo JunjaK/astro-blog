@@ -2,6 +2,7 @@
 name: Astro Blog
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - prd/blog

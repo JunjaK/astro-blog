@@ -5,6 +5,14 @@ Personal developer blog built with Astro 6, featuring multi-framework islands (R
 **Site:** https://www.jun-devlog.win
 **Node:** 24 (mise) | **Package Manager:** bun
 
+> ⚠️ **Repo layout (2026-06: monorepo split).** The blog now lives under **`blog/`** and the
+> writing app under **`editor/`**. Shared, Claude-owned context stays at root: `_docs/`, `_note/`,
+> `.claude/`, `CLAUDE.md`, `.github/`, `.mise.toml`. **All blog paths in the sections below are now
+> relative to `blog/`** (e.g. `src/` → `blog/src/`, run `bun dev` from `blog/`). The `editor/` app is a
+> Vite+React+TipTap SPA served by a Hono backend (`/editor` + `/editor-api`); see
+> `_docs/active/.../blog-editor-app-plan.md`. Deploys are branch-based: **`prd/blog`** (blog),
+> **`prd/editor`** (editor). Full path reconciliation of this file is pending.
+
 ## Commands
 
 ```bash

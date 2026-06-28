@@ -2,6 +2,7 @@
 name: Editor
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - prd/editor
