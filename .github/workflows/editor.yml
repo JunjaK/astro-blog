@@ -1,0 +1,64 @@
+# eslint-disable yaml/plain-scalar
+name: Editor
+
+on:
+  push:
+    branches:
+      - prd/editor
+    paths:
+      - 'editor/**'
+      - '.github/workflows/editor.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: editor
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup mise
+        uses: jdx/mise-action@v4
+
+      - name: Cache bun dependencies
+        id: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            editor/node_modules
+            ~/.bun/install/cache
+          key: gh-bun-editor-${{ hashFiles('editor/bun.lock') }}
+          restore-keys: |
+            gh-bun-editor-
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: bun install --frozen-lockfile
+
+      - name: Build (verify)
+        run: bun run build
+
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            editor
+          sparse-checkout-cone-mode: true
+
+      - name: Build Docker image
+        run: DOCKER_BUILDKIT=1 docker build -t astro-editor editor
+
+      - name: Deploy container
+        run: |
+          docker stop astro-editor 2>/dev/null && docker rm astro-editor 2>/dev/null || true
+          docker run -d --name astro-editor -p 4322:4322 astro-editor
+
+# NOTE: reachability at https://jun-devlog.win/editor and /editor-api requires the
+# reverse proxy (Cloudflare / host nginx) to route those path prefixes to the RPi :4322.
+# That routing config is a one-time manual step (see _docs plan §7 / handoff).

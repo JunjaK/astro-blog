@@ -1,0 +1,49 @@
+:root {
+  --bg: #0a0a0a;
+  --surface: #15151f;
+  --border: #2a2a3a;
+  --text: #e6e6e6;
+  --muted: #8a8a98;
+  --primary: #7c5cff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); }
+
+.app-shell { max-width: 860px; margin: 0 auto; padding: 16px; }
+.app-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 20px;
+}
+.app-header nav a { color: var(--muted); text-decoration: none; margin-left: 14px; }
+.app-header nav a.active { color: var(--text); }
+
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.muted { color: var(--muted); font-size: 14px; }
+
+.badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
+.badge.ok { color: #7fff9f; border-color: #2a4a32; }
+.badge.down { color: #ff8a8a; border-color: #4a2a2a; }
+
+.post-list { list-style: none; padding: 0; }
+.post-list a { color: var(--primary); text-decoration: none; }
+
+.btn-primary {
+  background: var(--primary); color: #fff; border: none; border-radius: 8px;
+  padding: 8px 14px; font-weight: 600; cursor: pointer;
+}
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.editor-canvas {
+  margin-top: 16px; border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; min-height: 320px; background: var(--surface);
+}
+.editor-canvas .ProseMirror { outline: none; min-height: 300px; line-height: 1.8; }
+
+.login-page form { display: flex; gap: 8px; margin-top: 12px; }
+.login-page input {
+  flex: 1; padding: 8px 12px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+}

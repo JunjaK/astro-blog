@@ -1,0 +1,2 @@
+[     227ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[     299ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194

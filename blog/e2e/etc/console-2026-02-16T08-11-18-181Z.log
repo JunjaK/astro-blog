@@ -1,0 +1,2 @@
+[     957ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/favicon.ico:0
+[  107469ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=2433ca13:194

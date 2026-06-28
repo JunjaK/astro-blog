@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>블로그 글쓰기 전용 웹앱 — Team Plan</title>
+<style>
+:root{
+  --bg:#0a0a0a;--surface:#1a1a2e;--surface2:#13131f;--border:#2a2a4a;--text:#e0e0e0;--text-muted:#888;
+  --leader:#ffd700;--arch-fe:#7fff7f;--arch-be:#7fbfff;--arch-infra:#ff7f7f;--uiux:#ff7fff;--designer:#ffbf7f;--tester:#7fffff;
+  --phase-planning:#ffd700;--phase-uiux:#ff7fff;--phase-impl:#ffbf7f;--phase-verify:#7fffff;--phase-security:#ff7f7f;--escalation:#ff4444;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--text);padding:40px;max-width:1180px;margin:0 auto;line-height:1.5}
+.header{margin-bottom:32px}
+.header h1{font-size:26px;margin-bottom:10px}
+.status-badge{display:inline-block;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:bold}
+.sub{margin-top:10px;color:var(--text-muted);font-size:14px}
+.section{margin-bottom:34px}
+.section h2{font-size:17px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.role-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+.role-card.inactive{opacity:.32}
+.role-card .ic{font-size:22px}
+.role-card .nm{font-weight:bold;margin-top:4px}
+.role-card .rs{font-size:11px;color:var(--text-muted);margin-top:2px}
+.tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;margin-top:6px;background:#0e2a0e;color:#7fff7f}
+.tag.par{background:#0e1e2a;color:#7fbfff}
+.phase-flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 0}
+.phase-node{padding:10px 16px;border-radius:8px;border:2px solid;font-size:12px;font-weight:bold;background:var(--surface2)}
+.phase-node.done{box-shadow:0 0 0 2px rgba(255,215,0,.25) inset}
+.phase-node.pending{opacity:.4}
+.phase-node.conditional{border-style:dashed}
+.phase-node.gate{border-radius:4px;border-style:dashed}
+.phase-arrow{color:var(--text-muted);font-size:18px}
+.legend{font-size:11px;color:var(--text-muted);margin-top:8px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.cols{grid-template-columns:1fr}}
+.arch{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;overflow:auto}
+.arch pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:#cfd2e6;white-space:pre;line-height:1.45}
+.file-table{width:100%;border-collapse:collapse}
+.file-table th,.file-table td{padding:8px 10px;border:1px solid var(--border);text-align:left;font-size:12.5px;vertical-align:top}
+.file-table th{background:var(--surface)}
+.dep-graph{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px}
+.dep-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0}
+.dep-node{display:inline-block;padding:7px 13px;border-radius:6px;font-size:12px;border:1px solid}
+.fe{border-color:var(--arch-fe);color:var(--arch-fe);background:#0c160c}
+.be{border-color:var(--arch-be);color:var(--arch-be);background:#0b131c}
+.sh{border-color:var(--designer);color:var(--designer);background:#1a140b}
+.ar{color:var(--text-muted);font-size:16px}
+.risk-item{padding:11px 13px;margin-bottom:8px;border-radius:6px;border-left:4px solid;font-size:13px}
+.risk-critical{border-color:#ff4444;background:#1a0a0a}
+.risk-high{border-color:#ff8844;background:#1a140a}
+.risk-medium{border-color:#ffcc44;background:#181808}
+.risk-item b{color:#fff}
+.dlog{width:100%;border-collapse:collapse}
+.dlog th,.dlog td{padding:8px 10px;border:1px solid var(--border);font-size:12.5px;text-align:left;vertical-align:top}
+.dlog th{background:var(--surface)}
+.dlog .id{color:var(--leader);font-weight:bold;white-space:nowrap}
+.open li{margin:6px 0;font-size:13.5px}
+.open b{color:#fff}
+.meta{font-size:11px;color:var(--text-muted);margin-top:40px;text-align:center}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border:1px solid var(--border);border-radius:20px;color:var(--text-muted);margin-right:6px}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>블로그 글쓰기 전용 웹앱 <span style="color:var(--text-muted);font-weight:400;font-size:15px">— Notion-style Editor + RPi 발행 백엔드</span></h1>
+  <span class="status-badge" style="background:var(--phase-planning);color:#000;">PLANNING (BRAINSTORM)</span>
+  <div class="sub">
+    <span class="pill">2026-06-28</span><span class="pill">mode: brainstorm</span><span class="pill">orchestration: STANDARD</span>
+    <br>에디터(IndexedDB 로컬 초안) → 발행 시 이미지=RPi <code>/files</code>, MDX=git → 기존 CI/CD 재빌드·배포
+  </div>
+</div>
+
+<!-- Team -->
+<div class="section">
+  <h2>1. 팀 구성</h2>
+  <div class="team-grid">
+    <div class="role-card" style="border-color:var(--leader)">
+      <div class="ic">👑</div><div class="nm" style="color:var(--leader)">Leader</div>
+      <div class="rs">조정·충돌 해소</div><span class="tag">active</span>
+    </div>
+    <div class="role-card" style="border-color:var(--arch-fe)">
+      <div class="ic">🎨</div><div class="nm" style="color:var(--arch-fe)">Architect FE</div>
+      <div class="rs">에디터·직렬화·IndexedDB</div><span class="tag par">parallel</span>
+    </div>
+    <div class="role-card" style="border-color:var(--arch-be)">
+      <div class="ic">⚙️</div><div class="nm" style="color:var(--arch-be)">Architect BE</div>
+      <div class="rs">발행 백엔드·git·이미지</div><span class="tag par">parallel</span>
+    </div>
+    <div class="role-card" style="border-color:var(--arch-infra)">
+      <div class="ic">🛡️</div><div class="nm" style="color:var(--arch-infra)">Architect Infra</div>
+      <div class="rs">노출모델·보안·비밀키</div><span class="tag par">parallel</span>
+    </div>
+    <div class="role-card" style="border-color:var(--uiux)">
+      <div class="ic">✨</div><div class="nm" style="color:var(--uiux)">UI/UX Master</div>
+      <div class="rs">레이아웃·발행 UX·a11y</div><span class="tag par">parallel</span>
+    </div>
+    <div class="role-card inactive" style="border-color:var(--designer)">
+      <div class="ic">🛠️</div><div class="nm" style="color:var(--designer)">Designer</div>
+      <div class="rs">TDD 구현 (Phase 3)</div>
+    </div>
+    <div class="role-card inactive" style="border-color:var(--tester)">
+      <div class="ic">🧪</div><div class="nm" style="color:var(--tester)">Tester</div>
+      <div class="rs">검증 (Phase 4)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Phases -->
+<div class="section">
+  <h2>2. 워크플로 단계</h2>
+  <div class="phase-flow">
+    <span class="phase-node done" style="border-color:var(--phase-planning)">P1 · Planning</span>
+    <span class="phase-arrow">→</span>
+    <span class="phase-node pending conditional" style="border-color:var(--phase-uiux)">P2 · UI/UX</span>
+    <span class="phase-arrow">→</span>
+    <span class="phase-node pending gate" style="border-color:var(--leader)">◆ Approval Gate</span>
+    <span class="phase-arrow">→</span>
+    <span class="phase-node pending" style="border-color:var(--phase-impl)">P3 · Impl (TDD)</span>
+    <span class="phase-arrow">→</span>
+    <span class="phase-node pending" style="border-color:var(--phase-verify)">P4 · Verify</span>
+    <span class="phase-arrow">→</span>
+    <span class="phase-node pending" style="border-color:var(--phase-security)">P5 · Security</span>
+  </div>
+  <div class="legend">● 채워진 = 완료(P1: Leader+FE+BE+Infra+UIUX) · 흐림 = 미실행 · 점선 = 조건부/게이트. <b>브라우즈톰 모드는 P1에서 종료</b> — 구현·검증·보안감사 없음. <code>/team-run</code>으로 P3+ 실행.</div>
+</div>
+
+<!-- Architecture -->
+<div class="section">
+  <h2>3. 아키텍처</h2>
+  <div class="arch">
+<pre>┌─────────── 오너 디바이스 (tailnet) ───────────┐         ┌──────── GitHub ────────┐
+│ React SPA  @tiptap/react · shadcn · PWA        │         │ master push            │
+│  · DB에 직접 자동저장 (IndexedDB 없음)         │         │  → Actions             │
+│  · WYSIWYG canvas = 발행 미리보기              │         │   job1(ubuntu): build  │
+│  · 노트북·PC·폰 다기기 (Hono가 SPA 서빙)      │         └──────────┬─────────────┘
+└──────────────┬─────────────────────────────────┘                    │ self-hosted
+               │ Bearer (tailnet / 127.0.0.1)                          ▼
+               ▼                                          ┌──── RPi 4 ───────────────┐
+┌──── RPi: 발행 백엔드  Hono on Bun (systemd) ────┐       │ job2: docker build + run │
+│ POST /media       → sharp → /files/media        │ ────▶ │  -v blog-files:/files     │
+│ GET·PUT /posts/:id → 작업본(TipTap JSON) 저장   │ git   │  nginx :4321 (공개 블로그) │
+│ POST /posts/:id/publish → MDX export+commit+push│ push  └───────────────────────────┘
+│ GET /publish/:jobId → Actions API 폴링 (비동기)  │
+│ SQLite: posts(doc_json + published_hash) · jobs │
+└─────────────────────────────────────────────────┘
+불변식: DB=편집SoT(TipTap JSON) · git/MDX=발행투영(SSG) · DB≠MDX=draft · 이미지=/files/media(이동없음)</pre>
+  </div>
+</div>
+
+<!-- Decision Log -->
+<div class="section">
+  <h2>4. Leader 의사결정 로그 (아키텍트 충돌 해소)</h2>
+  <table class="dlog">
+    <thead><tr><th>ID</th><th>충돌</th><th>결정 &amp; 근거</th></tr></thead>
+    <tbody>
+      <tr><td class="id">D1</td><td>노출(다기기·모바일 PWA)</td><td><b>공개 + 앱 로그인, Cloudflare 뒤</b>(<code>jun-devlog.win/editor</code>·<code>/editor-api</code>). CF가 TLS·DDoS·rate-limit·WAF 처리 → 앱 보안 경량. 블로그가 이미 CF 노출이라 동일 모델 상속. (사용자: 과하게 X)</td></tr>
+      <tr><td class="id">D2</td><td>이미지 경로 변환 주체</td><td><b>기존 <code>convertLoader.js</code> 재사용</b>(백엔드 실행, 절대 <code>/files/</code>도 래핑하도록 확장) — DRY·drift 방지. FE는 <code>![alt](/files/media/&lt;hash&gt;)</code>만 방출</td></tr>
+      <tr><td class="id">D3</td><td>이미지 저장(staging 이동 vs 단일경로)</td><td><b>한 번 업로드 → 안 옮김.</b> 삽입 시 <code>/files/media/&lt;hash&gt;</code>에 올리고 draft·published가 같은 URL. 이동 단계 삭제 → "이동 성공·commit 실패" 부분실패 소멸. 카테고리 변경에 비의존</td></tr>
+      <tr><td class="id">D4</td><td>발행글·레거시 편집</td><td><b>둘 다 목표.</b> 에디터 출생 글=DB JSON 로드(역파서 불필요). 레거시=MDX→TipTap 역변환(<b>raw-MDX 블록 폴백</b>, 마일스톤②). 사용자: 기존 글도 수정 원함</td></tr>
+      <tr><td class="id">D5</td><td>인증 (경량 서비스 로그인)</td><td><b>DB 계정(argon2id=Bun.password) + httpOnly 세션 쿠키.</b> JWT-localStorage 금지. Hono same-origin(CORS 없음). rate-limit은 CF 엣지. TOTP/잠금은 드롭(옵션 CF Access)</td></tr>
+      <tr><td class="id">D6</td><td>재빌드 완료 감지(비동기)</td><td><b>발행=비동기.</b> Actions API <code>head_sha</code> 폴링 → 에디터 <code>/publish/:jobId</code> 폴링 → 완료 시 별도 표시. 가짜 진행바 금지</td></tr>
+      <tr><td class="id">D7</td><td>저장 위치 & 클라 캐시</td><td><b>RPi SQLite 단일 저장소. IndexedDB·로컬캐시 안 씀</b> — DB에 직접 자동저장, 실패 시 에러+재시도. 편집 중 항상 온라인 전제(오프라인 비요구)</td></tr>
+      <tr><td class="id">D8</td><td>DB ↔ git/MDX 관계 (사용자 모델)</td><td><b>DB=편집 SoT(TipTap JSON), git/MDX=발행 투영.</b> 글 1개=row 1개. 상태 파생: MDX 없음→새 초안 / <code>serialize(DB)≠MDX</code>→수정됨(draft) / 같음→동기화됨. <b>발행=DB→MDX export+commit+재빌드</b>. 외부 git 수정은 해시 비교로 감지·경고</td></tr>
+      <tr><td class="id">D9</td><td>다기기 동시 접속</td><td><b>낙관적 버전 가드</b>: row <code>version</code>, PUT에 클라 버전 동봉 → 불일치 시 <b>409 "다른 기기에서 수정됨"</b>. 실시간 공동편집(Yjs)은 Later. 다른 글·다중 세션은 무충돌</td></tr>
+      <tr><td class="id">D10</td><td>repo 배치</td><td><b>단일 repo 대칭 <code>blog/</code> + <code>editor/</code></b>(워크스페이스 아님). 사용자: scope 시각 분리. blog→<code>blog/</code> 이동은 <b>검증된 step 0</b>(CI/Docker 마이그레이션) 후 editor 착수</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Files -->
+<div class="section">
+  <h2>5. 컴포넌트 / 파일 맵 (Designer 분배 후보)</h2>
+  <table class="file-table">
+    <thead><tr><th>영역</th><th>파일</th><th>범위</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--arch-fe)"><code>editor/</code> React 라우트</td><td><code>src/routes/{login, posts/index, editor/$id}.tsx</code> (TanStack Router)</td><td>thin 라우팅·로직은 훅</td></tr>
+      <tr><td style="color:var(--arch-fe)">React 컴포넌트</td><td><code>EditorCanvas, SlashMenu, FrontmatterForm, PublishDialog, PostCard(상태배지), AutosaveIndicator</code> · <code>nodeviews/{ImageNodeView, RawMdxBlock}</code></td><td>에디터 UI·발행 모달·음악 조건부 필드</td></tr>
+      <tr><td style="color:var(--arch-fe)">lib/store (IndexedDB 없음)</td><td><code>lib/{api(TanStack Query), serializeMdx, deserializeMdx(역변환), imageNormalize, frontmatterSchema}</code> · <code>stores/editorUi(Zustand)</code> · shadcn <code>components/ui</code></td><td>직렬화·역변환·서버 상태·이스케이프</td></tr>
+      <tr><td style="color:var(--arch-be)"><code>editor/</code> Hono 백엔드</td><td><code>server/index.ts</code> · <code>routes/{auth,posts,media,publish,categories,import}</code> · <code>lib/{git,sharp,mdx,slug,paths,hash}</code> · <code>db.ts(sqlite)</code> · <code>editor-api.service</code></td><td>SPA 서빙+API·git·이미지·버전가드·멱등 잡</td></tr>
+      <tr><td style="color:var(--designer)">기존 블로그 (root, 재사용)</td><td><code>src/utils/convertLoader.js</code> · <code>src/content.config.ts</code> · <code>src/utils/generateThumbnails.js</code></td><td>계약 소스 — Hono가 <code>../src/utils</code> 상대경로 재사용</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Dependency / data flow -->
+<div class="section">
+  <h2>6. 발행 데이터 흐름</h2>
+  <div class="dep-graph">
+    <div class="dep-row"><span class="dep-node fe">이미지 삽입</span><span class="ar">→</span><span class="dep-node be">POST /media (sharp WebP)</span><span class="ar">→</span><span class="dep-node sh">/files/media/&lt;hash&gt; (안정 URL, 이동 없음)</span></div>
+    <div class="dep-row"><span class="dep-node fe">TipTap JSON (편집 SoT)</span><span class="ar">→</span><span class="dep-node be">PUT /posts/:id (자동저장+버전가드 409)</span><span class="ar">→</span><span class="dep-node sh">RPi SQLite (IndexedDB 없음)</span></div>
+    <div class="dep-row"><span class="dep-node sh">DB row</span><span class="ar">→</span><span class="dep-node be">POST /posts/:id/publish</span><span class="ar">→</span><span class="dep-node be">serialize→MDX·convertLoader→&lt;ImageLoader/&gt;·commit+push·hash 갱신</span></div>
+    <div class="dep-row"><span class="dep-node be">GitHub Actions</span><span class="ar">→</span><span class="dep-node sh">docker rebuild (RPi)</span><span class="ar">→</span><span class="dep-node be">GET /publish/:jobId</span><span class="ar">→</span><span class="dep-node fe">라이브 표시 · DB=MDX(동기화됨)</span></div>
+    <div class="legend" style="margin-top:10px"><span class="dep-node fe" style="padding:2px 8px">FE</span> <span class="dep-node be" style="padding:2px 8px">BE</span> <span class="dep-node sh" style="padding:2px 8px">공유/파일시스템</span></div>
+  </div>
+</div>
+
+<!-- Risks -->
+<div class="section">
+  <h2>7. 보안 (경량 — Cloudflare 뒤, "과하게 X")</h2>
+  <div class="risk-item risk-high"><b>노출</b> — 공개 + 앱 로그인, <b>Cloudflare가 TLS·DDoS·rate-limit·WAF·origin 은닉 처리</b>. 블로그가 이미 CF라 동일 모델 상속. 앱 보안은 아래 4개만.</div>
+  <div class="risk-item risk-medium"><b>유지 ① 로그인/세션</b> — argon2id(<code>Bun.password</code>) + httpOnly 세션 쿠키 + 기본거부 미들웨어. (=기능 자체)</div>
+  <div class="risk-item risk-medium"><b>유지 ② 파일/git 코드 올바르게</b> — slug/category allowlist, <code>path.resolve</code> 컨테인먼트, 셸 금지(<code>execFile</code>). 오버엔지니어링 아님, 버그 안 내는 것.</div>
+  <div class="risk-item risk-medium"><b>유지 ③ EXIF/GPS (비용 0)</b> — sharp 기본이 메타 제거 → <code>withMetadata()</code> 안 부르면 끝. 다이어리 GPS 유출 방지.</div>
+  <div class="risk-item risk-medium"><b>유지 ④ 빌드 안전망 (공짜)</b> — 잘못된 MDX → CI 실패 → 구 사이트 유지. 배포는 build 성공 게이트.</div>
+  <div class="risk-item risk-critical" style="border-color:#555;background:#0e0e0e"><b>전부 드롭(과함)</b> — TOTP·brute-force 잠금·자체 HTTPS·fail2ban·systemd 샌드박싱·CSP·vendoring·sandboxed-iframe 미리보기. CF + 위 4개로 끝.</div>
+  <div class="risk-item risk-medium"><b>실제 난제(보안 아님)</b> — 한글 IME(조합 중 <code>preventDefault</code> 금지) · MDX 직렬화 충실도(이스케이프+스냅샷) · 레거시 역변환(raw-MDX 폴백) · RPi sharp HEIC(부팅 프로브) · 미참조 미디어 GC.</div>
+</div>
+
+<!-- Open decisions -->
+<div class="section">
+  <h2>8. 결정 완료 · 착수 순서</h2>
+  <p style="font-size:12.5px;color:#7fff7f;margin-bottom:8px">✅ <b>전부 확정 — 남은 결정 없음.</b> SSG 유지 · 스택=React(Vite+ alpha·editor한정 + @tiptap/react·<b>Novel 베이스</b> + TanStack + Zustand + shadcn정본 + MagicUI절제 + PWA, Hono 서빙·쿠키) · DB=편집SoT·git/MDX=발행투영·DB≠MDX=draft · IndexedDB/캐시 없음 · 이미지=/files/media 평면 · 발행=비동기 · 레거시 포함 편집(역변환) · 버전가드 · 단일 repo 대칭 blog/+editor/ · 노출=Cloudflare 공개+앱 로그인(보안 경량)</p>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:13px">
+    <b>착수 순서</b><br>
+    <b>step 0</b> blog→<code>blog/</code> 이동 + CI/Docker 마이그레이션 검증 →
+    <b>마일스톤 ①</b> 신규 생성·발행 →
+    <b>②</b> 에디터 출생 글 편집 →
+    <b>③</b> 레거시 역변환 임포트
+  </div>
+</div>
+
+<div class="meta">Generated by AI Harness Team Workflow · Brainstorm · 2026-06-28</div>
+</body>
+</html>

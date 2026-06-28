@@ -1,0 +1,332 @@
+[    1631ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/favicon.ico:0
+[  113313ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[  173804ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[  242874ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[  310340ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[  486724ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[  904188ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[ 2204115ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[ 2222142ms] ReferenceError: image is not defined
+    at UnifiedImagePlane (http://localhost:4321/src/components/Blog/DiaryGallery/UnifiedImagePlane.tsx?t=1771378251671:59:42)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:7869:20)
+    at It (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:3836:18)
+    at ks (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:4883:376)
+    at tt (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:5210:20)
+    at B (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:2667:63)
+    at Ph (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:7083:44)
+    at wh (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:6999:31)
+    at Ff (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:6990:13)
+    at Lf (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:6772:61)
+[ 2222145ms] ReferenceError: image is not defined
+    at UnifiedImagePlane (http://localhost:4321/src/components/Blog/DiaryGallery/UnifiedImagePlane.tsx?t=1771378251671:59:42)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:7869:20)
+    at It (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:3836:18)
+    at ks (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:4883:376)
+    at tt (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:5210:20)
+    at B (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:2667:63)
+    at Ph (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:7083:44)
+    at wh (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:6999:31)
+    at Ff (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:6990:13)
+    at Lf (http://localhost:4321/node_modules/.vite/deps/@react-three_fiber.js?v=825611c7:6772:61)
+[ 2219952ms] [WARNING] %s
+
+%s
+ An error occurred in the <CanvasImpl> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 2224475ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://giscus.app/api/discussions?repo=JunjaK%2Fastro-blog&term=blog%2Fdiary%2F25-01-tokyo%2F01_01-20&category=General&number=0&strict=true&last=15:0
+[ 2224562ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://giscus.app/api/discussions?repo=JunjaK%2Fastro-blog&term=blog%2Fdiary%2F25-01-tokyo%2F01_01-20&category=General&number=0&strict=true&first=15:0
+[ 2224564ms] [WARNING] [giscus] Discussion not found. A new discussion will be created if a comment/reaction is submitted. @ http://localhost:4321/node_modules/.vite/deps/giscus-Ci9LqPcC-X2ZIAMGX.js?v=825611c7:780
+[ 2224586ms] [WARNING] [giscus] Discussion not found. A new discussion will be created if a comment/reaction is submitted. @ http://localhost:4321/node_modules/.vite/deps/giscus-Ci9LqPcC-X2ZIAMGX.js?v=825611c7:780
+[ 2236571ms] ReferenceError: Cannot access 'currentImage' before initialization
+    at ImageLightbox (http://localhost:4321/src/components/ui/image-lightbox.tsx?t=1771378276319:108:19)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 2236049ms] [WARNING] %s
+
+%s
+ An error occurred in the <ImageLightbox> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 2243361ms] ReferenceError: Cannot access 'currentImage' before initialization
+    at ImageLightbox (http://localhost:4321/src/components/ui/image-lightbox.tsx?t=1771378284086:108:19)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 2243360ms] [WARNING] %s
+
+%s
+ An error occurred in the <ImageLightbox> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 2282593ms] ReferenceError: allImages is not defined
+    at DiaryGalleryUnified (http://localhost:4321/src/components/Blog/DiaryGallery/DiaryGalleryUnified.tsx?t=1771378323311:128:82)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 2282593ms] [WARNING] %s
+
+%s
+ An error occurred in the <DiaryGalleryUnified> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 2292742ms] ReferenceError: totalImages is not defined
+    at DiaryGalleryUnified (http://localhost:4321/src/components/Blog/DiaryGallery/DiaryGalleryUnified.tsx?t=1771378333460:154:3)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 2292737ms] [WARNING] %s
+
+%s
+ An error occurred in the <DiaryGalleryUnified> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 2297281ms] ReferenceError: totalImages is not defined
+    at DiaryGalleryUnified (http://localhost:4321/src/components/Blog/DiaryGallery/DiaryGalleryUnified.tsx?t=1771378338004:154:3)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 2297275ms] [WARNING] %s
+
+%s
+ An error occurred in the <DiaryGalleryUnified> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 2302789ms] ReferenceError: totalImages is not defined
+    at DiaryGalleryUnified (http://localhost:4321/src/components/Blog/DiaryGallery/DiaryGalleryUnified.tsx?t=1771378343504:154:3)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 2302774ms] [WARNING] %s
+
+%s
+ An error occurred in the <DiaryGalleryUnified> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 2307518ms] ReferenceError: totalImages is not defined
+    at DiaryGalleryUnified (http://localhost:4321/src/components/Blog/DiaryGallery/DiaryGalleryUnified.tsx?t=1771378348227:154:3)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 2307512ms] [WARNING] %s
+
+%s
+ An error occurred in the <DiaryGalleryUnified> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 2312135ms] ReferenceError: totalImages is not defined
+    at DiaryGalleryUnified (http://localhost:4321/src/components/Blog/DiaryGallery/DiaryGalleryUnified.tsx?t=1771378352852:154:3)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 2312125ms] [WARNING] %s
+
+%s
+ An error occurred in the <DiaryGalleryUnified> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 2335023ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 2335539ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 2335733ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[ 2336389ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 2352143ms] [ERROR] %cAstro background: linear-gradient(66.77deg, #D83333 0%, #F041FF 100%); color: white; padding-inline: 4px; border-radius: 2px; font-family: monospace; Error while running audit's match function: TypeError: Failed to fetch @ http://localhost:4321/node_modules/astro/dist/runtime/client/dev-toolbar/settings.js?v=825611c7:22
+[ 2352143ms] [ERROR] %cAstro background: linear-gradient(66.77deg, #D83333 0%, #F041FF 100%); color: white; padding-inline: 4px; border-radius: 2px; font-family: monospace; Error while running audit's match function: TypeError: Failed to fetch @ http://localhost:4321/node_modules/astro/dist/runtime/client/dev-toolbar/settings.js?v=825611c7:22
+[ 2352344ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 2352435ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[ 2353034ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 2702755ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 2702867ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[ 2705023ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 2770047ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 2770208ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[ 2770577ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 2861651ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 2861800ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[ 2864015ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 3338711ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 3338819ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[ 3339371ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 3352801ms] [ERROR] WebSocket connection to 'ws://localhost:4321/?token=0bbt7KDem-0B' failed:  @ http://localhost:4321/@vite/client:1533
+[ 3352886ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3353887ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3354889ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3355891ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3356896ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3357899ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3358914ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3359943ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3360978ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3362010ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3363107ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3364370ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3365931ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3367723ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3370998ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3373795ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3378206ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3382118ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3387364ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3392512ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3395898ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3401095ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3406521ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3411273ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3415556ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3418739ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3422553ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3426912ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3429090ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3431340ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3434806ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3440531ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3443180ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3446565ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3450022ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3453156ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3459822ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 3460195ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=3a8dadf5:194
+[ 3460824ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 3620274ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 3620470ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=3a8dadf5:194
+[ 3621062ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 3629098ms] [ERROR] WebSocket connection to 'ws://localhost:4321/?token=YYcu3ZI2fii3' failed:  @ http://localhost:4321/@vite/client:1533
+[ 3629168ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3630171ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3631173ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3632177ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3633179ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3634183ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3635188ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3636210ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3637243ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3638298ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3639438ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3640600ms] [ERROR] WebSocket connection to 'ws://localhost:4321/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4321/@vite/client:1766
+[ 3643337ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 3643504ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4321/node_modules/.vite/deps/chunk-B53UTRTY.js?v=825611c7:194
+[ 3644243ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
+[ 3888489ms] ReferenceError: sectionOffsets is not defined
+    at DiaryGalleryUnified (http://localhost:4321/src/components/Blog/DiaryGallery/DiaryGalleryUnified.tsx?t=1771379929175:127:23)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 3888479ms] [WARNING] %s
+
+%s
+ An error occurred in the <DiaryGalleryUnified> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 3890141ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://giscus.app/api/discussions?repo=JunjaK%2Fastro-blog&term=blog%2Fdiary%2F25-01-tokyo%2F01_01-20&category=General&number=0&strict=true&last=15:0
+[ 3890152ms] [WARNING] [giscus] Discussion not found. A new discussion will be created if a comment/reaction is submitted. @ http://localhost:4321/node_modules/.vite/deps/giscus-Ci9LqPcC-X2ZIAMGX.js?v=825611c7:780
+[ 3890347ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://giscus.app/api/discussions?repo=JunjaK%2Fastro-blog&term=blog%2Fdiary%2F25-01-tokyo%2F01_01-20&category=General&number=0&strict=true&first=15:0
+[ 3890350ms] [WARNING] [giscus] Discussion not found. A new discussion will be created if a comment/reaction is submitted. @ http://localhost:4321/node_modules/.vite/deps/giscus-Ci9LqPcC-X2ZIAMGX.js?v=825611c7:780
+[ 3893431ms] ReferenceError: sectionOffsets is not defined
+    at DiaryGalleryUnified (http://localhost:4321/src/components/Blog/DiaryGallery/DiaryGalleryUnified.tsx?t=1771379934145:127:23)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 3893430ms] [WARNING] %s
+
+%s
+ An error occurred in the <DiaryGalleryUnified> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 3897955ms] ReferenceError: totalMedia is not defined
+    at DiaryGalleryUnified (http://localhost:4321/src/components/Blog/DiaryGallery/DiaryGalleryUnified.tsx?t=1771379938675:146:3)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 3897954ms] [WARNING] %s
+
+%s
+ An error occurred in the <DiaryGalleryUnified> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 3902479ms] ReferenceError: totalMedia is not defined
+    at DiaryGalleryUnified (http://localhost:4321/src/components/Blog/DiaryGallery/DiaryGalleryUnified.tsx?t=1771379943190:146:3)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 3902467ms] [WARNING] %s
+
+%s
+ An error occurred in the <DiaryGalleryUnified> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 3907823ms] ReferenceError: totalMedia is not defined
+    at DiaryGalleryUnified (http://localhost:4321/src/components/Blog/DiaryGallery/DiaryGalleryUnified.tsx?t=1771379948535:146:3)
+    at Object.react_stack_bottom_frame (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:18242:20)
+    at renderWithHooks (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:5387:24)
+    at updateFunctionComponent (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:7208:21)
+    at beginWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:8258:20)
+    at runWithFiberInDEV (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:730:72)
+    at performUnitOfWork (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12294:98)
+    at workLoopSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12157:43)
+    at renderRootSync (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:12141:13)
+    at performWorkOnRoot (http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:11560:37)
+[ 3907808ms] [WARNING] %s
+
+%s
+ An error occurred in the <DiaryGalleryUnified> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:4321/node_modules/.vite/deps/@astrojs_react_client__js.js?v=825611c7:6698
+[ 3914023ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/files/blog/diary/25-01-tokyo/assets/monja-video-poster.webp:0
