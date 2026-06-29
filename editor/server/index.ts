@@ -5,7 +5,7 @@ import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
 import sharp from 'sharp';
 import { db } from './db';
-import { segmentMdx } from './mdx';
+import { isManagedImport, manageImports, segmentMdx } from './mdx';
 
 // Editor backend (Bun + Hono). Serves the built React SPA under /editor and the
 // API under /editor-api on the same origin (cookie auth, no CORS).
@@ -33,7 +33,9 @@ app.get('/editor-api/doc/:id{.+}', (c) => {
     | { category: string; frontmatter: string; body: string }
     | null;
   if (!row) return c.json({ error: 'not found' }, 404);
-  return c.json({ frontmatter: JSON.parse(row.frontmatter), segments: segmentMdx(row.body) });
+  // hide managed import lines — they're regenerated on save from used components
+  const segments = segmentMdx(row.body).filter((s) => !(s.kind === 'raw' && isManagedImport(s.src)));
+  return c.json({ frontmatter: JSON.parse(row.frontmatter), segments });
 });
 
 // Single post (id may contain slashes → rest-capture). `raw` = full MDX
@@ -52,9 +54,10 @@ app.put('/editor-api/posts/:id{.+}', async (c) => {
   const id = c.req.param('id');
   const { frontmatter, body } = await c.req.json<{ frontmatter?: Record<string, unknown>; body?: string }>();
   if (!frontmatter || typeof body !== 'string') return c.json({ error: 'bad payload' }, 400);
+  const finalBody = manageImports(body); // auto-inject imports for components used
   const res = db.run(
     'UPDATE posts SET frontmatter = ?, body = ?, title = ?, version = version + 1, updated_at = ? WHERE id = ?',
-    [JSON.stringify(frontmatter), body, String(frontmatter.title ?? ''), new Date().toISOString(), id],
+    [JSON.stringify(frontmatter), finalBody, String(frontmatter.title ?? ''), new Date().toISOString(), id],
   );
   return res.changes ? c.json({ ok: true }) : c.json({ error: 'not found' }, 404);
 });
