@@ -19,7 +19,6 @@ export function PostsPage() {
           <li key={p.id}>
             <span className="post-cat">{p.category}</span>
             <Link to={`/editor/${p.id}`} className="post-title">{p.title || p.slug}</Link>
-            <span className={`badge ${p.source === 'legacy' ? 'down' : 'ok'}`}>{p.source}</span>
           </li>
         ))}
       </ul>

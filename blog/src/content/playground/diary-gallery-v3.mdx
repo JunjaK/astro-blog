@@ -1,0 +1,81 @@
+---
+title: Diary Gallery ver3
+duration: 2026-06-29 ~ current
+techStacks: ['typescript', 'react', 'framer-motion', 'tegaki', 'css-3d']
+thumbnail: /files/blog/diary/25-01-tokyo/assets/20250120_063147954_iOS-thumb.webp
+description: 여행 향수 무드의 Diary Gallery ver3 — 항공우편 엽서 · 필름 슬라이드 · 여행 다이어리 3종 비교.
+---
+
+import ProjectInfo from '@/components/Project/ProjectInfo.astro';
+import { PostcardGallery, FilmStripGallery, JournalGallery } from '@/components/Blog/DiaryGallery/v3';
+
+<ProjectInfo frontmatter={frontmatter} />
+
+export const sample = [
+  {
+    src: '/files/blog/diary/25-01-tokyo/assets/20250120_020826538_iOS.webp',
+    thumb: true,
+    title: '나리타 공항',
+    caption: 'Narita',
+    description: '드디어 도착한 나리타. 겨울 공기가 코끝을 찔렀다.',
+    alt: '나리타 공항',
+  },
+  {
+    src: '/files/blog/diary/25-01-tokyo/assets/20250120_035637959_iOS.webp',
+    thumb: true,
+    title: '우에노 공원',
+    caption: 'Ueno Park',
+    description: '낙엽 깔린 우에노 공원을 천천히 걸었다.',
+    alt: '우에노 공원',
+  },
+  {
+    src: '/files/blog/diary/25-01-tokyo/assets/20250120_045235359_iOS.webp',
+    thumb: true,
+    title: '츠키시마 몬쟈 스트리트',
+    caption: 'Tsukishima',
+    description: '몬쟈야키 가게가 줄지어 선 골목. 냄새부터 군침이 돌았다.',
+    alt: '츠키시마 몬쟈 스트리트',
+  },
+  {
+    src: '/files/blog/diary/25-01-tokyo/assets/20250120_052312067_iOS.webp',
+    thumb: true,
+    title: '몬자야키',
+    caption: 'Monjayaki',
+    description: '직접 구워 먹는 첫 몬쟈야키. 생각보다 손이 많이 갔다.',
+    alt: '몬자야키',
+  },
+  {
+    src: '/files/blog/diary/25-01-tokyo/assets/20250120_055227328_iOS.webp',
+    thumb: true,
+    title: '버섯 버터 구이',
+    caption: 'Butter Yaki',
+    description: '버터에 구운 버섯 한 점. 술이 절로 들어갔다.',
+    alt: '버섯 버터 구이',
+  },
+  {
+    src: '/files/blog/diary/25-01-tokyo/assets/20250120_063147954_iOS.webp',
+    thumb: true,
+    title: '긴자 밤거리',
+    caption: 'Ginza Night',
+    description: '불 켜진 긴자의 밤. 하루의 끝이 반짝였다.',
+    alt: '긴자 밤거리',
+  },
+];
+
+## A. 항공우편 엽서
+
+낮은 지도/크래프트지 책상 위 엽서. 카드를 클릭하면 라이트박스에서 엽서가 3D로 뒤집히고(앞=사진, 뒤=손글씨 편지), tegaki가 다시 써진다.
+
+<PostcardGallery client:visible items={sample} />
+
+## B. 빈티지 필름 / 슬라이드
+
+35mm 필름 스트립(스프라켓 구멍 + 세피아). 프레임을 누르면 라이트테이블 위 슬라이드 마운트로 확대되고, 마운트 라벨이 tegaki로 써진다. 마운트는 마우스에 따라 살짝 기운다.
+
+<FilmStripGallery client:visible items={sample} />
+
+## C. 여행 다이어리
+
+제본된 다이어리 펼침면에 washi 테이프로 붙인 사진들. 사진을 누르면 페이지가 3D로 들리며 여백 메모가 tegaki로 써진다.
+
+<JournalGallery client:visible items={sample} />

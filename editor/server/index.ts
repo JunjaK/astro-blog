@@ -5,6 +5,7 @@ import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
 import sharp from 'sharp';
 import { db } from './db';
+import { segmentMdx } from './mdx';
 
 // Editor backend (Bun + Hono). Serves the built React SPA under /editor and the
 // API under /editor-api on the same origin (cookie auth, no CORS).
@@ -24,6 +25,16 @@ app.get('/editor-api/health', (c) =>
 app.get('/editor-api/posts', (c) =>
   c.json(db.query('SELECT id, category, slug, title, source, created_at FROM posts ORDER BY created_at DESC').all()),
 );
+
+// Parsed doc for the rich editor: prose runs (md) + verbatim component blocks (raw).
+// `doc` is a prefix (Hono can't match a static suffix after a greedy :id{.+}).
+app.get('/editor-api/doc/:id{.+}', (c) => {
+  const row = db.query('SELECT frontmatter, body FROM posts WHERE id = ?').get(c.req.param('id')) as
+    | { frontmatter: string; body: string }
+    | null;
+  if (!row) return c.json({ error: 'not found' }, 404);
+  return c.json({ frontmatter: JSON.parse(row.frontmatter), segments: segmentMdx(row.body) });
+});
 
 // Single post (id may contain slashes → rest-capture). `raw` = full MDX
 // (frontmatter + body) for editing both in one shot.
