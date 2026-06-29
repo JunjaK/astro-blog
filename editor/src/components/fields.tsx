@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Plus, RefreshCw, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -50,16 +50,32 @@ export function TagInput({ value, onChange }: { value: string[]; onChange: (t: s
   );
 }
 
-// Pick → object-URL preview + register pending; actual upload happens on save.
+// The box IS the control: empty → + to add; filled → hover to replace / remove.
+// Pick = object-URL preview + register pending; upload happens on save.
 export function ThumbnailInput({ value, onChange }: { value?: string; onChange: (src: string) => void }) {
   const ref = useRef<HTMLInputElement>(null);
+  const pick = () => ref.current?.click();
   return (
-    <div className="flex items-center gap-3">
+    <div className="group border-input relative aspect-video w-44 overflow-hidden rounded-md border border-dashed">
       {value
-        ? <img src={value} alt="" className="border-border size-16 rounded object-cover border" />
-        : <div className="border-input size-16 rounded border border-dashed" />}
-      <Button type="button" variant="outline" size="sm" onClick={() => ref.current?.click()}>이미지 선택</Button>
-      {value && <button type="button" className="text-muted-foreground text-sm" onClick={() => onChange('')}>제거</button>}
+        ? (
+          <>
+            <img src={value} alt="" className="size-full object-cover" />
+            <div className="absolute inset-0 hidden items-center justify-center gap-2 bg-black/55 group-hover:flex">
+              <button type="button" onClick={pick} title="교체" className="flex size-8 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25">
+                <RefreshCw className="size-4" />
+              </button>
+              <button type="button" onClick={() => onChange('')} title="제거" className="flex size-8 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25">
+                <X className="size-4" />
+              </button>
+            </div>
+          </>
+          )
+        : (
+          <button type="button" onClick={pick} className="text-muted-foreground hover:bg-accent hover:text-foreground flex size-full items-center justify-center">
+            <Plus className="size-6" />
+          </button>
+          )}
       <input
         ref={ref}
         type="file"

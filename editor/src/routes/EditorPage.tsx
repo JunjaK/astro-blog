@@ -5,6 +5,7 @@ import { RichEditor, type RichEditorHandle } from '../components/RichEditor';
 import { FrontmatterForm } from '../components/FrontmatterForm';
 import { pendingMedia } from '../tiptap/pendingMedia';
 import { api, type Frontmatter } from '../lib/api';
+import { Button } from '@/components/ui/button';
 
 export function EditorPage() {
   const id = useParams()['*'] ?? '';
@@ -32,8 +33,8 @@ function NewPost() {
   return (
     <section className="editor-page">
       <div className="row">
-        <button type="button" className="back-btn" onClick={() => navigate(-1)}>← 뒤로</button>
-        <button type="button" className="btn-primary" disabled>저장 (create 단계)</button>
+        <Button type="button" variant="outline" size="sm" onClick={() => navigate(-1)}>← 뒤로</Button>
+        <Button type="button" size="sm" disabled>저장</Button>
       </div>
       <FrontmatterForm value={fm} onChange={setFm} />
       <label className="field-label">content</label>
@@ -68,10 +69,10 @@ function EditExisting({ id }: { id: string }) {
   return (
     <section className="editor-page">
       <div className="row">
-        <button type="button" className="back-btn" onClick={() => navigate(-1)}>← 뒤로</button>
-        <div>
-          <span className="muted">{save.isPending ? '저장 중…' : dirty ? '변경됨' : save.isSuccess ? '저장됨' : ''}</span>{' '}
-          <button type="button" className="btn-primary" disabled={!dirty || save.isPending} onClick={() => save.mutate()}>저장</button>
+        <Button type="button" variant="outline" size="sm" onClick={() => navigate(-1)}>← 뒤로</Button>
+        <div className="flex items-center gap-3">
+          <span className="muted">{save.isPending ? '저장 중…' : dirty ? '변경됨' : save.isSuccess ? '저장됨' : ''}</span>
+          <Button type="button" size="sm" disabled={!dirty || save.isPending} onClick={() => save.mutate()}>저장</Button>
         </div>
       </div>
       {doc.isLoading && <p className="muted">불러오는 중…</p>}

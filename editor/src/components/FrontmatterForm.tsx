@@ -8,10 +8,12 @@ import { DatePicker, TagInput, ThumbnailInput } from './fields';
 
 export const CATEGORIES = ['daily', 'diary', 'game', 'music', 'web'];
 
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="grid gap-1.5">
-      <Label className="text-muted-foreground text-xs uppercase tracking-wide">{label}</Label>
+      <Label className="text-muted-foreground text-xs font-normal">{label}</Label>
       {children}
     </div>
   );
@@ -29,10 +31,11 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
         </Field>
       </div>
       <Field label="분류">
-        <Select value={value.category ?? ''} onValueChange={(v) => set({ category: v ?? undefined })}>
+        {/* value (data) stays lowercase; label is capitalized for display */}
+        <Select value={(value.category ?? '').toLowerCase()} onValueChange={(v) => set({ category: v ?? undefined })}>
           <SelectTrigger className="w-full"><SelectValue placeholder="분류 선택" /></SelectTrigger>
           <SelectContent>
-            {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{cap(c)}</SelectItem>)}
           </SelectContent>
         </Select>
       </Field>
@@ -56,7 +59,8 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
       </div>
 
       {isMusic && (
-        <>
+        <div className="border-border mt-1 grid gap-3 border-t pt-4 sm:col-span-2 sm:grid-cols-2">
+          <div className="text-foreground/80 text-sm font-medium sm:col-span-2">음악 정보</div>
           <Field label="아티스트"><Input value={value.artist ?? ''} onChange={(e) => set({ artist: e.target.value })} /></Field>
           <Field label="앨범"><Input value={value.album ?? ''} onChange={(e) => set({ album: e.target.value })} /></Field>
           <Field label="발매연도">
@@ -66,7 +70,7 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
           <div className="sm:col-span-2">
             <Field label="YouTube Music"><Input value={value.youtubeMusicUrl ?? ''} onChange={(e) => set({ youtubeMusicUrl: e.target.value })} /></Field>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
