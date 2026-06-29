@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { api } from '../lib/api';
 
 // Posts list = status dashboard. Shows seeded legacy posts + (later) editor-born.
@@ -10,7 +11,7 @@ export function PostsPage() {
     <section>
       <div className="row">
         <h1>글 {posts.data ? `(${posts.data.length})` : ''}</h1>
-        <Link to="/editor/new" className="post-list"><span>+ 새 글</span></Link>
+        <Button size="sm" className="min-h-11 sm:h-8" render={<Link to="/editor/new" />}>+ 새 글</Button>
       </div>
       {posts.isLoading && <p className="muted">불러오는 중…</p>}
       {posts.isError && <p className="muted">API 오프라인 — 서버를 켜세요.</p>}

@@ -1,18 +1,31 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { auth } from '../lib/api';
 
-// Skeleton login. Milestone ① wires POST /editor-api/auth/login
-// (argon2id via Bun.password) → httpOnly session cookie.
 export function LoginPage() {
+  const navigate = useNavigate();
+  const qc = useQueryClient();
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setError(false);
+    const ok = await auth.login(password);
+    setBusy(false);
+    if (!ok) { setError(true); return; }
+    // load-bearing: guard cached ['auth','me']=false on first load → invalidate to re-probe
+    await qc.invalidateQueries({ queryKey: ['auth'] });
+    navigate('/posts', { replace: true });
+  };
+
   return (
     <section className="login-page">
       <h1>로그인</h1>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          // TODO(milestone①): POST /editor-api/auth/login
-        }}
-      >
+      <form onSubmit={onSubmit}>
         <input
           type="password"
           value={password}
@@ -21,9 +34,10 @@ export function LoginPage() {
           data-testid="login-password-input"
           autoComplete="current-password"
         />
-        <button type="submit" className="btn-primary" data-testid="login-submit-button">
-          로그인
+        <button type="submit" className="btn-primary" disabled={busy} data-testid="login-submit-button">
+          {busy ? '확인 중…' : '로그인'}
         </button>
+        {error && <p className="muted" data-testid="login-error">비밀번호가 올바르지 않습니다.</p>}
       </form>
     </section>
   );

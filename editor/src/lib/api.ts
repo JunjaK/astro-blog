@@ -1,6 +1,11 @@
 // Thin client for the editor backend (Hono) mounted at /editor-api.
 // All content state lives server-side (RPi SQLite); no IndexedDB/local cache.
 const BASE = '/editor-api';
+const LOGIN_URL = `${import.meta.env.BASE_URL}login`; // '/editor/login'
+
+function bounceToLogin() {
+  if (!window.location.pathname.startsWith(LOGIN_URL)) window.location.assign(LOGIN_URL);
+}
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
@@ -8,9 +13,30 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
     headers: { 'X-Requested-With': 'XMLHttpRequest', ...init?.headers },
     ...init,
   });
+  if (res.status === 401) { bounceToLogin(); throw new Error('unauthorized'); }
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json() as Promise<T>;
 }
+
+// auth.* use raw fetch so their expected 401s don't trigger the global redirect.
+export const auth = {
+  me: async (): Promise<boolean> => {
+    const res = await fetch(`${BASE}/auth/me`, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+    return res.ok;
+  },
+  login: async (password: string): Promise<boolean> => {
+    const res = await fetch(`${BASE}/auth/login`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+      body: JSON.stringify({ password }),
+    });
+    return res.ok;
+  },
+  logout: async (): Promise<void> => {
+    await fetch(`${BASE}/auth/logout`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+  },
+};
 
 export interface HealthResponse {
   status: string;
@@ -53,7 +79,11 @@ export interface Frontmatter {
 
 export interface DocResponse {
   frontmatter: Frontmatter;
-  segments: { kind: 'md' | 'raw'; src: string }[];
+  segments: {
+    kind: 'md' | 'raw';
+    src: string;
+    node?: { name: string; attrs?: Record<string, string>; items?: { src: string; alt: string }[] };
+  }[];
 }
 
 export const api = {

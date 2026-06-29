@@ -21,6 +21,8 @@ const insertRaw = (src: string) => ({ editor, range }: Ctx) =>
   editor.chain().focus().deleteRange(range).insertContent({ type: 'rawMdx', attrs: { src } }).run();
 const insertGallery = (variant: 'carousel' | 'polaroid') => ({ editor, range }: Ctx) =>
   editor.chain().focus().deleteRange(range).insertContent({ type: 'gallery', attrs: { variant, items: [] } }).run();
+const insertMedia = (tag: 'ImageLoader' | 'VideoLoader') => ({ editor, range }: Ctx) =>
+  editor.chain().focus().deleteRange(range).insertContent({ type: 'mdxMedia', attrs: { tag, src: '', alt: '' } }).run();
 
 async function runAI({ editor, range }: Ctx) {
   editor.chain().focus().deleteRange(range).run();
@@ -44,6 +46,8 @@ const ITEMS: SlashItem[] = [
   { title: '코드 블록', hint: '</>', run: toggle('toggleCodeBlock') },
   { title: '구분선', hint: '—', run: ({ editor, range }) => editor.chain().focus().deleteRange(range).setHorizontalRule().run() },
   // common components
+  { title: '이미지', hint: 'img', run: insertMedia('ImageLoader') },
+  { title: '동영상', hint: '▶', run: insertMedia('VideoLoader') },
   { title: '목차 (TOC)', hint: 'toc', run: insertRaw('<TableOfContents>\n\n</TableOfContents>') },
   { title: '다이어그램 (Mermaid)', hint: '▤', run: insertRaw('```mermaid\n\n```') },
   { title: '갤러리 · 캐러셀', hint: 'img', run: insertGallery('carousel') },
@@ -108,6 +112,11 @@ export const SlashCommand = Extension.create<{ type: string }>({
                 getReferenceClientRect: props.clientRect as () => DOMRect,
                 appendTo: () => document.body, content: component.element,
                 showOnCreate: true, interactive: true, trigger: 'manual', placement: 'bottom-start',
+                maxWidth: 'calc(100vw - 24px)',
+                popperOptions: { modifiers: [
+                  { name: 'flip', options: { fallbackPlacements: ['top-start'] } },
+                  { name: 'preventOverflow', options: { padding: 12 } },
+                ] },
               });
             },
             onUpdate: (props) => {

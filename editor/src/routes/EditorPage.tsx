@@ -30,20 +30,20 @@ function NewPost() {
   const richRef = useRef<RichEditorHandle>(null);
   const [fm, setFm] = useState<Frontmatter>({ category: 'web', title: '', created: '' });
   const type = fm.category ?? 'web';
-  const actions = (
-    <div className="row">
+  const actions = (bar: boolean) => (
+    <div className={bar ? 'row editor-save-bar' : 'row'}>
       <Button type="button" variant="outline" size="sm" onClick={() => navigate(-1)}>← 뒤로</Button>
       <Button type="button" size="sm" disabled>저장</Button>
     </div>
   );
   return (
     <section className="editor-page">
-      {actions}
+      {actions(false)}
       <FrontmatterForm value={fm} onChange={setFm} />
       <label className="field-label">content</label>
       {/* key=type remounts so the slash palette reflects the chosen category */}
       <RichEditor key={type} ref={richRef} segments={[]} type={type} />
-      {actions}
+      {actions(true)}
     </section>
   );
 }
@@ -70,8 +70,8 @@ function EditExisting({ id }: { id: string }) {
 
   const type = fm?.category ?? 'web';
 
-  const actions = (
-    <div className="row">
+  const actions = (bar: boolean) => (
+    <div className={bar ? 'row editor-save-bar' : 'row'}>
       <Button type="button" variant="outline" size="sm" onClick={() => navigate(-1)}>← 뒤로</Button>
       <div className="flex items-center gap-3">
         <span className="muted">{save.isPending ? '저장 중…' : dirty ? '변경됨' : save.isSuccess ? '저장됨' : ''}</span>
@@ -81,7 +81,7 @@ function EditExisting({ id }: { id: string }) {
   );
   return (
     <section className="editor-page">
-      {actions}
+      {actions(false)}
       {doc.isLoading && <p className="muted">불러오는 중…</p>}
       {doc.isError && <p className="muted">불러오기 실패</p>}
       {doc.data && fm && (
@@ -89,7 +89,7 @@ function EditExisting({ id }: { id: string }) {
           <FrontmatterForm value={fm} onChange={update} />
           <label className="field-label">content</label>
           <RichEditor key={type} ref={richRef} segments={doc.data.segments} type={type} onDirty={() => setDirty(true)} />
-          {actions}
+          {actions(true)}
         </>
       )}
     </section>

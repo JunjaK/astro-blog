@@ -1,8 +1,9 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { mkdir } from 'node:fs/promises';
 import matter from 'gray-matter';
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
+import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import sharp from 'sharp';
 import { db } from './db';
 import { isManagedImport, manageImports, segmentMdx } from './mdx';
@@ -16,6 +17,57 @@ const app = new Hono();
 // the blog nginx serves them at /files/media (same dir as /home/jun/blog-files/media).
 const MEDIA_DIR = process.env.MEDIA_DIR ?? './.media';
 const MAX_BYTES = 25 * 1024 * 1024;
+
+// ── Auth (single-user, server-side session, httpOnly cookie, behind Cloudflare) ──
+const COOKIE = 'editor_session';
+const PROD = process.env.NODE_ENV === 'production';
+const SESSION_TTL_S = 30 * 24 * 60 * 60;
+const SESSIONS = new Map<string, number>(); // token → expiresAt ms (in-memory: deploy = re-login)
+
+const sha256 = (s: string) => createHash('sha256').update(s).digest();
+const safeEqual = (a: string, b: string) => timingSafeEqual(sha256(a), sha256(b));
+function newSession() {
+  const token = randomBytes(32).toString('base64url');
+  SESSIONS.set(token, Date.now() + SESSION_TTL_S * 1000);
+  return token;
+}
+function validSession(token: string | undefined): boolean {
+  if (!token) return false;
+  const exp = SESSIONS.get(token);
+  if (!exp) return false;
+  if (exp < Date.now()) { SESSIONS.delete(token); return false; }
+  return true;
+}
+
+// Default-DENY: every /editor-api/* needs a session except health + /auth/*.
+app.use('/editor-api/*', async (c, next) => {
+  const p = c.req.path;
+  if (p === '/editor-api/health' || p.startsWith('/editor-api/auth/')) return next();
+  if (!validSession(getCookie(c, COOKIE))) return c.json({ error: 'unauthorized' }, 401);
+  return next();
+});
+
+app.post('/editor-api/auth/login', async (c) => {
+  const expected = process.env.EDITOR_PASSWORD;
+  if (!expected) return c.json({ error: 'auth not configured' }, 503);
+  const { password } = await c.req.json<{ password?: string }>().catch(() => ({ password: undefined }));
+  if (!password || !safeEqual(password, expected)) return c.json({ error: 'invalid' }, 401);
+  setCookie(c, COOKIE, newSession(), { httpOnly: true, secure: PROD, sameSite: 'Lax', path: '/editor-api', maxAge: SESSION_TTL_S });
+  c.header('Cache-Control', 'no-store');
+  return c.json({ ok: true });
+});
+
+app.get('/editor-api/auth/me', (c) => {
+  c.header('Cache-Control', 'no-store');
+  return validSession(getCookie(c, COOKIE)) ? c.json({ ok: true }) : c.json({ error: 'unauthorized' }, 401);
+});
+
+app.post('/editor-api/auth/logout', (c) => {
+  const token = getCookie(c, COOKIE);
+  if (token) SESSIONS.delete(token);
+  deleteCookie(c, COOKIE, { path: '/editor-api' });
+  return c.json({ ok: true });
+});
 
 app.get('/editor-api/health', (c) =>
   c.json({ status: 'ok', service: 'editor-api', time: new Date().toISOString() }),

@@ -39,7 +39,7 @@ export function CropDialog({ src, aspect = 16 / 9, onCancel, onConfirm }: {
     <Dialog open onOpenChange={(o) => { if (!o) onCancel(); }}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader><DialogTitle>썸네일 자르기</DialogTitle></DialogHeader>
-        <div className="relative h-72 w-full overflow-hidden rounded-md bg-black">
+        <div className="relative h-56 max-h-[45vh] w-full overflow-hidden rounded-md bg-black sm:h-72">
           <Cropper
             image={src}
             crop={crop}

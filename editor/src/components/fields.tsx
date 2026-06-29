@@ -1,24 +1,19 @@
 import { useRef, useState } from 'react';
-import { CalendarIcon, Plus, RefreshCw, X } from 'lucide-react';
+import { Plus, RefreshCw, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
 import { pendingMedia } from '../tiptap/pendingMedia';
 import { CropDialog } from './CropDialog';
 
+// Native date input — far better than a cramped calendar popover on mobile.
 export function DatePicker({ value, onChange }: { value?: string; onChange: (iso: string) => void }) {
-  const date = value ? new Date(value) : undefined;
   return (
-    <Popover>
-      <PopoverTrigger render={<Button variant="outline" className="w-full justify-start font-normal" />}>
-        <CalendarIcon className="mr-2 size-4" />
-        {date ? date.toISOString().slice(0, 10) : '날짜 선택'}
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <Calendar mode="single" selected={date} onSelect={(d) => d && onChange(d.toISOString())} autoFocus />
-      </PopoverContent>
-    </Popover>
+    <Input
+      type="date"
+      className="w-full"
+      value={value ? value.slice(0, 10) : ''}
+      onChange={(e) => onChange(e.target.value ? new Date(e.target.value).toISOString() : '')}
+    />
   );
 }
 
@@ -38,7 +33,7 @@ export function TagInput({ value, onChange }: { value: string[]; onChange: (t: s
         </Badge>
       ))}
       <input
-        className="min-w-24 flex-1 bg-transparent px-1 text-sm outline-none"
+        className="min-w-24 flex-1 bg-transparent px-1 text-base outline-none sm:text-sm"
         value={draft}
         placeholder="태그 추가…"
         onChange={(e) => setDraft(e.target.value)}
@@ -63,11 +58,11 @@ export function ThumbnailInput({ value, onChange }: { value?: string; onChange: 
         ? (
           <>
             <img src={value} alt="" className="size-full object-cover" />
-            <div className="absolute inset-0 hidden items-center justify-center gap-2 bg-black/55 group-hover:flex">
-              <button type="button" onClick={pick} title="교체" className="flex size-8 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25">
+            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/55 opacity-0 transition-opacity group-hover:opacity-100 [@media(hover:none)]:opacity-100">
+              <button type="button" onClick={pick} title="교체" className="flex size-11 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 sm:size-8">
                 <RefreshCw className="size-4" />
               </button>
-              <button type="button" onClick={() => onChange('')} title="제거" className="flex size-8 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25">
+              <button type="button" onClick={() => onChange('')} title="제거" className="flex size-11 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 sm:size-8">
                 <X className="size-4" />
               </button>
             </div>
