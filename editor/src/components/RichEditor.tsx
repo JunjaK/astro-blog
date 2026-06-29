@@ -6,9 +6,14 @@ import type { Editor, JSONContent } from '@tiptap/core';
 import { GalleryNode } from '../tiptap/GalleryNode';
 import { RawMdx } from '../tiptap/RawMdx';
 import { SlashCommand } from '../tiptap/SlashCommand';
+import { pendingMedia } from '../tiptap/pendingMedia';
+import { api } from '../lib/api';
 
 export interface Segment { kind: 'md' | 'raw'; src: string }
-export interface RichEditorHandle { getBody: () => string }
+export interface RichEditorHandle {
+  getBody: () => string;
+  flushUploads: () => Promise<void>; // upload attached-but-pending images, swap blob src → /files/media
+}
 
 // tiptap-markdown augments editor.storage at runtime but not in types.
 interface MarkdownStorage {
@@ -55,6 +60,28 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(({ segments, type,
 
   useImperativeHandle(ref, () => ({
     getBody: () => (editor ? md(editor).getMarkdown() : ''),
+    flushUploads: async () => {
+      if (!editor) return;
+      const jobs: { pos: number; items: { src: string; alt: string }[] }[] = [];
+      editor.state.doc.descendants((node, pos) => {
+        if (node.type.name === 'gallery') jobs.push({ pos, items: node.attrs.items });
+      });
+      for (const job of jobs) {
+        let changed = false;
+        const out: { src: string; alt: string }[] = [];
+        for (const it of job.items) {
+          const file = pendingMedia.get(it.src);
+          if (it.src.startsWith('blob:') && file) {
+            const { src } = await api.uploadMedia(file);
+            URL.revokeObjectURL(it.src);
+            pendingMedia.delete(it.src);
+            out.push({ ...it, src });
+            changed = true;
+          } else { out.push(it); }
+        }
+        if (changed) editor.chain().command(({ tr }) => { tr.setNodeAttribute(job.pos, 'items', out); return true; }).run();
+      }
+    },
   }), [editor]);
 
   if (!editor) return null;

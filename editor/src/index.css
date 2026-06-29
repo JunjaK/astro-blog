@@ -19,8 +19,10 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   display: flex; align-items: center; justify-content: space-between;
   padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 20px;
 }
-.app-header nav a { color: var(--muted); text-decoration: none; margin-left: 14px; }
-.app-header nav a.active { color: var(--text); }
+.back-btn {
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 5px 12px; font-size: 13px; cursor: pointer;
+}
 
 .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .muted { color: var(--muted); font-size: 14px; }

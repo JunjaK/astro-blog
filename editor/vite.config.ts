@@ -9,6 +9,7 @@ export default defineConfig({
   base: '/editor/',
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       scope: '/editor/',

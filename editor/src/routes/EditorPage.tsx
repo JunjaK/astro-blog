@@ -15,6 +15,7 @@ function NewPost() {
   // POST /posts (create) lands with the publish step. For now: pick type + write.
   const richRef = useRef<RichEditorHandle>(null);
   const [type, setType] = useState('web');
+  const [fm, setFm] = useState('title: \ncategory: web\ncreated: ');
   return (
     <section className="editor-page">
       <div className="row">
@@ -26,6 +27,9 @@ function NewPost() {
         </div>
         <button type="button" className="btn-primary" disabled>저장 (create 단계)</button>
       </div>
+      <label className="field-label">frontmatter</label>
+      <textarea className="raw-mdx fm" value={fm} spellCheck={false} onChange={(e) => setFm(e.target.value)} />
+      <label className="field-label">content</label>
       {/* key=type remounts so the slash palette reflects the chosen type */}
       <RichEditor key={type} ref={richRef} segments={[]} type={type} />
     </section>
@@ -44,7 +48,10 @@ function EditExisting({ id }: { id: string }) {
   if (doc.data && fm === null) setFm(doc.data.frontmatterYaml);
 
   const save = useMutation({
-    mutationFn: () => api.savePost(id, `---\n${fm}\n---\n\n${richRef.current?.getBody() ?? ''}`),
+    mutationFn: async () => {
+      await richRef.current?.flushUploads(); // upload attached images now (not at attach time)
+      return api.savePost(id, `---\n${fm}\n---\n\n${richRef.current?.getBody() ?? ''}`);
+    },
     onSuccess: () => setDirty(false),
   });
 

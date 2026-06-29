@@ -1,7 +1,7 @@
 import { Node } from '@tiptap/core';
 import { NodeViewWrapper, ReactNodeViewRenderer, type ReactNodeViewProps } from '@tiptap/react';
-import { useRef, useState } from 'react';
-import { api } from '../lib/api';
+import { useRef } from 'react';
+import { pendingMedia } from './pendingMedia';
 
 // Gallery block: holds the images you add; editor shows them raw. The real
 // DiaryCarousel / PolaroidGalleryScrapbook renders in the published blog (viewer).
@@ -18,24 +18,19 @@ function GalleryView({ node, updateAttributes, deleteNode }: ReactNodeViewProps)
   const variant = node.attrs.variant as GalleryVariant;
   const items = node.attrs.items as GalleryItem[];
   const fileRef = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
 
   const setItems = (next: GalleryItem[]) => updateAttributes({ items: next });
 
-  async function onPick(files: FileList | null) {
+  // Attach = local preview only (object URL). Upload happens on save (flushUploads).
+  function onPick(files: FileList | null) {
     if (!files?.length) return;
-    setBusy(true);
-    try {
-      const uploaded: GalleryItem[] = [];
-      for (const f of Array.from(files)) {
-        const { src } = await api.uploadMedia(f);
-        uploaded.push({ src, alt: '' });
-      }
-      setItems([...items, ...uploaded]);
-    } finally {
-      setBusy(false);
-      if (fileRef.current) fileRef.current.value = '';
-    }
+    const added = Array.from(files).map((f) => {
+      const url = URL.createObjectURL(f);
+      pendingMedia.set(url, f);
+      return { src: url, alt: '' };
+    });
+    setItems([...items, ...added]);
+    if (fileRef.current) fileRef.current.value = '';
   }
 
   return (
@@ -62,9 +57,7 @@ function GalleryView({ node, updateAttributes, deleteNode }: ReactNodeViewProps)
             >✕</button>
           </figure>
         ))}
-        <button type="button" className="gallery-add" disabled={busy} onClick={() => fileRef.current?.click()}>
-          {busy ? '업로드 중…' : '+ 이미지'}
-        </button>
+        <button type="button" className="gallery-add" onClick={() => fileRef.current?.click()}>+ 이미지</button>
       </div>
       <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => onPick(e.target.files)} />
     </NodeViewWrapper>

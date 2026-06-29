@@ -1,17 +1,16 @@
-import { Navigate, NavLink, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { PostsPage } from './routes/PostsPage';
 import { EditorPage } from './routes/EditorPage';
 import { LoginPage } from './routes/LoginPage';
 
 function App() {
+  const navigate = useNavigate();
+  const atList = useLocation().pathname === '/posts';
   return (
     <div className="app-shell">
       <header className="app-header">
         <strong>jun-devlog editor</strong>
-        <nav>
-          <NavLink to="/posts">Posts</NavLink>
-          <NavLink to="/login">Login</NavLink>
-        </nav>
+        {!atList && <button type="button" className="back-btn" onClick={() => navigate(-1)}>← 뒤로</button>}
       </header>
       <main className="app-main">
         <Routes>
