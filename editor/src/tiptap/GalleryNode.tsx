@@ -91,4 +91,30 @@ export const GalleryNode = Node.create({
   addNodeView() {
     return ReactNodeViewRenderer(GalleryView);
   },
+  addStorage() {
+    return {
+      markdown: {
+        serialize(
+          state: { write: (s: string) => void; closeBlock: (n: unknown) => void },
+          node: { attrs: { variant: GalleryVariant; items: GalleryItem[] } },
+        ) {
+          const { variant, items } = node.attrs;
+          const rows = items
+            .map((it) =>
+              variant === 'polaroid'
+                ? `  { src: ${JSON.stringify(it.src)}, title: ${JSON.stringify(it.alt)} }`
+                : `  { src: ${JSON.stringify(it.src)}, alt: ${JSON.stringify(it.alt)} }`,
+            )
+            .join(',\n');
+          state.write(
+            variant === 'polaroid'
+              ? `<PolaroidGalleryScrapbook items={[\n${rows}\n]} />`
+              : `<DiaryCarousel client:visible content={[\n${rows}\n]} />`,
+          );
+          state.closeBlock(node);
+        },
+        parse: {},
+      },
+    };
+  },
 });

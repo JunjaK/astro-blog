@@ -29,11 +29,13 @@ app.get('/editor-api/posts', (c) =>
 // Parsed doc for the rich editor: prose runs (md) + verbatim component blocks (raw).
 // `doc` is a prefix (Hono can't match a static suffix after a greedy :id{.+}).
 app.get('/editor-api/doc/:id{.+}', (c) => {
-  const row = db.query('SELECT frontmatter, body FROM posts WHERE id = ?').get(c.req.param('id')) as
-    | { frontmatter: string; body: string }
+  const row = db.query('SELECT category, frontmatter, body FROM posts WHERE id = ?').get(c.req.param('id')) as
+    | { category: string; frontmatter: string; body: string }
     | null;
   if (!row) return c.json({ error: 'not found' }, 404);
-  return c.json({ frontmatter: JSON.parse(row.frontmatter), segments: segmentMdx(row.body) });
+  const fmYaml = matter.stringify('', JSON.parse(row.frontmatter))
+    .replace(/^---\r?\n/, '').replace(/\r?\n?---\r?\n?$/, '').trimEnd();
+  return c.json({ category: row.category, frontmatterYaml: fmYaml, segments: segmentMdx(row.body) });
 });
 
 // Single post (id may contain slashes → rest-capture). `raw` = full MDX

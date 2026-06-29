@@ -35,10 +35,17 @@ export interface PostDetail {
   raw: string; // full MDX (frontmatter + body)
 }
 
+export interface DocResponse {
+  category: string;
+  frontmatterYaml: string;
+  segments: { kind: 'md' | 'raw'; src: string }[];
+}
+
 export const api = {
   health: () => req<HealthResponse>('/health'),
   posts: () => req<PostListItem[]>('/posts'),
   getPost: (id: string) => req<PostDetail>(`/posts/${id}`),
+  getDoc: (id: string) => req<DocResponse>(`/doc/${id}`),
   savePost: (id: string, raw: string) =>
     req<{ ok: true }>(`/posts/${id}`, { method: 'PUT', body: JSON.stringify({ raw }), headers: { 'Content-Type': 'application/json' } }),
   uploadMedia: async (file: File): Promise<{ src: string }> => {

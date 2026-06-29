@@ -50,6 +50,16 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 }
 .raw-mdx.fm { min-height: 140px; }
 
+/* preserved MDX component blocks inside the rich editor */
+.rawmdx { border: 1px solid var(--border); border-left: 2px solid var(--muted); border-radius: 8px; margin: 12px 0; background: var(--surface); overflow: hidden; }
+.rawmdx-tag { font-size: 11px; color: var(--muted); padding: 5px 10px; border-bottom: 1px solid var(--border); }
+.rawmdx-src {
+  width: 100%; border: none; resize: vertical; display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; line-height: 1.55;
+  padding: 10px; background: transparent; color: var(--text); tab-size: 2;
+}
+.rawmdx-src:focus { outline: none; }
+
 .btn-primary {
   background: var(--accent); color: var(--bg); border: none; border-radius: 8px;
   padding: 8px 14px; font-weight: 600; cursor: pointer;

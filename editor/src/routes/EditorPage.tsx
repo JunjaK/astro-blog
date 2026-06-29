@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { EditorCanvas } from '../components/EditorCanvas';
+import { RichEditor, type RichEditorHandle } from '../components/RichEditor';
 import { api } from '../lib/api';
 
 export function EditorPage() {
@@ -10,58 +10,49 @@ export function EditorPage() {
 }
 
 function NewPost() {
+  // POST /posts (create) lands with the publish step. For now: a blank rich editor.
+  const richRef = useRef<RichEditorHandle>(null);
   return (
     <section className="editor-page">
-      <div className="row">
-        <h1>새 글</h1>
-        <button type="button" className="btn-primary" disabled>발행 (publish 단계)</button>
-      </div>
-      <EditorCanvas />
+      <div className="row"><h1>새 글</h1><button type="button" className="btn-primary" disabled>저장 (create 단계)</button></div>
+      <RichEditor ref={richRef} segments={[]} type="web" />
     </section>
   );
 }
 
-// frontmatter (between --- fences) + body. Lossless raw editing — no reverse
-// parser, so custom MDX (DiaryCarousel, ImageLoader, …) survives untouched.
-const FENCE = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/;
-
+// Uniform rich editing for any post: frontmatter (YAML) + content (prose rich,
+// component blocks preserved). type drives the slash component palette.
 function EditExisting({ id }: { id: string }) {
-  const post = useQuery({ queryKey: ['post', id], queryFn: () => api.getPost(id), retry: false });
-  const [fm, setFm] = useState('');
-  const [body, setBody] = useState('');
+  const doc = useQuery({ queryKey: ['doc', id], queryFn: () => api.getDoc(id), retry: false });
+  const richRef = useRef<RichEditorHandle>(null);
+  const [fm, setFm] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
 
-  useEffect(() => {
-    if (!post.data) return;
-    const m = post.data.raw.match(FENCE);
-    setFm(m ? m[1] : '');
-    setBody(m ? m[2] : post.data.raw);
-    setDirty(false);
-  }, [post.data]);
+  // seed frontmatter once loaded
+  if (doc.data && fm === null) setFm(doc.data.frontmatterYaml);
 
   const save = useMutation({
-    mutationFn: () => api.savePost(id, `---\n${fm}\n---\n${body}`),
+    mutationFn: () => api.savePost(id, `---\n${fm}\n---\n\n${richRef.current?.getBody() ?? ''}`),
     onSuccess: () => setDirty(false),
   });
-  const edit = <T,>(setter: (v: T) => void) => (v: T) => { setter(v); setDirty(true); };
 
   return (
     <section className="editor-page">
       <div className="row">
-        <h1>{post.data?.title || id}</h1>
+        <h1>{id}</h1>
         <div>
           <span className="muted">{save.isPending ? '저장 중…' : dirty ? '변경됨' : save.isSuccess ? '저장됨' : ''}</span>{' '}
           <button type="button" className="btn-primary" disabled={!dirty || save.isPending} onClick={() => save.mutate()}>저장</button>
         </div>
       </div>
-      {post.isLoading && <p className="muted">불러오는 중…</p>}
-      {post.isError && <p className="muted">불러오기 실패</p>}
-      {post.data && (
+      {doc.isLoading && <p className="muted">불러오는 중…</p>}
+      {doc.isError && <p className="muted">불러오기 실패</p>}
+      {doc.data && fm !== null && (
         <>
-          <label className="field-label">frontmatter</label>
-          <textarea className="raw-mdx fm" value={fm} spellCheck={false} onChange={(e) => edit(setFm)(e.target.value)} />
-          <label className="field-label">content (MDX)</label>
-          <textarea className="raw-mdx" value={body} spellCheck={false} onChange={(e) => edit(setBody)(e.target.value)} />
+          <label className="field-label">frontmatter · {doc.data.category}</label>
+          <textarea className="raw-mdx fm" value={fm} spellCheck={false} onChange={(e) => { setFm(e.target.value); setDirty(true); }} />
+          <label className="field-label">content</label>
+          <RichEditor ref={richRef} segments={doc.data.segments} type={doc.data.category} onDirty={() => setDirty(true)} />
         </>
       )}
     </section>

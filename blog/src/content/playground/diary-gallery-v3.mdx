@@ -7,7 +7,7 @@ description: 여행 향수 무드의 Diary Gallery ver3 — 항공우편 엽서 
 ---
 
 import ProjectInfo from '@/components/Project/ProjectInfo.astro';
-import { PostcardGallery, FilmStripGallery, JournalGallery } from '@/components/Blog/DiaryGallery/v3';
+import { PostcardGallery, FilmStripGallery, JournalGallery, VelocityStream } from '@/components/Blog/DiaryGallery/v3';
 
 <ProjectInfo frontmatter={frontmatter} />
 
@@ -79,3 +79,9 @@ export const sample = [
 제본된 다이어리 펼침면에 washi 테이프로 붙인 사진들. 사진을 누르면 페이지가 3D로 들리며 여백 메모가 tegaki로 써진다.
 
 <JournalGallery client:visible items={sample} />
+
+## D. 속도 연동 3D 스트림
+
+[Motion의 scroll-velocity 예제](https://examples.motion.dev/react/scroll-velocity-linked-offset) 기법. 사진이 대각선으로 깊이감 있게 늘어선 3D 스트림. **스크롤하면 흐르고**, 스크롤 속도(`useVelocity`)가 카드의 기울기·오프셋에 wave처럼 실시간 반영된다. 카드를 누르면 라이트박스로 확대되며 캡션이 tegaki로 써진다.
+
+<VelocityStream client:visible items={sample} />
