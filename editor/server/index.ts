@@ -3,6 +3,7 @@ import { mkdir } from 'node:fs/promises';
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
 import sharp from 'sharp';
+import { db } from './db';
 
 // Editor backend (Bun + Hono). Serves the built React SPA under /editor and the
 // API under /editor-api on the same origin (cookie auth, no CORS).
@@ -16,6 +17,11 @@ const MAX_BYTES = 25 * 1024 * 1024;
 
 app.get('/editor-api/health', (c) =>
   c.json({ status: 'ok', service: 'editor-api', time: new Date().toISOString() }),
+);
+
+// Post list (status dashboard). 'draft' state derivation comes with the publish step.
+app.get('/editor-api/posts', (c) =>
+  c.json(db.query('SELECT id, category, slug, title, source, created_at FROM posts ORDER BY created_at DESC').all()),
 );
 
 // Image upload → webp (EXIF/GPS stripped by sharp default), content-hash name.

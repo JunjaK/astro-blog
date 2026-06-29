@@ -25,3 +25,5 @@ dist-ssr
 
 # uploaded media (local dev)
 .media/
+
+.data/

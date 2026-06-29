@@ -2,26 +2,26 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
 
-// Posts list = status dashboard (동기화됨 / 수정됨 / 새 초안). Skeleton: shows
-// backend health + a placeholder entry. Milestone ① fills GET /posts.
+// Posts list = status dashboard. Shows seeded legacy posts + (later) editor-born.
 export function PostsPage() {
-  const health = useQuery({ queryKey: ['health'], queryFn: api.health, retry: false });
+  const posts = useQuery({ queryKey: ['posts'], queryFn: api.posts, retry: false });
 
   return (
     <section>
       <div className="row">
-        <h1>글</h1>
-        <span className={`badge ${health.isSuccess ? 'ok' : 'down'}`}>
-          API: {health.isLoading ? '확인 중…' : health.isSuccess ? 'online' : 'offline'}
-        </span>
+        <h1>글 {posts.data ? `(${posts.data.length})` : ''}</h1>
+        <Link to="/editor/new" className="post-list"><span>+ 새 글</span></Link>
       </div>
-      <p className="muted">
-        DB(편집 SoT) ↔ git/MDX(발행) 모델. 목록·상태 배지는 마일스톤①에서 구현.
-      </p>
-      <ul className="post-list">
-        <li>
-          <Link to="/editor/new">+ 새 글 작성</Link>
-        </li>
+      {posts.isLoading && <p className="muted">불러오는 중…</p>}
+      {posts.isError && <p className="muted">API 오프라인 — 서버를 켜세요.</p>}
+      <ul className="post-table">
+        {posts.data?.map((p) => (
+          <li key={p.id}>
+            <span className="post-cat">{p.category}</span>
+            <span className="post-title">{p.title || p.slug}</span>
+            <span className={`badge ${p.source === 'legacy' ? 'down' : 'ok'}`}>{p.source}</span>
+          </li>
+        ))}
       </ul>
     </section>
   );

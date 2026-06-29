@@ -18,8 +18,18 @@ export interface HealthResponse {
   time: string;
 }
 
+export interface PostListItem {
+  id: string;
+  category: string;
+  slug: string;
+  title: string | null;
+  source: string;
+  created_at: string | null;
+}
+
 export const api = {
   health: () => req<HealthResponse>('/health'),
+  posts: () => req<PostListItem[]>('/posts'),
   uploadMedia: async (file: File): Promise<{ src: string }> => {
     const fd = new FormData();
     fd.append('file', file);
