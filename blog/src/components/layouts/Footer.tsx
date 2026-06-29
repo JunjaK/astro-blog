@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button.tsx';
-import { Icon } from '@/components/ui/icon';
 // @flow
 import * as React from 'react';
+import { Button } from '@/components/ui/button.tsx';
+import { Icon } from '@/components/ui/icon';
 
 export default function Footer() {
   const currentYaer = new Date().getFullYear();
@@ -13,7 +13,7 @@ export default function Footer() {
           <div className="text-sm text-gray-500">
             &copy;
             {' '}
-            {currentYaer}
+            <span suppressHydrationWarning>{currentYaer}</span>
             {' '}
             • Junjak •
           </div>

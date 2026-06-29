@@ -1,26 +1,16 @@
 import type { BlogFrontMatter } from '@/types/commonType.ts';
+import dayjs from 'dayjs';
 import BlogTags from '@/components/Blog/BlogTags';
 import { MagicCard, MagicContainer } from '@/components/ui/magic-card';
-import dayjs from 'dayjs';
-import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
-import { useMemo } from 'react';
-
-dayjs.extend(dayJsRelativeTime);
 
 interface Props {
   frontmatter: BlogFrontMatter;
 }
 
 export default function BlogFrontmatter({ frontmatter }: Props) {
-  const created = useMemo(() => {
-    const today = dayjs();
-    const targetDate = dayjs(frontmatter.created);
-    const diff = today.diff(frontmatter.created, 'day') > 31;
-    if (diff) {
-      return targetDate.format('YYYY-MM-DD');
-    }
-    return targetDate.fromNow();
-  }, [frontmatter.created]);
+  // Absolute date only — `fromNow()` is time-of-render dependent and diverges
+  // SSR↔CSR for posts < 31 days old (React #418).
+  const created = dayjs(frontmatter.created).format('YYYY-MM-DD');
 
   function onSearch(type: 'category' | 'tag', value: string) {
     if (type === 'category') {

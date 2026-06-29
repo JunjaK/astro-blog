@@ -1,12 +1,12 @@
 ---
 title: 블로그 SSR↔CSR 하이드레이션 불일치(#418) 감사 + 수정
-status: planning
+status: complete
 created: 2026-06-29
 updated: 2026-06-29
 topic: blog-hydration-mismatch-audit
-orchestration: STANDARD
+orchestration: ULTRACODE
 team: Leader + Architect A (FE)  # BE N/A (static SSG), Infra/UIUX optional-low
-mode: team-brainstorm (planning only)
+mode: team-brainstorm → executed (ultracode)
 ---
 
 # 블로그 SSR↔CSR 하이드레이션 불일치(#418) 감사 + 수정 — 플랜
@@ -159,5 +159,25 @@ SSR/클라 동일, 깜빡임 없음, diff 음수.
 - **UI/UX Master**: optional-low — fromNow 제거로 시각 변화 없음(깜빡임도 제거됨).
 - **Designers ~2, Testers 1. Orchestration: STANDARD.**
 
-## 다음 단계
-`/team-run "블로그 하이드레이션 #418 감사+수정 (이 플랜 기준)"` 으로 실행.
+## 실행 결과 (완료 — 2026-06-29, ultracode)
+
+**Phase 0 루트커즈 (라이브 #418 범인 확정):** dev 빌드 비압축 캡처로 `Navigation` 안의 **`AnimatedThemeToggler`** 확정 — `isDark ? <Sun> : <Moon>`를 `$theme`(SSR 정적 `'dark'`) 기반으로 render에서 분기. 클라 첫 페인트에서 실제 테마/스토어 불일치 → 서버 Sun vs 클라 Moon → #418. ThemeInit가 `.dark`만 설정하고 `$theme`는 안 건드려 발생. **모든 페이지 공통 버그**(아키텍트 예측 적중; MDX 구조 문제 아님).
+
+**수정:**
+- `blog/src/components/ui/animated-theme-toggler.tsx` — 아이콘을 테마 비의존 마크업으로(Sun+Moon 둘 다 렌더, `.dark` CSS로 토글, ModeToggle 패턴). 토글 방향은 스토어 대신 live DOM(`classList.contains('dark')`)에서 읽음. `useStore($theme)` 제거. → SSR==CSR, #418 제거, 깜빡임 없음.
+- `blog/src/components/Blog/BlogFrontmatter.tsx` — `fromNow()` 분기 제거, 항상 `YYYY-MM-DD` (최신 글 잠재 #418 제거, diff 음수).
+- `blog/src/components/layouts/Footer.tsx` — 연도 `<span suppressHydrationWarning>` (무해 케이스).
+
+**탐지 하니스:** `blog/e2e/hydration-sweep.noauth.spec.ts` — 콘텐츠 글롭으로 블로그 글 라우트 열거(Astro 슬러그 소문자화 반영), 라우트별 navigate→scroll→settle→콘솔 하이드레이션 정규식 어서트, chromium+mobile-chrome.
+
+**CI 게이트:** `.github/workflows/main.yml` build job(ubuntu)에 `playwright install chromium` + `playwright test hydration-sweep --project=chromium` 추가 — 실패 시 빌드 중단→배포 차단.
+
+**검증:**
+- dev: 도쿄 글 #418 사라짐 (이전 캡처 → 0).
+- **sweep 80/80 통과** (40글 × chromium+mobile-chrome, 하이드레이션 에러 0).
+- prod 프리뷰: 도쿄 글 #418 0 (giscus 404 댓글만, 무관).
+- eslint clean(변경 4파일), prod build 59페이지 성공.
+
+**미적용/후속(플랜 명시):** playground(`DiarySection3D` module-level `isMobile`)는 범위 외. ClientRouter `transition:persist` 유발 불일치는 fresh-goto sweep이 못 잡음 → 후속. CI는 chromium-only(엔진 동일, lean); 로컬은 both.
+
+**배포:** 코드 머지 후 `prd/blog` push 시 CI 게이트 통과 → 자동 배포. (별건: `nginx.conf` HTML no-cache, `astro.config` optimizeDeps는 이전 단계에서 적용됨 — prod/dev 캐시 안정화용.)

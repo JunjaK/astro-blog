@@ -38,6 +38,12 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: bun install --frozen-lockfile
 
+      - name: Install Playwright (chromium)
+        run: bunx playwright install --with-deps chromium
+
+      - name: Hydration sweep gate (SSR/CSR mismatch)
+        run: bunx playwright test hydration-sweep --project=chromium
+
       - name: Build
         run: bun run build
 
