@@ -1,8 +1,11 @@
 # Project Structure
 
-## Directory Layout
+> Monorepo split (2026-06-29): root holds shared `_docs/ _note/ .claude/ CLAUDE.md .github/ .mise.toml`;
+> **`editor/`** = React+Vite+TipTap+Hono SPA (separate app); **everything below is under `blog/`**.
+
+## Directory Layout (under `blog/`)
 ```
-_docs/                       # Design plans & architecture docs (check before implementing)
+_docs/                       # (at ROOT, not blog/) Design plans & architecture docs
 image-assets/                # Local image storage (synced to RPi, NOT in src/)
 e2e/                         # Playwright + agent-browser tests (outputs gitignored)
 scripts/                     # Build scripts (bundle-icons.mjs)

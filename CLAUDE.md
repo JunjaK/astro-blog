@@ -11,11 +11,12 @@ Personal developer blog built with Astro 6, featuring multi-framework islands (R
 > relative to `blog/`** (e.g. `src/` → `blog/src/`, run `bun dev` from `blog/`). The `editor/` app is a
 > Vite+React+TipTap SPA served by a Hono backend (`/editor` + `/editor-api`); see
 > `_docs/active/.../blog-editor-app-plan.md`. Deploys are branch-based: **`prd/blog`** (blog),
-> **`prd/editor`** (editor). Full path reconciliation of this file is pending.
+> **`prd/editor`** (editor).
 
 ## Commands
 
 ```bash
+# blog: run from blog/  ·  editor: run from editor/
 bun dev               # Dev server (--mode dev)
 bun run build         # Production build (--mode prd)
 bun run preview       # Preview built site
@@ -31,7 +32,9 @@ bun run all-preprocess-md  # Run all markdown preprocessors (removeUnused → ad
 ## Project Structure
 
 ```
-_docs/                  # Design plans & architecture docs
+# ROOT: _docs/  _note/  .claude/  CLAUDE.md  .github/  .mise.toml   (shared, Claude-owned)
+# editor/                # React+Vite+TipTap SPA + Hono server (/editor, /editor-api) — milestone work
+blog/                    # ← everything below is under blog/
 src/
 ├── assets/styles/
 │   ├── global.css          # Tailwind 4 entry (@import "tailwindcss", CSS variables, base styles)
@@ -75,7 +78,7 @@ src/
 | `/playground` | `pages/playground.astro` | Interactive demos |
 | `/playground/[...slug]` | `pages/playground/[...slug].astro` | Demo detail |
 
-## Path Aliases (tsconfig.json)
+## Path Aliases (blog/tsconfig.json)
 
 - `@/*` → `./src/*`
 - `~/*` → `./src/*`
@@ -126,10 +129,11 @@ project: { title, duration, techStacks?, thumbnail?, description? }
 playground: { title, duration, techStacks?, thumbnail?, description? }
 ```
 
-## Deployment
-- **CI/CD**: GitHub Actions on push to `master` (self-hosted runner on Raspberry Pi 4)
-- **Tooling**: mise (node 24 + bun) → `bun run build` → Docker image → container restart
-- **Docker**: Ubuntu/Nginx image, serves static dist/ on port 4321
+## Deployment (branch-based, self-hosted RPi runner)
+- **blog** → push `prd/blog` (`.github/workflows/main.yml`, paths `blog/**`): `bun run build` in `blog/` → `blog/dist` → Docker/Nginx on :4321
+- **editor** → push `prd/editor` (`.github/workflows/editor.yml`, paths `editor/**`): Docker (Bun build + Hono) on :4322
+- Both also support `workflow_dispatch`. `master` does NOT deploy (no trigger). New-branch path-filter gotcha → use `gh workflow run <wf> --ref prd/xxx`.
+- editor public routing: Cloudflare Tunnel hostnames `www.jun-devlog.win/editor` + `/editor-api` → RPi :4322, ordered ABOVE the blog catch-all (first-match-wins)
 
 ## Key Dependencies
 
@@ -146,7 +150,7 @@ playground: { title, duration, techStacks?, thumbnail?, description? }
 
 ## Image Assets & Deployment
 
-- **Local storage**: `image-assets/` at project root (not in `src/content/`)
+- **Local storage**: `blog/image-assets/` (not in `src/content/`)
 - **Server path**: `/home/jun/blog-files/` on RPi (Docker bind mount → nginx `/files/`)
 - **SSH access**: `ssh raspi` (key-based auth via `~/.ssh/config`)
 - **Skills**: `/publish-images` (rsync + preprocess), `/preprocess-md` (preprocess only)

@@ -1,8 +1,10 @@
 # Project Profile
 
 > Generated: 2026-06-28
-> Last updated: 2026-06-28
-> Profile-Generated-At: 29d8a97
+> Last updated: 2026-06-29
+> Profile-Generated-At: 1f6f3b2
+
+> **Monorepo split (2026-06-29):** blog moved to **`blog/`**; new **`editor/`** app (React+Vite+TipTap+Hono SPA, `/editor` + `/editor-api`). Shared `_docs/ _note/ .claude/ CLAUDE.md .github/ .mise.toml` stay at root. **All blog paths in these profile files are now under `blog/`.** Deploys branch-based: `prd/blog`, `prd/editor`. Profile conventions (stack/style/state/test/ui) unchanged — only the root path moved.
 
 ## Quick Summary
 - **Stack**: Astro 6 (multi-framework islands: React 19 / Vue 3.5 / Svelte 5) + TypeScript + nyxbui (shadcn/Radix)

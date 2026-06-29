@@ -36,7 +36,7 @@
 | react-hook-form / @hookform/resolvers | — | Forms |
 | es-toolkit / dayjs / rxjs / uuid | — | Utilities |
 
-## Build (use Bun)
+## Build (use Bun — run from `blog/`)
 - Dev: `bun dev` (= `astro dev --mode dev`)
 - Build: `bun run build` (= `astro build --mode prd`)
 - Preview: `bun run preview`
