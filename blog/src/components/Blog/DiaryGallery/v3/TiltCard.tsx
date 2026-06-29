@@ -19,7 +19,8 @@ export function TiltCard({ max = 9, className, style, ariaLabel, onActivate, chi
 
   const onMove = (event: PointerEvent<HTMLButtonElement>) => {
     const el = ref.current;
-    if (!el) return;
+    if (!el)
+      return;
     const rect = el.getBoundingClientRect();
     const px = (event.clientX - rect.left) / rect.width - 0.5;
     const py = (event.clientY - rect.top) / rect.height - 0.5;
@@ -29,7 +30,8 @@ export function TiltCard({ max = 9, className, style, ariaLabel, onActivate, chi
 
   const reset = () => {
     const el = ref.current;
-    if (!el) return;
+    if (!el)
+      return;
     el.style.setProperty('--tilt-x', '0deg');
     el.style.setProperty('--tilt-y', '0deg');
   };

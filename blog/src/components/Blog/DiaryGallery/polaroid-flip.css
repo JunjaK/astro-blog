@@ -1,0 +1,229 @@
+/* =========================================================================
+   Scrapbook polaroid → flip lightbox. Keeps the INSTANT-PHOTO design; borrows
+   only the flip interaction. Vertical, mobile-safe (bottom control bar).
+   Self-contained (mounted on every blog post). Plain text, no tegaki.
+   ========================================================================= */
+
+.pf-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9990; /* below the custom cursor (#pelica-cursor) */
+  display: grid;
+  place-items: center;
+  padding: clamp(0.8rem, 4vw, 3rem);
+  background: radial-gradient(circle at 50% 40%, rgba(34, 24, 13, 0.82), rgba(8, 6, 3, 0.95));
+  backdrop-filter: blur(6px);
+}
+
+.pf-arena {
+  perspective: 1800px;
+}
+
+/* --- the polaroid + flip --- */
+.pf-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.pf-flip {
+  height: min(72vh, 32rem);
+  aspect-ratio: 5 / 6;
+  max-width: 88vw;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  perspective: 1800px;
+}
+
+.pf-flip__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0.1, 0.2, 1);
+  /* NOTE: no filter/opacity here — they flatten preserve-3d and break the flip. */
+}
+.pf-flip.is-flipped .pf-flip__inner { transform: rotateY(180deg); }
+
+/* --- polaroid card faces (instant-photo frame) --- */
+.pf-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  /* classic instant photo: thin top/sides, thick bottom */
+  padding: 5.5% 5.5% 17%;
+  border-radius: 3px;
+  backface-visibility: hidden;
+  background:
+    radial-gradient(circle at 14% 10%, rgba(150, 110, 60, 0.1), transparent 22%),
+    radial-gradient(circle at 88% 84%, rgba(120, 90, 50, 0.1), transparent 22%),
+    radial-gradient(120% 120% at 50% 46%, transparent 62%, rgba(120, 86, 40, 0.14) 100%),
+    linear-gradient(170deg, #f8f3ea, #ece3d0);
+  box-shadow:
+    inset 0 0 0 1px rgba(120, 86, 40, 0.08),
+    0 30px 55px rgba(0, 0, 0, 0.55);
+}
+
+/* ---- front ---- */
+.pf-photo {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: #d6d3d1;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.12),
+    inset 0 2px 12px rgba(40, 28, 12, 0.34);
+}
+.pf-photo img {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  /* aged film tone */
+  filter: sepia(0.24) saturate(0.82) contrast(0.92) brightness(0.97) hue-rotate(-6deg);
+}
+/* film vignette */
+.pf-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255, 204, 136, 0.12), transparent 36%),
+    radial-gradient(116% 116% at 50% 48%, transparent 56%, rgba(26, 16, 6, 0.32) 100%);
+  mix-blend-mode: multiply;
+}
+/* glossy sheen */
+.pf-photo__sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.06) 24%, transparent 44%);
+  mix-blend-mode: screen;
+}
+
+.pf-caption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 17%;
+  margin: 0 -0.5% -12% -0.5%;
+  font-family: 'Caveat', 'Segoe Script', cursive;
+  font-size: clamp(1.2rem, 4vw, 1.7rem);
+  line-height: 1;
+  color: #4a3f35;
+  text-align: center;
+}
+
+/* ---- back (written) ---- */
+.pf-face--back {
+  transform: rotateY(180deg);
+  justify-content: flex-start;
+  gap: 0.6rem;
+  padding: 9% 9% 14%;
+  text-align: left;
+}
+.pf-back__title {
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(74, 63, 53, 0.6);
+}
+.pf-back__desc {
+  margin: 0;
+  flex: 1;
+  overflow-y: auto;
+  font-size: clamp(0.95rem, 2.6vw, 1.12rem);
+  line-height: 1.62;
+  color: #4a3f35;
+  text-align: left;
+}
+
+.pf-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* --- controls --- */
+.pf-btn {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: rgba(20, 14, 8, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.pf-btn:hover { background: rgba(20, 14, 8, 0.85); }
+
+.pf-btn--close {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  width: 2.6rem;
+  height: 2.6rem;
+}
+
+/* bottom bar — always visible, never clipped on mobile */
+.pf-controls {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(0.9rem, 3.5vh, 2rem);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+.pf-nav { width: 3rem; height: 3rem; }
+.pf-nav:hover { transform: scale(1.06); }
+.pf-counter {
+  min-width: 3.4rem;
+  text-align: center;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* --- dark mode: a dark instant photo, matching the scrapbook board's dark tokens --- */
+.dark .pf-face,
+[data-theme='dark'] .pf-face {
+  background:
+    radial-gradient(circle at 14% 10%, rgba(255, 220, 171, 0.06), transparent 22%),
+    radial-gradient(circle at 88% 84%, rgba(255, 220, 171, 0.05), transparent 22%),
+    radial-gradient(120% 120% at 50% 46%, transparent 60%, rgba(0, 0, 0, 0.42) 100%),
+    linear-gradient(170deg, #27272c, #19191d);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 240, 212, 0.05),
+    0 30px 55px rgba(0, 0, 0, 0.7);
+}
+.dark .pf-photo,
+[data-theme='dark'] .pf-photo {
+  background: #2b2b30;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.4),
+    inset 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+.dark .pf-caption,
+[data-theme='dark'] .pf-caption {
+  color: #ece3d2;
+}
+.dark .pf-back__title,
+[data-theme='dark'] .pf-back__title {
+  color: rgba(236, 227, 210, 0.6);
+}
+.dark .pf-back__desc,
+[data-theme='dark'] .pf-back__desc {
+  color: #ece3d2;
+}
+
+@media (max-width: 768px) {
+  .pf-flip { height: auto; width: 86vw; max-width: 86vw; aspect-ratio: 5 / 6; }
+  .pf-stage { gap: 0.5rem; }
+}

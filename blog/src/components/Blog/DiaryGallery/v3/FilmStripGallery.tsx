@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { type PolaroidImage, resolveThumb } from './shared';
 import { TegakiCaption } from './TegakiCaption';
 import { TiltCard } from './TiltCard';
 import { V3LightboxShell } from './V3LightboxShell';
-import { resolveThumb, type PolaroidImage } from './shared';
 import './v3.css';
 
 function SlideStage({ item, index }: { item: PolaroidImage; index: number }) {

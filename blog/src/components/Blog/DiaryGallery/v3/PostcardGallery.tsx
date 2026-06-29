@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { type PolaroidImage, resolveThumb, round4, seeded } from './shared';
 import { TegakiCaption } from './TegakiCaption';
 import { TiltCard } from './TiltCard';
 import { V3LightboxShell } from './V3LightboxShell';
-import { resolveThumb, round4, seeded, type PolaroidImage } from './shared';
 import './v3.css';
 
 function PostcardStage({ item }: { item: PolaroidImage }) {
@@ -78,7 +78,7 @@ export function PostcardGallery({ items }: { items: PolaroidImage[] }) {
               key={item.src}
               className="dgv3-pc-card"
               ariaLabel={item.title}
-              style={{ '--card-rotate': `${rotate}deg`, zIndex: items.length - i } as React.CSSProperties}
+              style={{ '--card-rotate': `${rotate}deg`, 'zIndex': items.length - i } as React.CSSProperties}
               onActivate={() => setIndex(i)}
             >
               <span className="dgv3-pc-card__airmail" aria-hidden="true" />
@@ -88,7 +88,7 @@ export function PostcardGallery({ items }: { items: PolaroidImage[] }) {
               <span className="dgv3-pc-card__stamp" aria-hidden="true" />
               <span className="dgv3-pc-card__postmark" aria-hidden="true" />
               <span className="dgv3-pc-card__caption">
-                <TegakiCaption text={item.caption ?? item.title} delay={round4(i * 0.14)} />
+                <TegakiCaption text={item.caption ?? item.title} delay={round4(i * 0.14)} loop />
               </span>
             </TiltCard>
           );

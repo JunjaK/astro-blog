@@ -1,10 +1,10 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useCallback, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { wrapIndex } from './shared';
 
 type V3LightboxShellProps = {
@@ -22,18 +22,23 @@ export function V3LightboxShell({ count, index, onClose, onIndex, children }: V3
 
   const go = useCallback(
     (delta: number) => {
-      if (index === null) return;
+      if (index === null)
+        return;
       onIndex(wrapIndex(index + delta, count));
     },
     [index, count, onIndex],
   );
 
   useEffect(() => {
-    if (!open) return;
+    if (!open)
+      return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-      else if (event.key === 'ArrowLeft') go(-1);
-      else if (event.key === 'ArrowRight') go(1);
+      if (event.key === 'Escape')
+        onClose();
+      else if (event.key === 'ArrowLeft')
+        go(-1);
+      else if (event.key === 'ArrowRight')
+        go(1);
     };
     window.addEventListener('keydown', onKey);
     const previousOverflow = document.body.style.overflow;
@@ -44,7 +49,8 @@ export function V3LightboxShell({ count, index, onClose, onIndex, children }: V3
     };
   }, [open, go, onClose]);
 
-  if (typeof document === 'undefined') return null;
+  if (typeof document === 'undefined')
+    return null;
 
   return createPortal(
     <AnimatePresence>
@@ -94,7 +100,10 @@ export function V3LightboxShell({ count, index, onClose, onIndex, children }: V3
 
           {count > 1 && (
             <div className="dgv3-lightbox__counter">
-              {(index as number) + 1} / {count}
+              {(index as number) + 1}
+              {' '}
+              /
+              {count}
             </div>
           )}
         </motion.div>

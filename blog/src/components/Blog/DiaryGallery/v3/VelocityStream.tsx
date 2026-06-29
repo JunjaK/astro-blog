@@ -1,11 +1,11 @@
 'use client';
 
-import { useRef, useState } from 'react';
 import type { MotionValue } from 'framer-motion';
 import { motion, useScroll, useSpring, useTransform, useVelocity } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { type PolaroidImage, resolveThumb } from './shared';
 import { TegakiCaption } from './TegakiCaption';
 import { V3LightboxShell } from './V3LightboxShell';
-import { resolveThumb, type PolaroidImage } from './shared';
 import './v3.css';
 
 function clamp(v: number, min: number, max: number): number {

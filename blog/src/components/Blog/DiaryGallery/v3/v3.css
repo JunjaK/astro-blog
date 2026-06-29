@@ -15,8 +15,11 @@
   --dgv3-photo-filter: sepia(0.22) saturate(0.86) contrast(0.94) brightness(0.98);
   --dgv3-grain: rgba(60, 44, 26, 0.05);
 
+  /* full-bleed centered on the VIEWPORT (not the padded article column), so the
+     viewport-width shells never overflow their narrower parent → no horizontal scroll. */
   width: min(100vw - 1rem, 72rem);
-  margin: 2.4rem auto 3rem;
+  margin: 2.4rem 0 3rem;
+  margin-left: calc(50% - min(100vw - 1rem, 72rem) / 2);
   color: var(--dgv3-ink);
 }
 
@@ -659,10 +662,11 @@
 :global(.dark) .dgv3-journal-open__hand { color: #ece3d2; }
 
 /* ==================== D · Velocity 3D stream =========================== */
-/* full-bleed cinematic stage, breaks out of the article column */
+/* near-full-bleed cinematic stage; -0.8rem keeps it inside the scrollbar so it
+   never triggers horizontal scroll (100vw includes the scrollbar gutter). */
 .dgv3-shell--stream {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
+  width: min(100vw - 0.8rem, 120rem);
+  margin-left: calc(50% - min(100vw - 0.8rem, 120rem) / 2);
 }
 
 .dgv3-stream {
@@ -819,7 +823,10 @@
 
 /* =============================== Mobile ================================ */
 @media (max-width: 768px) {
-  .dgv3-shell { width: min(100vw - 0.8rem, 30rem); }
+  .dgv3-shell {
+    width: min(100vw - 0.8rem, 30rem);
+    margin-left: calc(50% - min(100vw - 0.8rem, 30rem) / 2);
+  }
 
   /* leave room for the lightbox nav arrows on either side */
   .dgv3-lightbox__stage { width: 100%; padding: 0 2.8rem; }

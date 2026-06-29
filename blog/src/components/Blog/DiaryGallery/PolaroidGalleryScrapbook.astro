@@ -93,7 +93,7 @@ function resolveThumb(item: PolaroidImage): string {
                 <img
                   src={resolveThumb(item)}
                   alt={item.alt ?? item.title}
-                  loading="eager"
+                  loading="lazy"
                   decoding="async"
                 />
               </div>
@@ -105,7 +105,7 @@ function resolveThumb(item: PolaroidImage): string {
                       data-scrapbook-caption
                       font="Caveat Tegaki 3dc76002"
                       text={item.caption}
-                      time={{ mode: 'uncontrolled', delay: round4(index * 0.18) }}
+                      time={{ mode: 'uncontrolled', delay: round4(index * 0.18), loop: true, loopGap: 2.5 }}
                       quality={{ clipText: 1.35, pixelRatio: 1.05 }}
                       showOverlay
                       style="font-size: clamp(1.08rem, 2.6vw, 1.42rem); line-height: 1.02; color: inherit;"
@@ -150,6 +150,9 @@ function resolveThumb(item: PolaroidImage): string {
     width: min(100vw - 1rem, 76rem);
     margin: 2rem 0 3.2rem;
     margin-left: calc(50% - min(100vw - 1rem, 76rem) / 2);
+    /* skip layout/paint of the whole board while offscreen ("virtual scroll lite") */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 700px;
   }
 
   .scrapbook-polaroid-shell[data-density='dense'] {
@@ -269,10 +272,16 @@ function resolveThumb(item: PolaroidImage): string {
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(circle at 18% 14%, var(--sb-paper-wear), transparent 30%),
-      radial-gradient(circle at 82% 78%, color-mix(in srgb, var(--sb-paper-speck) 92%, transparent), transparent 34%),
+      /* foxing / aged spots */
+      radial-gradient(circle at 18% 14%, var(--sb-paper-wear), transparent 26%),
+      radial-gradient(circle at 82% 78%, color-mix(in srgb, var(--sb-paper-speck) 92%, transparent), transparent 30%),
+      radial-gradient(circle at 8% 62%, rgba(150, 110, 60, 0.1), transparent 14%),
+      radial-gradient(circle at 92% 28%, rgba(120, 90, 50, 0.1), transparent 12%),
+      radial-gradient(circle at 44% 94%, rgba(150, 110, 60, 0.08), transparent 16%),
+      /* edge yellowing vignette */
+      radial-gradient(120% 130% at 50% 46%, transparent 60%, rgba(120, 86, 40, 0.16) 100%),
       linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--sb-paper-speck) 82%, transparent) 48%, transparent 100%);
-    opacity: 0.9;
+    opacity: 0.92;
     pointer-events: none;
   }
 
@@ -281,18 +290,35 @@ function resolveThumb(item: PolaroidImage): string {
     aspect-ratio: 1 / 1;
     overflow: hidden;
     background: var(--sb-photo-bg);
-    box-shadow: inset 0 0 0 1px rgba(82, 82, 91, 0.08);
+    /* instant-photo well: emulsion edge + recessed depth */
+    box-shadow:
+      inset 0 0 0 1px rgba(0, 0, 0, 0.1),
+      inset 0 2px 11px rgba(40, 28, 12, 0.32);
   }
 
+  /* film vignette + aged tone */
   .scrapbook-polaroid-card__photo::after {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 2;
     background:
       radial-gradient(circle at 22% 18%, var(--sb-film-glow), transparent 34%),
       radial-gradient(circle at 78% 76%, var(--sb-film-shadow), transparent 42%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(26, 18, 9, 0.16));
+      radial-gradient(116% 116% at 50% 48%, transparent 56%, rgba(26, 16, 6, 0.34) 100%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(26, 18, 9, 0.18));
     mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  /* glossy instant-film sheen (top-left diagonal highlight) */
+  .scrapbook-polaroid-card__photo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: linear-gradient(125deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.06) 26%, transparent 46%);
+    mix-blend-mode: screen;
     pointer-events: none;
   }
 
@@ -302,7 +328,7 @@ function resolveThumb(item: PolaroidImage): string {
     height: 100%;
     margin: 0;
     object-fit: cover;
-    filter: sepia(0.18) saturate(0.84) contrast(0.92) brightness(0.96) hue-rotate(-6deg);
+    filter: sepia(0.26) saturate(0.8) contrast(0.9) brightness(0.95) hue-rotate(-6deg);
     transform: scale(1.03);
   }
 
