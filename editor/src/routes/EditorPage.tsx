@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { RichEditor, type RichEditorHandle } from '../components/RichEditor';
 import { FrontmatterForm } from '../components/FrontmatterForm';
 import { pendingMedia } from '../tiptap/pendingMedia';
@@ -25,13 +25,14 @@ async function flushThumbnail(fm: Frontmatter): Promise<Frontmatter> {
 
 function NewPost() {
   // POST /posts (create) lands with the publish step. For now: fill the form + write.
+  const navigate = useNavigate();
   const richRef = useRef<RichEditorHandle>(null);
   const [fm, setFm] = useState<Frontmatter>({ category: 'web', title: '', created: '' });
   const type = fm.category ?? 'web';
   return (
     <section className="editor-page">
       <div className="row">
-        <h1>새 글</h1>
+        <button type="button" className="back-btn" onClick={() => navigate(-1)}>← 뒤로</button>
         <button type="button" className="btn-primary" disabled>저장 (create 단계)</button>
       </div>
       <FrontmatterForm value={fm} onChange={setFm} />
@@ -43,6 +44,7 @@ function NewPost() {
 }
 
 function EditExisting({ id }: { id: string }) {
+  const navigate = useNavigate();
   const doc = useQuery({ queryKey: ['doc', id], queryFn: () => api.getDoc(id), retry: false });
   const richRef = useRef<RichEditorHandle>(null);
   const [fm, setFm] = useState<Frontmatter | null>(null);
@@ -66,7 +68,7 @@ function EditExisting({ id }: { id: string }) {
   return (
     <section className="editor-page">
       <div className="row">
-        <h1>{fm?.title || id}</h1>
+        <button type="button" className="back-btn" onClick={() => navigate(-1)}>← 뒤로</button>
         <div>
           <span className="muted">{save.isPending ? '저장 중…' : dirty ? '변경됨' : save.isSuccess ? '저장됨' : ''}</span>{' '}
           <button type="button" className="btn-primary" disabled={!dirty || save.isPending} onClick={() => save.mutate()}>저장</button>
