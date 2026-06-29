@@ -33,7 +33,7 @@ spec: ../active/planning/2026-06-28/2026-06-28-blog-editor-app-plan.md
 
 ## ⏭️ 남은 수동/후속 작업
 
-1. **editor 공개 라우팅(중요·수동)**: `https://jun-devlog.win/editor`·`/editor-api`가 아직 404/미라우팅. **Cloudflare(또는 RPi 리버스 프록시)에서 `/editor`·`/editor-api` 경로 → RPi :4322**로 포워딩 규칙 추가 필요. (현재 블로그만 라우팅됨)
+1. ✅ **editor 공개 라우팅 완료(2026-06-29)**: Cloudflare Tunnel 공개 호스트명에 `www.jun-devlog.win/editor`·`/editor-api` → RPi :4322 추가. **핵심: 라우트 순서**(first-match-wins) — 구체 경로 `/editor*`를 catch-all `www.jun-devlog.win`(→:4321) **위**로 정렬해야 함. **검증: `/editor/` SPA 렌더, `/editor-api/health` JSON 200.** (DNS 400 경고는 무해 — 같은 호스트 경로는 기존 DNS 공유)
 2. **master 통합**: 자동모드 가드가 default 브랜치(master) push를 차단 → 통합 코드는 `feat/monorepo-split`, `prd/blog`, `prd/editor`(모두 commit `a8716a6`)에만 있음. master를 ff하려면 사용자가 직접 `git checkout master && git merge --ff-only feat/monorepo-split && git push`.
 3. **CLAUDE.md 경로 전면 정리**: 상단에 모노레포 배너만 추가함. 본문의 `src/`→`blog/src/` 등 경로 전면 재조정은 미완(배너로 안내).
 4. **`/team-init --update`**: 프로필 경로(blog/)가 바뀌었으니 재생성 권장.
