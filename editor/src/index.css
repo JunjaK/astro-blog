@@ -48,11 +48,18 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   border: 1px solid var(--border); background: var(--surface); color: var(--text);
 }
 
-.editor-toolbar { display: flex; gap: 8px; margin-top: 12px; }
-.editor-toolbar button {
-  background: var(--surface); color: var(--text); border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 13px;
+.slash-menu {
+  display: flex; flex-direction: column; min-width: 200px; max-height: 320px; overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
 }
+.slash-item {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  background: none; border: none; color: var(--text); text-align: left;
+  padding: 7px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;
+}
+.slash-item.active { background: #26263a; }
+.slash-hint { color: var(--muted); font-size: 11px; }
 
 .gallery-node { border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin: 12px 0; background: #11111a; }
 .gallery-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }

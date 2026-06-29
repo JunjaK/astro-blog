@@ -35,6 +35,28 @@ app.post('/editor-api/media', async (c) => {
   return c.json({ src: `/files/media/${name}` });
 });
 
+// AI generate (Novel-style). One fetch to OpenAI, no SDK. Key via OPENAI_API_KEY.
+app.post('/editor-api/generate', async (c) => {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) return c.json({ error: 'OPENAI_API_KEY not set' }, 503);
+  const { prompt } = await c.req.json<{ prompt?: string }>();
+  if (!prompt) return c.json({ error: 'no prompt' }, 400);
+  const r = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: '너는 블로그 글쓰기 도우미다. 요청에 맞는 한국어 본문만 마크다운으로 출력해라. 군더더기 설명 금지.' },
+        { role: 'user', content: prompt },
+      ],
+    }),
+  });
+  if (!r.ok) return c.json({ error: `openai ${r.status}` }, 502);
+  const data = await r.json();
+  return c.json({ text: data.choices?.[0]?.message?.content ?? '' });
+});
+
 // Serve uploaded media (dev; in prod the blog nginx serves /files/* from the shared mount).
 app.use('/files/media/*', serveStatic({ root: MEDIA_DIR, rewriteRequestPath: (p) => p.replace(/^\/files\/media/, '') }));
 

@@ -25,4 +25,6 @@ export const api = {
     fd.append('file', file);
     return req<{ src: string }>('/media', { method: 'POST', body: fd, headers: {} });
   },
+  generate: (prompt: string) =>
+    req<{ text: string }>('/generate', { method: 'POST', body: JSON.stringify({ prompt }), headers: { 'Content-Type': 'application/json' } }),
 };

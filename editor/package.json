@@ -16,11 +16,13 @@
     "@tiptap/pm": "^3.27.1",
     "@tiptap/react": "^3.27.1",
     "@tiptap/starter-kit": "^3.27.1",
+    "@tiptap/suggestion": "^3.27.1",
     "hono": "^4.12.27",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.0",
     "sharp": "^0.35.2",
+    "tippy.js": "^6.3.7",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
