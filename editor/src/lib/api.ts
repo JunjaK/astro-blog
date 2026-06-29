@@ -27,9 +27,20 @@ export interface PostListItem {
   created_at: string | null;
 }
 
+export interface PostDetail {
+  id: string;
+  category: string;
+  title: string | null;
+  source: string;
+  raw: string; // full MDX (frontmatter + body)
+}
+
 export const api = {
   health: () => req<HealthResponse>('/health'),
   posts: () => req<PostListItem[]>('/posts'),
+  getPost: (id: string) => req<PostDetail>(`/posts/${id}`),
+  savePost: (id: string, raw: string) =>
+    req<{ ok: true }>(`/posts/${id}`, { method: 'PUT', body: JSON.stringify({ raw }), headers: { 'Content-Type': 'application/json' } }),
   uploadMedia: async (file: File): Promise<{ src: string }> => {
     const fd = new FormData();
     fd.append('file', file);

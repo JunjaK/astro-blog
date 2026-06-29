@@ -18,7 +18,7 @@ function App() {
           <Route path="/" element={<Navigate to="/posts" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/posts" element={<PostsPage />} />
-          <Route path="/editor/:id" element={<EditorPage />} />
+          <Route path="/editor/*" element={<EditorPage />} />
         </Routes>
       </main>
     </div>

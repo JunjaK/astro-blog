@@ -1,0 +1,676 @@
+/* =========================================================================
+   Diary Gallery ver3 — shared vintage/travel theme + 3 variants
+   (Postcard · Film slide · Journal). CSS 3D only, no extra deps.
+   ========================================================================= */
+
+.dgv3-shell {
+  --dgv3-paper: #f3e9d6;
+  --dgv3-paper-2: #e8dcc2;
+  --dgv3-ink: #4a3f35;
+  --dgv3-ink-soft: rgba(74, 63, 53, 0.6);
+  --dgv3-red: #b5503f;
+  --dgv3-blue: #3f6196;
+  --dgv3-edge: rgba(74, 63, 53, 0.16);
+  --dgv3-shadow: 0 18px 30px rgba(54, 41, 28, 0.22), 0 4px 10px rgba(54, 41, 28, 0.14);
+  --dgv3-photo-filter: sepia(0.22) saturate(0.86) contrast(0.94) brightness(0.98);
+  --dgv3-grain: rgba(60, 44, 26, 0.05);
+
+  width: min(100vw - 1rem, 72rem);
+  margin: 2.4rem auto 3rem;
+  color: var(--dgv3-ink);
+}
+
+:global(.dark) .dgv3-shell,
+:global([data-theme='dark']) .dgv3-shell {
+  --dgv3-paper: #2a241d;
+  --dgv3-paper-2: #211c16;
+  --dgv3-ink: #ece3d2;
+  --dgv3-ink-soft: rgba(236, 227, 210, 0.6);
+  --dgv3-red: #d8775f;
+  --dgv3-blue: #7d9bd1;
+  --dgv3-edge: rgba(236, 227, 210, 0.14);
+  --dgv3-shadow: 0 18px 32px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.34);
+  --dgv3-photo-filter: sepia(0.18) saturate(0.82) contrast(0.96) brightness(0.9);
+  --dgv3-grain: rgba(255, 240, 214, 0.04);
+}
+
+/* faint handwriting overlay tint, shared by all tegaki captions */
+.dgv3-shell [data-tegaki='overlay'],
+.dgv3-lightbox [data-tegaki='overlay'] {
+  color: color-mix(in srgb, currentColor 30%, transparent) !important;
+  -webkit-text-fill-color: color-mix(in srgb, currentColor 30%, transparent) !important;
+}
+
+/* =========================== Lightbox shell ============================= */
+.dgv3-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 5vw, 4rem);
+  background: radial-gradient(circle at 50% 42%, rgba(38, 26, 14, 0.78), rgba(10, 7, 4, 0.94));
+  backdrop-filter: blur(6px);
+}
+
+.dgv3-lightbox__stage {
+  perspective: 1600px;
+}
+
+.dgv3-lightbox__close,
+.dgv3-lightbox__nav {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: rgba(20, 14, 8, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.dgv3-lightbox__close:hover,
+.dgv3-lightbox__nav:hover {
+  background: rgba(20, 14, 8, 0.8);
+}
+
+.dgv3-lightbox__close {
+  top: 1.1rem;
+  right: 1.1rem;
+  width: 2.6rem;
+  height: 2.6rem;
+}
+
+.dgv3-lightbox__nav {
+  top: 50%;
+  width: 3rem;
+  height: 3rem;
+  margin-top: -1.5rem;
+}
+
+.dgv3-lightbox__nav--prev { left: clamp(0.6rem, 3vw, 2rem); }
+.dgv3-lightbox__nav--next { right: clamp(0.6rem, 3vw, 2rem); }
+.dgv3-lightbox__nav:hover { transform: scale(1.06); }
+
+.dgv3-lightbox__counter {
+  position: absolute;
+  bottom: 1.3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.3rem 0.9rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(20, 14, 8, 0.5);
+  border-radius: 999px;
+}
+
+/* ============================ A · Postcard ============================== */
+.dgv3-pc-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+  gap: 1.8rem 1.4rem;
+  perspective: 1100px;
+  padding: 0.5rem;
+}
+
+.dgv3-pc-card {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  background: var(--dgv3-paper);
+  border-radius: 4px;
+  box-shadow: var(--dgv3-shadow);
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  transform: rotate(var(--card-rotate, 0deg)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.25s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.25s ease;
+}
+
+.dgv3-pc-card:hover {
+  box-shadow: 0 26px 40px rgba(54, 41, 28, 0.3), 0 6px 14px rgba(54, 41, 28, 0.18);
+}
+
+.dgv3-pc-card__airmail {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  border: 3px solid transparent;
+  border-image: repeating-linear-gradient(
+      45deg,
+      var(--dgv3-red) 0 8px,
+      transparent 8px 16px,
+      var(--dgv3-blue) 16px 24px,
+      transparent 24px 32px
+    )
+    3;
+  opacity: 0.85;
+}
+
+.dgv3-pc-card__photo {
+  position: absolute;
+  inset: 0;
+}
+
+.dgv3-pc-card__photo img {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  filter: var(--dgv3-photo-filter);
+}
+
+.dgv3-pc-card__stamp {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 5;
+  width: 2.1rem;
+  height: 2.5rem;
+  background: rgba(255, 252, 244, 0.92);
+  border: 1px dashed rgba(74, 63, 53, 0.45);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  transform: rotate(4deg);
+}
+
+.dgv3-pc-card__postmark {
+  position: absolute;
+  top: 0.7rem;
+  right: 2.6rem;
+  z-index: 5;
+  width: 1.7rem;
+  height: 1.7rem;
+  border: 2px solid color-mix(in srgb, var(--dgv3-red) 70%, transparent);
+  border-radius: 999px;
+  opacity: 0.55;
+  transform: rotate(-12deg);
+}
+
+.dgv3-pc-card__caption {
+  position: absolute;
+  left: 0.7rem;
+  bottom: 0.5rem;
+  z-index: 5;
+  max-width: 70%;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* --- postcard flip stage --- */
+.dgv3-pc-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.dgv3-pc-flip {
+  width: min(86vw, 40rem);
+  aspect-ratio: 3 / 2;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  perspective: 1600px;
+}
+
+.dgv3-pc-flip__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0.1, 0.2, 1);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+}
+
+.dgv3-pc-flip.is-flipped .dgv3-pc-flip__inner {
+  transform: rotateY(180deg);
+}
+
+.dgv3-pc-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--dgv3-paper);
+}
+
+.dgv3-pc-face--front img {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  filter: var(--dgv3-photo-filter);
+}
+
+.dgv3-pc-stamp {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 3.4rem;
+  height: 4rem;
+  padding: 0.18rem;
+  background: rgba(255, 252, 244, 0.95);
+  border: 1px dashed rgba(74, 63, 53, 0.5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transform: rotate(4deg);
+}
+
+.dgv3-pc-stamp__inner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: sepia(0.5) saturate(0.7);
+}
+
+.dgv3-pc-postmark {
+  position: absolute;
+  top: 1.2rem;
+  right: 4.6rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--dgv3-blue);
+  opacity: 0.8;
+  transform: rotate(-8deg);
+}
+
+.dgv3-pc-postmark--back {
+  top: 0.9rem;
+  right: 1.1rem;
+  color: var(--dgv3-red);
+}
+
+.dgv3-pc-face--back {
+  transform: rotateY(180deg);
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  padding: 1.4rem 1.6rem;
+  background:
+    repeating-linear-gradient(transparent 0 1.9rem, var(--dgv3-edge) 1.9rem 1.92rem),
+    var(--dgv3-paper);
+}
+
+.dgv3-pc-back__note {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-right: 1rem;
+}
+
+.dgv3-pc-back__title {
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dgv3-ink-soft);
+}
+
+.dgv3-pc-back__hand {
+  font-size: clamp(1.2rem, 3.4vw, 1.7rem);
+  line-height: 1.55;
+  color: var(--dgv3-ink);
+}
+
+.dgv3-pc-back__divider {
+  position: absolute;
+  top: 1.4rem;
+  bottom: 1.4rem;
+  left: 56%;
+  width: 1px;
+  background: var(--dgv3-edge);
+}
+
+.dgv3-pc-back__address {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1.1rem;
+  padding-left: 1.2rem;
+}
+
+.dgv3-pc-back__address span {
+  height: 1px;
+  background: var(--dgv3-edge);
+}
+
+.dgv3-pc-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ============================== B · Film =============================== */
+.dgv3-shell--film .dgv3-film-strip {
+  position: relative;
+  padding: 1.7rem 0;
+  background: #1c160f;
+  border-radius: 4px;
+  box-shadow: var(--dgv3-shadow);
+}
+
+.dgv3-film-strip__sprockets {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.7rem;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 0.7rem, #0c0a07 0.7rem 1.4rem) center / auto 0.85rem
+      no-repeat;
+  background-color: #1c160f;
+}
+
+.dgv3-film-strip__sprockets--top { top: 0; }
+.dgv3-film-strip__sprockets--bottom { bottom: 0; }
+
+.dgv3-film-strip__frames {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 0.6rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.dgv3-film-frame {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(9rem, 22vw, 12rem);
+  aspect-ratio: 3 / 2;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  background: #000;
+  overflow: hidden;
+  filter: var(--dgv3-photo-filter);
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.dgv3-film-frame:hover {
+  filter: sepia(0.1) saturate(1.05) brightness(1.04);
+  transform: translateY(-2px);
+}
+
+.dgv3-film-frame img {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+}
+
+.dgv3-film-frame__no {
+  position: absolute;
+  left: 0.4rem;
+  bottom: 0.3rem;
+  font-family: 'Roboto', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 210, 120, 0.85);
+  text-shadow: 0 1px 2px #000;
+}
+
+/* --- slide-on-lighttable stage --- */
+.dgv3-film-table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 10px;
+  background: radial-gradient(circle at 50% 45%, rgba(255, 248, 226, 0.95), rgba(214, 204, 178, 0.7) 70%);
+  box-shadow: 0 0 80px rgba(255, 240, 200, 0.4), inset 0 0 40px rgba(255, 255, 255, 0.5);
+  perspective: 1200px;
+}
+
+.dgv3-film-mount {
+  width: min(80vw, 30rem);
+  padding: 1.1rem 1.1rem 0;
+  border: 0;
+  cursor: default;
+  background: #ece6da;
+  border-radius: 3px;
+  box-shadow: 0 12px 26px rgba(54, 41, 28, 0.4), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease;
+}
+
+.dgv3-film-mount__window {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  background: #000;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.dgv3-film-mount__window img {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  filter: sepia(0.16) saturate(0.9) contrast(0.96);
+}
+
+.dgv3-film-mount__sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.28) 0%, transparent 38%);
+  pointer-events: none;
+}
+
+.dgv3-film-mount__label {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.2rem 0.7rem;
+  color: #4a3f35;
+}
+
+.dgv3-film-mount__no {
+  font-family: 'Roboto', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  color: rgba(74, 63, 53, 0.55);
+}
+
+.dgv3-film-mount__hand {
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  line-height: 1;
+}
+
+.dgv3-film-desc {
+  margin: 0;
+  max-width: 30rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  text-align: center;
+  color: #5b4f42;
+}
+
+/* ============================= C · Journal ============================= */
+.dgv3-shell--journal .dgv3-journal-book {
+  position: relative;
+  padding: 1.6rem;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--dgv3-paper) 0%, var(--dgv3-paper-2) 49.5%, var(--dgv3-paper-2) 50.5%, var(--dgv3-paper) 100%);
+  box-shadow: var(--dgv3-shadow), inset 0 0 60px rgba(54, 41, 28, 0.08);
+}
+
+.dgv3-journal-book::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 14% 12%, var(--dgv3-grain), transparent 28%),
+    radial-gradient(circle at 84% 76%, var(--dgv3-grain), transparent 30%);
+  pointer-events: none;
+}
+
+.dgv3-journal-book__spine {
+  position: absolute;
+  top: 0.8rem;
+  bottom: 0.8rem;
+  left: 50%;
+  width: 2.2rem;
+  margin-left: -1.1rem;
+  background: linear-gradient(90deg, transparent, rgba(54, 41, 28, 0.22) 45%, rgba(54, 41, 28, 0.28) 50%, rgba(54, 41, 28, 0.22) 55%, transparent);
+  pointer-events: none;
+}
+
+.dgv3-journal-book__pages {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 1.6rem 1.3rem;
+}
+
+.dgv3-journal-photo {
+  position: relative;
+  padding: 0.55rem 0.55rem 0.9rem;
+  border: 0;
+  cursor: pointer;
+  background: #fffdf7;
+  box-shadow: 0 8px 16px rgba(54, 41, 28, 0.2);
+  transform: rotate(var(--card-rotate, 0deg));
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+:global(.dark) .dgv3-journal-photo { background: #efe7d6; }
+
+.dgv3-journal-photo:hover {
+  transform: rotate(0deg) translateY(-4px) scale(1.03);
+  box-shadow: 0 16px 26px rgba(54, 41, 28, 0.3);
+  z-index: 5;
+}
+
+.dgv3-journal-photo__img {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #d8d2c6;
+}
+
+.dgv3-journal-photo__img img {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  filter: var(--dgv3-photo-filter);
+}
+
+.dgv3-journal-photo__cap {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.95rem;
+  line-height: 1;
+  text-align: center;
+  color: #4a3f35;
+}
+
+/* washi tape */
+.dgv3-tape {
+  position: absolute;
+  z-index: 6;
+  width: 3.2rem;
+  height: 1.05rem;
+  background: linear-gradient(180deg, rgba(180, 200, 190, 0.6), rgba(150, 175, 165, 0.5));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+.dgv3-tape--top {
+  top: -0.45rem;
+  left: 50%;
+  margin-left: -1.6rem;
+  transform: rotate(var(--tape-rotate, 0deg));
+}
+
+.dgv3-tape--tl { top: -0.5rem; left: 1.2rem; transform: rotate(-18deg); }
+.dgv3-tape--br { right: 1.2rem; bottom: -0.5rem; transform: rotate(-18deg); }
+
+/* --- journal page stage --- */
+.dgv3-journal-open {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 1.4rem;
+  width: min(88vw, 44rem);
+  padding: 1.8rem;
+  transform-origin: center bottom;
+  background:
+    repeating-linear-gradient(transparent 0 2rem, rgba(74, 63, 53, 0.1) 2rem 2.02rem),
+    #fbf4e4;
+  border-radius: 4px;
+  box-shadow: 0 34px 60px rgba(0, 0, 0, 0.5);
+}
+
+:global(.dark) .dgv3-journal-open {
+  background: repeating-linear-gradient(transparent 0 2rem, rgba(236, 227, 210, 0.1) 2rem 2.02rem), #2f2820;
+  color: #ece3d2;
+}
+
+.dgv3-journal-open__photo {
+  position: relative;
+  align-self: start;
+  padding: 0.6rem 0.6rem 1.4rem;
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(54, 41, 28, 0.3);
+  transform: rotate(-1.5deg);
+}
+
+:global(.dark) .dgv3-journal-open__photo { background: #efe7d6; }
+
+.dgv3-journal-open__photo img {
+  display: block;
+  width: 100%;
+  margin: 0;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  filter: var(--dgv3-photo-filter);
+}
+
+.dgv3-journal-open__memo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.6rem;
+}
+
+.dgv3-journal-open__title {
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dgv3-ink-soft);
+}
+
+.dgv3-journal-open__hand {
+  font-size: clamp(1.3rem, 3.6vw, 1.85rem);
+  line-height: 1.5;
+  color: #4a3f35;
+}
+
+:global(.dark) .dgv3-journal-open__hand { color: #ece3d2; }
+
+/* =============================== Mobile ================================ */
+@media (max-width: 768px) {
+  .dgv3-shell { width: min(100vw - 0.8rem, 30rem); }
+
+  .dgv3-pc-board { grid-template-columns: repeat(2, 1fr); gap: 1rem 0.8rem; }
+
+  .dgv3-pc-face--back { grid-template-columns: 1fr; }
+  .dgv3-pc-back__divider,
+  .dgv3-pc-back__address { display: none; }
+
+  .dgv3-journal-book__pages { grid-template-columns: repeat(2, 1fr); gap: 1rem 0.8rem; }
+  .dgv3-journal-book__spine { display: none; }
+
+  .dgv3-journal-open { grid-template-columns: 1fr; gap: 0.9rem; }
+  .dgv3-film-mount__label { gap: 0.5rem; }
+}

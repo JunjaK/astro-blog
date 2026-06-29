@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { mkdir } from 'node:fs/promises';
+import matter from 'gray-matter';
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
 import sharp from 'sharp';
@@ -23,6 +24,31 @@ app.get('/editor-api/health', (c) =>
 app.get('/editor-api/posts', (c) =>
   c.json(db.query('SELECT id, category, slug, title, source, created_at FROM posts ORDER BY created_at DESC').all()),
 );
+
+// Single post (id may contain slashes → rest-capture). `raw` = full MDX
+// (frontmatter + body) for editing both in one shot.
+app.get('/editor-api/posts/:id{.+}', (c) => {
+  const row = db.query('SELECT * FROM posts WHERE id = ?').get(c.req.param('id')) as
+    | { frontmatter: string; body: string; [k: string]: unknown }
+    | null;
+  if (!row) return c.json({ error: 'not found' }, 404);
+  const raw = matter.stringify(row.body, JSON.parse(row.frontmatter));
+  return c.json({ ...row, raw });
+});
+
+// Save edits: client sends full `raw` MDX → re-split into frontmatter + body.
+// Updates the DB only; publishing to the live blog is a later step.
+app.put('/editor-api/posts/:id{.+}', async (c) => {
+  const id = c.req.param('id');
+  const { raw } = await c.req.json<{ raw?: string }>();
+  if (typeof raw !== 'string') return c.json({ error: 'no raw' }, 400);
+  const { data, content } = matter(raw);
+  const res = db.run(
+    'UPDATE posts SET frontmatter = ?, body = ?, title = ?, version = version + 1, updated_at = ? WHERE id = ?',
+    [JSON.stringify(data), content, String(data.title ?? ''), new Date().toISOString(), id],
+  );
+  return res.changes ? c.json({ ok: true }) : c.json({ error: 'not found' }, 404);
+});
 
 // Image upload → webp (EXIF/GPS stripped by sharp default), content-hash name.
 app.post('/editor-api/media', async (c) => {

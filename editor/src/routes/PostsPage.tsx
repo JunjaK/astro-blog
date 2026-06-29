@@ -18,7 +18,7 @@ export function PostsPage() {
         {posts.data?.map((p) => (
           <li key={p.id}>
             <span className="post-cat">{p.category}</span>
-            <span className="post-title">{p.title || p.slug}</span>
+            <Link to={`/editor/${p.id}`} className="post-title">{p.title || p.slug}</Link>
             <span className={`badge ${p.source === 'legacy' ? 'down' : 'ok'}`}>{p.source}</span>
           </li>
         ))}

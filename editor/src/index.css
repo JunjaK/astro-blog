@@ -38,7 +38,17 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   padding: 9px 4px; border-bottom: 1px solid var(--border);
 }
 .post-cat { font-size: 11px; color: var(--muted); min-width: 56px; text-transform: uppercase; }
-.post-title { flex: 1; font-size: 14px; }
+.post-title { flex: 1; font-size: 14px; color: var(--text); text-decoration: none; }
+.post-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.field-label { display: block; margin: 14px 0 4px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.raw-mdx {
+  width: 100%; min-height: 55vh; resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.6;
+  padding: 14px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); tab-size: 2;
+}
+.raw-mdx.fm { min-height: 140px; }
 
 .btn-primary {
   background: var(--accent); color: var(--bg); border: none; border-radius: 8px;
