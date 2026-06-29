@@ -27,14 +27,16 @@ function StreamCard({ item, index, label, pos, vel, onOpen }: StreamCardProps) {
   // -50% bakes in self-centering (card sits at left:50%/top:50%); motion owns the transform
   const x = useTransform(() => `${-58 + (index - pos.get()) * 30 + vel.get() * 10}%`);
   const y = useTransform(() => `${-50 + (index - pos.get()) * -15}%`);
-  const z = useTransform(() => -Math.abs(index - pos.get()) * 340);
+  // hump look: front card largest, both sides recede. A small monotonic skew (-d*8)
+  // breaks the exact z-tie at symmetric |d| so real 3D depth sorts continuously —
+  // no discrete z-index pop when two cards cross.
+  const z = useTransform(() => -Math.abs(index - pos.get()) * 340 - (index - pos.get()) * 8);
   const rotateY = useTransform(() => clamp(-32 + vel.get() * 7, -46, 2));
   const scale = useTransform(() => Math.max(0.42, 1 - Math.abs(index - pos.get()) * 0.05));
   const opacity = useTransform(() => {
     const a = Math.abs(index - pos.get());
     return a > 5 ? 0 : clamp((5.4 - a) / 1.6, 0, 1);
   });
-  const zIndex = useTransform(() => Math.round(1000 - Math.abs(index - pos.get()) * 10));
   const pointerEvents = useTransform(() => (Math.abs(index - pos.get()) < 1.25 ? 'auto' : 'none'));
 
   return (
@@ -42,7 +44,7 @@ function StreamCard({ item, index, label, pos, vel, onOpen }: StreamCardProps) {
       type="button"
       className="dgv3-stream-card"
       aria-label={item.title}
-      style={{ x, y, z, rotateY, scale, opacity, zIndex, pointerEvents }}
+      style={{ x, y, z, rotateY, scale, opacity, pointerEvents }}
       onClick={onOpen}
     >
       <span className="dgv3-stream-card__no" aria-hidden="true">{String(label).padStart(2, '0')}</span>

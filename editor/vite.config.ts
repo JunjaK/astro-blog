@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // Editor SPA is served at https://jun-devlog.win/editor (behind Cloudflare),
@@ -29,6 +30,7 @@ export default defineConfig({
     // Dev: proxy API calls to the local Hono server.
     proxy: {
       '/editor-api': { target: 'http://localhost:4322', changeOrigin: true },
+      '/files': { target: 'http://localhost:4322', changeOrigin: true },
     },
   },
 });
