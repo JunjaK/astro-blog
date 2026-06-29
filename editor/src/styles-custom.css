@@ -12,7 +12,11 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); }
 
-.app-shell { max-width: 860px; margin: 0 auto; padding: 16px; }
+.app-shell { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
+
+.editor-page > .row { margin: 6px 0 20px; }
+.editor-page > .row:last-child { margin: 28px 0 0; border-top: 1px solid var(--border); padding-top: 20px; }
+.editor-page > .field-label { margin-top: 22px; }
 .app-header {
   display: flex; align-items: center; justify-content: space-between;
   padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 20px;

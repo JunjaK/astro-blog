@@ -5,6 +5,7 @@
 ## Active
 
 ### Planning
+- [블로그 SSR↔CSR 하이드레이션 불일치(#418) 감사 + 수정](./active/planning/2026-06-29/2026-06-29-blog-hydration-mismatch-audit-plan.md) — `planning` · 2026-06-29 · team-brainstorm (Leader+FE). 핫픽스 먼저 → 라우트 sweep + CI 게이트. [diagram](./active/planning/2026-06-29/2026-06-29-blog-hydration-mismatch-audit-plan.visual.html)
 - [블로그 글쓰기 전용 웹앱 (Notion-style Editor + RPi 발행 백엔드)](./active/planning/2026-06-28/2026-06-28-blog-editor-app-plan.md) — `planning` · 2026-06-28 · team-brainstorm (Leader+FE+BE+Infra+UIUX). [diagram](./active/planning/2026-06-28/2026-06-28-blog-editor-app-plan.visual.html)
 
 ### Processing

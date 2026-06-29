@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>블로그 하이드레이션 #418 감사 — Team Plan</title>
+<style>
+  :root{
+    --bg:#0a0a0a;--surface:#1a1a2e;--border:#2a2a4a;--text:#e0e0e0;--text-muted:#888;
+    --leader:#ffd700;--arch-fe:#7fff7f;--arch-be:#7fbfff;--arch-infra:#ff7f7f;--uiux:#ff7fff;--designer:#ffbf7f;--tester:#7fffff;
+    --phase-planning:#ffd700;--phase-uiux:#ff7fff;--phase-impl:#ffbf7f;--phase-verify:#7fffff;--phase-security:#ff7f7f;--escalation:#ff4444;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:40px;max-width:1100px;margin:0 auto;line-height:1.5}
+  .header{margin-bottom:32px}
+  .header h1{font-size:26px;margin-bottom:10px}
+  .status-badge{display:inline-block;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:bold}
+  .header p{margin-top:10px;color:var(--text-muted);font-size:14px}
+  .section{margin-bottom:34px}
+  .section h2{font-size:17px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .role-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+  .role-card.inactive{opacity:.38}
+  .role-card .ic{font-size:22px}
+  .role-card .nm{font-weight:bold;margin-top:4px}
+  .role-card .rs{font-size:11px;color:var(--text-muted);margin-top:2px}
+  .phase-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px 0}
+  .phase-node{padding:11px 16px;border-radius:8px;border:2px solid;font-size:12.5px;font-weight:bold;background:var(--surface)}
+  .phase-node small{display:block;font-weight:normal;color:var(--text-muted);font-size:10.5px;margin-top:3px}
+  .phase-arrow{color:var(--text-muted);font-size:18px}
+  .phase-node.gate{border-style:dashed;border-radius:4px}
+  .phase-node.conditional{border-style:dashed;opacity:.55}
+  .file-table{width:100%;border-collapse:collapse}
+  .file-table th,.file-table td{padding:9px 12px;border:1px solid var(--border);text-align:left;font-size:13px;vertical-align:top}
+  .file-table th{background:var(--surface)}
+  code{background:#000;padding:1px 5px;border-radius:3px;font-size:12px}
+  .risk-item{padding:11px 14px;margin-bottom:8px;border-radius:6px;border-left:4px solid;font-size:13px}
+  .risk-critical{border-color:#ff4444;background:#1a0a0a}
+  .risk-high{border-color:#ff8844;background:#1a140a}
+  .risk-medium{border-color:#ffcc44;background:#1a1a0a}
+  .dep-graph{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px}
+  .dep-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0;font-size:12px}
+  .dep-node{display:inline-block;padding:7px 13px;border-radius:6px;border:1px solid;font-size:12px}
+  .fe{border-color:var(--arch-fe);color:var(--arch-fe)}
+  .infra{border-color:var(--arch-infra);color:var(--arch-infra)}
+  .shared{border-color:#ffd96a;color:#ffd96a}
+  .lgnd{font-size:11px;color:var(--text-muted);margin-top:10px}
+  ul{margin:6px 0 0 18px;font-size:13px}
+  .key{background:#13131f;border:1px solid var(--border);border-radius:8px;padding:14px;font-size:13px}
+  .meta{font-size:11px;color:var(--text-muted);margin-top:40px;text-align:center}
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>블로그 SSR↔CSR 하이드레이션 불일치 (#418) 감사 + 수정</h1>
+    <span class="status-badge" style="background:var(--phase-planning);color:#000;">PLANNING</span>
+    <p>라이브 <code>/blog/diary/25-01-tokyo/02_01-21</code> #418 → 핫픽스 먼저, 그 후 전 블로그 글 라우트 sweep + CI 게이트. (team-brainstorm · planning only)</p>
+  </div>
+
+  <div class="section">
+    <h2>핵심 재구성 (FE 아키텍트 리서치)</h2>
+    <div class="key">
+      <b>정적 분석으로는 그 옛 글의 #418 범인을 못 잡음</b> — <code>mdLayout.astro</code>가 마운트하는 레이아웃 island(Footer/Giscus/BlogFrontmatter/ScrollProgress/Nav…) 대부분 그 글에선 무죄.
+      <ul>
+        <li>가장 유력: <b>MDX <code>&lt;div&gt;</code>-in-<code>&lt;p&gt;</code> 구조 재배치</b>, 또는 텍스트/공백/로케일 불일치.</li>
+        <li>→ <b>런타임 캡처가 ground truth</b>: dev 빌드(비압축) component stack으로 범인 직접 지목.</li>
+        <li>진짜 잠재 #418: <code>BlogFrontmatter.fromNow()</code>(31일 이내 글) → <b>제거, 항상 YYYY-MM-DD</b> 결정.</li>
+        <li><code>light-rays.tsx</code>·<code>Flickering.tsx</code> = effect-deferred → false positive(미수정).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Team Composition</h2>
+    <div class="team-grid">
+      <div class="role-card" style="border-color:var(--leader)"><div class="ic">👑</div><div class="nm" style="color:var(--leader)">Leader</div><div class="rs">조율·게이트</div></div>
+      <div class="role-card" style="border-color:var(--arch-fe)"><div class="ic">🎨</div><div class="nm" style="color:var(--arch-fe)">Architect A · FE</div><div class="rs">island/SSR·MDX 분석</div></div>
+      <div class="role-card inactive" style="border-color:var(--arch-be)"><div class="ic">🗄️</div><div class="nm" style="color:var(--arch-be)">Architect B · BE</div><div class="rs">N/A (static SSG)</div></div>
+      <div class="role-card inactive" style="border-color:var(--arch-infra)"><div class="ic">🛡️</div><div class="nm" style="color:var(--arch-infra)">Architect C · Infra</div><div class="rs">optional (CI 몇 줄)</div></div>
+      <div class="role-card inactive" style="border-color:var(--uiux)"><div class="ic">✨</div><div class="nm" style="color:var(--uiux)">UI/UX Master</div><div class="rs">optional (시각변화 無)</div></div>
+      <div class="role-card" style="border-color:var(--designer)"><div class="ic">🔧</div><div class="nm" style="color:var(--designer)">Designers ×2</div><div class="rs">핫픽스 + 하니스/하드닝</div></div>
+      <div class="role-card" style="border-color:var(--tester)"><div class="ic">🧪</div><div class="nm" style="color:var(--tester)">Tester ×1</div><div class="rs">sweep 검증</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>실행 흐름 (시퀀싱: 핫픽스 먼저)</h2>
+    <div class="phase-flow">
+      <span class="phase-node" style="border-color:var(--phase-planning)">Phase 0<small>라이브 #418 핫픽스<br>(dev 캡처→루트커즈)</small></span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-node gate" style="border-color:var(--leader)">확인<small>#418 0건 재확인</small></span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-node" style="border-color:var(--phase-impl)">탐지 하니스<small>route sweep spec</small></span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-node" style="border-color:var(--phase-impl)">하드닝<small>BlogFrontmatter·Footer</small></span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-node" style="border-color:var(--phase-verify)">검증<small>astro check·eslint·sweep</small></span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-node" style="border-color:var(--phase-security)">CI 게이트<small>prd/blog build job</small></span>
+    </div>
+    <div class="lgnd">◇ 점선 = 게이트 · 실선 = 실행 단계</div>
+  </div>
+
+  <div class="section">
+    <h2>파일 / 디자이너 배정 (추정)</h2>
+    <table class="file-table">
+      <thead><tr><th>Designer</th><th>파일</th><th>범위</th></tr></thead>
+      <tbody>
+        <tr style="color:var(--designer)"><td>Designer 1<br>(Phase 0 · 순차 · 전체 게이트)</td><td>런타임 캡처로 결정 — 도쿄 MDX 콘텐츠(구조적) 및/또는 지목된 island 1개</td><td>라이브 #418 루트커즈+핫픽스</td></tr>
+        <tr style="color:var(--tester)"><td>Designer 2<br>(Phase 0 후)</td>
+          <td><code>blog/e2e/hydration-sweep.noauth.spec.ts</code> (신규)<br><code>.github/workflows/*</code> 게이트<br><code>BlogFrontmatter.tsx</code> (fromNow 제거)<br><code>Footer.tsx</code> (suppressHydrationWarning)</td>
+          <td>탐지 하니스 + CI + 하드닝 (디스조인트, 충돌 없음)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>의존 / 데이터 흐름</h2>
+    <div class="dep-graph">
+      <div class="dep-row"><span class="dep-node shared">content/blog/**/*.mdx</span><span class="phase-arrow">→</span><span class="dep-node fe">route 열거 글롭</span><span class="phase-arrow">→</span><span class="dep-node fe">hydration-sweep spec</span></div>
+      <div class="dep-row"><span class="dep-node fe">bun dev (webServer, 비압축)</span><span class="phase-arrow">→</span><span class="dep-node fe">Playwright console capture</span><span class="phase-arrow">→</span><span class="dep-node shared">#418 regex assert</span></div>
+      <div class="dep-row"><span class="dep-node fe">sweep spec</span><span class="phase-arrow">→</span><span class="dep-node infra">.github/workflows (prd/blog build job)</span><span class="phase-arrow">→</span><span class="dep-node infra">Docker 이미지 → RPi 배포</span></div>
+      <div class="dep-row"><span class="dep-node fe">BlogFrontmatter.tsx</span><span class="phase-arrow">·</span><span class="dep-node fe">Footer.tsx</span><span class="phase-arrow">·</span><span class="dep-node shared">tokyo MDX</span><span class="lgnd" style="margin-left:8px">(독립 수정)</span></div>
+      <div class="lgnd">초록 = FE · 빨강 = Infra · 노랑 = 공유/콘텐츠</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>리스크 요약</h2>
+    <div class="risk-item risk-high"><b>HIGH · 라이브 범인 정적 미확인</b> — Phase 0 dev 빌드 component-stack 캡처 필수·결정적. dev=0건인데 prod=#418이면 압축전용/ClientRouter swap 의심 → preview에서도 캡처.</div>
+    <div class="risk-item risk-medium"><b>MED · ClientRouter / transition:persist</b> — 영속 island 데싱크 가능. sweep은 라우트별 fresh goto라 transition 유발 불일치 누락 가능 → 후속 권장(v1 아님).</div>
+    <div class="risk-item risk-medium"><b>MED · dev↔prod 발산</b> — sweep은 bun dev 기반. <code>--mode prd</code>에서만 나는 불일치는 게이트 통과 가능(알려진 한계).</div>
+    <div class="risk-item risk-medium"><b>MED · RPi 스케일</b> — 풀 라우트×2프로젝트 매트릭스 느리면 CI chromium-only fallback.</div>
+    <div class="risk-item risk-medium"><b>해소됨 · Flickering 랭킹 충돌</b> — FE는 false positive 평가(Leader는 HIGH). 런타임 sweep으로 판정, 유죄 시에만 수정.</div>
+  </div>
+
+  <div class="meta">Generated by AI Harness Team Workflow (team-brainstorm) · 2026-06-29</div>
+</body>
+</html>
