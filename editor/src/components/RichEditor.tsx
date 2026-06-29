@@ -3,6 +3,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { Markdown } from 'tiptap-markdown';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import type { Editor, JSONContent } from '@tiptap/core';
+import { DOMParser as PMDOMParser } from '@tiptap/pm/model';
 import { GalleryNode } from '../tiptap/GalleryNode';
 import { MdxMedia } from '../tiptap/MdxMedia';
 import { RawMdx } from '../tiptap/RawMdx';
@@ -22,7 +23,7 @@ export interface RichEditorHandle {
 
 // tiptap-markdown augments editor.storage at runtime but not in types.
 interface MarkdownStorage {
-  parser: { parse: (s: string) => { toJSON?: () => JSONContent } | JSONContent };
+  parser: { parse: (s: string) => string }; // returns rendered HTML, not a PM node
   getMarkdown: () => string;
 }
 const md = (e: Editor) => (e.storage as unknown as { markdown: MarkdownStorage }).markdown;
@@ -61,11 +62,12 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(({ segments, type,
         else
           content.push({ type: 'rawMdx', attrs: { src: s.src } });
       } else {
-        const parsed = md(editor).parser.parse(s.src);
-        const json = (parsed && typeof (parsed as { toJSON?: unknown }).toJSON === 'function'
-          ? (parsed as { toJSON: () => JSONContent }).toJSON()
-          : parsed) as JSONContent;
-        if (json?.content) content.push(...json.content);
+        // tiptap-markdown's parser.parse() returns an HTML string — convert it to
+        // ProseMirror JSON via the live schema, else all prose is silently dropped.
+        const html = md(editor).parser.parse(s.src);
+        const body = new window.DOMParser().parseFromString(html, 'text/html').body;
+        const json = PMDOMParser.fromSchema(editor.schema).parse(body).toJSON() as JSONContent;
+        if (json.content) content.push(...json.content);
       }
     }
     editor.commands.setContent({ type: 'doc', content }, { emitUpdate: false });

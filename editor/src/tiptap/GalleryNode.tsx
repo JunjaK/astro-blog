@@ -42,7 +42,7 @@ function GalleryView({ node, updateAttributes, deleteNode }: ReactNodeViewProps)
       <div className="gallery-grid">
         {items.map((it, i) => (
           <figure key={it.src + i} className="gallery-item">
-            <img src={it.src} alt={it.alt} />
+            <img src={it.src} alt={it.alt} loading="lazy" decoding="async" />
             <input
               className="gallery-cap"
               value={it.alt}
