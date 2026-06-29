@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { pendingMedia } from '../tiptap/pendingMedia';
+import { CropDialog } from './CropDialog';
 
 export function DatePicker({ value, onChange }: { value?: string; onChange: (iso: string) => void }) {
   const date = value ? new Date(value) : undefined;
@@ -51,9 +52,10 @@ export function TagInput({ value, onChange }: { value: string[]; onChange: (t: s
 }
 
 // The box IS the control: empty → + to add; filled → hover to replace / remove.
-// Pick = object-URL preview + register pending; upload happens on save.
+// Pick → crop/resize dialog → object-URL preview + register pending; upload on save.
 export function ThumbnailInput({ value, onChange }: { value?: string; onChange: (src: string) => void }) {
   const ref = useRef<HTMLInputElement>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const pick = () => ref.current?.click();
   return (
     <div className="group border-input relative aspect-video w-44 overflow-hidden rounded-md border border-dashed">
@@ -83,12 +85,23 @@ export function ThumbnailInput({ value, onChange }: { value?: string; onChange: 
         hidden
         onChange={(e) => {
           const f = e.target.files?.[0];
-          if (!f) return;
-          const url = URL.createObjectURL(f);
-          pendingMedia.set(url, f);
-          onChange(url);
+          if (f) setCropSrc(URL.createObjectURL(f));
+          if (ref.current) ref.current.value = '';
         }}
       />
+      {cropSrc && (
+        <CropDialog
+          src={cropSrc}
+          onCancel={() => { URL.revokeObjectURL(cropSrc); setCropSrc(null); }}
+          onConfirm={(blob) => {
+            URL.revokeObjectURL(cropSrc);
+            const url = URL.createObjectURL(blob);
+            pendingMedia.set(url, new File([blob], 'thumbnail.webp', { type: 'image/webp' }));
+            onChange(url);
+            setCropSrc(null);
+          }}
+        />
+      )}
     </div>
   );
 }

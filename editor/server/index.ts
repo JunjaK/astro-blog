@@ -71,14 +71,15 @@ app.post('/editor-api/media', async (c) => {
   if (file.size > MAX_BYTES) return c.json({ error: 'too large' }, 413);
   const input = Buffer.from(await file.arrayBuffer());
   let webp: Buffer;
+  const resize = { width: 2000, height: 2000, fit: 'inside' as const, withoutEnlargement: true }; // cap longest edge ~2k
   if (/heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name)) {
     // sharp can't decode HEIC here → heic-decode to raw RGBA, straight into sharp.
     // HEIC → raw → WebP: one lossy step, no intermediate JPEG/PNG. libheif applies orientation.
     const decode = (await import('heic-decode')).default;
     const { width, height, data } = await decode({ buffer: input });
-    webp = await sharp(Buffer.from(data), { raw: { width, height, channels: 4 } }).webp({ quality: 80 }).toBuffer();
+    webp = await sharp(Buffer.from(data), { raw: { width, height, channels: 4 } }).resize(resize).webp({ quality: 80 }).toBuffer();
   } else {
-    webp = await sharp(input).rotate().webp({ quality: 80 }).toBuffer(); // bake EXIF orientation, strip metadata
+    webp = await sharp(input).rotate().resize(resize).webp({ quality: 80 }).toBuffer(); // bake EXIF orientation, strip metadata
   }
   const name = `${createHash('sha256').update(webp).digest('hex').slice(0, 16)}.webp`;
   await mkdir(MEDIA_DIR, { recursive: true });
