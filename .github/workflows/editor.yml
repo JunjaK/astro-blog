@@ -56,10 +56,18 @@ jobs:
         run: DOCKER_BUILDKIT=1 docker build -t astro-editor editor
 
       - name: Deploy container
+        env:
+          EDITOR_PASSWORD: ${{ secrets.EDITOR_PASSWORD }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           docker stop astro-editor 2>/dev/null && docker rm astro-editor 2>/dev/null || true
           docker run -d --name astro-editor -p 4322:4322 \
-            -v /home/jun/blog-files:/home/files -e MEDIA_DIR=/home/files/media \
+            -v /home/jun/blog-files:/home/files \
+            -v /home/jun/editor-data:/app/.data \
+            -e NODE_ENV=production \
+            -e MEDIA_DIR=/home/files/media \
+            -e EDITOR_PASSWORD="$EDITOR_PASSWORD" \
+            -e OPENAI_API_KEY="$OPENAI_API_KEY" \
             astro-editor
 
 # NOTE: reachability at https://jun-devlog.win/editor and /editor-api requires the
