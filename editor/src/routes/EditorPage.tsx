@@ -9,13 +9,25 @@ export function EditorPage() {
   return !id || id === 'new' ? <NewPost /> : <EditExisting id={id} />;
 }
 
+const CATEGORIES = ['daily', 'diary', 'game', 'music', 'web'];
+
 function NewPost() {
-  // POST /posts (create) lands with the publish step. For now: a blank rich editor.
+  // POST /posts (create) lands with the publish step. For now: pick type + write.
   const richRef = useRef<RichEditorHandle>(null);
+  const [type, setType] = useState('web');
   return (
     <section className="editor-page">
-      <div className="row"><h1>새 글</h1><button type="button" className="btn-primary" disabled>저장 (create 단계)</button></div>
-      <RichEditor ref={richRef} segments={[]} type="web" />
+      <div className="row">
+        <div className="title-row">
+          <h1>새 글</h1>
+          <select className="type-select" value={type} onChange={(e) => setType(e.target.value)}>
+            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <button type="button" className="btn-primary" disabled>저장 (create 단계)</button>
+      </div>
+      {/* key=type remounts so the slash palette reflects the chosen type */}
+      <RichEditor key={type} ref={richRef} segments={[]} type={type} />
     </section>
   );
 }

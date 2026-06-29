@@ -41,6 +41,11 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .post-title { flex: 1; font-size: 14px; color: var(--text); text-decoration: none; }
 .post-title:hover { text-decoration: underline; text-underline-offset: 3px; }
 
+.title-row { display: flex; align-items: center; gap: 12px; }
+.type-select {
+  padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); font-size: 13px;
+}
 .field-label { display: block; margin: 14px 0 4px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
 .raw-mdx {
   width: 100%; min-height: 55vh; resize: vertical;
