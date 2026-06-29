@@ -1,0 +1,94 @@
+import { Node } from '@tiptap/core';
+import { NodeViewWrapper, ReactNodeViewRenderer, type ReactNodeViewProps } from '@tiptap/react';
+import { useRef, useState } from 'react';
+import { api } from '../lib/api';
+
+// Gallery block: holds the images you add; editor shows them raw. The real
+// DiaryCarousel / PolaroidGalleryScrapbook renders in the published blog (viewer).
+// Serialization (node → MDX) lands with the publish step (milestone ①).
+export type GalleryVariant = 'carousel' | 'polaroid';
+export interface GalleryItem { src: string; alt: string }
+
+const LABEL: Record<GalleryVariant, string> = {
+  carousel: 'DiaryCarousel',
+  polaroid: 'PolaroidGalleryScrapbook',
+};
+
+function GalleryView({ node, updateAttributes, deleteNode }: ReactNodeViewProps) {
+  const variant = node.attrs.variant as GalleryVariant;
+  const items = node.attrs.items as GalleryItem[];
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  const setItems = (next: GalleryItem[]) => updateAttributes({ items: next });
+
+  async function onPick(files: FileList | null) {
+    if (!files?.length) return;
+    setBusy(true);
+    try {
+      const uploaded: GalleryItem[] = [];
+      for (const f of Array.from(files)) {
+        const { src } = await api.uploadMedia(f);
+        uploaded.push({ src, alt: '' });
+      }
+      setItems([...items, ...uploaded]);
+    } finally {
+      setBusy(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
+  return (
+    <NodeViewWrapper className="gallery-node" data-variant={variant}>
+      <div className="gallery-head">
+        <span className="gallery-tag">갤러리 · {LABEL[variant]}</span>
+        <button type="button" className="gallery-x" onClick={() => deleteNode()} title="블록 삭제">✕</button>
+      </div>
+      <div className="gallery-grid">
+        {items.map((it, i) => (
+          <figure key={it.src + i} className="gallery-item">
+            <img src={it.src} alt={it.alt} />
+            <input
+              className="gallery-cap"
+              value={it.alt}
+              placeholder={variant === 'polaroid' ? '제목' : '설명(alt)'}
+              onChange={(e) => setItems(items.map((x, j) => (j === i ? { ...x, alt: e.target.value } : x)))}
+            />
+            <button
+              type="button"
+              className="gallery-remove"
+              onClick={() => setItems(items.filter((_, j) => j !== i))}
+              title="이미지 제거"
+            >✕</button>
+          </figure>
+        ))}
+        <button type="button" className="gallery-add" disabled={busy} onClick={() => fileRef.current?.click()}>
+          {busy ? '업로드 중…' : '+ 이미지'}
+        </button>
+      </div>
+      <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => onPick(e.target.files)} />
+    </NodeViewWrapper>
+  );
+}
+
+export const GalleryNode = Node.create({
+  name: 'gallery',
+  group: 'block',
+  atom: true,
+  draggable: true,
+  addAttributes() {
+    return {
+      variant: { default: 'carousel' as GalleryVariant },
+      items: { default: [] as GalleryItem[] },
+    };
+  },
+  parseHTML() {
+    return [{ tag: 'div[data-gallery]' }];
+  },
+  renderHTML() {
+    return ['div', { 'data-gallery': '' }];
+  },
+  addNodeView() {
+    return ReactNodeViewRenderer(GalleryView);
+  },
+});

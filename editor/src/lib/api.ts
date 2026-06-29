@@ -20,4 +20,9 @@ export interface HealthResponse {
 
 export const api = {
   health: () => req<HealthResponse>('/health'),
+  uploadMedia: async (file: File): Promise<{ src: string }> => {
+    const fd = new FormData();
+    fd.append('file', file);
+    return req<{ src: string }>('/media', { method: 'POST', body: fd, headers: {} });
+  },
 };

@@ -58,7 +58,9 @@ jobs:
       - name: Deploy container
         run: |
           docker stop astro-editor 2>/dev/null && docker rm astro-editor 2>/dev/null || true
-          docker run -d --name astro-editor -p 4322:4322 astro-editor
+          docker run -d --name astro-editor -p 4322:4322 \
+            -v /home/jun/blog-files:/home/files -e MEDIA_DIR=/home/files/media \
+            astro-editor
 
 # NOTE: reachability at https://jun-devlog.win/editor and /editor-api requires the
 # reverse proxy (Cloudflare / host nginx) to route those path prefixes to the RPi :4322.
