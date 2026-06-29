@@ -1,0 +1,111 @@
+:root {
+  /* custom mono tokens for the hand-styled UI; namespaced to avoid clashing with
+     shadcn's --muted/--accent/--border (which it owns). --border reuses shadcn's. */
+  --bg: #0a0a0a;
+  --surface: #161616;
+  --elevated: #1e1e1e;
+  --text: #ededed;
+  --c-muted: #8a8a8a;
+  --c-accent: #ededed;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); }
+
+.app-shell { max-width: 860px; margin: 0 auto; padding: 16px; }
+.app-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 20px;
+}
+.back-btn {
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 5px 12px; font-size: 13px; cursor: pointer;
+}
+
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.muted { color: var(--c-muted); font-size: 14px; }
+
+.badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
+.badge.ok { color: #7fff9f; border-color: #2a4a32; }
+.badge.down { color: #ff8a8a; border-color: #4a2a2a; }
+
+.post-list { list-style: none; padding: 0; }
+.post-list a, a.post-list { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+
+.post-table { list-style: none; padding: 0; margin: 12px 0 0; }
+.post-table li {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 4px; border-bottom: 1px solid var(--border);
+}
+.post-cat { font-size: 11px; color: var(--c-muted); min-width: 56px; text-transform: uppercase; }
+.post-title { flex: 1; font-size: 14px; color: var(--text); text-decoration: none; }
+.post-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.title-row { display: flex; align-items: center; gap: 12px; }
+.type-select {
+  padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); font-size: 13px;
+}
+.field-label { display: block; margin: 14px 0 4px; font-size: 11px; color: var(--c-muted); text-transform: uppercase; letter-spacing: .04em; }
+.raw-mdx {
+  width: 100%; min-height: 55vh; resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.6;
+  padding: 14px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); tab-size: 2;
+}
+.raw-mdx.fm { min-height: 140px; }
+
+/* preserved MDX component blocks inside the rich editor */
+.rawmdx { border: 1px solid var(--border); border-left: 2px solid var(--c-muted); border-radius: 8px; margin: 12px 0; background: var(--surface); overflow: hidden; }
+.rawmdx-tag { font-size: 11px; color: var(--c-muted); padding: 5px 10px; border-bottom: 1px solid var(--border); }
+.rawmdx-src {
+  width: 100%; border: none; resize: vertical; display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; line-height: 1.55;
+  padding: 10px; background: transparent; color: var(--text); tab-size: 2;
+}
+.rawmdx-src:focus { outline: none; }
+
+.btn-primary {
+  background: var(--c-accent); color: var(--bg); border: none; border-radius: 8px;
+  padding: 8px 14px; font-weight: 600; cursor: pointer;
+}
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.editor-canvas {
+  margin-top: 16px; border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; min-height: 320px; background: var(--surface);
+}
+.editor-canvas .ProseMirror { outline: none; min-height: 300px; line-height: 1.8; }
+
+.login-page form { display: flex; gap: 8px; margin-top: 12px; }
+.login-page input {
+  flex: 1; padding: 8px 12px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+}
+
+.slash-menu {
+  display: flex; flex-direction: column; min-width: 200px; max-height: 320px; overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.slash-item {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  background: none; border: none; color: var(--text); text-align: left;
+  padding: 7px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;
+}
+.slash-item.active { background: var(--elevated); }
+.slash-hint { color: var(--c-muted); font-size: 11px; }
+
+.gallery-node { border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin: 12px 0; background: var(--surface); }
+.gallery-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.gallery-tag { font-size: 12px; color: var(--c-muted); }
+.gallery-x, .gallery-remove { background: none; border: none; color: var(--c-muted); cursor: pointer; }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.gallery-item { margin: 0; position: relative; }
+.gallery-item img { width: 100%; height: 110px; object-fit: cover; border-radius: 6px; display: block; }
+.gallery-item .gallery-remove { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,.6); border-radius: 999px; width: 22px; height: 22px; color: #fff; }
+.gallery-cap { width: 100%; margin-top: 4px; font-size: 12px; padding: 3px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+.gallery-add {
+  display: flex; align-items: center; justify-content: center; min-height: 110px;
+  border: 1px dashed var(--border); border-radius: 6px; background: transparent; color: var(--c-muted); cursor: pointer;
+}

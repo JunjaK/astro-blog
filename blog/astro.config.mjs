@@ -87,6 +87,9 @@ export default defineConfig({
     },
     optimizeDeps: {
       exclude: ['tegaki', 'tegaki/react', 'tegaki/fonts/caveat'],
+      // pre-bundle framer-motion up front so dev edits don't trigger a mid-session
+      // re-optimization (which 504s already-open tabs and kills tegaki islands)
+      include: ['framer-motion'],
     },
     css: {
       preprocessorOptions: {

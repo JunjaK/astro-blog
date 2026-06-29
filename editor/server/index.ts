@@ -33,9 +33,7 @@ app.get('/editor-api/doc/:id{.+}', (c) => {
     | { category: string; frontmatter: string; body: string }
     | null;
   if (!row) return c.json({ error: 'not found' }, 404);
-  const fmYaml = matter.stringify('', JSON.parse(row.frontmatter))
-    .replace(/^---\r?\n/, '').replace(/\r?\n?---\r?\n?$/, '').trimEnd();
-  return c.json({ category: row.category, frontmatterYaml: fmYaml, segments: segmentMdx(row.body) });
+  return c.json({ frontmatter: JSON.parse(row.frontmatter), segments: segmentMdx(row.body) });
 });
 
 // Single post (id may contain slashes → rest-capture). `raw` = full MDX
@@ -49,16 +47,14 @@ app.get('/editor-api/posts/:id{.+}', (c) => {
   return c.json({ ...row, raw });
 });
 
-// Save edits: client sends full `raw` MDX → re-split into frontmatter + body.
-// Updates the DB only; publishing to the live blog is a later step.
+// Save edits: structured frontmatter (object) + body. DB only; publish is later.
 app.put('/editor-api/posts/:id{.+}', async (c) => {
   const id = c.req.param('id');
-  const { raw } = await c.req.json<{ raw?: string }>();
-  if (typeof raw !== 'string') return c.json({ error: 'no raw' }, 400);
-  const { data, content } = matter(raw);
+  const { frontmatter, body } = await c.req.json<{ frontmatter?: Record<string, unknown>; body?: string }>();
+  if (!frontmatter || typeof body !== 'string') return c.json({ error: 'bad payload' }, 400);
   const res = db.run(
     'UPDATE posts SET frontmatter = ?, body = ?, title = ?, version = version + 1, updated_at = ? WHERE id = ?',
-    [JSON.stringify(data), content, String(data.title ?? ''), new Date().toISOString(), id],
+    [JSON.stringify(frontmatter), body, String(frontmatter.title ?? ''), new Date().toISOString(), id],
   );
   return res.changes ? c.json({ ok: true }) : c.json({ error: 'not found' }, 404);
 });

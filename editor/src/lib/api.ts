@@ -35,9 +35,24 @@ export interface PostDetail {
   raw: string; // full MDX (frontmatter + body)
 }
 
+export interface Frontmatter {
+  title?: string;
+  category?: string;
+  created?: string;
+  updated?: string;
+  tags?: string[];
+  thumbnail?: string;
+  description?: string;
+  artist?: string;
+  album?: string;
+  releaseYear?: number;
+  appleMusicUrl?: string;
+  youtubeMusicUrl?: string;
+  [k: string]: unknown;
+}
+
 export interface DocResponse {
-  category: string;
-  frontmatterYaml: string;
+  frontmatter: Frontmatter;
   segments: { kind: 'md' | 'raw'; src: string }[];
 }
 
@@ -46,8 +61,8 @@ export const api = {
   posts: () => req<PostListItem[]>('/posts'),
   getPost: (id: string) => req<PostDetail>(`/posts/${id}`),
   getDoc: (id: string) => req<DocResponse>(`/doc/${id}`),
-  savePost: (id: string, raw: string) =>
-    req<{ ok: true }>(`/posts/${id}`, { method: 'PUT', body: JSON.stringify({ raw }), headers: { 'Content-Type': 'application/json' } }),
+  savePost: (id: string, frontmatter: Frontmatter, body: string) =>
+    req<{ ok: true }>(`/posts/${id}`, { method: 'PUT', body: JSON.stringify({ frontmatter, body }), headers: { 'Content-Type': 'application/json' } }),
   uploadMedia: async (file: File): Promise<{ src: string }> => {
     const fd = new FormData();
     fd.append('file', file);

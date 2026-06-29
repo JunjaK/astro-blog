@@ -1,3 +1,4 @@
+import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -7,6 +8,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 // API at /editor-api. Base path must match the public mount point.
 export default defineConfig({
   base: '/editor/',
+  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   plugins: [
     react(),
     tailwindcss(),
