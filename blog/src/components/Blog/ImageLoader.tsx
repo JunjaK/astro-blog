@@ -24,12 +24,15 @@ export default function ImageLoader({ src, alt = 'blog-image', ...props }: Image
       src={src ?? ''}
       alt={alt}
       loading="lazy"
+      decoding="async"
       data-lightbox=""
       className={`cursor-zoom-in ${props.className ?? ''}`}
+      style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 360px', ...props.style }}
     />
   );
 
-  if (!isDesktop) return img;
+  if (!isDesktop)
+    return img;
 
   return (
     <div data-lightbox-trigger>

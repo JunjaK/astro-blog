@@ -20,6 +20,7 @@ import rehypeKatex from 'rehype-katex';
 
 import remarkMath from 'remark-math';
 
+import rehypeImgAttrs from './src/plugins/rehypeImgAttrs.mjs';
 import remarkLyricsBlock from './src/plugins/remarkLyricsBlock.mjs';
 import remarkMermaidToHtml from './src/plugins/remarkMermaidToHtml.mjs';
 
@@ -50,7 +51,7 @@ export default defineConfig({
   },
   markdown: {
     remarkPlugins: [remarkMermaidToHtml, remarkMath, remarkLyricsBlock],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [rehypeKatex, rehypeImgAttrs],
     syntaxHighlight: false,
   },
   vite: {

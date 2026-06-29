@@ -16,8 +16,10 @@ const { src, alt = 'blog-image', class: className, width, height } = Astro.props
   src={src ?? ''}
   alt={alt ?? 'blog-image'}
   loading="lazy"
+  decoding="async"
   onerror={`this.src='/fallbackImg.svg'`}
   class:list={['cursor-zoom-in', className]}
+  style="content-visibility:auto;contain-intrinsic-size:auto 360px;"
   width={width}
   height={height}
   data-lightbox
