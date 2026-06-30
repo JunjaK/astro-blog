@@ -9,6 +9,7 @@ import {
   useCarousel,
 } from '@/components/ui/carousel';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
+import { srcSet, variant } from '@/utils/imageVariant';
 
 type DiaryCarouselProps = {
   content: DiaryContent[];
@@ -67,13 +68,20 @@ export function DiaryCarousel({ content }: DiaryCarouselProps) {
                     )
                   : (
                       <img
-                        src={item.src}
+                        src={variant(item.src, 480)}
+                        srcSet={srcSet(item.src)}
+                        sizes="(max-width: 768px) 50vw, 25vw"
                         alt={item.alt ?? ''}
                         loading="lazy"
                         decoding="async"
                         className="h-full w-full cursor-pointer object-cover"
                         style={{ height: '100%', margin: 0 }}
                         onClick={() => openLightbox(i)}
+                        onError={(e) => {
+                          // variant missing → fall back to the original once
+                          const t = e.currentTarget;
+                          if (t.src !== item.src) { t.srcset = ''; t.src = item.src; }
+                        }}
                       />
                     )}
               </div>

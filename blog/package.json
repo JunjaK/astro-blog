@@ -12,6 +12,8 @@
     "add-md-enter": "node ./src/utils/addMdEnter.js",
     "generate-thumbs": "node ./src/utils/generateThumbnails.js",
     "generate-thumbs:dry": "node ./src/utils/generateThumbnails.js --dry-run",
+    "generate-variants": "node ./src/utils/generateVariants.js",
+    "generate-variants:dry": "node ./src/utils/generateVariants.js --dry-run",
     "all-preprocess-md": "node ./src/utils/generateThumbnails.js && node ./src/utils/removeUnusedImages.js && node ./src/utils/addMdEnter.js && node ./src/utils/convertLoader.js",
     "astro": "astro",
     "test:e2e:ab": "vitest run --config vitest.e2e.config.ts",
