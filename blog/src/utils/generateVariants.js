@@ -14,7 +14,7 @@ import sharp from 'sharp';
 const ROOT = process.cwd();
 const IMAGE_ASSETS_DIR = path.join(ROOT, 'image-assets');
 const CONTENT_DIR = path.join(ROOT, 'src/content');
-const SIZES = [480, 960]; // carousel slide tiers; P3 adds 1600 for inline
+const SIZES = [480, 960, 1600]; // 480/960 carousel slides; 1600 for inline retina
 
 const FLAGS = { dryRun: process.argv.includes('--dry-run'), force: process.argv.includes('--force') };
 const matchArg = (() => { const i = process.argv.indexOf('--match'); return i >= 0 ? process.argv[i + 1] : null; })();

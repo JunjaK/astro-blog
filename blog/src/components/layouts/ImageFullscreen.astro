@@ -218,15 +218,15 @@
     // Skip if inside a no-lightbox container
     if (target.closest('[data-no-lightbox]')) return null;
 
-    // Direct img[data-lightbox]
+    // Direct img[data-lightbox] — prefer the original (data-full) over the displayed variant
     const lbImg = target.closest('img[data-lightbox]') as HTMLImageElement | null;
-    if (lbImg) return lbImg.src;
+    if (lbImg) return lbImg.dataset.full || lbImg.src;
 
     // Click on lightbox-trigger container (e.g. Lens overlay) — find the img inside
     const trigger = target.closest('[data-lightbox-trigger]');
     if (trigger) {
       const inner = trigger.querySelector('img[data-lightbox]') as HTMLImageElement | null;
-      if (inner) return inner.src;
+      if (inner) return inner.dataset.full || inner.src;
     }
 
     return null;

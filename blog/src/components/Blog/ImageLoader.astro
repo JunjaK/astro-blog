@@ -1,6 +1,10 @@
 ---
 // Lightweight server-rendered <img> for MDX blog posts (no client JS).
+// Displays a downscaled webp variant (lighter); clicking opens the original
+// full-res via the global ImageFullscreen handler (reads data-full).
 // For lens zoom on hover, use ImageLoader.tsx with client:visible instead.
+import { srcSet, variant } from '@/utils/imageVariant';
+
 type Props = {
   src?: string;
   alt?: string;
@@ -9,18 +13,25 @@ type Props = {
   height?: number;
 };
 
-const { src, alt = 'blog-image', class: className, width, height } = Astro.props;
+const { src = '', alt = 'blog-image', class: className, width, height } = Astro.props;
+
+const display = variant(src, 960); // inline images render larger than gallery → 960 default
+const set = srcSet(src, [480, 960, 1600]);
+const full = display !== src ? src : undefined; // original for the lightbox (only when a variant is shown)
 ---
 
 <img
-  src={src ?? ''}
-  alt={alt ?? 'blog-image'}
+  src={display}
+  srcset={set}
+  sizes="(max-width: 768px) 92vw, 720px"
+  alt={alt}
   loading="lazy"
   decoding="async"
-  onerror={`this.src='/fallbackImg.svg'`}
+  onerror="if(this.dataset.full){this.srcset='';this.src=this.dataset.full;this.dataset.full='';}else{this.onerror=null;this.src='/fallbackImg.svg';}"
   class:list={['cursor-zoom-in', className]}
   style="content-visibility:auto;contain-intrinsic-size:auto 360px;"
   width={width}
   height={height}
+  data-full={full}
   data-lightbox
 />
