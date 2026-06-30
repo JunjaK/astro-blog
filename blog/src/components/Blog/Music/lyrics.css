@@ -46,7 +46,7 @@
   border-left: 2px solid var(--border);
   color: var(--lyrics-translation-color);
   line-height: 1.7;
-  font-size: 0.95rem;
+  font-size: var(--type-label); /* one clear step below the source line (16 -> 14) */
 }
 
 .lyrics-stanza .chevron {

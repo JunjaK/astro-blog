@@ -28,7 +28,7 @@
         width: 100%;
       }
       .desc {
-        font-size: 0.9rem;
+        font-size: var(--type-label);
       }
     }
   }
@@ -64,7 +64,7 @@
         width: calc($px400 - 10.5rem);
       }
       white-space: pre-wrap;
-      font-size: 0.8rem;
+      font-size: var(--type-caption);
     }
     p {
       margin: 0.4rem 0;

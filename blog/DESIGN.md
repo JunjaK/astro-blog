@@ -16,26 +16,25 @@ colors:
   ink-muted-dark: "#a1a1aa"
   surface-dark: "#09090b"
 typography:
-  display:
+  page-title:
     fontFamily: "Roboto, 'M PLUS 1p', 'Noto Sans KR Variable', sans-serif"
-    fontSize: "clamp(2.25rem, 6vw, 3rem)"
-    fontWeight: 800
-    lineHeight: 1.05
+    fontSize: "clamp(1.5rem, 1.05rem + 1.9vw, 2rem)"
+    fontWeight: 700
+    lineHeight: 1.15
     letterSpacing: "-0.02em"
-  headline:
-    fontFamily: "Roboto, 'M PLUS 1p', 'Noto Sans KR Variable', sans-serif"
-    fontSize: "1.875rem"
-    fontWeight: 600
-    lineHeight: 1.2
-    letterSpacing: "-0.02em"
-  title:
+  heading:
     fontFamily: "Roboto, 'M PLUS 1p', 'Noto Sans KR Variable', sans-serif"
     fontSize: "1.5rem"
     fontWeight: 600
     lineHeight: 1.3
-  subtitle:
+  title:
     fontFamily: "Roboto, 'M PLUS 1p', 'Noto Sans KR Variable', sans-serif"
     fontSize: "1.25rem"
+    fontWeight: 600
+    lineHeight: 1.4
+  subtitle:
+    fontFamily: "Roboto, 'M PLUS 1p', 'Noto Sans KR Variable', sans-serif"
+    fontSize: "1.125rem"
     fontWeight: 600
     lineHeight: 1.4
   body:
@@ -138,19 +137,19 @@ components:
 
 **Character:** 한 종류의 휴머니스트 sans가 본문부터 제목까지 끌고 간다. 위계는 폰트 종류가 아니라 크기·굵기 대비로 만든다.
 
-### Hierarchy (단일 모듈러 스케일, 1.25 비율 — 이 스케일이 SSOT다)
-- **Display** (800, clamp(2.25rem→3rem) = 36→48px, lh 1.05): 히어로/블로그 글 최상위 제목. 빅스텝은 clamp로 ~400px까지 매끄럽게(768 점프 금지).
-- **Headline** (600, 1.875rem = 30px): 섹션 제목, 본문 h2.
-- **Title** (600, 1.5rem = 24px): h3, 큰 카드 제목.
-- **Subtitle** (600, 1.25rem = 20px): h4, 카드/리스트 제목, lead.
-- **Body** (400, 1rem = 16px, lh 1.7): 본문. 가독 줄길이 65–75ch.
-- **Label** (500, 0.875rem = 14px): 메타·태그·버튼·카테고리. (기존 0.8/0.9/1.0 군집을 여기로 통일)
-- **Caption** (500, 0.8125rem = 13px, tracking 0.04em): 최소 가독 크기. 그 이하 금지.
-- **Handwriting** (Caveat, ~1.25rem): tegaki 캡션 전용. 본문 위계에 포함되지 않음.
+### Hierarchy (단일 ladder, ~1.2-1.25 간격. mood 보존 위해 현재 크기에 앵커링한 compact 인스턴스. 이 토큰들이 SSOT, `global.css :root`에 정의)
+- **Page Title** `--type-page-title` (700, clamp(1.5rem→2rem) = 24→32px): about/project/blog 메인 제목 + 본문 h1. 빅스텝 clamp로 ~400px까지 매끄럽게(768 하드점프 금지).
+- **Heading** `--type-h2` (600, 1.5rem = 24px): 본문 h2.
+- **Title** `--type-h3` / `--type-card-title` (600, 1.25rem = 20px): 본문 h3, 리스트 카드 제목.
+- **Subtitle** `--type-h4` (600, 1.125rem = 18px): 본문 h4, empty-state desc.
+- **Body** `--type-body` (400, 1rem = 16px, lh 1.7): 본문. 65–75ch.
+- **Label** `--type-label` (500, 0.875rem = 14px): 메타·설명·카테고리·번역 (기존 0.8/0.9/1.0 군집 통일).
+- **Caption** `--type-caption` (500, 0.8125rem = 13px): 최소 가독. 그 이하 금지.
+- **Handwriting** (Caveat): tegaki 캡션 전용. 위계 밖.
 
 ### Named Rules
 **The Single Scale Rule.** 모든 서피스는 위 8단계 중 하나를 쓴다. 페이지마다 rem을 새로 찍지 않는다(과거: 1.2 vs 1.25 카드제목, 0.8/0.9 메타, 1.3em/1.2em 본문 헤딩 같은 off-scale 금지).
-**The Page-Title Rule.** about/project/blog의 메인 제목은 전부 **Display 토큰 하나**를 공유한다. 페이지마다 2rem/1.5rem로 다르게 두지 않는다.
+**The Page-Title Rule.** about/project/blog의 메인 제목은 전부 **`--type-page-title` 토큰 하나**를 공유한다. 페이지마다 2rem/1.5rem로 다르게 두지 않는다.
 **The Body-Heading Rule.** `.article-entry`(마크다운 본문) 헤딩은 별도 em-스케일을 만들지 말고 위 rem 스케일을 따른다. h5·h6를 본문 p와 같은 크기로 두지 않는다.
 **The Legibility Floor.** ~400px에서 13px(Caption) 미만 텍스트 금지. 0.48rem 같은 마이크로 라벨은 Caption까지 올린다.
 

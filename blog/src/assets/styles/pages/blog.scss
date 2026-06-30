@@ -35,14 +35,14 @@
   align-items: center;
 
   .empty-icon {
-    font-size: 10rem;
+    font-size: clamp(6rem, 18vw, 10rem);
     text-align: center;
     margin: 0 auto;
     color: var(--text-muted);
   }
 
   .desc {
-    font-size: 1.2rem;
+    font-size: var(--type-h4);
     font-weight: 500;
     text-align: center;
     margin-top: 1rem;
@@ -77,7 +77,7 @@
   .article-info {
     .article-title {
       scroll-margin: 5rem;
-      font-size: 1.25rem;
+      font-size: var(--type-card-title);
       line-height: 1.75rem;
       font-weight: 600;
       letter-spacing: -0.025em;
@@ -137,13 +137,23 @@
       }
     }
     @media screen and (max-width: 768px) {
-      padding-bottom: 0.5rem !important;
+      padding: 0.5rem 0.75rem !important;
+    }
+    // "이전 글 / 다음 글" kicker label — small, subordinate to the post title below it
+    h3 {
+      font-size: var(--type-label);
+      font-weight: 600;
     }
     .nav-icon {
-      font-size: 2rem;
+      font-size: var(--type-card-title);
     }
     .content {
       margin-top: 0.5rem;
+      // mobile shows only the label row; hide the empty content box so its
+      // leftover margins don't add phantom left/bottom space
+      @media screen and (max-width: 768px) {
+        display: none;
+      }
       .title {
         color: var(--text-p);
         line-height: 1.25rem;
@@ -175,15 +185,12 @@
 
   .front-matter-info {
     .title {
-      font-size: 2rem;
+      font-size: var(--type-page-title);
       font-weight: bold;
-      @media screen and (max-width: 768px) {
-        font-size: 1.25rem;
-      }
     }
 
     .category {
-      font-size: 1rem;
+      font-size: var(--type-label);
       font-weight: 500;
       cursor: pointer;
     }
@@ -270,7 +277,7 @@
     padding: 1px 10px;
 
     footer {
-      font-size: 16px;
+      font-size: var(--type-caption);
       margin: 1em 0;
 
       cite {
@@ -283,11 +290,11 @@
   }
 
   h1 {
-    font-size: 2em;
+    font-size: var(--type-page-title);
   }
 
   h2 {
-    font-size: 1.5em;
+    font-size: var(--type-h2);
     position: relative;
 
     &:before {
@@ -321,19 +328,21 @@
   }
 
   h3 {
-    font-size: 1.3em;
+    font-size: var(--type-h3);
   }
 
   h4 {
-    font-size: 1.2em;
+    font-size: var(--type-h4);
   }
 
   h5 {
-    font-size: 1em;
+    font-size: var(--type-body);
+    font-weight: 700;
   }
 
   h6 {
-    font-size: 1em;
+    font-size: var(--type-label);
+    font-weight: 700;
     color: var(--grey-9);
   }
 

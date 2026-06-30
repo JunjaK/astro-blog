@@ -128,7 +128,7 @@
   text-align: left;
 }
 .pf-back__title {
-  font-size: 0.74rem;
+  font-size: var(--type-caption);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(74, 63, 53, 0.6);
@@ -137,7 +137,7 @@
   margin: 0;
   flex: 1;
   overflow-y: auto;
-  font-size: clamp(0.95rem, 2.6vw, 1.12rem);
+  font-size: clamp(1rem, 2.6vw, 1.125rem);
   line-height: 1.62;
   color: #4a3f35;
   text-align: left;
@@ -145,7 +145,7 @@
 
 .pf-hint {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--type-caption);
   letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.55);
 }
@@ -186,7 +186,7 @@
 .pf-counter {
   min-width: 3.4rem;
   text-align: center;
-  font-size: 0.85rem;
+  font-size: var(--type-label);
   letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.88);
 }
