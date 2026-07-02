@@ -1,4 +1,5 @@
 import type { PolaroidImage } from '../types';
+import { variant } from '@/utils/imageVariant';
 
 export type { PolaroidImage };
 
@@ -14,9 +15,8 @@ export function round4(value: number): number {
 
 /** Mirror the scrapbook thumb resolution so v3 can share the same MDX data. */
 export function resolveThumb(item: PolaroidImage): string {
-  if (typeof item.thumb === 'string') return item.thumb;
-  if (item.thumb === true) return item.src.replace(/\.[^./]+$/, '-thumb.webp');
-  return item.src;
+  if (typeof item.thumb === 'string') return item.thumb; // explicit override
+  return variant(item.src, 480); // downscaled card image (replaces the legacy thumb-suffix derivation)
 }
 
 export function wrapIndex(index: number, count: number): number {

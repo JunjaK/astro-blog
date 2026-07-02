@@ -52,7 +52,7 @@ function pickNoteRotate(index: number): number {
 
 function resolveThumb(item: PolaroidImage): string {
   if (typeof item.thumb === 'string') return item.thumb; // explicit override
-  return variant(item.src, 480); // downscaled card image (replaces the -thumb.webp derivation)
+  return variant(item.src, 480); // downscaled card image (replaces the legacy thumb-suffix derivation)
 }
 ---
 
