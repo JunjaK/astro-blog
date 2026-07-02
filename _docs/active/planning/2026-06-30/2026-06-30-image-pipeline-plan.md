@@ -1,7 +1,8 @@
 # 이미지 파이프라인 계획 — 변형(variant) 생성 + 카탈로그 DB
 
 **작성일:** 2026-06-30
-**상태:** 계획 (구현 전)
+**상태:** 구현 완료 (2026-07-03) — P1–P5의 **리버서블·로컬 부분 전부 실행+커밋**; 파일 삭제·RPi 변형 생성·배포는 사용자 게이트 대기. 적대적 리뷰 1회 + 수정 9건 반영.
+> 커밋: P1 `0b4eb35` · P2/P3 `a18f236` · P3 `c4aaa9f` · P4 `7751c3a` · P5스크립트 `da1486c` · 리뷰수정 `08d646c` · P5마이그레이션 `817d27c`. (브랜치 `fix/blog-hydration-418`, 미푸시)
 **연관:** [[2026-06-28-blog-editor-app-plan]] (D8 데이터모델, 발행 마일스톤 ①), [[CLAUDE.md]] Image Assets
 **제약(사용자 확정):** 외부 서비스 금지(Cloudflare Image Resizing/Polish, thumbor 등 ✗). **`sharp` + 정적 파일**만. 자가호스팅(RPi), monochrome 톤 유지.
 
@@ -99,14 +100,17 @@ CREATE TABLE IF NOT EXISTS image_usage (   -- 어떤 글이 어떤 이미지를 
 - `image_usage`는 글 저장 시 body에서 `/files/[^"')\s]+` 추출해 갱신.
 - **자산관리(사용자 요청)**: dedup=hash 그룹, 고아=`image_usage` 없는 `images`, 재사용/cover선택 UI=`images` 조회. 전부 이 스키마로 충족.
 
-## 9. 단계 (phasing)
+## 9. 단계 (phasing) — 실행 현황
 
-1. **P1 — 체감 슬라이스(먼저):** `variant()` 헬퍼 + `DiaryCarousel` 슬라이드/라이트박스 교체 + 대상 글 이미지만 변형 생성. diary 1글로 로딩 체감 검증. (DB/배치 없이 컨벤션만.)
-2. **P2 — 배치 + 카탈로그:** `server/images.ts` + RPi 전량 배치 변형 + `images`/`image_usage` 적재 + `image-manifest.json`.
-3. **P3 — 블로그 전면:** `ImageLoader.astro`/`.tsx`/Polaroid srcset + 매니페스트 치수.
-4. **P4 — 에디터 저장 훅:** media 엔드포인트 변형+DB upsert + 갤러리 + cover=본문선택 ThumbnailInput.
-5. **P5 — 마이그레이션 정리:** cover 재작성 → 검증 → 구 thumb 삭제(§5). 로컬 image-assets 삭제.
-6. **P6 — 자산관리(선택):** 에디터 이미지 브라우즈/재사용/고아정리 UI.
+1. ✅ **P1** — `variant()`/`srcSet()` 헬퍼 + `DiaryCarousel` 슬라이드(480)/라이트박스(원본) + 대상 글 변형. `0b4eb35`.
+2. ✅ **P2** — `image-manifest.json`(1292장, sharp metadata·EXIF-orient 보정) + `imageVariant.size()` + 에디터 `server/images.ts` + `images`/`image_usage` 카탈로그. 블로그 매니페스트 커밋됨(image-assets 삭제 후 생존). `a18f236`,`7751c3a`. *(RPi 전량 변형 파일 생성은 게이트 §외)*
+3. ✅ **P3** — `ImageLoader.astro`/`.tsx` srcset(480/960/1600)+치수+클릭원본, Polaroid는 P5에서 배선. `a18f236`,`c4aaa9f`,`817d27c`.
+4. ✅ **P4(저장 훅)** — media 변형+카탈로그+usage, 2k캡→4096, try/catch, HEIC MIME. `7751c3a`,`08d646c`. *(cover=본문선택 ThumbnailInput UX는 보류 — 기존글은 P5가 dedup)*
+5. 🟡 **P5** — cover 재작성(52/52)+소비처 변형 배선+generateThumbnails 은퇴 **실행 완료** `817d27c`. **게이트 대기**: 구 `-thumb.webp` 70개 삭제, 로컬 image-assets 삭제, RPi 변형 생성.
+6. ⬜ **P6(선택)** — 에디터 자산 UI(재사용/고아정리). 카탈로그 DB·usage 준비됨, UI만 남음.
+
+### 리뷰 반영 (적대적 리뷰 1회)
+onError 무한리로드(터미널 폴백), HEIC octet-stream MIME 허용, media 4096 cap(RPi OOM), 고아파일 unlink, setImageUsage 트랜잭션, isVariant 정밀화(`-480/960/1600`), EXIF orient 치수, migrate `$` replacer. skip(안전): srcset sub-tier descriptor, migrate base-order latent.
 
 ## 10. 열린 질문
 
