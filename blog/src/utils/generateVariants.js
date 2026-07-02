@@ -14,9 +14,14 @@ import sharp from 'sharp';
 const ROOT = process.cwd();
 const IMAGE_ASSETS_DIR = path.join(ROOT, 'image-assets');
 const CONTENT_DIR = path.join(ROOT, 'src/content');
+const MANIFEST_PATH = path.join(ROOT, 'src/data/imageManifest.json'); // committed: /files/... -> [w,h]
 const SIZES = [480, 960, 1600]; // 480/960 carousel slides; 1600 for inline retina
 
-const FLAGS = { dryRun: process.argv.includes('--dry-run'), force: process.argv.includes('--force') };
+const FLAGS = {
+  dryRun: process.argv.includes('--dry-run'),
+  force: process.argv.includes('--force'),
+  manifestOnly: process.argv.includes('--manifest-only'), // build dim manifest, skip webp encoding
+};
 const matchArg = (() => { const i = process.argv.indexOf('--match'); return i >= 0 ? process.argv[i + 1] : null; })();
 
 const IMG_URL_RE = /\/files\/[^\s"')]+\.(?:png|jpe?g|webp)/gi;
@@ -37,7 +42,12 @@ async function main() {
   console.log(`=== Variant Generator ===${FLAGS.dryRun ? ' (dry-run)' : ''}`);
   console.log(`Scanning ${files.length} file(s)${matchArg ? ` matching "${matchArg}"` : ''}, sizes [${SIZES.join(', ')}]\n`);
 
-  let gen = 0, skip = 0, missing = 0, origTotal = 0, varTotal = 0;
+  // Dimension manifest (path -> [w,h]) — committed so the blog build knows intrinsic
+  // sizes for layout-shift even after local image-assets is deleted. Merge, don't clobber.
+  let manifest = {};
+  try { manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf-8')); } catch { /* first run */ }
+
+  let gen = 0, skip = 0, missing = 0, origTotal = 0, varTotal = 0, dims = 0;
   const seen = new Set();
   for (const file of files) {
     for (const url of imageUrls(fs.readFileSync(file, 'utf-8'))) {
@@ -46,6 +56,11 @@ async function main() {
       const local = urlToLocal(url);
       if (!local || !fs.existsSync(local)) { missing++; console.log(`  MISS ${url}`); continue; }
       const origMtime = fs.statSync(local).mtimeMs;
+      if (!FLAGS.dryRun) {
+        const meta = await sharp(local).metadata();
+        if (meta.width && meta.height) { manifest[url] = [meta.width, meta.height]; dims++; }
+      }
+      if (FLAGS.manifestOnly) continue;
       for (const w of SIZES) {
         const out = variantLocal(local, w);
         if (!FLAGS.force && fs.existsSync(out) && fs.statSync(out).mtimeMs >= origMtime) { skip++; continue; }
@@ -56,7 +71,13 @@ async function main() {
       }
     }
   }
-  console.log(`\n${FLAGS.dryRun ? 'would generate' : 'generated'} ${gen}, skipped ${skip}, missing-original ${missing}`);
+  if (!FLAGS.dryRun) {
+    fs.mkdirSync(path.dirname(MANIFEST_PATH), { recursive: true });
+    const sorted = Object.fromEntries(Object.keys(manifest).sort().map((k) => [k, manifest[k]]));
+    fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(sorted, null, 0)}\n`);
+  }
+
+  console.log(`\n${FLAGS.dryRun ? 'would generate' : 'generated'} ${gen}, skipped ${skip}, missing-original ${missing}, manifest dims ${dims} (total ${Object.keys(manifest).length})`);
   if (varTotal) console.log(`orig ${(origTotal / 1e6).toFixed(1)}MB → variants ${(varTotal / 1e6).toFixed(1)}MB (${((1 - varTotal / origTotal) * 100).toFixed(0)}% smaller)`);
 }
 

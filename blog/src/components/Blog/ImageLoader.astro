@@ -3,7 +3,7 @@
 // Displays a downscaled webp variant (lighter); clicking opens the original
 // full-res via the global ImageFullscreen handler (reads data-full).
 // For lens zoom on hover, use ImageLoader.tsx with client:visible instead.
-import { srcSet, variant } from '@/utils/imageVariant';
+import { size, srcSet, variant } from '@/utils/imageVariant';
 
 type Props = {
   src?: string;
@@ -18,6 +18,7 @@ const { src = '', alt = 'blog-image', class: className, width, height } = Astro.
 const display = variant(src, 960); // inline images render larger than gallery → 960 default
 const set = srcSet(src, [480, 960, 1600]);
 const full = display !== src ? src : undefined; // original for the lightbox (only when a variant is shown)
+const dim = size(src); // original intrinsic {w,h} → aspect ratio reserved, no layout shift
 ---
 
 <img
@@ -30,8 +31,8 @@ const full = display !== src ? src : undefined; // original for the lightbox (on
   onerror="if(this.dataset.full){this.srcset='';this.src=this.dataset.full;this.dataset.full='';}else{this.onerror=null;this.src='/fallbackImg.svg';}"
   class:list={['cursor-zoom-in', className]}
   style="content-visibility:auto;contain-intrinsic-size:auto 360px;"
-  width={width}
-  height={height}
+  width={width ?? dim?.w}
+  height={height ?? dim?.h}
   data-full={full}
   data-lightbox
 />
