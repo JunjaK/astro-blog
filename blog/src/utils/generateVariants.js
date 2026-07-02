@@ -25,7 +25,8 @@ const FLAGS = {
 const matchArg = (() => { const i = process.argv.indexOf('--match'); return i >= 0 ? process.argv[i + 1] : null; })();
 
 const IMG_URL_RE = /\/files\/[^\s"')]+\.(?:png|jpe?g|webp)/gi;
-const isVariant = (url) => /-(?:thumb|\d+)\.webp$/i.test(url); // skip existing thumbs/variants
+// only our own suffixes — NOT any -<digits>.webp (a real original named foo-2.webp is not a variant)
+const isVariant = (url) => /-(?:thumb|480|960|1600)\.webp$/i.test(url);
 
 const urlToLocal = (url) => (url.startsWith('/files/') ? path.join(IMAGE_ASSETS_DIR, url.replace(/^\/files\//, '')) : null);
 const variantLocal = (local, w) => { const p = path.parse(local); return path.join(p.dir, `${p.name}-${w}.webp`); };
@@ -58,7 +59,13 @@ async function main() {
       const origMtime = fs.statSync(local).mtimeMs;
       if (!FLAGS.dryRun) {
         const meta = await sharp(local).metadata();
-        if (meta.width && meta.height) { manifest[url] = [meta.width, meta.height]; dims++; }
+        if (meta.width && meta.height) {
+          // variants are encoded with .rotate() (auto-orient); EXIF orientation 5-8 swaps
+          // w/h, so store the DISPLAYED dims to keep the reserved aspect ratio correct.
+          const swap = (meta.orientation ?? 1) >= 5;
+          manifest[url] = swap ? [meta.height, meta.width] : [meta.width, meta.height];
+          dims++;
+        }
       }
       if (FLAGS.manifestOnly) continue;
       for (const w of SIZES) {

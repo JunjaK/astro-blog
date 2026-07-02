@@ -1,5 +1,5 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, unlink } from 'node:fs/promises';
 import matter from 'gray-matter';
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
@@ -122,28 +122,39 @@ app.post('/editor-api/media', async (c) => {
   const form = await c.req.formData();
   const file = form.get('file');
   if (!(file instanceof File)) return c.json({ error: 'no file' }, 400);
-  if (!file.type.startsWith('image/')) return c.json({ error: 'not an image' }, 415);
+  if (!file.type.startsWith('image/') && !/\.(heic|heif)$/i.test(file.name)) return c.json({ error: 'not an image' }, 415); // HEIC often arrives as octet-stream
   if (file.size > MAX_BYTES) return c.json({ error: 'too large' }, 413);
   const input = Buffer.from(await file.arrayBuffer());
   let webp: Buffer;
-  // Full-resolution webp (no 2k cap — the sized variants below carry display; this full
-  // file is the lightbox source. True originals live in the user's cloud). One lossy step.
+  // The sized variants below carry display; this "full" webp is the lightbox source (true
+  // originals live in the user's cloud). No aggressive 2k cap, but a generous 4096 longest-
+  // edge cap bounds decode memory so a giant HEIC can't OOM the shared RPi. One lossy step.
+  const cap = { width: 4096, height: 4096, fit: 'inside' as const, withoutEnlargement: true };
   if (/heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name)) {
     // sharp can't decode HEIC here → heic-decode to raw RGBA, straight into sharp.
     const decode = (await import('heic-decode')).default;
     const { width, height, data } = await decode({ buffer: input });
-    webp = await sharp(Buffer.from(data), { raw: { width, height, channels: 4 } }).webp({ quality: 80 }).toBuffer();
+    webp = await sharp(Buffer.from(data), { raw: { width, height, channels: 4 } }).resize(cap).webp({ quality: 80 }).toBuffer();
   } else {
-    webp = await sharp(input).rotate().webp({ quality: 80 }).toBuffer(); // bake EXIF orientation, strip metadata
+    webp = await sharp(input).rotate().resize(cap).webp({ quality: 80 }).toBuffer(); // bake EXIF orientation, strip metadata
   }
   const name = `${createHash('sha256').update(webp).digest('hex').slice(0, 16)}.webp`;
+  const base = name.replace(/\.webp$/, '');
+  const src = `/files/media/${name}`;
   await mkdir(MEDIA_DIR, { recursive: true });
   await Bun.write(`${MEDIA_DIR}/${name}`, webp);
-  const src = `/files/media/${name}`;
-  // sized variants (foo-480/960/1600.webp, matching the blog convention) + catalog row
-  const meta = await sharp(webp).metadata();
-  await writeVariants(webp, name.replace(/\.webp$/, ''), MEDIA_DIR);
-  catalogImage(src, webp, meta.width ?? 0, meta.height ?? 0);
+  try {
+    // sized variants (foo-480/960/1600.webp, matching the blog convention) + catalog row
+    const meta = await sharp(webp).metadata();
+    await writeVariants(webp, base, MEDIA_DIR);
+    catalogImage(src, webp, meta.width ?? 0, meta.height ?? 0);
+  } catch (err) {
+    // variants/catalog failed → unlink so no uncataloged orphan is left behind
+    for (const p of [name, `${base}-480.webp`, `${base}-960.webp`, `${base}-1600.webp`]) {
+      await unlink(`${MEDIA_DIR}/${p}`).catch(() => {});
+    }
+    return c.json({ error: `processing failed: ${(err as Error).message}` }, 500);
+  }
   return c.json({ src });
 });
 

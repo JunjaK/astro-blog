@@ -39,7 +39,14 @@ export default function ImageLoader({ src = '', alt = 'blog-image', width, heigh
       height={height ?? dim?.h}
       className={`cursor-zoom-in ${className ?? ''}`}
       style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 360px', ...style }}
-      onError={(e) => { const t = e.currentTarget; if (full && t.src !== full) { t.srcset = ''; t.src = full; } }}
+      onError={(e) => {
+        // variant → original → fallback, terminal (dataset flag avoids reload loop:
+        // IDL t.src is absolute so a relative compare never ends).
+        const t = e.currentTarget;
+        if (t.dataset.fb === '2') return;
+        if (t.dataset.fb === '1') { t.dataset.fb = '2'; t.src = '/fallbackImg.svg'; return; }
+        t.dataset.fb = '1'; t.srcset = ''; t.src = full ?? '/fallbackImg.svg';
+      }}
     />
   );
 

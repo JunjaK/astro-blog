@@ -6,7 +6,9 @@ import { db } from './db';
 // Body-image variant tiers — MUST match blog/src/utils/imageVariant.ts (foo-<w>.webp).
 const SIZES = [480, 960, 1600] as const;
 const IMG_URL_RE = /\/files\/[^\s"')]+\.(?:webp|png|jpe?g)/gi;
-const isVariant = (url: string) => /-(?:thumb|\d+)\.webp$/i.test(url);
+// only our own suffixes (must match blog/src/utils/generateVariants.js) — a real original
+// named foo-2.webp is NOT a variant, so don't drop it from usage.
+const isVariant = (url: string) => /-(?:thumb|480|960|1600)\.webp$/i.test(url);
 
 // Write sibling downscaled webp variants (<base>-480.webp …) next to the full image.
 export async function writeVariants(full: Buffer, baseName: string, dir: string): Promise<void> {
@@ -34,7 +36,9 @@ export function catalogImage(path: string, full: Buffer, width: number, height: 
 export function setImageUsage(postId: string, body: string): void {
   const urls = new Set<string>();
   for (const m of body.matchAll(IMG_URL_RE)) if (!isVariant(m[0])) urls.add(m[0]);
-  db.run('DELETE FROM image_usage WHERE post_id = ?', [postId]);
   const ins = db.query('INSERT OR IGNORE INTO image_usage (image_path, post_id) VALUES (?, ?)');
-  for (const u of urls) ins.run(u, postId);
+  db.transaction(() => { // atomic: never leave a post with a half-rebuilt usage set
+    db.run('DELETE FROM image_usage WHERE post_id = ?', [postId]);
+    for (const u of urls) ins.run(u, postId);
+  })();
 }

@@ -78,9 +78,12 @@ export function DiaryCarousel({ content }: DiaryCarouselProps) {
                         style={{ height: '100%', margin: 0 }}
                         onClick={() => openLightbox(i)}
                         onError={(e) => {
-                          // variant missing → fall back to the original once
+                          // variant → original → fallback, terminal (dataset flag avoids
+                          // a reload loop: IDL t.src is absolute, item.src relative).
                           const t = e.currentTarget;
-                          if (t.src !== item.src) { t.srcset = ''; t.src = item.src; }
+                          if (t.dataset.fb === '2') return;
+                          if (t.dataset.fb === '1') { t.dataset.fb = '2'; t.src = '/fallbackImg.svg'; return; }
+                          t.dataset.fb = '1'; t.srcset = ''; t.src = item.src;
                         }}
                       />
                     )}

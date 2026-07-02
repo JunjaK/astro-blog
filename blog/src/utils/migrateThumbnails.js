@@ -65,7 +65,8 @@ function main() {
 
     rewrite++;
     console.log(`  ${APPLY ? 'REWRITE' : 'would rewrite'}  ${rel}\n      ${cur}\n   →  ${orig}`);
-    if (APPLY) fs.writeFileSync(file, content.replace(THUMB_RE, `$1${orig}`), 'utf-8');
+    // function replacer: a resolved path containing $ must not be read as a $-pattern
+    if (APPLY) fs.writeFileSync(file, content.replace(THUMB_RE, (_m, p1) => p1 + orig), 'utf-8');
   }
 
   // deletion candidates (report only — never deleted here)
