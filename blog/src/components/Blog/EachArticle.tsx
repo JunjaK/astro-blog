@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import dayJsRelativeTime from 'dayjs/plugin/relativeTime';
 import React, { useMemo } from 'react';
+import { srcSet, variant } from '@/utils/imageVariant';
 import BlogTags from './BlogTags';
 
 dayjs.extend(dayJsRelativeTime);
@@ -42,12 +43,20 @@ export default function EachArticle({ frontmatter, url }: Props) {
         <article className="blog-article">
 
           <img
-            src={frontmatter.thumbnail ?? ''}
+            src={variant(frontmatter.thumbnail ?? '', 480)}
+            srcSet={srcSet(frontmatter.thumbnail ?? '', [480, 960])}
+            sizes="128px"
             alt={frontmatter.title}
             loading="lazy"
             className="rounded-lg"
             width={128}
             height={128}
+            onError={(e) => {
+              const t = e.currentTarget; const o = frontmatter.thumbnail ?? '';
+              if (t.dataset.fb === '2') return;
+              if (t.dataset.fb === '1') { t.dataset.fb = '2'; t.src = '/fallbackImg.svg'; return; }
+              t.dataset.fb = '1'; t.srcset = ''; t.src = o;
+            }}
           />
 
           <div className="article-info">

@@ -3,6 +3,7 @@ import { useStore } from '@nanostores/react';
 import React, { useEffect, useState } from 'react';
 import { TechIcon } from '@/components/About/TechStackComp/TechIcon';
 import { cn } from '@/lib/utils';
+import { srcSet, variant } from '@/utils/imageVariant';
 import { $theme } from '@/store/system';
 import getTechIcons from '@/utils/getTechIcons';
 import { Separator } from '../ui/separator';
@@ -38,10 +39,18 @@ const EachArticles: React.FC<EachArticlesProps> = ({ frontmatter, url }) => {
         <article className="project-article">
 
           <img
-            src={frontmatter.thumbnail ?? ''}
+            src={variant(frontmatter.thumbnail ?? '', 960)}
+            srcSet={srcSet(frontmatter.thumbnail ?? '', [480, 960])}
+            sizes="(max-width: 768px) 90vw, 400px"
             alt={frontmatter.title}
             loading="lazy"
             className="rounded-t-2xl project-thumbnail"
+            onError={(e) => {
+              const t = e.currentTarget; const o = frontmatter.thumbnail ?? '';
+              if (t.dataset.fb === '2') return;
+              if (t.dataset.fb === '1') { t.dataset.fb = '2'; t.src = '/fallbackImg.svg'; return; }
+              t.dataset.fb = '1'; t.srcset = ''; t.src = o;
+            }}
           />
 
           <div className="article-info">

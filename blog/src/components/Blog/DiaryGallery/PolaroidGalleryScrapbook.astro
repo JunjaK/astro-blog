@@ -2,6 +2,7 @@
 import type { PolaroidImage } from './types';
 import TegakiRenderer from 'tegaki/astro';
 import caveatBundle from 'tegaki/fonts/caveat';
+import { variant } from '@/utils/imageVariant';
 
 interface Props {
   items: PolaroidImage[];
@@ -50,9 +51,8 @@ function pickNoteRotate(index: number): number {
 }
 
 function resolveThumb(item: PolaroidImage): string {
-  if (typeof item.thumb === 'string') return item.thumb;
-  if (item.thumb === true) return item.src.replace(/\.[^./]+$/, '-thumb.webp');
-  return item.src;
+  if (typeof item.thumb === 'string') return item.thumb; // explicit override
+  return variant(item.src, 480); // downscaled card image (replaces the -thumb.webp derivation)
 }
 ---
 
@@ -95,6 +95,7 @@ function resolveThumb(item: PolaroidImage): string {
                   alt={item.alt ?? item.title}
                   loading="lazy"
                   decoding="async"
+                  onerror={`this.onerror=null;this.src='${item.src}'`}
                 />
               </div>
               <div class="scrapbook-polaroid-card__caption-row">

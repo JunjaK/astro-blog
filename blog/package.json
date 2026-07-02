@@ -15,7 +15,7 @@
     "generate-variants": "node ./src/utils/generateVariants.js",
     "generate-variants:dry": "node ./src/utils/generateVariants.js --dry-run",
     "generate-variants:manifest": "node ./src/utils/generateVariants.js --manifest-only",
-    "all-preprocess-md": "node ./src/utils/generateThumbnails.js && node ./src/utils/removeUnusedImages.js && node ./src/utils/addMdEnter.js && node ./src/utils/convertLoader.js",
+    "all-preprocess-md": "node ./src/utils/removeUnusedImages.js && node ./src/utils/addMdEnter.js && node ./src/utils/convertLoader.js",
     "astro": "astro",
     "test:e2e:ab": "vitest run --config vitest.e2e.config.ts",
     "bundle-icons": "node scripts/bundle-icons.mjs"
