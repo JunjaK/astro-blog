@@ -23,3 +23,26 @@ db.run(`
     updated_at         TEXT
   )
 `);
+
+// Image catalog (plan P2/§8). One row per uploaded/known image (dedup by content hash);
+// image_usage tracks which post references which image (orphan detection, asset reuse).
+db.run(`
+  CREATE TABLE IF NOT EXISTS images (
+    path       TEXT PRIMARY KEY,          -- canonical /files/... url of the original
+    hash       TEXT NOT NULL,             -- sha256(16hex) of the webp bytes → dedup
+    ext        TEXT,
+    width      INTEGER,
+    height     INTEGER,
+    bytes      INTEGER,
+    variants   INTEGER NOT NULL DEFAULT 0,-- 1 = sized webp variants generated
+    created_at TEXT
+  )
+`);
+db.run('CREATE INDEX IF NOT EXISTS idx_images_hash ON images(hash)');
+db.run(`
+  CREATE TABLE IF NOT EXISTS image_usage (
+    image_path TEXT NOT NULL,
+    post_id    TEXT NOT NULL,
+    PRIMARY KEY (image_path, post_id)
+  )
+`);

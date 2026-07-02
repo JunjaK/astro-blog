@@ -6,6 +6,7 @@ import { serveStatic } from 'hono/bun';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import sharp from 'sharp';
 import { db } from './db';
+import { catalogImage, setImageUsage, writeVariants } from './images';
 import { isManagedImport, manageImports, segmentMdx } from './mdx';
 
 // Editor backend (Bun + Hono). Serves the built React SPA under /editor and the
@@ -111,7 +112,9 @@ app.put('/editor-api/posts/:id{.+}', async (c) => {
     'UPDATE posts SET frontmatter = ?, body = ?, title = ?, version = version + 1, updated_at = ? WHERE id = ?',
     [JSON.stringify(frontmatter), finalBody, String(frontmatter.title ?? ''), new Date().toISOString(), id],
   );
-  return res.changes ? c.json({ ok: true }) : c.json({ error: 'not found' }, 404);
+  if (!res.changes) return c.json({ error: 'not found' }, 404);
+  setImageUsage(id, finalBody); // track which images this post references (orphan detection)
+  return c.json({ ok: true });
 });
 
 // Image upload → webp (EXIF/GPS stripped by sharp default), content-hash name.
@@ -123,20 +126,25 @@ app.post('/editor-api/media', async (c) => {
   if (file.size > MAX_BYTES) return c.json({ error: 'too large' }, 413);
   const input = Buffer.from(await file.arrayBuffer());
   let webp: Buffer;
-  const resize = { width: 2000, height: 2000, fit: 'inside' as const, withoutEnlargement: true }; // cap longest edge ~2k
+  // Full-resolution webp (no 2k cap — the sized variants below carry display; this full
+  // file is the lightbox source. True originals live in the user's cloud). One lossy step.
   if (/heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name)) {
     // sharp can't decode HEIC here → heic-decode to raw RGBA, straight into sharp.
-    // HEIC → raw → WebP: one lossy step, no intermediate JPEG/PNG. libheif applies orientation.
     const decode = (await import('heic-decode')).default;
     const { width, height, data } = await decode({ buffer: input });
-    webp = await sharp(Buffer.from(data), { raw: { width, height, channels: 4 } }).resize(resize).webp({ quality: 80 }).toBuffer();
+    webp = await sharp(Buffer.from(data), { raw: { width, height, channels: 4 } }).webp({ quality: 80 }).toBuffer();
   } else {
-    webp = await sharp(input).rotate().resize(resize).webp({ quality: 80 }).toBuffer(); // bake EXIF orientation, strip metadata
+    webp = await sharp(input).rotate().webp({ quality: 80 }).toBuffer(); // bake EXIF orientation, strip metadata
   }
   const name = `${createHash('sha256').update(webp).digest('hex').slice(0, 16)}.webp`;
   await mkdir(MEDIA_DIR, { recursive: true });
   await Bun.write(`${MEDIA_DIR}/${name}`, webp);
-  return c.json({ src: `/files/media/${name}` });
+  const src = `/files/media/${name}`;
+  // sized variants (foo-480/960/1600.webp, matching the blog convention) + catalog row
+  const meta = await sharp(webp).metadata();
+  await writeVariants(webp, name.replace(/\.webp$/, ''), MEDIA_DIR);
+  catalogImage(src, webp, meta.width ?? 0, meta.height ?? 0);
+  return c.json({ src });
 });
 
 // AI generate (Novel-style). One fetch to OpenAI, no SDK. Key via OPENAI_API_KEY.
