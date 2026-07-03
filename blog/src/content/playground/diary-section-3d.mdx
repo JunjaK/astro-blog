@@ -2,7 +2,7 @@
 title: Diary Section 개발 기록
 duration: 2026-02-14 ~ 2026-02-20
 techStacks: ['typescript', 'react', 'threedotjs', 'framer']
-thumbnail: /files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg
+thumbnail: /files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.webp
 description: 일기 포스트용 이미지 갤러리의 개발 시항 착오. Three.js WebGL → CSS 3D → R3F 링 캐러셀 → 단순 캐러셀
 ---
 
@@ -21,7 +21,7 @@ import ImageLoader from '@/components/Blog/ImageLoader';
 
 이 [템플릿](https://v0.app/templates/3-d-gallery-photography-template-JUFK37Esjlj?via=TRX3Vvo)을 보고 이거처럼 블로그 포스트에 다이나믹하게 이미지와 글을 표시하고 싶었다.
 
-<ImageLoader src="/files/playground/diary-seciton-sample.gif" alt="diary-section-sample" />
+<ImageLoader src="/files/playground/diary-seciton-sample.webp" alt="diary-section-sample" />
 
 Three.js를 통해서 이를 구현하면 좋겠다고 생각했는데, 정작 나는 Three.js에 대하여 모르니까  
 AI(Claude Code)를 통해서 구현하기로 했다.
@@ -58,10 +58,10 @@ AI(Claude Code)를 통해서 구현하기로 했다.
 
 <DiarySection client:visible variant="webgl"
   images={[
-    { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg", alt: "아사쿠사" },
-    { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.jpeg", alt: "스키야 규동" },
-    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.png", alt: "신마 아카리짱" },
-    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.png", alt: "간다 신사" },
+    { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.webp", alt: "아사쿠사" },
+    { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.webp", alt: "스키야 규동" },
+    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.webp", alt: "신마 아카리짱" },
+    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.webp", alt: "간다 신사" },
   ]}
 >
 
@@ -97,10 +97,10 @@ CSS 3D로 옮기니 원하는 결과물에 어느 정도 근접할 수 있었다
 
 <DiarySection client:visible
   images={[
-    { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg", alt: "아사쿠사" },
-    { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.jpeg", alt: "스키야 규동" },
-    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.png", alt: "신마 아카리짱" },
-    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.png", alt: "간다 신사" },
+    { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.webp", alt: "아사쿠사" },
+    { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.webp", alt: "스키야 규동" },
+    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.webp", alt: "신마 아카리짱" },
+    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.webp", alt: "간다 신사" },
   ]}
 >
 
@@ -133,14 +133,14 @@ CSS 3D로 옮기니 원하는 결과물에 어느 정도 근접할 수 있었다
   sections={[
     {
       images: [
-        { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg", alt: "아사쿠사" },
-        { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.jpeg", alt: "스키야 규동" },
+        { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.webp", alt: "아사쿠사" },
+        { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.webp", alt: "스키야 규동" },
       ],
     },
     {
       images: [
-        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.png", alt: "신마 아카리짱" },
-        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.png", alt: "간다 신사" },
+        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.webp", alt: "신마 아카리짱" },
+        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.webp", alt: "간다 신사" },
       ],
     },
   ]}
@@ -184,16 +184,16 @@ CSS 3D 버전으로는 구현의 한계가 있고, 1번째에서 시도한 Three
   sections={[
     {
       images: [
-        { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg", alt: "아사쿠사" },
-        { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.jpeg", alt: "스키야 규동" },
+        { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.webp", alt: "아사쿠사" },
+        { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.webp", alt: "스키야 규동" },
           { src: "/files/blog/diary/japan-around-trip/assets/20241223_020939713_iOS.webp", alt: "마쓰시마 해안 조망 1" },
         
       ],
     },
     {
       images: [
-        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.png", alt: "신마 아카리짱" },
-        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.png", alt: "간다 신사" },
+        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.webp", alt: "신마 아카리짱" },
+        { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.webp", alt: "간다 신사" },
          { src: "/files/blog/diary/25-01-tokyo/assets/20250120_112504045_iOS.webp", alt: "히츠지 양 구이" },
 
       ],
@@ -222,7 +222,7 @@ Three.js 링 캐러셀의 경우에는 성능 이슈도 어느 정도 해결되�
 그러던 중 내가 팔로우하고 있는 anthony-fu 의 블로그에서 [하나의 포스트](https://antfu.me/posts/hello-tokyo)가 단순히 캐러셀 + 텍스트 단락으로 구성되어 있는 것을 보고  
 굳이 복잡하게 갈 필요가 있을까 하는 생각이 들었고, 모바일에서는 오히려 단순한 것이 더 보기 편해서 단순하게 가는 것으로 결정햇다.
 
-<ImageLoader src="/files/playground/anthony-fu-blog-post.png" alt="anthony-fu" />
+<ImageLoader src="/files/playground/anthony-fu-blog-post.webp" alt="anthony-fu" />
 
 
 
@@ -243,9 +243,9 @@ Three.js 링 캐러셀의 경우에는 성능 이슈도 어느 정도 해결되�
 
 <DiaryCarousel client:visible
   content={[
-    { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.jpeg", alt: "아사쿠사" },
-    { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.jpeg", alt: "스키야 규동" },
-    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.png", alt: "신마 아카리짱" },
-    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.png", alt: "간다 신사" },
+    { src: "/files/blog/diary/japan-around-trip/assets/636F22B7-579E-4FC8-A0AC-E062DF61CBCC_1_105_c.webp", alt: "아사쿠사" },
+    { src: "/files/blog/diary/japan-around-trip/assets/53707095-F4FB-4238-BFD8-4DDEC1C2ECB7_1_105_c.webp", alt: "스키야 규동" },
+    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.53.01.webp", alt: "신마 아카리짱" },
+    { src: "/files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_15.55.09.webp", alt: "간다 신사" },
   ]}
 />
