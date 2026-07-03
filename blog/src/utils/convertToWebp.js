@@ -24,9 +24,11 @@ const isVariant = (p) => /-(?:thumb|480|960|1600)\.webp$/i.test(p);
 const localToUrl = (local) => `/files/${path.relative(IMAGE_ASSETS_DIR, local).split(path.sep).join('/')}`;
 
 function convert(src, dst, ext) {
-  if (ext === 'gif') return sharp(src, { animated: true }).webp().toFile(dst);
-  if (ext === 'png') return sharp(src).webp({ lossless: true }).toFile(dst); // lossless: text stays crisp
-  return sharp(src).rotate().webp({ quality: 85 }).toFile(dst); // jpeg (bake EXIF)
+  // limitInputPixels:false — long screen-recording gifs stack all frames vertically and
+  // blow past sharp's default 16383² guard; these are the user's own trusted files.
+  if (ext === 'gif') return sharp(src, { animated: true, limitInputPixels: false }).webp().toFile(dst);
+  if (ext === 'png') return sharp(src, { limitInputPixels: false }).webp({ lossless: true }).toFile(dst); // lossless: text stays crisp
+  return sharp(src, { limitInputPixels: false }).rotate().webp({ quality: 85 }).toFile(dst); // jpeg (bake EXIF)
 }
 
 async function main() {
