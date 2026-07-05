@@ -5,6 +5,7 @@
 ## Active
 
 ### Planning
+- [시음 노트(Tasting Note) 블로그 카테고리 — nihonshu 상세 + AI autofill](./active/processing/2026-07-06/2026-07-06-tasting-note-plan.md) — `processing` · 2026-07-06 · team-run (Leader+FE+BE+C-advisory+UIUX). music 카테고리 미러, Contract 11필드 SSOT, Designer 4명(겹침 0). base `fix/blog-hydration-418`@cf51e44.
 - [블로그 글쓰기 전용 웹앱 (Notion-style Editor + RPi 발행 백엔드)](./active/planning/2026-06-28/2026-06-28-blog-editor-app-plan.md) — `planning` · 2026-06-28 · team-brainstorm (Leader+FE+BE+Infra+UIUX). [diagram](./active/planning/2026-06-28/2026-06-28-blog-editor-app-plan.visual.html)
 
 ### Processing
