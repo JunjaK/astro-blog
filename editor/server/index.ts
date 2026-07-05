@@ -180,6 +180,119 @@ app.post('/editor-api/generate', async (c) => {
   return c.json({ text: data.choices?.[0]?.message?.content ?? '' });
 });
 
+// ── AI autofill (nihonshu tasting notes) ──
+// Mirrors /generate: one raw fetch to OpenAI, no SDK, key via OPENAI_API_KEY. The strict json_schema
+// forces every field into the reply (nullable); the server null-strips so only *confident* keys reach
+// the client (augment-only hallucination guard — its location is the server, per the plan).
+
+type TokuteiMeisho =
+  | '純米大吟醸' | '大吟醸' | '純米吟醸' | '吟醸'
+  | '特別純米' | '特別本醸造' | '純米' | '本醸造' | '普通酒';
+
+type FieldValue = string | number | string[] | null;
+
+// Raw model reply (json_schema strict → all keys present, each nullable). drinkKind is NOT here —
+// the endpoint is nihonshu-only and the client sets drinkKind itself. `type` (not interface) so it
+// carries an implicit index signature and satisfies stripNulls' Record<string, FieldValue> bound.
+type TastingRaw = {
+  brewery: string | null;
+  tokuteiMeisho: TokuteiMeisho | null;
+  riceType: string[] | null;
+  seimaiBuai: number | null;
+  alcohol: number | null;
+  nihonshuDo: number | null;
+  sando: number | null;
+  amakara: number | null;
+  noutan: number | null;
+  flavorTags: string[] | null;
+};
+
+// Drop null / '' / [] keys — a plain truthy check would wrongly drop legit zeros (amakara/noutan 中央,
+// nihonshuDo). Pure + exported so it's unit-testable in isolation (autofill.test.ts).
+export function stripNulls<T extends Record<string, FieldValue>>(raw: T): Partial<T> {
+  const out: Partial<T> = {};
+  for (const key of Object.keys(raw) as (keyof T)[]) {
+    const v = raw[key];
+    if (v !== null && v !== '' && !(Array.isArray(v) && v.length === 0)) out[key] = v;
+  }
+  return out;
+}
+
+const TASTING_SYSTEM_PROMPT
+  = '너는 일본 사케(니혼슈) 데이터 어시스턴트다. 입력은 사케명(또는 "양조장 - 사케명")이다. '
+  + '확실히 아는 정보만 채우고, 확신하지 못하는 필드는 반드시 null로 둔다. '
+  + 'seimaiBuai(정미보합%)/alcohol(도수%)/nihonshuDo(일본주도 SMV)/sando(산도)는 공식 실측값을 확신하지 못하면 절대 창작하지 말고 null. '
+  + 'amakara(-2 甘 ~ +2 辛)/noutan(-2 淡麗 ~ +2 濃醇)는 관능 인상을 나타내는 정수이며, 모르면 null. '
+  + 'tokuteiMeisho(特定名称)는 제공된 9개 값 중 하나 또는 null. '
+  + 'flavorTags는 한국어 라벨 배열로 출력한다(예: "리치·백도향", "키레(산뜻한 후미)"). 없으면 null.';
+
+// Strict structured-output schema. Rules: additionalProperties:false, every key required, nullable via
+// type:['x','null'], nullable enum via null appended to the enum array. No numeric min/max — ranges are
+// enforced downstream (zod ingest + FE picker) and stated in descriptions, keeping the schema portable.
+const TASTING_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['brewery', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando', 'amakara', 'noutan', 'flavorTags'],
+  properties: {
+    brewery: { type: ['string', 'null'], description: '양조장(酒蔵) 이름. 확신 못 하면 null.' },
+    tokuteiMeisho: {
+      type: ['string', 'null'],
+      enum: ['純米大吟醸', '大吟醸', '純米吟醸', '吟醸', '特別純米', '特別本醸造', '純米', '本醸造', '普通酒', null],
+      description: '特定名称. 9값 중 하나 또는 null.',
+    },
+    riceType: { type: ['array', 'null'], items: { type: 'string' }, description: '원료미(酒米). 블렌드 가능. 확신 못 하면 null.' },
+    seimaiBuai: { type: ['integer', 'null'], description: '정미보합 %. 0–100 정수. 공식 실측값 확신 못 하면 절대 창작 말고 null.' },
+    alcohol: { type: ['number', 'null'], description: '도수 %. 공식 실측값 확신 못 하면 절대 창작 말고 null.' },
+    nihonshuDo: { type: ['number', 'null'], description: '일본주도(SMV). 부호 허용. 공식 실측값 확신 못 하면 절대 창작 말고 null.' },
+    sando: { type: ['number', 'null'], description: '산도(酸度). 공식 실측값 확신 못 하면 절대 창작 말고 null.' },
+    amakara: { type: ['integer', 'null'], description: '甘辛 관능 인상. -2(甘) ~ +2(辛) 정수. 모르면 null.' },
+    noutan: { type: ['integer', 'null'], description: '濃淡 관능 인상. -2(淡麗) ~ +2(濃醇) 정수. 모르면 null.' },
+    flavorTags: { type: ['array', 'null'], items: { type: 'string' }, description: '향미 태그(한국어 라벨). 없으면 null.' },
+  },
+};
+
+interface ChatCompletion {
+  choices?: { message?: { content?: string } }[];
+}
+
+app.post('/editor-api/generate/tasting', async (c) => {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) return c.json({ error: 'OPENAI_API_KEY not set' }, 503);
+  const { query } = await c.req.json<{ query?: string }>();
+  if (!query) return c.json({ error: 'no query' }, 400);
+
+  let r: Response;
+  try {
+    r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: TASTING_SYSTEM_PROMPT },
+          { role: 'user', content: query },
+        ],
+        response_format: { type: 'json_schema', json_schema: { name: 'tasting_nihonshu', strict: true, schema: TASTING_SCHEMA } },
+      }),
+      signal: AbortSignal.timeout(20_000),
+    });
+  } catch {
+    return c.json({ error: 'openai timeout' }, 504); // AbortSignal.timeout / network throw
+  }
+  if (!r.ok) return c.json({ error: `openai ${r.status}` }, 502);
+
+  const data = (await r.json()) as ChatCompletion;
+  const content = data.choices?.[0]?.message?.content;
+  if (typeof content !== 'string') return c.json({ error: 'no content' }, 500);
+  let parsed: TastingRaw;
+  try {
+    parsed = JSON.parse(content) as TastingRaw;
+  } catch {
+    return c.json({ error: 'bad json' }, 500);
+  }
+  return c.json(stripNulls(parsed)); // flat, null-stripped → only confident keys
+});
+
 // Serve uploaded media (dev; in prod the blog nginx serves /files/* from the shared mount).
 app.use('/files/media/*', serveStatic({ root: MEDIA_DIR, rewriteRequestPath: (p) => p.replace(/^\/files\/media/, '') }));
 
