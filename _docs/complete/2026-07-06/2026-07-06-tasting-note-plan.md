@@ -1,5 +1,5 @@
 ---
-status: processing
+status: complete
 created: 2026-07-06
 topic: tasting-note
 base: fix/blog-hydration-418 @ cf51e44
@@ -9,7 +9,7 @@ mode: /team-run (autonomous)
 
 # 시음 노트(Tasting Note) 블로그 카테고리 — 통합 확정 플랜
 
-> Status: Processing (Phase 3)
+> Status: Complete (shipped 2026-07-06)
 > 원칙: **music 카테고리 정확 미러 = 통일성 우선.** 신규 npm 의존성 0. 계약(필드명)은 이 문서의 Contract 표가 SSOT — 모든 선언 사이트가 이 표를 전사(transcribe)한다.
 
 ## Task Description (원문)
@@ -266,3 +266,28 @@ Phase 1 판정 = **advisory(신규 공격면 없음), 블로킹 아님.** Phase 
 
 ## Escalation Log
 _(none)_
+
+---
+
+# 실행 결과 (2026-07-06 — Phase 3~5 완료 기록)
+
+## 구현 (Phase 3)
+- **커밋**: d3a6d61(mdx 라운드트립+테스트) · 49f08b8(tiptap 노드+Slash+RichEditor) · ea48f67(api.ts 계약) · d42af1e(blog zod+카드+샘플) · 2f3e4ce(AI autofill 라우트) · 4a03356(editor 입력 UI) — base 57b89d5, 브랜치 `fix/blog-hydration-418`
+- 16파일 +1304/-29. 신규 npm 의존성 0. Designer 4명 worktree 병렬(D1/D2/D4) + D3 순차(in-tree).
+- 주의: workflow worktree가 HEAD~1에서 생성되는 버그 발생 — D2가 발견·자체 reset, D1/D4는 3-way merge로 흡수(충돌 1건: content.config.ts lyricsType, 수동 해소).
+
+## 검증 (Phase 4 / 4.5)
+- **Tester1 (정적+계약)**: PASS-WITH-NOTES. editor 16/16 tests·tsc 0·lint 0·build OK / blog build 61p OK. **Contract 5개 선언 사이트 전수 파리티 일치** (zod/api.ts/CANONICAL/Astro Props/AI json_schema — camelCase·tokuteiMeisho 9값 순서·좌표 매핑·에러코드 맵 포함).
+- **Tester2 (실호출 스모크)**: PASS-WITH-NOTES. **환각 가드 실호출 통과** — 獺祭45 → seimaiBuai=45(공식값 일치), 가짜 사케 → 수치 4종 전부 null. MDX 라운드트립 byte-preserve + JSON.stringify undefined-key drop 실측.
+- **Phase 4.5 (agentic)**: 코드 결함 0. 브라우저 라이브 검증 — 피커 radiogroup/roving tabindex/aria-live, autocomplete, 슬래시 게이팅, 폼 영속 데이터 로드. 스크린샷 blog/e2e/screenshots/tasting-note-editor-agentic-4.5.png.
+- **미검증 1건 (환경, 사용자 액션 필요)**: 라이브 저장→재로드 통합 — 실행 중 editor 서버(PID 67923)가 tasting 배선 이전(7/5 18:15) 기동된 stale 프로세스. 재기동 후 수동 시나리오 1회 필요: 값 변경→저장→새로고침→값 유지+마커 영속 확인.
+
+## 보안 (Phase 5): **SHIP** (CRITICAL 0 · HIGH 0)
+XSS(Astro 이스케이프, set:html 0)·인증(default-DENY 커버)·키 누출 0·프롬프트 인젝션 실위험 0(json_schema strict+zod 빌드 게이트)·YAML 인젝션 기존 경로 동일·시크릿 커밋 0·의존성 diff 0.
+
+## Follow-ups (별도 과제)
+1. `.gitignore`에 `**/e2e/screenshots/` 추가 (blog/e2e/가 monorepo 분리 후 미매칭, PNG 61개 tracked 잔재 정리 포함)
+2. editor CATEGORIES가 lowercase 저장 (기존 music도 동일한 editor 전반 패턴) — blog frontmatter는 Capitalized 컨벤션. 통일 여부 검토
+3. 기존 `/generate` 라우트에도 20s 타임아웃 일관 적용 검토
+4. AI alcohol 정밀도(獺祭 15 vs 16%) — 창작은 아니나 리뷰 패널 「추정」 뱃지로 사용자 검증 유도 (현행 유지)
+5. whisky/beer/other kind별 스펙 필드 — drinkKind enum 예약만 된 상태, 추후 별도 PR
