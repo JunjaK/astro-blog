@@ -152,6 +152,10 @@ function modeledNode(node: MdxJsxNode, consts: Map<string, GalleryItem[]>, consu
   // frontmatter form). Model as a fieldless block; serialize re-emits canonical wiring.
   if (node.name === 'MusicCard') return { name: 'MusicCard' };
 
+  // TastingNoteCard: same frontmatter-wired marker pattern as MusicCard (nihonshu specs
+  // live in the frontmatter form). Fieldless block; serialize re-emits canonical wiring.
+  if (node.name === 'TastingNoteCard') return { name: 'TastingNoteCard' };
+
   // ImageLoader / VideoLoader: childless, string-literal attrs only.
   const allowed = MODELED_ATTRS[node.name];
   if (!allowed) return;
@@ -173,6 +177,7 @@ export const IMPORTS: Record<string, string> = {
   PolaroidGalleryScrapbook: "import PolaroidGalleryScrapbook from '@/components/Blog/DiaryGallery/PolaroidGalleryScrapbook.astro';",
   TableOfContents: "import TableOfContents from '@/components/Blog/TableOfContents.astro';",
   MusicCard: "import MusicCard from '@/components/Blog/Music/MusicCard.astro';",
+  TastingNoteCard: "import TastingNoteCard from '@/components/Blog/TastingNote/TastingNoteCard.astro';",
   Lyrics: "import { Lyrics } from '@/components/Blog/Music';",
   ImageLoader: "import ImageLoader from '@/components/Blog/ImageLoader.astro';",
   VideoLoader: "import VideoLoader from '@/components/Blog/VideoLoader.astro';",
