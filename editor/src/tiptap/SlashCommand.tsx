@@ -55,6 +55,8 @@ const ITEMS: SlashItem[] = [
   // music
   { title: '뮤직 카드', hint: '♪', types: ['music'], run: ({ editor, range }) => editor.chain().focus().deleteRange(range).insertContent({ type: 'musicCard' }).run() },
   { title: '가사 (lyrics)', hint: '♫', types: ['music'], run: ({ editor, range }) => editor.chain().focus().deleteRange(range).insertContent({ type: 'lyrics', attrs: { stanzas: [{ ja: '', ko: '' }] } }).run() },
+  // tasting note
+  { title: '시음 노트', hint: '🍶', types: ['tasting'], run: ({ editor, range }) => editor.chain().focus().deleteRange(range).insertContent({ type: 'tastingNoteCard' }).run() },
   { title: 'AI 작성', hint: '✨', run: runAI },
 ];
 

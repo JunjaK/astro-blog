@@ -7,6 +7,7 @@ import { DOMParser as PMDOMParser } from '@tiptap/pm/model';
 import { GalleryNode, type GalleryItem } from '../tiptap/GalleryNode';
 import { LyricsNode, type LyricStanza } from '../tiptap/LyricsNode';
 import { MusicCardNode } from '../tiptap/MusicCardNode';
+import { TastingNoteCardNode } from '../tiptap/TastingNoteCardNode';
 import { MdxMedia } from '../tiptap/MdxMedia';
 import { RawMdx } from '../tiptap/RawMdx';
 import { SlashCommand } from '../tiptap/SlashCommand';
@@ -46,6 +47,7 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(({ segments, type,
       GalleryNode,
       LyricsNode,
       MusicCardNode,
+      TastingNoteCardNode,
       MdxMedia,
       RawMdx,
       SlashCommand.configure({ type }),
@@ -69,6 +71,8 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(({ segments, type,
           content.push({ type: 'gallery', attrs: { variant: 'polaroid', items: s.node.items ?? [] } });
         else if (s.node?.name === 'MusicCard')
           content.push({ type: 'musicCard' });
+        else if (s.node?.name === 'TastingNoteCard')
+          content.push({ type: 'tastingNoteCard' });
         else if (s.node?.name === 'Lyrics')
           content.push({ type: 'lyrics', attrs: { stanzas: s.node.stanzas ?? [], kind: lyricsType } });
         else
