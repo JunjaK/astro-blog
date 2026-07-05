@@ -1,10 +1,13 @@
 ---
+import { size } from '@/utils/imageVariant';
+
 interface Props {
   appleMusicUrl: string;
   youtubeMusicUrl?: string;
   artist?: string;
   album?: string;
   releaseYear?: number;
+  cover?: string; // album art (usually frontmatter.thumbnail)
 }
 
 const {
@@ -13,6 +16,7 @@ const {
   artist,
   album,
   releaseYear,
+  cover,
 } = Astro.props;
 
 const embedSrc = appleMusicUrl.replace(
@@ -20,11 +24,25 @@ const embedSrc = appleMusicUrl.replace(
   'https://embed.music.apple.com/',
 );
 
+const coverDim = cover ? size(cover) : undefined;
+
 const captionParts = [artist, album, releaseYear].filter(Boolean);
 const caption = captionParts.join(' · ');
 ---
 
 <div class="music-card my-8 flex flex-col gap-3">
+  {cover && (
+    <div class="music-card-cover rounded-xl overflow-hidden border border-border">
+      <img
+        src={cover}
+        width={coverDim?.w}
+        height={coverDim?.h}
+        alt={[artist, album].filter(Boolean).join(' - ') || 'album cover'}
+        decoding="async"
+        fetchpriority="high"
+      />
+    </div>
+  )}
   <div class="rounded-xl overflow-hidden border border-border">
     <iframe
       src={embedSrc}
@@ -63,3 +81,16 @@ const caption = captionParts.join(' · ');
     <p class="text-sm text-muted-foreground">{caption}</p>
   )}
 </div>
+
+<style>
+  /* album cover: moderate hero, natural aspect ratio (square or wide both fit) */
+  .music-card-cover {
+    max-width: 22rem;
+  }
+  .music-card-cover img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+</style>

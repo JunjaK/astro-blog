@@ -74,8 +74,12 @@ export interface Frontmatter {
   releaseYear?: number;
   appleMusicUrl?: string;
   youtubeMusicUrl?: string;
+  lyricsType?: LyricsKind;
   [k: string]: unknown;
 }
+
+// jpop: 원문(루비)+번역 · pop: 원문+번역 · kpop: 가사만
+export type LyricsKind = 'jpop' | 'kpop' | 'pop';
 
 export interface DocResponse {
   frontmatter: Frontmatter;

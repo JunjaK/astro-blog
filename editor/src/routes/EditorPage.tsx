@@ -42,7 +42,7 @@ function NewPost() {
       <FrontmatterForm value={fm} onChange={setFm} />
       <label className="field-label">content</label>
       {/* key=type remounts so the slash palette reflects the chosen category */}
-      <RichEditor key={type} ref={richRef} segments={[]} type={type} />
+      <RichEditor key={type} ref={richRef} segments={[]} type={type} lyricsType={fm.lyricsType} />
       {actions(true)}
     </section>
   );
@@ -88,7 +88,7 @@ function EditExisting({ id }: { id: string }) {
         <>
           <FrontmatterForm value={fm} onChange={update} />
           <label className="field-label">content</label>
-          <RichEditor key={type} ref={richRef} segments={doc.data.segments} type={type} onDirty={() => setDirty(true)} />
+          <RichEditor key={type} ref={richRef} segments={doc.data.segments} type={type} lyricsType={fm.lyricsType} onDirty={() => setDirty(true)} />
           {actions(true)}
         </>
       )}

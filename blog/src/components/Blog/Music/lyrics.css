@@ -20,9 +20,14 @@
   outline: none;
 }
 
-.lyrics-stanza:hover,
-.lyrics-stanza:focus-visible {
+.lyrics-stanza:not(.is-plain):hover,
+.lyrics-stanza:not(.is-plain):focus-visible {
   background-color: color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+/* lyrics-only stanza (kpop / untranslated): no expand affordance */
+.lyrics-stanza.is-plain {
+  cursor: default;
 }
 
 .lyrics-stanza .ja {

@@ -5,9 +5,15 @@ import { pendingMedia } from './pendingMedia';
 
 // Gallery block: holds the images you add; editor shows them raw. The real
 // DiaryCarousel / PolaroidGalleryScrapbook renders in the published blog (viewer).
-// Serialization (node → MDX) lands with the publish step (milestone ①).
+// Polaroid carries per-image title / caption / description inline — no hoisted const.
 export type GalleryVariant = 'carousel' | 'polaroid';
-export interface GalleryItem { src: string; alt: string }
+export interface GalleryItem {
+  src: string;
+  alt?: string;         // carousel img alt
+  title?: string;       // polaroid card + lightbox title
+  caption?: string;     // polaroid handwritten caption
+  description?: string; // polaroid lightbox body
+}
 
 const LABEL: Record<GalleryVariant, string> = {
   carousel: 'DiaryCarousel',
@@ -20,14 +26,16 @@ function GalleryView({ node, updateAttributes, deleteNode }: ReactNodeViewProps)
   const fileRef = useRef<HTMLInputElement>(null);
 
   const setItems = (next: GalleryItem[]) => updateAttributes({ items: next });
+  const patch = (i: number, p: Partial<GalleryItem>) => setItems(items.map((x, j) => (j === i ? { ...x, ...p } : x)));
 
   // Attach = local preview only (object URL). Upload happens on save (flushUploads).
   function onPick(files: FileList | null) {
     if (!files?.length) return;
+    const blank: Partial<GalleryItem> = variant === 'polaroid' ? { title: '', caption: '', description: '' } : { alt: '' };
     const added = Array.from(files).map((f) => {
       const url = URL.createObjectURL(f);
       pendingMedia.set(url, f);
-      return { src: url, alt: '' };
+      return { src: url, ...blank };
     });
     setItems([...items, ...added]);
     if (fileRef.current) fileRef.current.value = '';
@@ -42,13 +50,37 @@ function GalleryView({ node, updateAttributes, deleteNode }: ReactNodeViewProps)
       <div className="gallery-grid">
         {items.map((it, i) => (
           <figure key={it.src + i} className="gallery-item">
-            <img src={it.src} alt={it.alt} loading="lazy" decoding="async" />
-            <input
-              className="gallery-cap"
-              value={it.alt}
-              placeholder={variant === 'polaroid' ? '제목' : '설명(alt)'}
-              onChange={(e) => setItems(items.map((x, j) => (j === i ? { ...x, alt: e.target.value } : x)))}
-            />
+            <img src={it.src} alt={it.alt ?? it.title ?? ''} loading="lazy" decoding="async" />
+            {variant === 'polaroid' ? (
+              <div className="gallery-fields">
+                <input
+                  className="gallery-cap"
+                  value={it.title ?? ''}
+                  placeholder="제목"
+                  onChange={(e) => patch(i, { title: e.target.value })}
+                />
+                <input
+                  className="gallery-cap"
+                  value={it.caption ?? ''}
+                  placeholder="캡션 (손글씨)"
+                  onChange={(e) => patch(i, { caption: e.target.value })}
+                />
+                <textarea
+                  className="gallery-desc"
+                  value={it.description ?? ''}
+                  placeholder="설명 (라이트박스)"
+                  rows={2}
+                  onChange={(e) => patch(i, { description: e.target.value })}
+                />
+              </div>
+            ) : (
+              <input
+                className="gallery-cap"
+                value={it.alt ?? ''}
+                placeholder="설명(alt)"
+                onChange={(e) => patch(i, { alt: e.target.value })}
+              />
+            )}
             <button
               type="button"
               className="gallery-remove"
@@ -92,12 +124,17 @@ export const GalleryNode = Node.create({
           node: { attrs: { variant: GalleryVariant; items: GalleryItem[] } },
         ) {
           const { variant, items } = node.attrs;
+          const j = (s: string | undefined) => JSON.stringify(s ?? '');
           const rows = items
-            .map((it) =>
-              variant === 'polaroid'
-                ? `  { src: ${JSON.stringify(it.src)}, title: ${JSON.stringify(it.alt)} }`
-                : `  { src: ${JSON.stringify(it.src)}, alt: ${JSON.stringify(it.alt)} }`,
-            )
+            .map((it) => {
+              if (variant === 'polaroid') {
+                // title + description always emitted (required by PolaroidImage); caption only if set.
+                const parts = [`src: ${j(it.src)}`, `title: ${j(it.title)}`, `description: ${j(it.description)}`];
+                if (it.caption) parts.push(`caption: ${j(it.caption)}`);
+                return `  { ${parts.join(', ')} }`;
+              }
+              return `  { src: ${j(it.src)}, alt: ${j(it.alt)} }`;
+            })
             .join(',\n');
           state.write(
             variant === 'polaroid'

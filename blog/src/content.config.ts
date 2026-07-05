@@ -16,6 +16,7 @@ const blog = defineCollection({
     releaseYear: z.number().optional(),
     appleMusicUrl: z.url().optional(),
     youtubeMusicUrl: z.url().optional(),
+    lyricsType: z.enum(['jpop', 'kpop', 'pop']).optional(),
   }),
 });
 

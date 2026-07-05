@@ -53,8 +53,8 @@ const ITEMS: SlashItem[] = [
   { title: '갤러리 · 캐러셀', hint: 'img', run: insertGallery('carousel') },
   { title: '갤러리 · 폴라로이드', hint: 'img', run: insertGallery('polaroid') },
   // music
-  { title: '뮤직 카드', hint: '♪', types: ['music'], run: insertRaw('<MusicCard />') },
-  { title: '가사 (lyrics)', hint: '♫', types: ['music'], run: insertRaw('```lyrics\n\n```') },
+  { title: '뮤직 카드', hint: '♪', types: ['music'], run: ({ editor, range }) => editor.chain().focus().deleteRange(range).insertContent({ type: 'musicCard' }).run() },
+  { title: '가사 (lyrics)', hint: '♫', types: ['music'], run: ({ editor, range }) => editor.chain().focus().deleteRange(range).insertContent({ type: 'lyrics', attrs: { stanzas: [{ ja: '', ko: '' }] } }).run() },
   { title: 'AI 작성', hint: '✨', run: runAI },
 ];
 

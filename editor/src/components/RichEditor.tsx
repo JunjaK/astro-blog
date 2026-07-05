@@ -4,17 +4,20 @@ import { Markdown } from 'tiptap-markdown';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import type { Editor, JSONContent } from '@tiptap/core';
 import { DOMParser as PMDOMParser } from '@tiptap/pm/model';
-import { GalleryNode } from '../tiptap/GalleryNode';
+import { GalleryNode, type GalleryItem } from '../tiptap/GalleryNode';
+import { LyricsNode, type LyricStanza } from '../tiptap/LyricsNode';
+import { MusicCardNode } from '../tiptap/MusicCardNode';
 import { MdxMedia } from '../tiptap/MdxMedia';
 import { RawMdx } from '../tiptap/RawMdx';
 import { SlashCommand } from '../tiptap/SlashCommand';
+import { LyricsKindContext } from '../tiptap/LyricsKindContext';
 import { pendingMedia } from '../tiptap/pendingMedia';
-import { api } from '../lib/api';
+import { api, type LyricsKind } from '../lib/api';
 
 export interface Segment {
   kind: 'md' | 'raw';
   src: string;
-  node?: { name: string; attrs?: Record<string, string>; items?: { src: string; alt: string }[] };
+  node?: { name: string; attrs?: Record<string, string>; items?: GalleryItem[]; stanzas?: LyricStanza[] };
 }
 export interface RichEditorHandle {
   getBody: () => string;
@@ -31,15 +34,18 @@ const md = (e: Editor) => (e.storage as unknown as { markdown: MarkdownStorage }
 interface Props {
   segments: Segment[];
   type: string; // post category — drives the slash component palette
+  lyricsType?: LyricsKind; // frontmatter lyricsType — drives the Lyrics node fields
   onDirty?: () => void;
 }
 
-export const RichEditor = forwardRef<RichEditorHandle, Props>(({ segments, type, onDirty }, ref) => {
+export const RichEditor = forwardRef<RichEditorHandle, Props>(({ segments, type, lyricsType = 'jpop', onDirty }, ref) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
       Markdown.configure({ html: true, transformPastedText: true }),
       GalleryNode,
+      LyricsNode,
+      MusicCardNode,
       MdxMedia,
       RawMdx,
       SlashCommand.configure({ type }),
@@ -59,6 +65,12 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(({ segments, type,
           content.push({ type: 'mdxMedia', attrs: { tag: 'VideoLoader', src: s.node.attrs?.src ?? '', alt: '' } });
         else if (s.node?.name === 'DiaryCarousel')
           content.push({ type: 'gallery', attrs: { variant: 'carousel', items: s.node.items ?? [] } });
+        else if (s.node?.name === 'PolaroidGalleryScrapbook')
+          content.push({ type: 'gallery', attrs: { variant: 'polaroid', items: s.node.items ?? [] } });
+        else if (s.node?.name === 'MusicCard')
+          content.push({ type: 'musicCard' });
+        else if (s.node?.name === 'Lyrics')
+          content.push({ type: 'lyrics', attrs: { stanzas: s.node.stanzas ?? [], kind: lyricsType } });
         else
           content.push({ type: 'rawMdx', attrs: { src: s.src } });
       } else {
@@ -71,13 +83,15 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(({ segments, type,
       }
     }
     editor.commands.setContent({ type: 'doc', content }, { emitUpdate: false });
-  }, [editor, segments]);
+    // lyricsType is only the initial kind for lifted Lyrics nodes; later changes are synced
+    // by the node view (LyricsView effect), NOT by re-lifting — that would reset the doc.
+  }, [editor, segments]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useImperativeHandle(ref, () => ({
     getBody: () => (editor ? md(editor).getMarkdown() : ''),
     flushUploads: async () => {
       if (!editor) return;
-      const jobs: { pos: number; items: { src: string; alt: string }[] }[] = [];
+      const jobs: { pos: number; items: GalleryItem[] }[] = [];
       const imgJobs: { pos: number; src: string }[] = [];
       editor.state.doc.descendants((node, pos) => {
         if (node.type.name === 'gallery') jobs.push({ pos, items: node.attrs.items });
@@ -93,7 +107,7 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(({ segments, type,
       }
       for (const job of jobs) {
         let changed = false;
-        const out: { src: string; alt: string }[] = [];
+        const out: GalleryItem[] = [];
         for (const it of job.items) {
           const file = pendingMedia.get(it.src);
           if (it.src.startsWith('blob:') && file) {
@@ -110,5 +124,9 @@ export const RichEditor = forwardRef<RichEditorHandle, Props>(({ segments, type,
   }), [editor]);
 
   if (!editor) return null;
-  return <EditorContent editor={editor} className="editor-canvas" />;
+  return (
+    <LyricsKindContext.Provider value={lyricsType}>
+      <EditorContent editor={editor} className="editor-canvas" />
+    </LyricsKindContext.Provider>
+  );
 });

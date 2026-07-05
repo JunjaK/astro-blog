@@ -38,9 +38,15 @@ function JaLine({ tokens }: { tokens: Token[] }) {
   );
 }
 
+function hasTranslation(stanza: Stanza): boolean {
+  return stanza.ko.some((line) => line.trim() !== '');
+}
+
 export default function Lyrics({ stanzas }: Props) {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
-  const allExpanded = stanzas.length > 0 && expanded.size === stanzas.length;
+  // Only stanzas with a translation are expandable (kpop / untranslated verses show plain).
+  const koIndices = stanzas.flatMap((s, i) => (hasTranslation(s) ? [i] : []));
+  const allExpanded = koIndices.length > 0 && expanded.size === koIndices.length;
 
   const toggleStanza = useCallback((index: number) => {
     setExpanded((prev) => {
@@ -56,7 +62,7 @@ export default function Lyrics({ stanzas }: Props) {
   }, []);
 
   const expandAll = useCallback(() => {
-    setExpanded(new Set(stanzas.map((_, i) => i)));
+    setExpanded(new Set(stanzas.flatMap((s, i) => (hasTranslation(s) ? [i] : []))));
   }, [stanzas]);
 
   const collapseAll = useCallback(() => {
@@ -72,18 +78,40 @@ export default function Lyrics({ stanzas }: Props) {
 
   return (
     <div className="lyrics-block">
-      <div className="lyrics-toolbar">
-        <Button
-          variant="outline"
-          size="sm"
-          type="button"
-          onClick={allExpanded ? collapseAll : expandAll}
-        >
-          {allExpanded ? '전체 접기' : '전체 펼치기'}
-        </Button>
-      </div>
+      {koIndices.length > 0 && (
+        <div className="lyrics-toolbar">
+          <Button
+            variant="outline"
+            size="sm"
+            type="button"
+            onClick={allExpanded ? collapseAll : expandAll}
+          >
+            {allExpanded ? '전체 접기' : '전체 펼치기'}
+          </Button>
+        </div>
+      )}
 
       {stanzas.map((stanza, index) => {
+        const jaBlock = (
+          <div className="ja flex-1">
+            {stanza.ja.map((line, i) => (
+              <Fragment key={i}>
+                {i > 0 && <br />}
+                <JaLine tokens={line} />
+              </Fragment>
+            ))}
+          </div>
+        );
+
+        // No translation → plain, non-interactive stanza (kpop / untranslated verse).
+        if (!hasTranslation(stanza)) {
+          return (
+            <div key={index} className="lyrics-stanza is-plain">
+              <div className="lyrics-stanza-header">{jaBlock}</div>
+            </div>
+          );
+        }
+
         const isOpen = expanded.has(index);
         return (
           <div
@@ -96,14 +124,7 @@ export default function Lyrics({ stanzas }: Props) {
             onKeyDown={(event) => onKeyDown(event, index)}
           >
             <div className="lyrics-stanza-header">
-              <div className="ja flex-1">
-                {stanza.ja.map((line, i) => (
-                  <Fragment key={i}>
-                    {i > 0 && <br />}
-                    <JaLine tokens={line} />
-                  </Fragment>
-                ))}
-              </div>
+              {jaBlock}
               <span className="chevron" aria-hidden="true">
                 <Icon icon="mingcute:down-line" width={20} height={20} />
               </span>

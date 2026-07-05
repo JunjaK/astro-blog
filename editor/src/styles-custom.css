@@ -132,10 +132,36 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .gallery-item img { width: 100%; height: 110px; object-fit: cover; border-radius: 6px; display: block; }
 .gallery-item .gallery-remove { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,.6); border-radius: 999px; width: 22px; height: 22px; color: #fff; }
 .gallery-cap { width: 100%; margin-top: 4px; font-size: 12px; padding: 3px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+/* polaroid cards carry title/caption/description → wider columns + stacked field group */
+.gallery-node[data-variant='polaroid'] .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.gallery-fields { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.gallery-fields .gallery-cap { margin-top: 0; }
+.gallery-desc { width: 100%; font-size: 12px; padding: 3px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); resize: vertical; font-family: inherit; line-height: 1.4; }
 .gallery-add {
   display: flex; align-items: center; justify-content: center; min-height: 110px;
   border: 1px dashed var(--border); border-radius: 6px; background: transparent; color: var(--c-muted); cursor: pointer;
 }
+
+/* MusicCard — frontmatter-wired marker block */
+.music-card-node { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 12px 0; background: var(--surface); }
+.music-card-node__icon { font-size: 18px; color: var(--c-muted); }
+.music-card-node__label { font-weight: 600; font-size: 14px; }
+.music-card-node__hint { font-size: 12px; color: var(--c-muted); }
+.music-card-node__x { margin-left: auto; background: none; border: none; color: var(--c-muted); cursor: pointer; }
+
+/* Lyrics — per-stanza 원문/번역 editor */
+.lyrics-node { border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin: 12px 0; background: var(--surface); }
+.lyrics-node__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.lyrics-node__tag { font-size: 12px; color: var(--c-muted); }
+.lyrics-node__x, .lyrics-stanza-edit__x { background: none; border: none; color: var(--c-muted); cursor: pointer; }
+.lyrics-stanza-edit { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--border); }
+.lyrics-stanza-edit[data-single='true'] { grid-template-columns: 1fr; } /* kpop: 가사만 */
+.lyrics-stanza-edit__idx { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; font-size: 11px; letter-spacing: .06em; color: var(--c-muted); }
+.lyrics-ta { width: 100%; font-size: 13px; line-height: 1.6; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); resize: vertical; font-family: inherit; }
+.lyrics-ta--ja { font-variant-east-asian: proportional-width; }
+.lyrics-ta--ko { color: var(--c-muted); }
+.lyrics-node__add { margin-top: 8px; width: 100%; min-height: 34px; border: 1px dashed var(--border); border-radius: 6px; background: transparent; color: var(--c-muted); cursor: pointer; }
+@media (max-width: 640px) { .lyrics-stanza-edit { grid-template-columns: 1fr; } }
 
 /* ImageLoader / VideoLoader rendered as real media (Notion-style) */
 /* image-heavy docs: let the browser skip layout/paint of offscreen media blocks.

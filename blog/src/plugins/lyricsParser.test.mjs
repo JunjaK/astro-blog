@@ -65,10 +65,13 @@ ko`;
   assert.deepEqual(result[0].ja, [['a|b']]);
 });
 
-test('throws on stanza missing || separator', () => {
-  const input = `{歩|あゆ}く
-걷는다`;
-  assert.throws(() => parseLyrics(input), /missing.*\|\|/i);
+test('no || separator → lyrics-only stanza (kpop / untranslated verse)', () => {
+  const input = `사랑을 했다
+우리가 만나`;
+  const result = parseLyrics(input);
+  assert.equal(result.length, 1);
+  assert.deepEqual(result[0].ja, [['사랑을 했다'], ['우리가 만나']]);
+  assert.deepEqual(result[0].ko, []);
 });
 
 test('throws on unclosed ruby annotation', () => {

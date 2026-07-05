@@ -3,10 +3,15 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { ReactNode } from 'react';
-import type { Frontmatter } from '../lib/api';
+import type { Frontmatter, LyricsKind } from '../lib/api';
 import { DatePicker, TagInput, ThumbnailInput } from './fields';
 
 export const CATEGORIES = ['daily', 'diary', 'game', 'music', 'web'];
+const LYRICS_TYPES: { value: LyricsKind; label: string }[] = [
+  { value: 'jpop', label: 'J-POP (원문·루비·번역)' },
+  { value: 'kpop', label: 'K-POP (가사만)' },
+  { value: 'pop', label: 'POP (원문·번역)' },
+];
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -61,6 +66,16 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
       {isMusic && (
         <div className="border-border mt-1 grid gap-3 border-t pt-4 sm:col-span-2 sm:grid-cols-2">
           <div className="text-foreground/80 text-sm font-medium sm:col-span-2">음악 정보</div>
+          <div className="sm:col-span-2">
+            <Field label="가사 유형">
+              <Select value={value.lyricsType ?? 'jpop'} onValueChange={(v) => set({ lyricsType: (v as LyricsKind) ?? undefined })}>
+                <SelectTrigger className="w-full"><SelectValue placeholder="가사 유형" /></SelectTrigger>
+                <SelectContent>
+                  {LYRICS_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </Field>
+          </div>
           <Field label="아티스트"><Input value={value.artist ?? ''} onChange={(e) => set({ artist: e.target.value })} /></Field>
           <Field label="앨범"><Input value={value.album ?? ''} onChange={(e) => set({ album: e.target.value })} /></Field>
           <Field label="발매연도">
