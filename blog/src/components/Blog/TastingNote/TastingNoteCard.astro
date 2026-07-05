@@ -1,0 +1,233 @@
+---
+type DrinkKind = 'nihonshu' | 'whisky' | 'beer' | 'other';
+
+type TokuteiMeisho =
+  | '純米大吟醸' | '大吟醸' | '純米吟醸' | '吟醸'
+  | '特別純米' | '特別本醸造' | '純米' | '本醸造' | '普通酒';
+
+interface Props {
+  drinkKind?: DrinkKind;
+  brewery?: string;
+  tokuteiMeisho?: TokuteiMeisho;
+  riceType?: string[];
+  seimaiBuai?: number;
+  alcohol?: number;
+  nihonshuDo?: number;
+  sando?: number;
+  amakara?: number;
+  noutan?: number;
+  flavorTags?: string[];
+}
+
+interface Spec {
+  label: string;
+  gloss: string;
+  value: string;
+}
+
+const {
+  drinkKind,
+  brewery,
+  tokuteiMeisho,
+  riceType,
+  seimaiBuai,
+  alcohol,
+  nihonshuDo,
+  sando,
+  amakara,
+  noutan,
+  flavorTags,
+} = Astro.props;
+
+const isNihonshu = drinkKind === 'nihonshu';
+
+// 축 라벨 (카드·picker 공용)
+const AMAKARA = ['甘口', 'やや甘口', '中口', 'やや辛口', '辛口'];
+const NOUTAN = ['濃醇', 'やや濃醇', '中程度', 'やや淡麗', '淡麗'];
+
+// 값 있는 스펙 행만 (strict tsc: 타입 프레디킷 필터)
+const specs = [
+  riceType && riceType.length > 0
+    ? { label: '酒米', gloss: '원료미', value: riceType.join(', ') }
+    : null,
+  seimaiBuai != null
+    ? { label: '精米歩合', gloss: '정미보합', value: `${seimaiBuai}%` }
+    : null,
+  nihonshuDo != null
+    ? { label: '日本酒度', gloss: '일본주도', value: nihonshuDo > 0 ? `+${nihonshuDo}` : `${nihonshuDo}` }
+    : null,
+  sando != null
+    ? { label: '酸度', gloss: '산도', value: `${sando}` }
+    : null,
+  alcohol != null
+    ? { label: 'アルコール', gloss: '도수', value: `${alcohol}%` }
+    : null,
+].filter((s): s is Spec => Boolean(s));
+
+// 2D 맵: amakara·noutan 둘 다 present일 때만. X = 甘(좌)→辛(우), Y = 濃醇(상)→淡麗(하).
+const mapPoint = amakara != null && noutan != null
+  ? {
+      left: ((amakara + 2) / 4) * 100,
+      top: ((2 - noutan) / 4) * 100,
+      caption: `甘辛 ${AMAKARA[amakara + 2]} · 濃淡 ${NOUTAN[2 - noutan]}`,
+    }
+  : null;
+
+const flavors = flavorTags ?? [];
+---
+
+{isNihonshu && (
+  <section class="tasting-note-card my-8 flex flex-col gap-4 rounded-xl border border-border bg-card p-5">
+    {(brewery || tokuteiMeisho) && (
+      <div class="flex flex-wrap items-center gap-2">
+        {brewery && (
+          <span class="text-sm">
+            <span class="font-medium text-foreground">{brewery}</span>
+            <span class="ml-1 text-xs text-muted-foreground">酒蔵 · 양조장</span>
+          </span>
+        )}
+        {tokuteiMeisho && (
+          <span class="inline-flex h-6 items-center rounded-full border border-border bg-muted px-2.5 text-xs font-medium text-foreground">
+            {tokuteiMeisho}
+          </span>
+        )}
+      </div>
+    )}
+
+    {specs.length > 0 && (
+      <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
+        {specs.map((spec) => (
+          <Fragment>
+            <dt class="text-muted-foreground">
+              {spec.label}
+              <span class="ml-1 text-xs">{spec.gloss}</span>
+            </dt>
+            <dd class="tabular-nums text-foreground">{spec.value}</dd>
+          </Fragment>
+        ))}
+      </dl>
+    )}
+
+    {flavors.length > 0 && (
+      <ul class="flex flex-wrap gap-2">
+        {flavors.map((tag) => (
+          <li class="inline-flex h-7 items-center rounded-full border border-border bg-muted px-3 text-xs text-muted-foreground">
+            {tag}
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {mapPoint && (
+      <figure class="tasting-map-figure flex flex-col items-center gap-2">
+        <div class="tasting-map">
+          <span class="tasting-map__pole tasting-map__pole--top">濃醇</span>
+          <span class="tasting-map__pole tasting-map__pole--bottom">淡麗</span>
+          <span class="tasting-map__pole tasting-map__pole--left">甘口</span>
+          <span class="tasting-map__pole tasting-map__pole--right">辛口</span>
+          <span
+            class="tasting-map__point"
+            style={`left:${mapPoint.left}%;top:${mapPoint.top}%`}
+            aria-hidden="true"
+          ></span>
+        </div>
+        <figcaption class="text-xs text-muted-foreground">{mapPoint.caption}</figcaption>
+      </figure>
+    )}
+  </section>
+)}
+
+<style>
+  /* 아티클 프로스 전역 list 여백/불릿 무력화 (.article-entry dl/ul 오버라이드) */
+  .tasting-note-card dl,
+  .tasting-note-card ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    line-height: 1.5;
+  }
+
+  .tasting-note-card dd {
+    margin: 0;
+  }
+
+  .tasting-map-figure {
+    margin: 0;
+  }
+
+  .tasting-map {
+    position: relative;
+    width: 100%;
+    max-width: 15rem;
+    aspect-ratio: 1;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    background: hsl(var(--card));
+  }
+
+  /* crosshair 좌표축 */
+  .tasting-map::before,
+  .tasting-map::after {
+    content: '';
+    position: absolute;
+    background: hsl(var(--border));
+  }
+
+  .tasting-map::before {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+  }
+
+  .tasting-map::after {
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
+  .tasting-map__point {
+    position: absolute;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 9999px;
+    /* [MUST-1] --primary. --accent 금지(다크모드 --border와 동일값). */
+    background: hsl(var(--primary));
+    box-shadow: 0 0 0 3px hsl(var(--background));
+    transform: translate(-50%, -50%);
+  }
+
+  .tasting-map__pole {
+    position: absolute;
+    font-size: 0.7rem;
+    color: hsl(var(--muted-foreground));
+    white-space: nowrap;
+  }
+
+  .tasting-map__pole--top {
+    top: 0.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .tasting-map__pole--bottom {
+    bottom: 0.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .tasting-map__pole--left {
+    top: 50%;
+    left: 0.25rem;
+    transform: translateY(-50%);
+  }
+
+  .tasting-map__pole--right {
+    top: 50%;
+    right: 0.25rem;
+    transform: translateY(-50%);
+  }
+</style>
