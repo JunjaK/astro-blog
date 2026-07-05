@@ -16,6 +16,20 @@ const blog = defineCollection({
     releaseYear: z.number().optional(),
     appleMusicUrl: z.url().optional(),
     youtubeMusicUrl: z.url().optional(),
+    // ── tasting note (category: 'Tasting') ──
+    drinkKind: z.enum(['nihonshu', 'whisky', 'beer', 'other']).optional(),
+    brewery: z.string().optional(),
+    tokuteiMeisho: z
+      .enum(['純米大吟醸', '大吟醸', '純米吟醸', '吟醸', '特別純米', '特別本醸造', '純米', '本醸造', '普通酒'])
+      .optional(),
+    riceType: z.array(z.string()).optional(),
+    seimaiBuai: z.number().int().gte(0).lte(100).optional(),
+    alcohol: z.number().gte(0).optional(),
+    nihonshuDo: z.number().optional(),
+    sando: z.number().gte(0).optional(),
+    amakara: z.number().int().gte(-2).lte(2).optional(),
+    noutan: z.number().int().gte(-2).lte(2).optional(),
+    flavorTags: z.array(z.string()).optional(),
   }),
 });
 
