@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { type PolaroidImage, resolveThumb, round4, seeded } from './shared';
-import { TegakiCaption } from './TegakiCaption';
 import { TiltCard } from './TiltCard';
 import { V3LightboxShell } from './V3LightboxShell';
 import './v3.css';
@@ -42,12 +41,7 @@ function PostcardStage({ item }: { item: PolaroidImage }) {
             <div className="dgv3-pc-back__note">
               <span className="dgv3-pc-back__title">{item.title}</span>
               {item.description && (
-                <TegakiCaption
-                  text={item.description}
-                  delay={0.25}
-                  replayKey={`${item.src}-${flipped}`}
-                  className="dgv3-pc-back__hand"
-                />
+                <span className="dgv3-pc-back__hand">{item.description}</span>
               )}
             </div>
             <div className="dgv3-pc-back__address" aria-hidden="true">
@@ -87,9 +81,7 @@ export function PostcardGallery({ items }: { items: PolaroidImage[] }) {
               </span>
               <span className="dgv3-pc-card__stamp" aria-hidden="true" />
               <span className="dgv3-pc-card__postmark" aria-hidden="true" />
-              <span className="dgv3-pc-card__caption">
-                <TegakiCaption text={item.caption ?? item.title} delay={round4(i * 0.14)} loop />
-              </span>
+              <span className="dgv3-pc-card__caption">{item.caption ?? item.title}</span>
             </TiltCard>
           );
         })}

@@ -37,11 +37,14 @@
   --dgv3-grain: rgba(255, 240, 214, 0.04);
 }
 
-/* faint handwriting overlay tint, shared by all tegaki captions */
-.dgv3-shell [data-tegaki='overlay'],
-.dgv3-lightbox [data-tegaki='overlay'] {
-  color: color-mix(in srgb, currentColor 30%, transparent) !important;
-  -webkit-text-fill-color: color-mix(in srgb, currentColor 30%, transparent) !important;
+/* handwritten captions — static Caveat (tegaki stroke engine removed) */
+.dgv3-pc-card__caption,
+.dgv3-pc-back__hand,
+.dgv3-film-mount__hand,
+.dgv3-journal-photo__cap,
+.dgv3-journal-open__hand,
+.dgv3-reel-stage__hand {
+  font-family: 'Caveat', 'Segoe Script', cursive;
 }
 
 /* =========================== Lightbox shell ============================= */

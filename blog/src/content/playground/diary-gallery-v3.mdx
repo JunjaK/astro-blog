@@ -64,24 +64,24 @@ export const sample = [
 
 ## A. 항공우편 엽서
 
-낮은 지도/크래프트지 책상 위 엽서. 카드를 클릭하면 라이트박스에서 엽서가 3D로 뒤집히고(앞=사진, 뒤=손글씨 편지), tegaki가 다시 써진다.
+낮은 지도/크래프트지 책상 위 엽서. 카드를 클릭하면 라이트박스에서 엽서가 3D로 뒤집힌다(앞=사진, 뒤=손글씨 편지).
 
 <PostcardGallery client:visible items={sample} />
 
 ## B. 빈티지 필름 / 슬라이드
 
-35mm 필름 스트립(스프라켓 구멍 + 세피아). 프레임을 누르면 라이트테이블 위 슬라이드 마운트로 확대되고, 마운트 라벨이 tegaki로 써진다. 마운트는 마우스에 따라 살짝 기운다.
+35mm 필름 스트립(스프라켓 구멍 + 세피아). 프레임을 누르면 라이트테이블 위 슬라이드 마운트로 확대되고, 마운트 라벨은 손글씨체로 표시된다. 마운트는 마우스에 따라 살짝 기운다.
 
 <FilmStripGallery client:visible items={sample} />
 
 ## C. 여행 다이어리
 
-제본된 다이어리 펼침면에 washi 테이프로 붙인 사진들. 사진을 누르면 페이지가 3D로 들리며 여백 메모가 tegaki로 써진다.
+제본된 다이어리 펼침면에 washi 테이프로 붙인 사진들. 사진을 누르면 페이지가 3D로 들리며 여백 메모가 손글씨체로 표시된다.
 
 <JournalGallery client:visible items={sample} />
 
 ## D. 속도 연동 3D 스트림
 
-[Motion의 scroll-velocity 예제](https://examples.motion.dev/react/scroll-velocity-linked-offset) 기법. 사진이 대각선으로 깊이감 있게 늘어선 3D 스트림. **스크롤하면 흐르고**, 스크롤 속도(`useVelocity`)가 카드의 기울기·오프셋에 wave처럼 실시간 반영된다. 카드를 누르면 라이트박스로 확대되며 캡션이 tegaki로 써진다.
+[Motion의 scroll-velocity 예제](https://examples.motion.dev/react/scroll-velocity-linked-offset) 기법. 사진이 대각선으로 깊이감 있게 늘어선 3D 스트림. **스크롤하면 흐르고**, 스크롤 속도(`useVelocity`)가 카드의 기울기·오프셋에 wave처럼 실시간 반영된다. 카드를 누르면 라이트박스로 확대되며 캡션이 손글씨체로 표시된다.
 
 <VelocityStream client:visible items={sample} />

@@ -14,6 +14,7 @@
         "@expressive-code/plugin-collapsible-sections": "^0.41.6",
         "@expressive-code/plugin-line-numbers": "^0.41.6",
         "@fontsource-variable/noto-sans-kr": "^5.2.10",
+        "@fontsource/caveat": "^5.2.8",
         "@fontsource/gothic-a1": "^5.2.8",
         "@fontsource/m-plus-1p": "^5.2.9",
         "@fontsource/roboto": "^5.2.9",
@@ -71,7 +72,6 @@
         "svelte": "^5.50.1",
         "tailwind-merge": "^3.4.0",
         "tailwindcss": "^4.1.18",
-        "tegaki": "^0.13.0",
         "three": "^0.182.0",
         "tw-animate-css": "^1.4.0",
         "typescript": "^5.9.3",
@@ -369,6 +369,8 @@
     "@floating-ui/utils": ["@floating-ui/utils@0.2.10", "", {}, "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="],
 
     "@fontsource-variable/noto-sans-kr": ["@fontsource-variable/noto-sans-kr@5.2.10", "", {}, "sha512-UZOO7HF44Rt5+7SCeFMHYVgbKu36Jet6IxrAd7jjEkQMVDmeefwd0H8V5pSZydvBOOxClk3V5cQsujJqGHhQMw=="],
+
+    "@fontsource/caveat": ["@fontsource/caveat@5.2.8", "", {}, "sha512-9fUUfFE2IQFKbx+xOcaeQxxmh8iJguEb8z+j1PeueO4UUx+XfT4pRm/B04ZDvFA794/iRxY/IibmP8ZKtIf4rw=="],
 
     "@fontsource/gothic-a1": ["@fontsource/gothic-a1@5.2.8", "", {}, "sha512-TGkEbNiU3BVy6KtEPHvwAl77eMRkElCVwO2V+1lvjBcvVwRvI47sGRW1+9Ylg2jS1Bocl6kNcDXUHKrntgHnZQ=="],
 
@@ -2527,8 +2529,6 @@
     "tailwindcss": ["tailwindcss@4.1.18", "", {}, "sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw=="],
 
     "tapable": ["tapable@2.3.0", "", {}, "sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg=="],
-
-    "tegaki": ["tegaki@0.13.0", "", { "peerDependencies": { "react": ">=18", "solid-js": ">=1", "svelte": ">=5", "vue": ">=3" }, "optionalPeers": ["react", "solid-js", "svelte", "vue"] }, "sha512-CLNxDPfcxMtko0kR/9rNPZViBQSxyLFC1yBGKNO9XXoDyCUzrbspc72s0jC4WmA826/7k/nPAbtK8r44r0iOKQ=="],
 
     "three": ["three@0.182.0", "", {}, "sha512-GbHabT+Irv+ihI1/f5kIIsZ+Ef9Sl5A1Y7imvS5RQjWgtTPfPnZ43JmlYI7NtCRDK9zir20lQpfg8/9Yd02OvQ=="],
 

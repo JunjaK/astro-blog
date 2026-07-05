@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { type PolaroidImage, resolveThumb } from './shared';
-import { TegakiCaption } from './TegakiCaption';
 import { TiltCard } from './TiltCard';
 import { V3LightboxShell } from './V3LightboxShell';
 import './v3.css';
@@ -24,12 +23,7 @@ function SlideStage({ item, index }: { item: PolaroidImage; index: number }) {
         </span>
         <span className="dgv3-film-mount__label">
           <span className="dgv3-film-mount__no">{String(index + 1).padStart(2, '0')}</span>
-          <TegakiCaption
-            text={item.caption ?? item.title}
-            delay={0.2}
-            replayKey={item.src}
-            className="dgv3-film-mount__hand"
-          />
+          <span className="dgv3-film-mount__hand">{item.caption ?? item.title}</span>
         </span>
       </TiltCard>
       {item.description && <p className="dgv3-film-desc">{item.description}</p>}

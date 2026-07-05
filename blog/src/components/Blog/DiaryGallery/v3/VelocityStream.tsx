@@ -4,7 +4,6 @@ import type { MotionValue } from 'framer-motion';
 import { motion, useScroll, useSpring, useTransform, useVelocity } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { type PolaroidImage, resolveThumb } from './shared';
-import { TegakiCaption } from './TegakiCaption';
 import { V3LightboxShell } from './V3LightboxShell';
 import './v3.css';
 
@@ -67,7 +66,7 @@ function StreamStage({ item }: { item: PolaroidImage }) {
         <img src={item.src} alt={item.alt ?? item.title} />
       </div>
       <div className="dgv3-reel-stage__cap">
-        <TegakiCaption text={item.caption ?? item.title} delay={0.2} replayKey={item.src} className="dgv3-reel-stage__hand" />
+        <span className="dgv3-reel-stage__hand">{item.caption ?? item.title}</span>
         {item.description && <p className="dgv3-reel-stage__desc">{item.description}</p>}
       </div>
     </motion.div>

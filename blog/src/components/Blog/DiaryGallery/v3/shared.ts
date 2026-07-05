@@ -1,4 +1,5 @@
 import type { PolaroidImage } from '../types';
+import '@fontsource/caveat';
 import { variant } from '@/utils/imageVariant';
 
 export type { PolaroidImage };

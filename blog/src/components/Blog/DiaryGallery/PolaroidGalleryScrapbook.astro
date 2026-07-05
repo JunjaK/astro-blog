@@ -1,7 +1,6 @@
 ---
 import type { PolaroidImage } from './types';
-import TegakiRenderer from 'tegaki/astro';
-import caveatBundle from 'tegaki/fonts/caveat';
+import '@fontsource/caveat';
 import { variant } from '@/utils/imageVariant';
 
 interface Props {
@@ -56,8 +55,6 @@ function resolveThumb(item: PolaroidImage): string {
 }
 ---
 
-<TegakiRenderer font={caveatBundle} bundle loadFont />
-
 <div
   class="scrapbook-polaroid-shell"
   data-no-lightbox
@@ -101,16 +98,7 @@ function resolveThumb(item: PolaroidImage): string {
               <div class="scrapbook-polaroid-card__caption-row">
                 {item.caption && (
                   <div class="scrapbook-polaroid-card__caption">
-                    <TegakiRenderer
-                      class="scrapbook-handwriting"
-                      data-scrapbook-caption
-                      font="Caveat Tegaki 3dc76002"
-                      text={item.caption}
-                      time={{ mode: 'uncontrolled', delay: round4(index * 0.18), loop: true, loopGap: 2.5 }}
-                      quality={{ clipText: 1.35, pixelRatio: 1.05 }}
-                      showOverlay
-                      style="font-size: clamp(1.08rem, 2.6vw, 1.42rem); line-height: 1.02; color: inherit;"
-                    />
+                    <span class="scrapbook-handwriting">{item.caption}</span>
                   </div>
                 )}
                 <span class="scrapbook-polaroid-card__tag">#{String(index + 1).padStart(2, '0')}</span>
@@ -365,13 +353,11 @@ function resolveThumb(item: PolaroidImage): string {
     justify-content: center;
     width: 100%;
     min-height: 1.45rem;
+    font-family: 'Caveat', 'Segoe Script', cursive;
+    font-size: clamp(1.18rem, 2.8vw, 1.6rem);
+    line-height: 1.02;
     color: var(--sb-ink);
     text-shadow: 0 1px 0 color-mix(in srgb, var(--sb-ink) 12%, transparent);
-  }
-
-  .scrapbook-handwriting :global([data-tegaki='overlay']) {
-    color: color-mix(in srgb, var(--sb-ink) 32%, transparent) !important;
-    -webkit-text-fill-color: color-mix(in srgb, var(--sb-ink) 32%, transparent) !important;
   }
 
   @media (max-width: 768px) {
@@ -490,25 +476,6 @@ function resolveThumb(item: PolaroidImage): string {
 <script>
   import { openPolaroidLightbox } from '@/store/polaroid';
 
-  function replayCaption(button: HTMLButtonElement) {
-    const caption = button.querySelector<HTMLElement>('[data-scrapbook-caption]');
-    const engine = (caption as HTMLElement & { __tegakiEngine?: { restart: () => void } | undefined }).__tegakiEngine;
-    engine?.restart();
-  }
-
-  if (!(window as Window & { __scrapbookTegakiReadyBound?: boolean }).__scrapbookTegakiReadyBound) {
-    (window as Window & { __scrapbookTegakiReadyBound?: boolean }).__scrapbookTegakiReadyBound = true;
-    document.addEventListener('tegaki:ready', (event) => {
-      const target = event.target;
-      if (!(target instanceof HTMLElement)) return;
-      if (!target.closest('[data-polaroid-gallery="scrapbook"]')) return;
-
-      const detail = (event as CustomEvent<{ engine?: { restart: () => void } }>).detail;
-      if (!detail?.engine) return;
-      (target as HTMLElement & { __tegakiEngine?: { restart: () => void } }).__tegakiEngine = detail.engine;
-    });
-  }
-
   function bindScrapbook(root: ParentNode = document) {
     root.querySelectorAll<HTMLElement>('[data-polaroid-gallery="scrapbook"]').forEach((gallery) => {
       if (gallery.dataset.polaroidBound === 'true') return;
@@ -521,12 +488,8 @@ function resolveThumb(item: PolaroidImage): string {
 
         button.addEventListener('click', () => {
           const index = Number.parseInt(button.dataset.polaroidIndex ?? '0', 10);
-          replayCaption(button);
           openPolaroidLightbox(items, index);
         });
-        button.addEventListener('mouseenter', () => replayCaption(button));
-        button.addEventListener('focus', () => replayCaption(button));
-        button.addEventListener('touchstart', () => replayCaption(button), { passive: true });
       });
     });
   }

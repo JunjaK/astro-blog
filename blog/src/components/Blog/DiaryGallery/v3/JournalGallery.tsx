@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { type PolaroidImage, resolveThumb, round4, seeded } from './shared';
-import { TegakiCaption } from './TegakiCaption';
 import { V3LightboxShell } from './V3LightboxShell';
 import './v3.css';
 
@@ -24,12 +23,7 @@ function PageStage({ item }: { item: PolaroidImage }) {
       <div className="dgv3-journal-open__memo">
         <span className="dgv3-journal-open__title">{item.title}</span>
         {item.description && (
-          <TegakiCaption
-            text={item.description}
-            delay={0.25}
-            replayKey={item.src}
-            className="dgv3-journal-open__hand"
-          />
+          <span className="dgv3-journal-open__hand">{item.description}</span>
         )}
       </div>
     </motion.div>
@@ -60,9 +54,7 @@ export function JournalGallery({ items }: { items: PolaroidImage[] }) {
                 <span className="dgv3-journal-photo__img">
                   <img src={resolveThumb(item)} alt={item.alt ?? item.title} loading="lazy" decoding="async" />
                 </span>
-                <span className="dgv3-journal-photo__cap">
-                  <TegakiCaption text={item.caption ?? item.title} delay={round4(i * 0.12)} loop />
-                </span>
+                <span className="dgv3-journal-photo__cap">{item.caption ?? item.title}</span>
               </button>
             );
           })}
