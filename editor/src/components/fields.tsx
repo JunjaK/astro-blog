@@ -17,31 +17,75 @@ export function DatePicker({ value, onChange }: { value?: string; onChange: (iso
   );
 }
 
-export function TagInput({ value, onChange }: { value: string[]; onChange: (t: string[]) => void }) {
+// `suggestions` (optional) turns on an autocomplete dropdown that reuses the slash-menu look:
+// opens on draft ≥1 char, filters by includes minus already-picked, Arrow/Enter/Escape, free
+// text preserved. Omit it and the input behaves exactly as before (no dropdown).
+export function TagInput({ value, onChange, suggestions, placeholder = '태그 추가…' }: {
+  value: string[];
+  onChange: (t: string[]) => void;
+  suggestions?: string[];
+  placeholder?: string;
+}) {
   const [draft, setDraft] = useState('');
-  const add = () => {
-    const t = draft.trim();
-    if (t && !value.includes(t)) onChange([...value, t]);
+  const [hi, setHi] = useState(-1);
+  const [dismissed, setDismissed] = useState(false);
+
+  const q = draft.trim().toLowerCase();
+  const matches = suggestions && q
+    ? suggestions.filter((s) => s.toLowerCase().includes(q) && !value.includes(s)).slice(0, 8)
+    : [];
+  const open = !dismissed && matches.length > 0;
+
+  const add = (t: string) => {
+    const v = t.trim();
+    if (v && !value.includes(v)) onChange([...value, v]);
     setDraft('');
+    setHi(-1);
   };
+
   return (
-    <div className="border-input flex flex-wrap items-center gap-1.5 rounded-md border bg-transparent p-1.5">
-      {value.map((t) => (
-        <Badge key={t} variant="secondary" className="gap-1">
-          {t}
-          <button type="button" className="cursor-pointer" onClick={() => onChange(value.filter((x) => x !== t))}>×</button>
-        </Badge>
-      ))}
-      <input
-        className="min-w-24 flex-1 bg-transparent px-1 text-base outline-none sm:text-sm"
-        value={draft}
-        placeholder="태그 추가…"
-        onChange={(e) => setDraft(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); }
-          else if (e.key === 'Backspace' && !draft && value.length) onChange(value.slice(0, -1));
-        }}
-      />
+    <div className="relative">
+      <div className="border-input flex flex-wrap items-center gap-1.5 rounded-md border bg-transparent p-1.5">
+        {value.map((t) => (
+          <Badge key={t} variant="secondary" className="gap-1">
+            {t}
+            <button type="button" className="cursor-pointer" onClick={() => onChange(value.filter((x) => x !== t))}>×</button>
+          </Badge>
+        ))}
+        <input
+          className="min-w-24 flex-1 bg-transparent px-1 text-base outline-none sm:text-sm"
+          value={draft}
+          placeholder={placeholder}
+          role="combobox"
+          aria-expanded={open}
+          aria-autocomplete="list"
+          onChange={(e) => { setDraft(e.target.value); setHi(-1); setDismissed(false); }}
+          onKeyDown={(e) => {
+            if (open && e.key === 'ArrowDown') { e.preventDefault(); setHi((h) => (h + 1) % matches.length); }
+            else if (open && e.key === 'ArrowUp') { e.preventDefault(); setHi((h) => (h - 1 + matches.length) % matches.length); }
+            else if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(open && hi >= 0 ? matches[hi] : draft); }
+            else if (e.key === 'Escape' && open) { e.preventDefault(); setDismissed(true); setHi(-1); }
+            else if (e.key === 'Backspace' && !draft && value.length) onChange(value.slice(0, -1));
+          }}
+        />
+      </div>
+      {open && (
+        <div className="slash-menu tag-ac-menu" role="listbox">
+          {matches.map((m, i) => (
+            <button
+              key={m}
+              type="button"
+              role="option"
+              aria-selected={i === hi}
+              className={i === hi ? 'slash-item active' : 'slash-item'}
+              onMouseEnter={() => setHi(i)}
+              onMouseDown={(e) => { e.preventDefault(); add(m); }}
+            >
+              <span>{m}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

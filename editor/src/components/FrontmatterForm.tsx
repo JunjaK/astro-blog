@@ -1,32 +1,271 @@
+import type { Frontmatter, LyricsKind, TastingAutofill, TokuteiMeisho } from '../lib/api';
+import type { ReactNode } from 'react';
+import { useState } from 'react';
+import { Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { ReactNode } from 'react';
-import type { Frontmatter, LyricsKind } from '../lib/api';
+import { Textarea } from '@/components/ui/textarea';
+import { api, AutofillError } from '../lib/api';
+import { NIHONSHU_FLAVOR_LABELS } from '../lib/nihonshuFlavors';
+import { AMAKARA, AmakaraNoutanPicker, NOUTAN } from './AmakaraNoutanPicker';
 import { DatePicker, TagInput, ThumbnailInput } from './fields';
 
-export const CATEGORIES = ['daily', 'diary', 'game', 'music', 'web'];
+type DrinkKind = NonNullable<Frontmatter['drinkKind']>;
+
+export const CATEGORIES = ['daily', 'diary', 'game', 'music', 'tasting', 'web'];
 const LYRICS_TYPES: { value: LyricsKind; label: string }[] = [
   { value: 'jpop', label: 'J-POP (원문·루비·번역)' },
   { value: 'kpop', label: 'K-POP (가사만)' },
   { value: 'pop', label: 'POP (원문·번역)' },
 ];
+const DRINK_KINDS: { value: DrinkKind; label: string }[] = [
+  { value: 'nihonshu', label: '니혼슈(日本酒)' },
+  { value: 'whisky', label: '위스키' },
+  { value: 'beer', label: '맥주' },
+  { value: 'other', label: '기타 주류' },
+];
+// Derived from the exported union — adding/removing a grade here fails to compile unless
+// api.ts's TokuteiMeisho matches (no triple hand-maintained definition).
+const TOKUTEI_MEISHO = [
+  '純米大吟醸', '大吟醸', '純米吟醸', '吟醸', '特別純米', '特別本醸造', '純米', '本醸造', '普通酒',
+] as const satisfies readonly TokuteiMeisho[];
+
+// AI-autofillable fields, in review-panel order. `estimate` = AI-must-not-invent numeric.
+const AUTOFILL_ROWS: { key: keyof TastingAutofill; label: string; estimate?: boolean }[] = [
+  { key: 'brewery', label: '양조장' },
+  { key: 'tokuteiMeisho', label: '특정명칭' },
+  { key: 'riceType', label: '원료미' },
+  { key: 'seimaiBuai', label: '정미보합(%)', estimate: true },
+  { key: 'alcohol', label: '도수(%)', estimate: true },
+  { key: 'nihonshuDo', label: '일본주도(SMV)', estimate: true },
+  { key: 'sando', label: '산도', estimate: true },
+  { key: 'amakara', label: '甘辛' },
+  { key: 'noutan', label: '濃淡' },
+  { key: 'flavorTags', label: '향미 태그' },
+];
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const signed = (n: number) => (n > 0 ? `+${n}` : String(n));
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
+function isEmpty(v: unknown): boolean {
+  return v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0);
+}
+
+function fmt(key: keyof TastingAutofill, v: unknown): string {
+  if (v === undefined || v === null) return '—';
+  if (key === 'amakara' && typeof v === 'number') return `${signed(v)} (${AMAKARA[v + 2]})`;
+  if (key === 'noutan' && typeof v === 'number') return `${signed(v)} (${NOUTAN[2 - v]})`;
+  if (Array.isArray(v)) return v.join(', ');
+  return String(v);
+}
+
+// Status → user message. Error never writes a field (augment-only fails closed).
+function errMessage(status: number): string {
+  switch (status) {
+    case 401: return ''; // login bounce already navigating away
+    case 502: return 'AI 서버 오류입니다. 잠시 후 다시 시도해 주세요';
+    case 503: return 'AI가 설정되지 않았습니다(API 키 없음)';
+    case 504: return '응답이 20초를 넘겨 중단됐습니다. 다시 시도해 주세요';
+    default: return 'AI 응답을 해석하지 못했습니다';
+  }
+}
+
+function Field({ label, badge, children }: { label: string; badge?: ReactNode; children: ReactNode }) {
   return (
     <div className="grid gap-1.5">
-      <Label className="text-muted-foreground text-xs font-normal">{label}</Label>
+      <div className="flex items-center gap-2">
+        <Label className="text-muted-foreground text-xs font-normal">{label}</Label>
+        {badge}
+      </div>
       {children}
     </div>
   );
 }
 
+// Local, non-persistent "this came from AI, please verify" marker. Cleared on manual edit.
+function AiBadge() {
+  return <span className="border-primary/40 text-primary rounded-full border px-1.5 py-0.5 text-[10px] leading-none">AI 채움 · 확인 요망</span>;
+}
+
+function NumberField({ label, badge, value, onChange, min, max, step }: {
+  label: string;
+  badge?: ReactNode;
+  value?: number;
+  onChange: (v: number | undefined) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+}) {
+  return (
+    <Field label={label} badge={badge}>
+      <Input
+        type="number"
+        min={min}
+        max={max}
+        step={step}
+        value={value ?? ''}
+        onChange={(e) => {
+          const n = e.target.value === '' ? undefined : Number(e.target.value);
+          onChange(n === undefined || Number.isNaN(n) ? undefined : n);
+        }}
+      />
+    </Field>
+  );
+}
+
+// Inline (never modal) AI review panel. Fetch → present keys → checkbox review → 선택 적용.
+// Never immediate-commits; user-filled fields default unchecked (augment-only, no clobber).
+function TastingAutofillPanel({ current, defaultQuery, onApply }: {
+  current: Frontmatter;
+  defaultQuery: string;
+  onApply: (patch: Partial<Frontmatter>, keys: string[]) => void;
+}) {
+  const [query, setQuery] = useState(defaultQuery);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [result, setResult] = useState<TastingAutofill | null>(null);
+  const [checked, setChecked] = useState<Set<string>>(new Set());
+
+  const present = result ? AUTOFILL_ROWS.filter((r) => result[r.key] !== undefined) : [];
+  const hasNumericEstimate = present.some((r) => r.estimate);
+
+  const run = async () => {
+    const q = query.trim();
+    if (!q || loading) return;
+    setLoading(true);
+    setError('');
+    setResult(null);
+    try {
+      const res = await api.autofillTasting(q);
+      const keys = AUTOFILL_ROWS.filter((r) => res[r.key] !== undefined).map((r) => r.key as string);
+      // Default-check only empty fields → won't clobber values the user already typed.
+      setChecked(new Set(keys.filter((k) => isEmpty(current[k]))));
+      setResult(res);
+    } catch (e) {
+      setError(errMessage(e instanceof AutofillError ? e.status : 0));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggle = (k: string) =>
+    setChecked((prev) => {
+      const n = new Set(prev);
+      if (n.has(k)) n.delete(k);
+      else n.add(k);
+      return n;
+    });
+
+  const close = () => {
+    setResult(null);
+    setChecked(new Set());
+  };
+
+  const apply = () => {
+    if (!result) return;
+    const patch: Partial<Frontmatter> = {};
+    const keys: string[] = [];
+    for (const r of present) {
+      const k = r.key as string;
+      if (!checked.has(k)) continue;
+      keys.push(k);
+      if (r.key === 'flavorTags') {
+        // union-merge with existing tags (dedup) rather than replace.
+        patch.flavorTags = Array.from(new Set([...(current.flavorTags ?? []), ...(result.flavorTags ?? [])]));
+      } else {
+        (patch as Record<string, unknown>)[k] = result[r.key];
+      }
+    }
+    if (keys.length) onApply(patch, keys);
+    close();
+  };
+
+  return (
+    <div className="tasting-ai">
+      <div className="tasting-ai__bar">
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="사케명 (예: 旭酒造 - 獺祭 45)"
+          className="flex-1"
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void run(); } }}
+        />
+        <Button type="button" variant="outline" onClick={() => void run()} disabled={loading || !query.trim()}>
+          <Sparkles className="size-4" />
+          {loading ? '조회 중…' : 'AI 자동 채움'}
+        </Button>
+      </div>
+      {error && <p className="tasting-ai__error">{error}</p>}
+      {result && (
+        <div className="tasting-ai__panel">
+          {present.length === 0
+            ? <p className="tasting-ai__empty">제안할 항목이 없습니다.</p>
+            : (
+                <>
+                  {hasNumericEstimate && (
+                    <p className="tasting-ai__caveat">AI 추정치입니다. 수치는 공식 자료로 반드시 검증하세요.</p>
+                  )}
+                  <ul className="tasting-ai__rows">
+                    {present.map((r) => {
+                      const k = r.key as string;
+                      const cur = current[r.key];
+                      return (
+                        <li key={k} className="tasting-ai__row">
+                          <label className="tasting-ai__pick">
+                            <input type="checkbox" className="tasting-ai__check" checked={checked.has(k)} onChange={() => toggle(k)} />
+                            <span className="tasting-ai__name">{r.label}</span>
+                            {r.estimate && <span className="tasting-ai__est">추정</span>}
+                          </label>
+                          <span className="tasting-ai__val">
+                            {!isEmpty(cur) && <span className="tasting-ai__cur">{fmt(r.key, cur)} → </span>}
+                            {fmt(r.key, result[r.key])}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <div className="tasting-ai__actions">
+                    <Button type="button" variant="outline" onClick={close}>닫기</Button>
+                    <Button type="button" onClick={apply} disabled={checked.size === 0}>선택 적용</Button>
+                  </div>
+                </>
+              )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onChange: (fm: Frontmatter) => void }) {
-  const set = (patch: Partial<Frontmatter>) => onChange({ ...value, ...patch });
+  const [aiFilled, setAiFilled] = useState<Set<string>>(new Set());
+
+  // Manual edits clear the AI badge for the fields they touch.
+  const set = (patch: Partial<Frontmatter>) => {
+    const keys = Object.keys(patch);
+    if (aiFilled.size && keys.some((k) => aiFilled.has(k))) {
+      setAiFilled((prev) => {
+        const n = new Set(prev);
+        keys.forEach((k) => n.delete(k));
+        return n;
+      });
+    }
+    onChange({ ...value, ...patch });
+  };
+
+  // Autofill-apply keeps the AI badge (opposite of `set`).
+  const applyAutofill = (patch: Partial<Frontmatter>, keys: string[]) => {
+    onChange({ ...value, ...patch });
+    setAiFilled((prev) => new Set([...prev, ...keys]));
+  };
+
+  const aiBadge = (k: string): ReactNode => (aiFilled.has(k) ? <AiBadge /> : undefined);
+
   const isMusic = (value.category ?? '').toLowerCase() === 'music';
+  const isTasting = (value.category ?? '').toLowerCase() === 'tasting';
+  const drinkKind = value.drinkKind ?? 'nihonshu';
+  const isNihonshu = drinkKind === 'nihonshu';
 
   return (
     <div className="grid gap-3 rounded-lg border border-border bg-card p-4 sm:grid-cols-2">
@@ -37,7 +276,16 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
       </div>
       <Field label="분류">
         {/* value (data) stays lowercase; label is capitalized for display */}
-        <Select value={(value.category ?? '').toLowerCase()} onValueChange={(v) => set({ category: v ?? undefined })}>
+        <Select
+          value={(value.category ?? '').toLowerCase()}
+          onValueChange={(v) => {
+            const cat = v ?? undefined;
+            const patch: Partial<Frontmatter> = { category: cat };
+            // Seed the discriminator so the blog card's drinkKind gate has a value.
+            if ((cat ?? '').toLowerCase() === 'tasting' && value.drinkKind === undefined) patch.drinkKind = 'nihonshu';
+            set(patch);
+          }}
+        >
           <SelectTrigger className="w-full"><SelectValue placeholder="분류 선택" /></SelectTrigger>
           <SelectContent>
             {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{cap(c)}</SelectItem>)}
@@ -85,6 +333,67 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
           <div className="sm:col-span-2">
             <Field label="YouTube Music"><Input value={value.youtubeMusicUrl ?? ''} onChange={(e) => set({ youtubeMusicUrl: e.target.value })} /></Field>
           </div>
+        </div>
+      )}
+
+      {isTasting && (
+        <div className="border-border mt-1 grid gap-3 border-t pt-4 sm:col-span-2 sm:grid-cols-2">
+          <div className="text-foreground/80 text-sm font-medium sm:col-span-2">시음 정보</div>
+          <div className="sm:col-span-2">
+            <Field label="종류">
+              <Select value={drinkKind} onValueChange={(v) => set({ drinkKind: (v as DrinkKind) ?? undefined })}>
+                <SelectTrigger className="w-full"><SelectValue placeholder="종류 선택" /></SelectTrigger>
+                <SelectContent>
+                  {DRINK_KINDS.map((d) => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </Field>
+          </div>
+
+          {isNihonshu && (
+            <>
+              <div className="sm:col-span-2">
+                <TastingAutofillPanel current={value} defaultQuery={value.title ?? ''} onApply={applyAutofill} />
+              </div>
+              <Field label="양조장(酒蔵)" badge={aiBadge('brewery')}>
+                <Input value={value.brewery ?? ''} onChange={(e) => set({ brewery: e.target.value })} />
+              </Field>
+              <Field label="특정명칭(特定名称)" badge={aiBadge('tokuteiMeisho')}>
+                <Select
+                  value={value.tokuteiMeisho ?? null}
+                  onValueChange={(v) => set({ tokuteiMeisho: (v as TokuteiMeisho | null) ?? undefined })}
+                >
+                  <SelectTrigger className="w-full"><SelectValue placeholder="특정명칭 선택" /></SelectTrigger>
+                  <SelectContent>
+                    {TOKUTEI_MEISHO.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label="원료미(酒米)" badge={aiBadge('riceType')}>
+                  <TagInput value={value.riceType ?? []} onChange={(riceType) => set({ riceType })} placeholder="쌀 품종 추가…" />
+                </Field>
+              </div>
+              <NumberField label="정미보합(精米歩合, %)" badge={aiBadge('seimaiBuai')} value={value.seimaiBuai} onChange={(seimaiBuai) => set({ seimaiBuai })} min={0} max={100} />
+              <NumberField label="도수(%)" badge={aiBadge('alcohol')} value={value.alcohol} onChange={(alcohol) => set({ alcohol })} min={0} step={0.1} />
+              <NumberField label="일본주도(日本酒度)" badge={aiBadge('nihonshuDo')} value={value.nihonshuDo} onChange={(nihonshuDo) => set({ nihonshuDo })} step={0.1} />
+              <NumberField label="산도(酸度)" badge={aiBadge('sando')} value={value.sando} onChange={(sando) => set({ sando })} min={0} step={0.1} />
+              <div className="sm:col-span-2">
+                <Field label="향미 태그" badge={aiBadge('flavorTags')}>
+                  <TagInput value={value.flavorTags ?? []} onChange={(flavorTags) => set({ flavorTags })} suggestions={NIHONSHU_FLAVOR_LABELS} placeholder="향미 태그 추가…" />
+                </Field>
+              </div>
+              <div className="sm:col-span-2">
+                <Field label="甘辛 × 濃淡" badge={aiFilled.has('amakara') || aiFilled.has('noutan') ? <AiBadge /> : undefined}>
+                  <AmakaraNoutanPicker
+                    amakara={value.amakara}
+                    noutan={value.noutan}
+                    onChange={(v) => set({ amakara: v.amakara, noutan: v.noutan })}
+                  />
+                </Field>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

@@ -190,6 +190,64 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .rawmdx-caret { color: var(--c-muted); }
 .rawmdx[data-open="true"] .rawmdx-chip { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 
+/* TastingNoteCard — frontmatter-wired marker block (mirrors .music-card-node) */
+.tasting-note-node { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 12px 0; background: var(--surface); }
+.tasting-note-node__icon { font-size: 18px; color: var(--c-muted); }
+.tasting-note-node__label { font-weight: 600; font-size: 14px; }
+.tasting-note-node__hint { font-size: 12px; color: var(--c-muted); }
+.tasting-note-node__x { margin-left: auto; background: none; border: none; color: var(--c-muted); cursor: pointer; }
+
+/* flavor-tag autocomplete: reuses .slash-menu / .slash-item look, anchored under the input */
+.tag-ac-menu { position: absolute; z-index: 30; top: calc(100% + 4px); left: 0; right: 0; min-width: 0; max-height: 240px; }
+
+/* 甘辛 × 濃淡 discrete 5×5 picker (editor input) */
+.amakara-noutan-picker { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; max-width: 280px; }
+.amakara-noutan-picker__pole { font-size: 12px; color: var(--c-muted); }
+.amakara-noutan-picker__mid { display: flex; align-items: stretch; gap: 6px; width: 100%; }
+.amakara-noutan-picker__pole--left, .amakara-noutan-picker__pole--right { writing-mode: vertical-rl; display: flex; align-items: center; }
+.amakara-noutan-picker__grid {
+  position: relative; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px;
+  flex: 1; aspect-ratio: 1; touch-action: none;
+  border: 1px solid var(--border); border-radius: 8px; padding: 4px; background: var(--bg);
+}
+.amakara-noutan-picker__grid::before,
+.amakara-noutan-picker__grid::after { content: ''; position: absolute; background: var(--border); pointer-events: none; }
+.amakara-noutan-picker__grid::before { left: 50%; top: 4px; bottom: 4px; width: 1px; transform: translateX(-0.5px); }
+.amakara-noutan-picker__grid::after { top: 50%; left: 4px; right: 4px; height: 1px; transform: translateY(-0.5px); }
+.amakara-noutan-picker__cell {
+  position: relative; min-width: 0; aspect-ratio: 1; border: none; border-radius: 5px;
+  background: var(--surface); cursor: pointer; padding: 0;
+}
+.amakara-noutan-picker__cell:hover { background: var(--elevated); }
+.amakara-noutan-picker__cell:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 1px; }
+.amakara-noutan-picker__cell[aria-checked='true'] { background: var(--c-accent); }
+.amakara-noutan-picker__cell[aria-checked='true']::after { content: ''; position: absolute; inset: 30%; border-radius: 999px; background: var(--bg); }
+.amakara-noutan-picker__foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
+.amakara-noutan-picker__readout { font-size: 13px; color: var(--text); }
+.amakara-noutan-picker__clear {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--surface); color: var(--c-muted); border: 1px solid var(--border);
+  border-radius: 8px; padding: 4px 8px; font-size: 12px; cursor: pointer;
+}
+.amakara-noutan-picker__clear:hover { color: var(--text); }
+
+/* AI autofill trigger + inline review panel (never a modal) */
+.tasting-ai { display: flex; flex-direction: column; gap: 8px; }
+.tasting-ai__bar { display: flex; gap: 8px; align-items: center; }
+.tasting-ai__error { margin: 0; font-size: 13px; color: #ff8a8a; }
+.tasting-ai__panel { display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: var(--surface); }
+.tasting-ai__empty { margin: 0; font-size: 13px; color: var(--c-muted); }
+.tasting-ai__caveat { margin: 0; font-size: 12px; color: #ffcf8a; border: 1px solid #5a4326; border-radius: 8px; padding: 6px 10px; background: rgba(255, 207, 138, .06); }
+.tasting-ai__rows { display: flex; flex-direction: column; gap: 2px; list-style: none; margin: 0; padding: 0; }
+.tasting-ai__row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 5px 4px; border-bottom: 1px solid var(--border); }
+.tasting-ai__pick { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
+.tasting-ai__check { width: 16px; height: 16px; accent-color: var(--c-accent); cursor: pointer; }
+.tasting-ai__name { color: var(--text); }
+.tasting-ai__est { font-size: 10px; color: #ffcf8a; border: 1px solid #5a4326; border-radius: 999px; padding: 1px 6px; }
+.tasting-ai__val { font-size: 13px; color: var(--text); text-align: right; }
+.tasting-ai__cur { color: var(--c-muted); }
+.tasting-ai__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 2px; }
+
 /* larger slider thumb on touch (crop zoom) */
 @media (hover: none) {
   [data-slot="slider-thumb"]::after { inset: -14px; }
@@ -212,6 +270,8 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   .post-table li { min-height: 44px; padding: 11px 4px; }
   .login-page input { font-size: 16px; }
   .login-page .btn-primary { min-height: 44px; }
+  .tasting-ai__bar { flex-direction: column; align-items: stretch; }
+  .tasting-ai__row { flex-wrap: wrap; }
 
   /* fixed bottom save bar so Save isn't buried under N images */
   .editor-page > .row.editor-save-bar {
