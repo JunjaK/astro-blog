@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { api, AutofillError, TOKUTEI_MEISHO } from '../lib/api';
 import { NIHONSHU_FLAVOR_LABELS } from '../lib/nihonshuFlavors';
-import { AMAKARA, AmakaraNoutanPicker, NOUTAN } from './AmakaraNoutanPicker';
+import { AmakaraNoutanPicker } from './AmakaraNoutanPicker';
 import { DatePicker, TagInput, ThumbnailInput } from './fields';
 
 type DrinkKind = NonNullable<Frontmatter['drinkKind']>;
@@ -27,13 +27,21 @@ const DRINK_KINDS: { value: DrinkKind; label: string }[] = [
   { value: 'beer', label: '맥주' },
   { value: 'other', label: '기타 주류' },
 ];
-// Objective master keys shared between DB pick (authoritative augment) and master save.
-// Subjective keys (amakara/noutan/flavorTags) and title are never stored in / read from master.
-const MASTER_KEYS = ['brewery', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando'] as const;
+// DB-pick objective keys (Sake → Frontmatter, authoritative augment). Includes join-only
+// breweryYomigana. Subjective keys (amakara/noutan/flavorTags) and title are never in master.
+const DB_PICK_KEYS = ['brand', 'brandYomigana', 'yomigana', 'brewery', 'breweryYomigana', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando'] as const;
+// Subset persisted back to the sake master on save — SakeInput has no breweryYomigana
+// (양조장 읽기는 브루어리 레코드 소유). 그 한 필드만 제외.
+const MASTER_SAVE_KEYS = ['brand', 'brandYomigana', 'yomigana', 'brewery', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando'] as const;
 
 // AI-autofillable fields, in review-panel order. `estimate` = AI-must-not-invent numeric.
+// brand/yomigana류는 문자열 — 「추정」 뱃지 없음.
 const AUTOFILL_ROWS: { key: keyof TastingAutofill; label: string; estimate?: boolean }[] = [
+  { key: 'brand', label: '브랜드(銘柄)' },
+  { key: 'brandYomigana', label: '브랜드 요미가나' },
+  { key: 'yomigana', label: '술이름 요미가나' },
   { key: 'brewery', label: '양조장' },
+  { key: 'breweryYomigana', label: '양조장 요미가나' },
   { key: 'tokuteiMeisho', label: '특정명칭' },
   { key: 'riceType', label: '원료미' },
   { key: 'seimaiBuai', label: '정미보합(%)', estimate: true },
@@ -46,7 +54,6 @@ const AUTOFILL_ROWS: { key: keyof TastingAutofill; label: string; estimate?: boo
 ];
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const signed = (n: number) => (n > 0 ? `+${n}` : String(n));
 
 function isEmpty(v: unknown): boolean {
   return v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0);
@@ -54,8 +61,8 @@ function isEmpty(v: unknown): boolean {
 
 function fmt(key: keyof TastingAutofill, v: unknown): string {
   if (v === undefined || v === null) return '—';
-  if (key === 'amakara' && typeof v === 'number') return `${signed(v)} (${AMAKARA[v + 2]})`;
-  if (key === 'noutan' && typeof v === 'number') return `${signed(v)} (${NOUTAN[2 - v]})`;
+  if (key === 'amakara' && typeof v === 'number') return `甘辛 ${v}/8`;
+  if (key === 'noutan' && typeof v === 'number') return `濃淡 ${v}/8`;
   if (Array.isArray(v)) return v.join(', ');
   return String(v);
 }
@@ -237,7 +244,7 @@ function TastingAutofillPanel({ current, defaultQuery, onApply, onDbPick }: {
     const saveName = query.trim();
     if (saveToMaster && saveName) {
       const input: SakeInput = { name: saveName };
-      for (const k of MASTER_KEYS) {
+      for (const k of MASTER_SAVE_KEYS) {
         if (checked.has(k) && result[k] !== undefined) Object.assign(input, { [k]: result[k] });
       }
       api.upsertSake(input)
@@ -281,7 +288,7 @@ function TastingAutofillPanel({ current, defaultQuery, onApply, onDbPick }: {
                   onMouseEnter={() => setHi(i)}
                   onMouseDown={(e) => { e.preventDefault(); pick(s); }}
                 >
-                  <span>{s.name}</span>
+                  <span>{s.name}{s.yomigana ? `（${s.yomigana}）` : ''}</span>
                   {(s.brewery || s.tokuteiMeisho) && (
                     <span className="slash-hint">{[s.brewery, s.tokuteiMeisho].filter(Boolean).join(' · ')}</span>
                   )}
@@ -380,7 +387,7 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
   const applyDbPick = (sake: Sake) => {
     const patch: Partial<Frontmatter> = {};
     const keys: string[] = [];
-    for (const k of MASTER_KEYS) {
+    for (const k of DB_PICK_KEYS) {
       const v = sake[k];
       if (v === null || v === undefined) continue;
       if (k === 'riceType' && Array.isArray(v) && v.length === 0) continue;
@@ -490,6 +497,19 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
               <div className="sm:col-span-2">
                 <TastingAutofillPanel current={value} defaultQuery={value.title ?? ''} onApply={applyAutofill} onDbPick={applyDbPick} />
               </div>
+              {/* 銘柄 + 읽기류(요미가나) — 컴팩트 2×2 그룹 */}
+              <Field label="브랜드(銘柄)" badge={aiBadge('brand')}>
+                <Input value={value.brand ?? ''} onChange={(e) => set({ brand: e.target.value })} />
+              </Field>
+              <Field label="브랜드 요미가나" badge={aiBadge('brandYomigana')}>
+                <Input value={value.brandYomigana ?? ''} onChange={(e) => set({ brandYomigana: e.target.value })} placeholder="히라가나" />
+              </Field>
+              <Field label="술이름 요미가나" badge={aiBadge('yomigana')}>
+                <Input value={value.yomigana ?? ''} onChange={(e) => set({ yomigana: e.target.value })} placeholder="히라가나" />
+              </Field>
+              <Field label="양조장 요미가나" badge={aiBadge('breweryYomigana')}>
+                <Input value={value.breweryYomigana ?? ''} onChange={(e) => set({ breweryYomigana: e.target.value })} placeholder="히라가나" />
+              </Field>
               <Field label="양조장(酒蔵)" badge={aiBadge('brewery')}>
                 <Input value={value.brewery ?? ''} onChange={(e) => set({ brewery: e.target.value })} />
               </Field>

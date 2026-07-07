@@ -77,7 +77,11 @@ export interface Frontmatter {
   lyricsType?: LyricsKind;
   // ── tasting note (category: 'Tasting') — specs meaningful only when drinkKind==='nihonshu' ──
   drinkKind?: 'nihonshu' | 'whisky' | 'beer' | 'other';
+  brand?: string; // 銘柄 (v1.1)
+  yomigana?: string; // 술 이름 읽기 (히라가나)
+  brandYomigana?: string; // 브랜드 읽기 (히라가나)
   brewery?: string;
+  breweryYomigana?: string; // 양조장 읽기 (히라가나)
   tokuteiMeisho?: TokuteiMeisho;
   riceType?: string[];
   seimaiBuai?: number;
@@ -107,7 +111,8 @@ export const TOKUTEI_MEISHO = [
 // autofill 결과 — 서버가 null/''/[] 키를 strip → present-or-absent (augment-only).
 // drinkKind는 서버가 nihonshu 하드코딩 → 응답에 없음.
 export type TastingAutofill = Partial<Pick<Frontmatter,
-  'brewery' | 'tokuteiMeisho' | 'riceType' | 'seimaiBuai' | 'alcohol'
+  'brand' | 'yomigana' | 'brandYomigana' | 'breweryYomigana'
+  | 'brewery' | 'tokuteiMeisho' | 'riceType' | 'seimaiBuai' | 'alcohol'
   | 'nihonshuDo' | 'sando' | 'amakara' | 'noutan' | 'flavorTags'>>;
 
 export interface DocResponse {
@@ -148,6 +153,7 @@ async function autofillTasting(query: string): Promise<TastingAutofill> {
 export interface Brewery {
   id: string;
   name: string;
+  yomigana: string | null; // 양조장 읽기 (v1.1)
   region: string | null;
   note: string | null;
   created_at: string | null;
@@ -158,7 +164,11 @@ export interface Brewery {
 export interface Sake {
   id: string;
   name: string;
+  brand: string | null; // 銘柄 (v1.1)
+  yomigana: string | null; // 술 이름 읽기 (v1.1)
+  brandYomigana: string | null; // 브랜드 읽기 (v1.1)
   brewery: string | null; // 해석된 양조장 이름(표시용)
+  breweryYomigana: string | null; // join된 양조장 읽기 (b.yomigana AS breweryYomigana)
   brewery_id: string | null;
   tokuteiMeisho: TokuteiMeisho | null;
   riceType: string[]; // 없으면 []
@@ -172,8 +182,12 @@ export interface Sake {
 }
 
 // POST(augment) / PUT(replace) 공용. brewery=이름(서버가 id 해석). `| null`로 PUT 명시 clear.
+// breweryYomigana는 SakeInput에 없음 — 양조장 읽기는 브루어리 레코드(BreweryInput.yomigana)에 저장.
 export interface SakeInput {
   name: string;
+  brand?: string | null; // 銘柄 (v1.1)
+  yomigana?: string | null; // 술 이름 읽기 (v1.1)
+  brandYomigana?: string | null; // 브랜드 읽기 (v1.1)
   brewery?: string | null;
   tokuteiMeisho?: TokuteiMeisho | null;
   riceType?: string[];
@@ -186,6 +200,7 @@ export interface SakeInput {
 
 export interface BreweryInput {
   name: string;
+  yomigana?: string | null; // 양조장 읽기 (v1.1)
   region?: string | null;
   note?: string | null;
 }
