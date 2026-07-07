@@ -1,13 +1,14 @@
-import type { Frontmatter, LyricsKind, TastingAutofill, TokuteiMeisho } from '../lib/api';
+import type { Frontmatter, LyricsKind, Sake, SakeInput, TastingAutofill, TokuteiMeisho } from '../lib/api';
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useEffect, useId, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { api, AutofillError } from '../lib/api';
+import { api, AutofillError, TOKUTEI_MEISHO } from '../lib/api';
 import { NIHONSHU_FLAVOR_LABELS } from '../lib/nihonshuFlavors';
 import { AMAKARA, AmakaraNoutanPicker, NOUTAN } from './AmakaraNoutanPicker';
 import { DatePicker, TagInput, ThumbnailInput } from './fields';
@@ -26,11 +27,9 @@ const DRINK_KINDS: { value: DrinkKind; label: string }[] = [
   { value: 'beer', label: '맥주' },
   { value: 'other', label: '기타 주류' },
 ];
-// Derived from the exported union — adding/removing a grade here fails to compile unless
-// api.ts's TokuteiMeisho matches (no triple hand-maintained definition).
-const TOKUTEI_MEISHO = [
-  '純米大吟醸', '大吟醸', '純米吟醸', '吟醸', '特別純米', '特別本醸造', '純米', '本醸造', '普通酒',
-] as const satisfies readonly TokuteiMeisho[];
+// Objective master keys shared between DB pick (authoritative augment) and master save.
+// Subjective keys (amakara/noutan/flavorTags) and title are never stored in / read from master.
+const MASTER_KEYS = ['brewery', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando'] as const;
 
 // AI-autofillable fields, in review-panel order. `estimate` = AI-must-not-invent numeric.
 const AUTOFILL_ROWS: { key: keyof TastingAutofill; label: string; estimate?: boolean }[] = [
@@ -89,6 +88,18 @@ function AiBadge() {
   return <span className="border-primary/40 text-primary rounded-full border px-1.5 py-0.5 text-[10px] leading-none">AI 채움 · 확인 요망</span>;
 }
 
+// DB master authoritative-fill marker (green). Outranks AiBadge; cleared on manual edit.
+function DbBadge() {
+  return (
+    <span
+      className="rounded-full border border-[#7fff9f]/40 bg-[#2a4a32] px-1.5 py-0.5 text-[10px] leading-none text-[#7fff9f]"
+      title="마스터 DB에서 확정 채움"
+    >
+      마스터
+    </span>
+  );
+}
+
 function NumberField({ label, badge, value, onChange, min, max, step }: {
   label: string;
   badge?: ReactNode;
@@ -115,39 +126,85 @@ function NumberField({ label, badge, value, onChange, min, max, step }: {
   );
 }
 
-// Inline (never modal) AI review panel. Fetch → present keys → checkbox review → 선택 적용.
-// Never immediate-commits; user-filled fields default unchecked (augment-only, no clobber).
-function TastingAutofillPanel({ current, defaultQuery, onApply }: {
+// Inline (never modal) DB-first autofill. Search-select combobox (DB master = authoritative) →
+// applyDbPick bypasses review, never upserts. Miss / Enter-without-highlight → AI → checkbox
+// review → 선택 적용 (+ best-effort 마스터 저장). AI values never immediate-commit; user-filled
+// fields default unchecked (augment-only, no clobber).
+function TastingAutofillPanel({ current, defaultQuery, onApply, onDbPick }: {
   current: Frontmatter;
   defaultQuery: string;
   onApply: (patch: Partial<Frontmatter>, keys: string[]) => void;
+  onDbPick: (sake: Sake) => void;
 }) {
   const [query, setQuery] = useState(defaultQuery);
+  const [debounced, setDebounced] = useState('');
+  const [dismissed, setDismissed] = useState(false);
+  const [hi, setHi] = useState(-1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<TastingAutofill | null>(null);
   const [checked, setChecked] = useState<Set<string>>(new Set());
+  const [saveToMaster, setSaveToMaster] = useState(true);
+  const [saveMsg, setSaveMsg] = useState<{ text: string; ok: boolean } | null>(null);
+
+  const listId = useId();
+  const optionId = (i: number) => `${listId}-opt-${i}`;
+
+  // 250ms debounce → server-side normalize+LIKE search. Failure is silent (empty dropdown).
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(query.trim()), 250);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  const search = useQuery({
+    queryKey: ['sakes', 'search', debounced],
+    queryFn: () => api.searchSakes(debounced),
+    enabled: debounced.length >= 1,
+    retry: false,
+  });
+
+  const candidates = (search.data ?? []).slice(0, 8);
+  const truncated = (search.data?.length ?? 0) > 8;
+  const open = !dismissed && query.trim().length >= 1 && candidates.length > 0;
 
   const present = result ? AUTOFILL_ROWS.filter((r) => result[r.key] !== undefined) : [];
   const hasNumericEstimate = present.some((r) => r.estimate);
 
+  const close = () => {
+    setResult(null);
+    setChecked(new Set());
+  };
+
   const run = async () => {
     const q = query.trim();
     if (!q || loading) return;
+    setDismissed(true);
     setLoading(true);
     setError('');
     setResult(null);
+    setSaveMsg(null);
     try {
       const res = await api.autofillTasting(q);
       const keys = AUTOFILL_ROWS.filter((r) => res[r.key] !== undefined).map((r) => r.key as string);
       // Default-check only empty fields → won't clobber values the user already typed.
       setChecked(new Set(keys.filter((k) => isEmpty(current[k]))));
+      setSaveToMaster(true);
       setResult(res);
     } catch (e) {
       setError(errMessage(e instanceof AutofillError ? e.status : 0));
     } finally {
       setLoading(false);
     }
+  };
+
+  // DB candidate pick: authoritative fill via parent, bypass review, close everything.
+  const pick = (sake: Sake) => {
+    onDbPick(sake);
+    setQuery(sake.name);
+    setDismissed(true);
+    setHi(-1);
+    setSaveMsg(null);
+    close();
   };
 
   const toggle = (k: string) =>
@@ -157,11 +214,6 @@ function TastingAutofillPanel({ current, defaultQuery, onApply }: {
       else n.add(k);
       return n;
     });
-
-  const close = () => {
-    setResult(null);
-    setChecked(new Set());
-  };
 
   const apply = () => {
     if (!result) return;
@@ -179,25 +231,73 @@ function TastingAutofillPanel({ current, defaultQuery, onApply }: {
       }
     }
     if (keys.length) onApply(patch, keys);
+
+    // Best-effort master save (checked objective keys only, name = panel query). Applied patch
+    // never rolls back on save failure. saveName empty → skip.
+    const saveName = query.trim();
+    if (saveToMaster && saveName) {
+      const input: SakeInput = { name: saveName };
+      for (const k of MASTER_KEYS) {
+        if (checked.has(k) && result[k] !== undefined) Object.assign(input, { [k]: result[k] });
+      }
+      api.upsertSake(input)
+        .then(({ created }) => setSaveMsg({ text: created ? '마스터에 추가됨' : '기존 마스터 갱신됨', ok: true }))
+        .catch(() => setSaveMsg({ text: '마스터 저장 실패 — 글은 정상 저장됩니다', ok: false }));
+    }
     close();
   };
 
   return (
     <div className="tasting-ai">
       <div className="tasting-ai__bar">
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="사케명 (예: 旭酒造 - 獺祭 45)"
-          className="flex-1"
-          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void run(); } }}
-        />
+        <div className="relative flex-1">
+          <Input
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setHi(-1); setDismissed(false); }}
+            placeholder="사케명 (예: 旭酒造 - 獺祭 45)"
+            className="w-full"
+            role="combobox"
+            aria-expanded={open}
+            aria-autocomplete="list"
+            aria-controls={open ? listId : undefined}
+            aria-activedescendant={open && hi >= 0 ? optionId(hi) : undefined}
+            onKeyDown={(e) => {
+              if (open && e.key === 'ArrowDown') { e.preventDefault(); setHi((h) => (h + 1) % candidates.length); }
+              else if (open && e.key === 'ArrowUp') { e.preventDefault(); setHi((h) => (h - 1 + candidates.length) % candidates.length); }
+              else if (e.key === 'Enter') { e.preventDefault(); if (open && hi >= 0) pick(candidates[hi]); else void run(); }
+              else if (e.key === 'Escape' && open) { e.preventDefault(); setDismissed(true); setHi(-1); }
+            }}
+          />
+          {open && (
+            <div className="slash-menu tag-ac-menu" role="listbox" id={listId}>
+              {candidates.map((s, i) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  role="option"
+                  id={optionId(i)}
+                  aria-selected={i === hi}
+                  className={i === hi ? 'slash-item active' : 'slash-item'}
+                  onMouseEnter={() => setHi(i)}
+                  onMouseDown={(e) => { e.preventDefault(); pick(s); }}
+                >
+                  <span>{s.name}</span>
+                  {(s.brewery || s.tokuteiMeisho) && (
+                    <span className="slash-hint">{[s.brewery, s.tokuteiMeisho].filter(Boolean).join(' · ')}</span>
+                  )}
+                </button>
+              ))}
+              {truncated && <div className="slash-item slash-hint">검색어를 좁히세요</div>}
+            </div>
+          )}
+        </div>
         <Button type="button" variant="outline" onClick={() => void run()} disabled={loading || !query.trim()}>
           <Sparkles className="size-4" />
           {loading ? '조회 중…' : 'AI 자동 채움'}
         </Button>
       </div>
       {error && <p className="tasting-ai__error">{error}</p>}
+      {saveMsg && <p className={saveMsg.ok ? 'tasting-ai__savemsg' : 'tasting-ai__error'}>{saveMsg.text}</p>}
       {result && (
         <div className="tasting-ai__panel">
           {present.length === 0
@@ -226,9 +326,21 @@ function TastingAutofillPanel({ current, defaultQuery, onApply }: {
                       );
                     })}
                   </ul>
-                  <div className="tasting-ai__actions">
-                    <Button type="button" variant="outline" onClick={close}>닫기</Button>
-                    <Button type="button" onClick={apply} disabled={checked.size === 0}>선택 적용</Button>
+                  <div className="tasting-ai__foot">
+                    <label className="tasting-ai__save">
+                      <input
+                        type="checkbox"
+                        className="tasting-ai__check"
+                        checked={saveToMaster && !!query.trim()}
+                        disabled={!query.trim()}
+                        onChange={(e) => setSaveToMaster(e.target.checked)}
+                      />
+                      <span>마스터에 저장</span>
+                    </label>
+                    <div className="tasting-ai__actions">
+                      <Button type="button" variant="outline" onClick={close}>닫기</Button>
+                      <Button type="button" onClick={apply} disabled={checked.size === 0}>선택 적용</Button>
+                    </div>
                   </div>
                 </>
               )}
@@ -240,27 +352,50 @@ function TastingAutofillPanel({ current, defaultQuery, onApply }: {
 
 export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onChange: (fm: Frontmatter) => void }) {
   const [aiFilled, setAiFilled] = useState<Set<string>>(new Set());
+  const [dbFilled, setDbFilled] = useState<Set<string>>(new Set());
 
-  // Manual edits clear the AI badge for the fields they touch.
+  const without = (keys: string[]) => (prev: Set<string>) => {
+    const n = new Set(prev);
+    keys.forEach((k) => n.delete(k));
+    return n;
+  };
+
+  // Manual edits clear both provenance badges for the fields they touch.
   const set = (patch: Partial<Frontmatter>) => {
     const keys = Object.keys(patch);
-    if (aiFilled.size && keys.some((k) => aiFilled.has(k))) {
-      setAiFilled((prev) => {
-        const n = new Set(prev);
-        keys.forEach((k) => n.delete(k));
-        return n;
-      });
-    }
+    if (aiFilled.size && keys.some((k) => aiFilled.has(k))) setAiFilled(without(keys));
+    if (dbFilled.size && keys.some((k) => dbFilled.has(k))) setDbFilled(without(keys));
     onChange({ ...value, ...patch });
   };
 
-  // Autofill-apply keeps the AI badge (opposite of `set`).
+  // Autofill-apply keeps the AI badge (opposite of `set`); it supersedes any DbBadge on the key.
   const applyAutofill = (patch: Partial<Frontmatter>, keys: string[]) => {
     onChange({ ...value, ...patch });
     setAiFilled((prev) => new Set([...prev, ...keys]));
+    if (dbFilled.size) setDbFilled(without(keys));
   };
 
-  const aiBadge = (k: string): ReactNode => (aiFilled.has(k) ? <AiBadge /> : undefined);
+  // DB pick = authoritative augment: set only non-null objective keys, mark DbBadge, bypass the
+  // review panel, never upsert (hallucination-guard lock). Subjective keys / title untouched.
+  const applyDbPick = (sake: Sake) => {
+    const patch: Partial<Frontmatter> = {};
+    const keys: string[] = [];
+    for (const k of MASTER_KEYS) {
+      const v = sake[k];
+      if (v === null || v === undefined) continue;
+      if (k === 'riceType' && Array.isArray(v) && v.length === 0) continue;
+      (patch as Record<string, unknown>)[k] = v;
+      keys.push(k);
+    }
+    if (!keys.length) return;
+    onChange({ ...value, ...patch });
+    setDbFilled((prev) => new Set([...prev, ...keys]));
+    if (aiFilled.size) setAiFilled(without(keys));
+  };
+
+  // Badge priority: db → ai.
+  const aiBadge = (k: string): ReactNode =>
+    dbFilled.has(k) ? <DbBadge /> : aiFilled.has(k) ? <AiBadge /> : undefined;
 
   const isMusic = (value.category ?? '').toLowerCase() === 'music';
   const isTasting = (value.category ?? '').toLowerCase() === 'tasting';
@@ -353,7 +488,7 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
           {isNihonshu && (
             <>
               <div className="sm:col-span-2">
-                <TastingAutofillPanel current={value} defaultQuery={value.title ?? ''} onApply={applyAutofill} />
+                <TastingAutofillPanel current={value} defaultQuery={value.title ?? ''} onApply={applyAutofill} onDbPick={applyDbPick} />
               </div>
               <Field label="양조장(酒蔵)" badge={aiBadge('brewery')}>
                 <Input value={value.brewery ?? ''} onChange={(e) => set({ brewery: e.target.value })} />

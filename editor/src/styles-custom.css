@@ -247,6 +247,11 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .tasting-ai__val { font-size: 13px; color: var(--text); text-align: right; }
 .tasting-ai__cur { color: var(--c-muted); }
 .tasting-ai__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 2px; }
+/* master-save row: checkbox (left) ↔ close/apply (right) */
+.tasting-ai__foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; }
+.tasting-ai__foot .tasting-ai__actions { margin-top: 0; }
+.tasting-ai__save { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--c-muted); }
+.tasting-ai__savemsg { margin: 0; font-size: 13px; color: #7fdf9f; }
 
 /* larger slider thumb on touch (crop zoom) */
 @media (hover: none) {
@@ -272,6 +277,7 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   .login-page .btn-primary { min-height: 44px; }
   .tasting-ai__bar { flex-direction: column; align-items: stretch; }
   .tasting-ai__row { flex-wrap: wrap; }
+  .tasting-ai__foot { flex-wrap: wrap; }
 
   /* fixed bottom save bar so Save isn't buried under N images */
   .editor-page > .row.editor-save-bar {
