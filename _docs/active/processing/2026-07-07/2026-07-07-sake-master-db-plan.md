@@ -312,41 +312,44 @@ _(none)_
 
 ---
 
-# v1.1 증분 (2026-07-07 사용자 추가 요구) — 요미가나 + 8×8 매트릭스
+# v1.1 증분 (2026-07-07 사용자 추가 요구) — brand 복원 + 요미가나 + 8×8 매트릭스
 
-## 요구
-1. **요미가나 입력** — 스코프: 블로그 카드까지 (마스터 DB + frontmatter + 카드 표시).
-2. **아마카라/농담 매트릭스 5×5 → 8×8.**
+## 요구 (사용자 정정 반영)
+1. **요미가나 입력** — 가변 텍스트 3종만: **술이름 / 양조장 / 브랜드**. 타입이 정해진 필드(tokuteiMeisho 등 enum)는 제외. 스코프: 블로그 카드까지.
+2. **`brand`(銘柄) 필드 복원** — 최초 요구사항에 있었으나 v1 계약에서 누락된 것을 확인 (rough plan 전달 사고의 잔여). 예: 브랜드 獺祭 / 양조장 旭酒造 / 술이름 獺祭 純米大吟醸 45.
+3. **아마카라/농담 매트릭스 5×5 → 8×8.**
 
 ## 확정 계약 델타 (전 선언 사이트 전사 — 이 표가 SSOT)
 
-### 신규 필드
+### 신규 필드 (6개)
 | 필드 | 타입 | 위치 |
 |------|------|------|
-| `yomigana` | string (히라가나, 술 이름 읽기) | zod(optional) · Frontmatter · Sake(.yomigana, nullable) · SakeInput · AI schema(nullable) · CANONICAL · Card Props · DB sakes.yomigana TEXT |
-| `breweryYomigana` | string (양조장 읽기) | zod(optional) · Frontmatter · AI schema(nullable) · CANONICAL · Card Props. **DB는 breweries.yomigana TEXT** (GET sakes join이 `b.yomigana AS breweryYomigana` 반환) |
+| `brand` | string (銘柄) | zod(optional) · Frontmatter · Sake(nullable) · SakeInput · AI schema(nullable) · CANONICAL · Card Props · DB **sakes.brand TEXT** · 폼/관리페이지 |
+| `yomigana` | string (히라가나, 술 이름 읽기) | zod · Frontmatter · Sake · SakeInput · AI schema · CANONICAL · Card Props · DB sakes.yomigana TEXT |
+| `brandYomigana` | string (브랜드 읽기) | zod · Frontmatter · Sake · SakeInput · AI schema · CANONICAL · Card Props · DB **sakes.brandYomigana TEXT** |
+| `breweryYomigana` | string (양조장 읽기) | zod · Frontmatter · AI schema · CANONICAL · Card Props · DB **breweries.yomigana TEXT** (GET sakes join이 `b.yomigana AS breweryYomigana` 반환) · BreweryInput.yomigana |
 
 ### 스케일 변경 (구 -2..2 폐기)
 - `amakara`: **int 1..8** (1=甘口 ↔ 8=辛口), `noutan`: **int 1..8** (1=淡麗 ↔ 8=濃醇). zod `.int().gte(1).lte(8)`, AI schema `integer 1..8 | null`.
 - 카드 점 공식: `left=(amakara-1)/7*100%`, `top=(8-noutan)/7*100%` (濃醇 위). figcaption/리드아웃 = `甘辛 n/8 · 濃淡 m/8` (5단계 일본어 라벨 폐기, 4극 라벨 유지).
 - 피커: 8×8=64셀 radiogroup, 셀 aria-label `甘辛 n/8 · 濃淡 m/8`, roving tabindex/쌍-커밋/해제 유지. max-width ~360px (모바일 375px에서 셀 ≥40px).
 
-### 서버 델타
-- **DB 마이그레이션**: 테이블이 이미 존재할 수 있음(테스트 런이 .data/blog.db에 생성) → `CREATE TABLE IF NOT EXISTS`만으로 부족. **PRAGMA table_info 검사 후 없으면 `ALTER TABLE ... ADD COLUMN yomigana TEXT`** (멱등, sakes/breweries 각각).
-- sake.ts: yomigana를 SakeInput/upsert COALESCE/PUT full-replace에 포함. `resolveBreweryId(name, yomigana?)` — found 시 yomigana 제공되면 COALESCE UPDATE, create 시 포함. 검색 LIKE 대상에 yomigana(정규화) 추가 (sakes/breweries 모두: `name_norm LIKE ? OR yomigana LIKE ?`).
-- index.ts TASTING_SCHEMA: yomigana/breweryYomigana string|null 추가, amakara/noutan 1..8로 변경, 시스템 프롬프트에 「yomigana는 히라가나 읽기, 모르면 null / amakara·noutan은 1..8 정수」 반영.
+### 서버 델타 (D-s: editor/server/*)
+- **DB 마이그레이션**: 테이블이 이미 존재할 수 있음(테스트 런이 .data/blog.db에 생성) → `CREATE TABLE IF NOT EXISTS`만으로 부족. **PRAGMA table_info 검사 후 없으면 `ALTER TABLE ... ADD COLUMN`** (멱등): sakes.brand / sakes.yomigana / sakes.brandYomigana / breweries.yomigana.
+- sake.ts: brand/yomigana/brandYomigana를 SakeInput/upsert COALESCE/PUT full-replace에 포함. `resolveBreweryId(name, yomigana?)` — found 시 yomigana 제공되면 COALESCE UPDATE, create 시 포함. 검색 LIKE 대상 확장: sakes = `name_norm | yomigana | brand(정규화) | brandYomigana`, breweries = `name_norm | yomigana` (전부 바인딩+ESCAPE).
+- index.ts TASTING_SCHEMA: brand/yomigana/brandYomigana/breweryYomigana string|null 추가, amakara/noutan 1..8, 시스템 프롬프트에 「요미가나는 히라가나, 모르면 null / brand=銘柄 / amakara·noutan 1..8 정수」 반영.
 
-### 에디터 델타
-- api.ts: 타입 확장 (Sake.yomigana, Brewery.yomigana, breweryYomigana in Frontmatter/TastingAutofill Pick).
-- FrontmatterForm: tasting 블록에 yomigana/breweryYomigana Input 2개 · applyDbPick objective 키에 yomigana/breweryYomigana 추가(9키) · AI 리뷰 행 추가(수치 아님 — 「추정」 뱃지 없음) · 마스터 저장 시 yomigana/breweryYomigana 포함 · 콤보 후보 행 부기에 yomigana 표시(있으면).
+### 에디터 델타 (D-c: editor/src/*)
+- api.ts: 타입 확장 (Sake.brand/.yomigana/.brandYomigana, Brewery.yomigana, Frontmatter/TastingAutofill Pick에 brand/yomigana/brandYomigana/breweryYomigana).
+- FrontmatterForm: tasting 블록에 brand/yomigana/brandYomigana/breweryYomigana Input 4개(브랜드·읽기류는 컴팩트 배치) · applyDbPick objective 키 7→11 (brand/yomigana/brandYomigana/breweryYomigana 추가) · AI 리뷰 행 추가(수치 아님 — 「추정」 뱃지 없음) · 마스터 저장 payload에 포함 · 콤보 후보 행 부기에 yomigana 표시(있으면).
 - AmakaraNoutanPicker: 8×8 (위 스펙).
-- SakesPage: 사케 에디터에 yomigana 필드, 양조장 에디터에 yomigana 필드.
-- TastingNoteCardNode CANONICAL: 11→13 props (yomigana/breweryYomigana 추가).
+- SakesPage: 사케 에디터에 brand/yomigana/brandYomigana, 양조장 에디터에 yomigana.
+- TastingNoteCardNode CANONICAL: 11→15 props (brand/yomigana/brandYomigana/breweryYomigana 추가).
 
-### 블로그 델타
-- content.config.ts: yomigana/breweryYomigana 추가, amakara/noutan 1..8.
-- TastingNoteCard.astro: brewery 리드를 `<ruby>` (breweryYomigana 있으면 `<rt>`) · yomigana는 스펙 dl 첫 행 `読み` · 점 공식/figcaption 8×8.
-- dassai-45.mdx: yomigana だっさい / breweryYomigana あさひしゅぞう 추가, amakara -1→3, noutan -1→3, CANONICAL 배선 13 props.
+### 블로그 델타 (D-b: blog/*)
+- content.config.ts: brand/yomigana/brandYomigana/breweryYomigana 추가, amakara/noutan 1..8.
+- TastingNoteCard.astro: 리드 = `<ruby>` 양조장(breweryYomigana 있으면 rt) + tokuteiMeisho 뱃지 유지 · 스펙 dl에 `銘柄`(brand, brandYomigana ruby)와 `読み`(yomigana) 행 추가(값 있을 때만) · 점 공식/figcaption 8×8.
+- dassai-45.mdx: brand 獺祭 / brandYomigana だっさい / breweryYomigana あさひしゅぞう / yomigana(술이름 읽기) 추가, amakara -1→3, noutan -1→3, CANONICAL 배선 15 props.
 
 ### 마이그레이션 노트
-기존 실사용 데이터 없음(샘플 1건뿐, 마스터는 스크래치만). 구 -2..2 값은 샘플 리매핑으로 종결. zod가 구 값(음수)을 빌드 에러로 잡음 = 안전망.
+기존 실사용 데이터 없음(샘플 1건, 마스터는 스크래치만). 구 -2..2 값은 샘플 리매핑으로 종결. zod가 구 값을 빌드 에러로 잡음 = 안전망.
