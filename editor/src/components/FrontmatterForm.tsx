@@ -30,9 +30,9 @@ const DRINK_KINDS: { value: DrinkKind; label: string }[] = [
 // DB-pick objective keys (Sake → Frontmatter, authoritative augment). Includes join-only
 // breweryYomigana. Subjective keys (amakara/noutan/flavorTags) and title are never in master.
 const DB_PICK_KEYS = ['brand', 'brandYomigana', 'yomigana', 'brewery', 'breweryYomigana', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando'] as const;
-// Subset persisted back to the sake master on save — SakeInput has no breweryYomigana
-// (양조장 읽기는 브루어리 레코드 소유). 그 한 필드만 제외.
-const MASTER_SAVE_KEYS = ['brand', 'brandYomigana', 'yomigana', 'brewery', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando'] as const;
+// Subset persisted back to the sake master on save. breweryYomigana는 서버
+// resolveBreweryId가 브루어리 레코드에 COALESCE 반영.
+const MASTER_SAVE_KEYS = ['brand', 'brandYomigana', 'yomigana', 'brewery', 'breweryYomigana', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando'] as const;
 
 // AI-autofillable fields, in review-panel order. `estimate` = AI-must-not-invent numeric.
 // brand/yomigana류는 문자열 — 「추정」 뱃지 없음.

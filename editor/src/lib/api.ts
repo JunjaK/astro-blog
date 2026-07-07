@@ -182,13 +182,13 @@ export interface Sake {
 }
 
 // POST(augment) / PUT(replace) 공용. brewery=이름(서버가 id 해석). `| null`로 PUT 명시 clear.
-// breweryYomigana는 SakeInput에 없음 — 양조장 읽기는 브루어리 레코드(BreweryInput.yomigana)에 저장.
 export interface SakeInput {
   name: string;
   brand?: string | null; // 銘柄 (v1.1)
   yomigana?: string | null; // 술 이름 읽기 (v1.1)
   brandYomigana?: string | null; // 브랜드 읽기 (v1.1)
   brewery?: string | null;
+  breweryYomigana?: string | null; // 서버 resolveBreweryId가 브루어리 레코드에 반영 (v1.1)
   tokuteiMeisho?: TokuteiMeisho | null;
   riceType?: string[];
   seimaiBuai?: number | null;
