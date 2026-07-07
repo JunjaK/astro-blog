@@ -309,3 +309,44 @@ _(none)_
 
 ## SHOULD
 콤보 후보 행에 양조장·特定名称 muted 부기 / 8개+ 절단 footer 「검색어를 좁히세요」 / saveMsg 초록·muted 컬러 / `.seg`·`.nav-link` focus-visible outline / 검색 클라 필터(위 MUST에 승격 반영).
+
+---
+
+# v1.1 증분 (2026-07-07 사용자 추가 요구) — 요미가나 + 8×8 매트릭스
+
+## 요구
+1. **요미가나 입력** — 스코프: 블로그 카드까지 (마스터 DB + frontmatter + 카드 표시).
+2. **아마카라/농담 매트릭스 5×5 → 8×8.**
+
+## 확정 계약 델타 (전 선언 사이트 전사 — 이 표가 SSOT)
+
+### 신규 필드
+| 필드 | 타입 | 위치 |
+|------|------|------|
+| `yomigana` | string (히라가나, 술 이름 읽기) | zod(optional) · Frontmatter · Sake(.yomigana, nullable) · SakeInput · AI schema(nullable) · CANONICAL · Card Props · DB sakes.yomigana TEXT |
+| `breweryYomigana` | string (양조장 읽기) | zod(optional) · Frontmatter · AI schema(nullable) · CANONICAL · Card Props. **DB는 breweries.yomigana TEXT** (GET sakes join이 `b.yomigana AS breweryYomigana` 반환) |
+
+### 스케일 변경 (구 -2..2 폐기)
+- `amakara`: **int 1..8** (1=甘口 ↔ 8=辛口), `noutan`: **int 1..8** (1=淡麗 ↔ 8=濃醇). zod `.int().gte(1).lte(8)`, AI schema `integer 1..8 | null`.
+- 카드 점 공식: `left=(amakara-1)/7*100%`, `top=(8-noutan)/7*100%` (濃醇 위). figcaption/리드아웃 = `甘辛 n/8 · 濃淡 m/8` (5단계 일본어 라벨 폐기, 4극 라벨 유지).
+- 피커: 8×8=64셀 radiogroup, 셀 aria-label `甘辛 n/8 · 濃淡 m/8`, roving tabindex/쌍-커밋/해제 유지. max-width ~360px (모바일 375px에서 셀 ≥40px).
+
+### 서버 델타
+- **DB 마이그레이션**: 테이블이 이미 존재할 수 있음(테스트 런이 .data/blog.db에 생성) → `CREATE TABLE IF NOT EXISTS`만으로 부족. **PRAGMA table_info 검사 후 없으면 `ALTER TABLE ... ADD COLUMN yomigana TEXT`** (멱등, sakes/breweries 각각).
+- sake.ts: yomigana를 SakeInput/upsert COALESCE/PUT full-replace에 포함. `resolveBreweryId(name, yomigana?)` — found 시 yomigana 제공되면 COALESCE UPDATE, create 시 포함. 검색 LIKE 대상에 yomigana(정규화) 추가 (sakes/breweries 모두: `name_norm LIKE ? OR yomigana LIKE ?`).
+- index.ts TASTING_SCHEMA: yomigana/breweryYomigana string|null 추가, amakara/noutan 1..8로 변경, 시스템 프롬프트에 「yomigana는 히라가나 읽기, 모르면 null / amakara·noutan은 1..8 정수」 반영.
+
+### 에디터 델타
+- api.ts: 타입 확장 (Sake.yomigana, Brewery.yomigana, breweryYomigana in Frontmatter/TastingAutofill Pick).
+- FrontmatterForm: tasting 블록에 yomigana/breweryYomigana Input 2개 · applyDbPick objective 키에 yomigana/breweryYomigana 추가(9키) · AI 리뷰 행 추가(수치 아님 — 「추정」 뱃지 없음) · 마스터 저장 시 yomigana/breweryYomigana 포함 · 콤보 후보 행 부기에 yomigana 표시(있으면).
+- AmakaraNoutanPicker: 8×8 (위 스펙).
+- SakesPage: 사케 에디터에 yomigana 필드, 양조장 에디터에 yomigana 필드.
+- TastingNoteCardNode CANONICAL: 11→13 props (yomigana/breweryYomigana 추가).
+
+### 블로그 델타
+- content.config.ts: yomigana/breweryYomigana 추가, amakara/noutan 1..8.
+- TastingNoteCard.astro: brewery 리드를 `<ruby>` (breweryYomigana 있으면 `<rt>`) · yomigana는 스펙 dl 첫 행 `読み` · 점 공식/figcaption 8×8.
+- dassai-45.mdx: yomigana だっさい / breweryYomigana あさひしゅぞう 추가, amakara -1→3, noutan -1→3, CANONICAL 배선 13 props.
+
+### 마이그레이션 노트
+기존 실사용 데이터 없음(샘플 1건뿐, 마스터는 스크래치만). 구 -2..2 값은 샘플 리매핑으로 종결. zod가 구 값(음수)을 빌드 에러로 잡음 = 안전망.
