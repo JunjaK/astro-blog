@@ -4,7 +4,8 @@ import { Database } from 'bun:sqlite';
 // Single content store (D8). Local dev: ./.data/blog.db. posts = one row per article;
 // 'draft' is a derived state (serialize(doc_json) != published_mdx_hash), not a column.
 const DB_PATH = process.env.DB_PATH ?? './.data/blog.db';
-mkdirSync(DB_PATH.replace(/\/[^/]+$/, '') || '.', { recursive: true });
+// ':memory:' has no parent dir (sake.test.ts uses it); mkdir would create a bogus './:memory:' folder.
+if (DB_PATH !== ':memory:') mkdirSync(DB_PATH.replace(/\/[^/]+$/, '') || '.', { recursive: true });
 
 export const db = new Database(DB_PATH);
 db.run(`
@@ -44,5 +45,38 @@ db.run(`
     image_path TEXT NOT NULL,
     post_id    TEXT NOT NULL,
     PRIMARY KEY (image_path, post_id)
+  )
+`);
+
+// Editor-only sake / brewery master (plan: sake-master-db). `name` = display original,
+// `name_norm` = normalizeName() for match/dedup (never exposed in responses). No FK PRAGMA
+// (unenforced logical FK) — the app blocks brewery delete with a 409 when still referenced.
+db.run(`
+  CREATE TABLE IF NOT EXISTS breweries (
+    id         TEXT PRIMARY KEY,
+    name       TEXT NOT NULL,
+    name_norm  TEXT NOT NULL UNIQUE,
+    region     TEXT,
+    note       TEXT,
+    created_at TEXT,
+    updated_at TEXT
+  )
+`);
+db.run(`
+  CREATE TABLE IF NOT EXISTS sakes (
+    id            TEXT PRIMARY KEY,
+    name          TEXT NOT NULL,
+    name_norm     TEXT NOT NULL,
+    brewery_id    TEXT,
+    tokuteiMeisho TEXT,
+    riceType      TEXT,
+    seimaiBuai    INTEGER,
+    alcohol       REAL,
+    nihonshuDo    REAL,
+    sando         REAL,
+    note          TEXT,
+    created_at    TEXT,
+    updated_at    TEXT,
+    UNIQUE(brewery_id, name_norm)
   )
 `);

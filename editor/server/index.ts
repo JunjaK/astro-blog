@@ -8,6 +8,7 @@ import sharp from 'sharp';
 import { db } from './db';
 import { catalogImage, setImageUsage, writeVariants } from './images';
 import { isManagedImport, manageImports, segmentMdx } from './mdx';
+import { sake } from './sake';
 
 // Editor backend (Bun + Hono). Serves the built React SPA under /editor and the
 // API under /editor-api on the same origin (cookie auth, no CORS).
@@ -73,6 +74,8 @@ app.post('/editor-api/auth/logout', (c) => {
 app.get('/editor-api/health', (c) =>
   c.json({ status: 'ok', service: 'editor-api', time: new Date().toISOString() }),
 );
+
+app.route('/editor-api/sake', sake);
 
 // Post list (status dashboard). 'draft' state derivation comes with the publish step.
 app.get('/editor-api/posts', (c) =>
