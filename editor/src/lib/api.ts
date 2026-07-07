@@ -98,6 +98,12 @@ export type TokuteiMeisho =
   | '純米大吟醸' | '大吟醸' | '純米吟醸' | '吟醸'
   | '特別純米' | '特別本醸造' | '純米' | '本醸造' | '普通酒';
 
+// 特定名称 상수 (FrontmatterForm/SakesPage 공유). union에서 파생 — 등급 추가/삭제 시
+// TokuteiMeisho와 어긋나면 컴파일 실패(삼중 손유지 방지, Contract SSOT).
+export const TOKUTEI_MEISHO = [
+  '純米大吟醸', '大吟醸', '純米吟醸', '吟醸', '特別純米', '特別本醸造', '純米', '本醸造', '普通酒',
+] as const satisfies readonly TokuteiMeisho[];
+
 // autofill 결과 — 서버가 null/''/[] 키를 strip → present-or-absent (augment-only).
 // drinkKind는 서버가 nihonshu 하드코딩 → 응답에 없음.
 export type TastingAutofill = Partial<Pick<Frontmatter,
@@ -138,6 +144,82 @@ async function autofillTasting(query: string): Promise<TastingAutofill> {
   return res.json() as Promise<TastingAutofill>;
 }
 
+// ── 사케/양조장 마스터 데이터 (editor 전용 SQLite, /editor-api/sake/*) — BE=SSOT ──
+export interface Brewery {
+  id: string;
+  name: string;
+  region: string | null;
+  note: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+// GET 응답 (LEFT JOIN brewery 이름 + 서버가 riceType JSON.parse 완료).
+export interface Sake {
+  id: string;
+  name: string;
+  brewery: string | null; // 해석된 양조장 이름(표시용)
+  brewery_id: string | null;
+  tokuteiMeisho: TokuteiMeisho | null;
+  riceType: string[]; // 없으면 []
+  seimaiBuai: number | null;
+  alcohol: number | null;
+  nihonshuDo: number | null;
+  sando: number | null;
+  note: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+// POST(augment) / PUT(replace) 공용. brewery=이름(서버가 id 해석). `| null`로 PUT 명시 clear.
+export interface SakeInput {
+  name: string;
+  brewery?: string | null;
+  tokuteiMeisho?: TokuteiMeisho | null;
+  riceType?: string[];
+  seimaiBuai?: number | null;
+  alcohol?: number | null;
+  nihonshuDo?: number | null;
+  sando?: number | null;
+  note?: string | null;
+}
+
+export interface BreweryInput {
+  name: string;
+  region?: string | null;
+  note?: string | null;
+}
+
+// Thrown by deleteBrewery on 409 "brewery in use". Carries the referencing sake count so the UI
+// can show a blocking "N개 참조 중" message (mirrors the AutofillError .status idiom).
+export class SakeRefError extends Error {
+  status: number;
+  count: number;
+  constructor(count: number, message?: string) {
+    super(message ?? 'brewery in use');
+    this.name = 'SakeRefError';
+    this.status = 409;
+    this.count = count;
+  }
+}
+
+// DELETE a brewery. Own fetch (not req<T>) to surface the 409 count as a SakeRefError.
+// 401 reuses the global bounce; 409 → SakeRefError(count); other non-2xx → generic Error.
+async function deleteBrewery(id: string): Promise<{ ok: true }> {
+  const res = await fetch(`${BASE}/sake/breweries/${id}`, {
+    method: 'DELETE',
+    credentials: 'same-origin',
+    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+  });
+  if (res.status === 401) { bounceToLogin(); throw new Error('unauthorized'); }
+  if (res.status === 409) {
+    const body = await res.json() as { error: string; count: number };
+    throw new SakeRefError(body.count);
+  }
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.json() as Promise<{ ok: true }>;
+}
+
 export const api = {
   health: () => req<HealthResponse>('/health'),
   posts: () => req<PostListItem[]>('/posts'),
@@ -153,4 +235,17 @@ export const api = {
   generate: (prompt: string) =>
     req<{ text: string }>('/generate', { method: 'POST', body: JSON.stringify({ prompt }), headers: { 'Content-Type': 'application/json' } }),
   autofillTasting,
+  // 사케/양조장 마스터 CRUD. q 생략 = 전량(관리 페이지), q 지정 = 서버 정규화+LIKE(콤보박스).
+  searchSakes: (q?: string) => req<Sake[]>(`/sake/sakes${q ? `?q=${encodeURIComponent(q)}` : ''}`),
+  upsertSake: (input: SakeInput) =>
+    req<{ sake: Sake; created: boolean }>('/sake/sakes', { method: 'POST', body: JSON.stringify(input), headers: { 'Content-Type': 'application/json' } }),
+  updateSake: (id: string, input: SakeInput) =>
+    req<{ ok: true }>(`/sake/sakes/${id}`, { method: 'PUT', body: JSON.stringify(input), headers: { 'Content-Type': 'application/json' } }),
+  deleteSake: (id: string) => req<{ ok: true }>(`/sake/sakes/${id}`, { method: 'DELETE' }),
+  searchBreweries: (q?: string) => req<Brewery[]>(`/sake/breweries${q ? `?q=${encodeURIComponent(q)}` : ''}`),
+  upsertBrewery: (input: BreweryInput) =>
+    req<{ brewery: Brewery; created: boolean }>('/sake/breweries', { method: 'POST', body: JSON.stringify(input), headers: { 'Content-Type': 'application/json' } }),
+  updateBrewery: (id: string, input: BreweryInput) =>
+    req<{ ok: true }>(`/sake/breweries/${id}`, { method: 'PUT', body: JSON.stringify(input), headers: { 'Content-Type': 'application/json' } }),
+  deleteBrewery,
 };
