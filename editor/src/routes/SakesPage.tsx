@@ -121,6 +121,9 @@ function EditorMsg({ msg }: { msg: Msg | null }) {
 
 interface SakeForm {
   name: string;
+  yomigana: string;
+  brand: string;
+  brandYomigana: string;
   brewery: string;
   tokuteiMeisho: TokuteiMeisho | '';
   riceType: string[];
@@ -132,13 +135,16 @@ interface SakeForm {
 }
 
 const EMPTY_SAKE: SakeForm = {
-  name: '', brewery: '', tokuteiMeisho: '', riceType: [],
+  name: '', yomigana: '', brand: '', brandYomigana: '', brewery: '', tokuteiMeisho: '', riceType: [],
   seimaiBuai: '', alcohol: '', nihonshuDo: '', sando: '', note: '',
 };
 
 function sakeToForm(s: Sake): SakeForm {
   return {
     name: s.name,
+    yomigana: s.yomigana ?? '',
+    brand: s.brand ?? '',
+    brandYomigana: s.brandYomigana ?? '',
     brewery: s.brewery ?? '',
     tokuteiMeisho: s.tokuteiMeisho ?? '',
     riceType: s.riceType,
@@ -150,10 +156,13 @@ function sakeToForm(s: Sake): SakeForm {
   };
 }
 
-// PUT은 full body(brewery 포함) — 생략 시 조용한 unlink 방지.
+// PUT은 full body(신규 필드 포함) — 생략 시 조용한 unlink/clear 방지.
 function sakeToInput(f: SakeForm): SakeInput {
   return {
     name: f.name.trim(),
+    yomigana: f.yomigana.trim() || null,
+    brand: f.brand.trim() || null,
+    brandYomigana: f.brandYomigana.trim() || null,
     brewery: f.brewery.trim() || null,
     tokuteiMeisho: f.tokuteiMeisho === '' ? null : f.tokuteiMeisho,
     riceType: f.riceType,
@@ -255,6 +264,17 @@ function SakePanel() {
               </Field>
             </div>
             <div className="sake-editor__full">
+              <Field label="술이름 요미가나">
+                <Input value={form.yomigana} placeholder="히라가나" onChange={(e) => update({ yomigana: e.target.value })} />
+              </Field>
+            </div>
+            <Field label="브랜드(銘柄)">
+              <Input value={form.brand} placeholder="예: 獺祭" onChange={(e) => update({ brand: e.target.value })} />
+            </Field>
+            <Field label="브랜드 요미가나">
+              <Input value={form.brandYomigana} placeholder="히라가나" onChange={(e) => update({ brandYomigana: e.target.value })} />
+            </Field>
+            <div className="sake-editor__full">
               <Field label="양조장(酒蔵)">
                 <Input value={form.brewery} placeholder="양조장 이름" onChange={(e) => update({ brewery: e.target.value })} />
               </Field>
@@ -334,11 +354,12 @@ function SakePanel() {
 
 // ── 양조장 패널 ──
 
-interface BreweryForm { name: string; region: string; note: string }
-const EMPTY_BREWERY: BreweryForm = { name: '', region: '', note: '' };
-const breweryToForm = (b: Brewery): BreweryForm => ({ name: b.name, region: b.region ?? '', note: b.note ?? '' });
+interface BreweryForm { name: string; yomigana: string; region: string; note: string }
+const EMPTY_BREWERY: BreweryForm = { name: '', yomigana: '', region: '', note: '' };
+const breweryToForm = (b: Brewery): BreweryForm => ({ name: b.name, yomigana: b.yomigana ?? '', region: b.region ?? '', note: b.note ?? '' });
 const breweryToInput = (f: BreweryForm): BreweryInput => ({
   name: f.name.trim(),
+  yomigana: f.yomigana.trim() || null,
   region: f.region.trim() || null,
   note: f.note.trim() || null,
 });
@@ -434,6 +455,9 @@ function BreweryPanel() {
         <div className="sake-editor" data-testid="sakes-editor">
           <Field label="이름 *">
             <Input value={form.name} placeholder="양조장 이름" data-testid="sakes-editor-name-input" onChange={(e) => update({ name: e.target.value })} />
+          </Field>
+          <Field label="요미가나(읽기)">
+            <Input value={form.yomigana} placeholder="히라가나" onChange={(e) => update({ yomigana: e.target.value })} />
           </Field>
           <Field label="지역(地域)">
             <Input value={form.region} placeholder="예: 야마구치" onChange={(e) => update({ region: e.target.value })} />

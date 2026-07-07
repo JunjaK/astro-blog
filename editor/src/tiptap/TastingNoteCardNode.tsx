@@ -7,7 +7,11 @@ import { NodeViewWrapper, ReactNodeViewRenderer, type ReactNodeViewProps } from 
 const CANONICAL =
   `<TastingNoteCard\n` +
   `  drinkKind={frontmatter.drinkKind}\n` +
+  `  brand={frontmatter.brand}\n` +
+  `  brandYomigana={frontmatter.brandYomigana}\n` +
+  `  yomigana={frontmatter.yomigana}\n` +
   `  brewery={frontmatter.brewery}\n` +
+  `  breweryYomigana={frontmatter.breweryYomigana}\n` +
   `  tokuteiMeisho={frontmatter.tokuteiMeisho}\n` +
   `  riceType={frontmatter.riceType}\n` +
   `  seimaiBuai={frontmatter.seimaiBuai}\n` +

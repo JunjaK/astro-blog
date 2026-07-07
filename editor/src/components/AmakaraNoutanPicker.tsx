@@ -2,19 +2,16 @@ import type { KeyboardEvent, PointerEvent } from 'react';
 import { useRef, useState } from 'react';
 import { X } from 'lucide-react';
 
-// Axis labels shared with the review panel readout. idx = value + 2 for amakara,
-// idx = 2 − value for noutan (top row = 濃醇 = +2, bottom row = 淡麗 = −2).
-export const AMAKARA = ['甘口', 'やや甘口', '中口', 'やや辛口', '辛口'];
-export const NOUTAN = ['濃醇', 'やや濃醇', '中程度', 'やや淡麗', '淡麗'];
-
+// 8×8 매트릭스 (값 1..8). 甘辛(X): 1=甘口(좌) ↔ 8=辛口(우). 濃淡(Y): 1=淡麗(아래) ↔ 8=濃醇(위).
+// 리드아웃/셀 aria-label 공용 포맷 — 5단계 일본어 라벨 폐기, n/8 수치.
 function coordLabel(amakara: number, noutan: number) {
-  return `${AMAKARA[amakara + 2]} · ${NOUTAN[2 - noutan]}`;
+  return `甘辛 ${amakara}/8 · 濃淡 ${noutan}/8`;
 }
 
-const clamp = (n: number) => Math.max(-2, Math.min(2, n));
-const clampCell = (n: number) => Math.max(0, Math.min(4, n));
+const clampVal = (n: number) => Math.max(1, Math.min(8, n)); // 값 1..8
+const clampIdx = (n: number) => Math.max(0, Math.min(7, n)); // 그리드 인덱스 0..7
 
-// 甘辛(X: 甘−↔辛+) × 濃淡(Y: 淡麗− top? no — 濃醇 top) discrete 5×5 picker.
+// 甘辛(X: 甘1↔辛8) × 濃淡(Y: 淡1↔濃8, 濃醇 top) discrete 8×8 picker.
 // Pair-commit: amakara & noutan are set/cleared together (no partial value).
 export function AmakaraNoutanPicker({ amakara, noutan, onChange }: {
   amakara?: number;
@@ -22,7 +19,7 @@ export function AmakaraNoutanPicker({ amakara, noutan, onChange }: {
   onChange: (v: { amakara?: number; noutan?: number }) => void;
 }) {
   const hasValue = amakara !== undefined && noutan !== undefined;
-  const [focus, setFocus] = useState(() => ({ ax: amakara ?? 0, nou: noutan ?? 0 }));
+  const [focus, setFocus] = useState(() => ({ ax: amakara ?? 4, nou: noutan ?? 4 }));
   const gridRef = useRef<HTMLDivElement>(null);
   const cells = useRef(new Map<string, HTMLButtonElement>());
   const pressed = useRef(false);
@@ -43,10 +40,10 @@ export function AmakaraNoutanPicker({ amakara, noutan, onChange }: {
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     switch (e.key) {
-      case 'ArrowLeft': e.preventDefault(); commitAndFocus(clamp(focus.ax - 1), focus.nou); break;
-      case 'ArrowRight': e.preventDefault(); commitAndFocus(clamp(focus.ax + 1), focus.nou); break;
-      case 'ArrowUp': e.preventDefault(); commitAndFocus(focus.ax, clamp(focus.nou + 1)); break;
-      case 'ArrowDown': e.preventDefault(); commitAndFocus(focus.ax, clamp(focus.nou - 1)); break;
+      case 'ArrowLeft': e.preventDefault(); commitAndFocus(clampVal(focus.ax - 1), focus.nou); break;
+      case 'ArrowRight': e.preventDefault(); commitAndFocus(clampVal(focus.ax + 1), focus.nou); break;
+      case 'ArrowUp': e.preventDefault(); commitAndFocus(focus.ax, clampVal(focus.nou + 1)); break;
+      case 'ArrowDown': e.preventDefault(); commitAndFocus(focus.ax, clampVal(focus.nou - 1)); break;
       case 'Enter': case ' ': e.preventDefault(); commit(focus.ax, focus.nou); break;
       case 'Delete': case 'Backspace': case 'Escape': e.preventDefault(); clear(); break;
     }
@@ -56,9 +53,9 @@ export function AmakaraNoutanPicker({ amakara, noutan, onChange }: {
     const el = gridRef.current;
     if (!el) return null;
     const r = el.getBoundingClientRect();
-    const col = clampCell(Math.floor(((e.clientX - r.left) / r.width) * 5));
-    const row = clampCell(Math.floor(((e.clientY - r.top) / r.height) * 5));
-    return { ax: col - 2, nou: 2 - row };
+    const col = clampIdx(Math.floor(((e.clientX - r.left) / r.width) * 8));
+    const row = clampIdx(Math.floor(((e.clientY - r.top) / r.height) * 8));
+    return { ax: col + 1, nou: 8 - row };
   };
 
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
@@ -90,9 +87,9 @@ export function AmakaraNoutanPicker({ amakara, noutan, onChange }: {
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
         >
-          {Array.from({ length: 5 }, (_, row) => Array.from({ length: 5 }, (_, col) => {
-            const ax = col - 2;
-            const nou = 2 - row;
+          {Array.from({ length: 8 }, (_, row) => Array.from({ length: 8 }, (_, col) => {
+            const ax = col + 1; // 1..8, 좌→우 = 甘→辛
+            const nou = 8 - row; // 1..8, 아래→위 = 淡→濃 (row 0 top = 8 = 濃醇)
             const selected = hasValue && ax === amakara && nou === noutan;
             const roving = ax === focus.ax && nou === focus.nou;
             return (
