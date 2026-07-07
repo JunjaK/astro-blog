@@ -1,5 +1,5 @@
 ---
-status: processing
+status: complete
 created: 2026-07-07
 topic: sake-master-db
 base: dc2eb1b (tasting-note SHIP)
@@ -353,3 +353,27 @@ _(none)_
 
 ### 마이그레이션 노트
 기존 실사용 데이터 없음(샘플 1건, 마스터는 스크래치만). 구 -2..2 값은 샘플 리매핑으로 종결. zod가 구 값을 빌드 에러로 잡음 = 안전망.
+
+---
+
+# 실행 결과 (2026-07-07 — v1 + v1.1 완료 기록)
+
+## 구현 커밋 (base c81cc29, 브랜치 fix/blog-hydration-418)
+- **v1**: 37366f9(서버 CRUD+테스트) · 27ac109(클라 계약+폼 콤보박스) · 404b718(관리 페이지+nav)
+- **v1.1**: 7ed61e3(델타 계약) · c567934(서버: brand/yomigana+마이그레이션+8×8 스키마) · c0744ae(클라) · 7b2f554(blog 카드) · 36d7c89(breweryYomigana 정합 fix)
+- 신규 npm 의존성 0. Designer 총 6명 worktree 병렬 (전원 worktree HEAD~n 버그 자가 교정).
+
+## 검증
+- **Phase 4 (v1)**: T1 PASS(계약 3사이트 파리티 전수 일치, likeEscape/바인딩/auth 마운트/환각가드 락 grep 실측) · T2 PASS(스크래치 인스턴스 실기동: CRUD/정규화 dedup(전각↔반각)/COALESCE/409/LIKE 이스케이프/**서버 재시작 후 SQLite 영속** 전수, findings 0).
+- **Phase 4.5 (v1, agentic browser)**: PASS 4/4 goals, 결함 0 — 관리 CRUD+새로고침 영속, **DB-픽 시 /generate/tasting 0콜 + upsert 0콜(네트워크 실증)**, AI 저장 시 **체크한 값만 DB 도달(언체크 도수=null DB 실측)**, 콤보박스 aria-activedescendant/roving 실동작. 스크린샷 11장 blog/e2e/screenshots/sake-*.png.
+- **v1.1**: 서버 30 tests(마이그레이션 ALTER 케이스 포함) · editor tsc/lint/build 클린 · blog 61p 빌드 + dist grep(ruby 2개/銘柄/読み/점 28.57%/71.43%/figcaption 3/8).
+- **Phase 5 보안**: **SHIP** — CRITICAL/HIGH 0. 10항목 실측(인증 마운트/likeEscape/바인딩/name 검증/additive 마이그레이션/ensureColumns 멱등/ruby XSS 이스케이프/AI strict 스키마/시크릿 0/확정값-만-저장).
+
+## Follow-ups (별도 과제, non-blocking)
+1. [A1] 마스터 저장 name = 패널 query — placeholder("旭酒造 - 獺祭 45") 유도 시 양조장 접두사가 sakes.name에 섞일 수 있음. 데이터 위생 과제.
+2. brand 검색은 LOWER() ASCII 근사(NFKC 미적용) — 전각 로마자 브랜드 미세 불일치 가능 (v1 accept).
+3. 8×8 피커 셀이 375px 화면에서 ~35-37px (44px 미달, 390px+는 ~40px) — 물리 제약, 드래그/키보드로 보완됨.
+4. (이전 이월) `.gitignore`에 `**/e2e/screenshots/` 추가 · editor CATEGORIES lowercase 통일 검토 · 기존 /generate 타임아웃 일관화.
+
+## 사용자 액션
+- **editor 서버 재기동 필요** (4322의 실행 프로세스는 sake 라우트 이전 기동): `kill <pid> && cd editor && bun run server`. 재기동 후 /editor/sakes 진입 + 시음노트 폼에서 콤보박스 확인.
