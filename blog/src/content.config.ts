@@ -20,6 +20,10 @@ const blog = defineCollection({
     // ── tasting note (category: 'Tasting') ──
     drinkKind: z.enum(['nihonshu', 'whisky', 'beer', 'other']).optional(),
     brewery: z.string().optional(),
+    brand: z.string().optional(),
+    yomigana: z.string().optional(),
+    brandYomigana: z.string().optional(),
+    breweryYomigana: z.string().optional(),
     tokuteiMeisho: z
       .enum(['純米大吟醸', '大吟醸', '純米吟醸', '吟醸', '特別純米', '特別本醸造', '純米', '本醸造', '普通酒'])
       .optional(),
@@ -28,8 +32,8 @@ const blog = defineCollection({
     alcohol: z.number().gte(0).optional(),
     nihonshuDo: z.number().optional(),
     sando: z.number().gte(0).optional(),
-    amakara: z.number().int().gte(-2).lte(2).optional(),
-    noutan: z.number().int().gte(-2).lte(2).optional(),
+    amakara: z.number().int().gte(1).lte(8).optional(),
+    noutan: z.number().int().gte(1).lte(8).optional(),
     flavorTags: z.array(z.string()).optional(),
   }),
 });

@@ -8,6 +8,10 @@ type TokuteiMeisho =
 interface Props {
   drinkKind?: DrinkKind;
   brewery?: string;
+  brand?: string;
+  yomigana?: string;
+  brandYomigana?: string;
+  breweryYomigana?: string;
   tokuteiMeisho?: TokuteiMeisho;
   riceType?: string[];
   seimaiBuai?: number;
@@ -28,6 +32,10 @@ interface Spec {
 const {
   drinkKind,
   brewery,
+  brand,
+  yomigana,
+  brandYomigana,
+  breweryYomigana,
   tokuteiMeisho,
   riceType,
   seimaiBuai,
@@ -40,10 +48,6 @@ const {
 } = Astro.props;
 
 const isNihonshu = drinkKind === 'nihonshu';
-
-// 축 라벨 (카드·picker 공용)
-const AMAKARA = ['甘口', 'やや甘口', '中口', 'やや辛口', '辛口'];
-const NOUTAN = ['濃醇', 'やや濃醇', '中程度', 'やや淡麗', '淡麗'];
 
 // 값 있는 스펙 행만 (strict tsc: 타입 프레디킷 필터)
 const specs = [
@@ -64,12 +68,12 @@ const specs = [
     : null,
 ].filter((s): s is Spec => Boolean(s));
 
-// 2D 맵: amakara·noutan 둘 다 present일 때만. X = 甘(좌)→辛(우), Y = 濃醇(상)→淡麗(하).
-const mapPoint = amakara != null && noutan != null
+// 2D 맵(8×8): amakara·noutan 둘 다 present & ≥1일 때만. X = 甘(좌)→辛(우), Y = 濃醇(상)→淡麗(하).
+const mapPoint = amakara != null && noutan != null && amakara >= 1 && noutan >= 1
   ? {
-      left: ((amakara + 2) / 4) * 100,
-      top: ((2 - noutan) / 4) * 100,
-      caption: `甘辛 ${AMAKARA[amakara + 2]} · 濃淡 ${NOUTAN[2 - noutan]}`,
+      left: ((amakara - 1) / 7) * 100,
+      top: ((8 - noutan) / 7) * 100,
+      caption: `甘辛 ${amakara}/8 · 濃淡 ${noutan}/8`,
     }
   : null;
 
@@ -82,7 +86,11 @@ const flavors = flavorTags ?? [];
       <div class="flex flex-wrap items-center gap-2">
         {brewery && (
           <span class="text-sm">
-            <span class="font-medium text-foreground">{brewery}</span>
+            <span class="font-medium text-foreground">
+              {breweryYomigana
+                ? <ruby>{brewery}<rt>{breweryYomigana}</rt></ruby>
+                : brewery}
+            </span>
             <span class="ml-1 text-xs text-muted-foreground">酒蔵 · 양조장</span>
           </span>
         )}
@@ -94,8 +102,30 @@ const flavors = flavorTags ?? [];
       </div>
     )}
 
-    {specs.length > 0 && (
+    {(brand || yomigana || specs.length > 0) && (
       <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
+        {brand && (
+          <Fragment>
+            <dt class="text-muted-foreground">
+              銘柄
+              <span class="ml-1 text-xs">브랜드</span>
+            </dt>
+            <dd class="text-foreground">
+              {brandYomigana
+                ? <ruby>{brand}<rt>{brandYomigana}</rt></ruby>
+                : brand}
+            </dd>
+          </Fragment>
+        )}
+        {yomigana && (
+          <Fragment>
+            <dt class="text-muted-foreground">
+              読み
+              <span class="ml-1 text-xs">읽기</span>
+            </dt>
+            <dd class="text-foreground">{yomigana}</dd>
+          </Fragment>
+        )}
         {specs.map((spec) => (
           <Fragment>
             <dt class="text-muted-foreground">
@@ -149,6 +179,12 @@ const flavors = flavorTags ?? [];
 
   .tasting-note-card dd {
     margin: 0;
+  }
+
+  /* 요미가나 rt — muted 소형 */
+  .tasting-note-card rt {
+    font-size: 0.7em;
+    color: hsl(var(--muted-foreground));
   }
 
   .tasting-map-figure {

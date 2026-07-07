@@ -4,12 +4,16 @@ category: Tasting
 created: 2026-07-06
 drinkKind: nihonshu
 brewery: 旭酒造
+breweryYomigana: あさひしゅぞう
+brand: 獺祭
+brandYomigana: だっさい
+yomigana: だっさい じゅんまいだいぎんじょう よんじゅうご
 tokuteiMeisho: 純米大吟醸
 riceType: ['山田錦']
 seimaiBuai: 45
 alcohol: 16
-amakara: -1
-noutan: -1
+amakara: 3
+noutan: 3
 flavorTags: ['리치·백도향', '화사한 긴죠향', '은은한 단맛', '깔끔한 후미']
 tags: ['tasting', 'nihonshu', 'sake']
 description: 獺祭 純米大吟醸 45 시음 노트
@@ -19,7 +23,11 @@ import TastingNoteCard from '@/components/Blog/TastingNote/TastingNoteCard.astro
 
 <TastingNoteCard
   drinkKind={frontmatter.drinkKind}
+  brand={frontmatter.brand}
+  yomigana={frontmatter.yomigana}
+  brandYomigana={frontmatter.brandYomigana}
   brewery={frontmatter.brewery}
+  breweryYomigana={frontmatter.breweryYomigana}
   tokuteiMeisho={frontmatter.tokuteiMeisho}
   riceType={frontmatter.riceType}
   seimaiBuai={frontmatter.seimaiBuai}
