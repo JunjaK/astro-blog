@@ -198,7 +198,11 @@ type FieldValue = string | number | string[] | null;
 // the endpoint is nihonshu-only and the client sets drinkKind itself. `type` (not interface) so it
 // carries an implicit index signature and satisfies stripNulls' Record<string, FieldValue> bound.
 type TastingRaw = {
+  brand: string | null;
+  yomigana: string | null;
+  brandYomigana: string | null;
   brewery: string | null;
+  breweryYomigana: string | null;
   tokuteiMeisho: TokuteiMeisho | null;
   riceType: string[] | null;
   seimaiBuai: number | null;
@@ -224,20 +228,27 @@ export function stripNulls<T extends Record<string, FieldValue>>(raw: T): Partia
 const TASTING_SYSTEM_PROMPT
   = '너는 일본 사케(니혼슈) 데이터 어시스턴트다. 입력은 사케명(또는 "양조장 - 사케명")이다. '
   + '확실히 아는 정보만 채우고, 확신하지 못하는 필드는 반드시 null로 둔다. '
+  + 'brand(銘柄, 브랜드명)는 술이름과 다를 수 있다(예: 술이름 "獺祭 純米大吟醸 45"의 brand는 "獺祭"). 확신 못 하면 null. '
+  + 'yomigana(술이름 읽기)/brandYomigana(브랜드 읽기)/breweryYomigana(양조장 읽기)는 모두 히라가나로만 출력하고, 모르면 null. '
   + 'seimaiBuai(정미보합%)/alcohol(도수%)/nihonshuDo(일본주도 SMV)/sando(산도)는 공식 실측값을 확신하지 못하면 절대 창작하지 말고 null. '
-  + 'amakara(-2 甘 ~ +2 辛)/noutan(-2 淡麗 ~ +2 濃醇)는 관능 인상을 나타내는 정수이며, 모르면 null. '
+  + 'amakara(甘辛)/noutan(濃淡)는 1~8 정수다. amakara는 1=甘口 ~ 8=辛口, noutan은 1=淡麗 ~ 8=濃醇. 관능 인상을 나타내며 모르면 null. '
   + 'tokuteiMeisho(特定名称)는 제공된 9개 값 중 하나 또는 null. '
   + 'flavorTags는 한국어 라벨 배열로 출력한다(예: "리치·백도향", "키레(산뜻한 후미)"). 없으면 null.';
 
 // Strict structured-output schema. Rules: additionalProperties:false, every key required, nullable via
 // type:['x','null'], nullable enum via null appended to the enum array. No numeric min/max — ranges are
 // enforced downstream (zod ingest + FE picker) and stated in descriptions, keeping the schema portable.
-const TASTING_SCHEMA = {
+// Exported so a guard test can assert required ≡ property keys (OpenAI strict mode rejects a mismatch).
+export const TASTING_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['brewery', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando', 'amakara', 'noutan', 'flavorTags'],
+  required: ['brand', 'yomigana', 'brandYomigana', 'brewery', 'breweryYomigana', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando', 'amakara', 'noutan', 'flavorTags'],
   properties: {
+    brand: { type: ['string', 'null'], description: '銘柄(브랜드명). 술이름과 다를 수 있다. 확신 못 하면 null.' },
+    yomigana: { type: ['string', 'null'], description: '술이름 읽기(히라가나). 모르면 null.' },
+    brandYomigana: { type: ['string', 'null'], description: '브랜드 읽기(히라가나). 모르면 null.' },
     brewery: { type: ['string', 'null'], description: '양조장(酒蔵) 이름. 확신 못 하면 null.' },
+    breweryYomigana: { type: ['string', 'null'], description: '양조장 읽기(히라가나). 모르면 null.' },
     tokuteiMeisho: {
       type: ['string', 'null'],
       enum: ['純米大吟醸', '大吟醸', '純米吟醸', '吟醸', '特別純米', '特別本醸造', '純米', '本醸造', '普通酒', null],
@@ -248,8 +259,8 @@ const TASTING_SCHEMA = {
     alcohol: { type: ['number', 'null'], description: '도수 %. 공식 실측값 확신 못 하면 절대 창작 말고 null.' },
     nihonshuDo: { type: ['number', 'null'], description: '일본주도(SMV). 부호 허용. 공식 실측값 확신 못 하면 절대 창작 말고 null.' },
     sando: { type: ['number', 'null'], description: '산도(酸度). 공식 실측값 확신 못 하면 절대 창작 말고 null.' },
-    amakara: { type: ['integer', 'null'], description: '甘辛 관능 인상. -2(甘) ~ +2(辛) 정수. 모르면 null.' },
-    noutan: { type: ['integer', 'null'], description: '濃淡 관능 인상. -2(淡麗) ~ +2(濃醇) 정수. 모르면 null.' },
+    amakara: { type: ['integer', 'null'], description: '甘辛 관능 인상. 1(甘口) ~ 8(辛口) 정수. 모르면 null.' },
+    noutan: { type: ['integer', 'null'], description: '濃淡 관능 인상. 1(淡麗) ~ 8(濃醇) 정수. 모르면 null.' },
     flavorTags: { type: ['array', 'null'], items: { type: 'string' }, description: '향미 태그(한국어 라벨). 없으면 null.' },
   },
 };

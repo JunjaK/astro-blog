@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
+import { Database } from 'bun:sqlite';
 import type { Brewery, Sake } from './sake';
 
 // In-memory DB so these cases never touch the real dev file. This wins only when THIS file
 // loads ./db first (standalone `bun test server/sake.test.ts`). In the full `bun test` suite
 // bun shares the module registry across files, so ./db may already be cached against the real
 // path (autofill.test.ts imports ./index → ./db earlier) — the beforeEach wipe below keeps the
-// 8 cases deterministic either way. Set BEFORE the dynamic import that instantiates the db.
+// cases deterministic either way. Set BEFORE the dynamic import that instantiates the db.
 process.env.DB_PATH = ':memory:';
 const { sake } = await import('./sake');
-const { db } = await import('./db');
+const { db, ensureColumns } = await import('./db');
 
 beforeEach(() => {
   db.run('DELETE FROM sakes');
@@ -123,5 +124,116 @@ describe('sake CRUD router', () => {
     expect(empty.status).toBe(400);
     const ws = await call<ErrRes>('POST', '/sakes', { name: '　' }); // full-width space only → normalizes to ''
     expect(ws.status).toBe(400);
+  });
+
+  // ── v1.1 delta: brand (銘柄) + yomigana on the 3 variable-text fields ──
+
+  it('9. brand/yomigana/brandYomigana roundtrip through POST → GET', async () => {
+    const created = await call<UpsertRes>('POST', '/sakes', {
+      name: '獺祭 純米大吟醸 45',
+      brand: '獺祭',
+      yomigana: 'だっさい じゅんまいだいぎんじょう 45',
+      brandYomigana: 'だっさい',
+    });
+    expect(created.status).toBe(200);
+    const row = await call<Sake>('GET', `/sakes/${created.body.sake.id}`);
+    expect(row.body.brand).toBe('獺祭');
+    expect(row.body.yomigana).toBe('だっさい じゅんまいだいぎんじょう 45');
+    expect(row.body.brandYomigana).toBe('だっさい');
+  });
+
+  it('10. search matches by yomigana, brand, and brandYomigana (not just name)', async () => {
+    // name shares no chars with brand/yomigana → each hit must come from its own column
+    await call('POST', '/sakes', {
+      name: 'スパークリング',
+      brand: '獺祭',
+      yomigana: 'すぱーくりんぐ',
+      brandYomigana: 'だっさい',
+    });
+    const byBrand = await call<Sake[]>('GET', `/sakes?q=${encodeURIComponent('獺祭')}`);
+    expect(byBrand.body.some((s) => s.brand === '獺祭')).toBe(true);
+    const byBrandYomi = await call<Sake[]>('GET', `/sakes?q=${encodeURIComponent('だっさい')}`);
+    expect(byBrandYomi.body.some((s) => s.brand === '獺祭')).toBe(true);
+    const byYomi = await call<Sake[]>('GET', `/sakes?q=${encodeURIComponent('すぱー')}`);
+    expect(byYomi.body.length).toBe(1);
+  });
+
+  it('11. brewery yomigana: set via sake POST, joined into GET, COALESCE-preserved', async () => {
+    // first sake creates the brewery with no reading
+    const first = await call<UpsertRes>('POST', '/sakes', { name: '獺祭', brewery: '旭酒造' });
+    const before = await call<Brewery[]>('GET', '/breweries');
+    expect(before.body.find((x) => x.name === '旭酒造')!.yomigana).toBeNull();
+
+    // second sake supplies the reading → resolveBreweryId COALESCE-updates the brewery
+    await call('POST', '/sakes', { name: '獺祭 45', brewery: '旭酒造', breweryYomigana: 'あさひしゅぞう' });
+    const after = await call<Brewery[]>('GET', '/breweries');
+    expect(after.body.find((x) => x.name === '旭酒造')!.yomigana).toBe('あさひしゅぞう');
+
+    // the join surfaces breweryYomigana on the sake GET
+    const sakeRow = await call<Sake>('GET', `/sakes/${first.body.sake.id}`);
+    expect(sakeRow.body.breweryYomigana).toBe('あさひしゅぞう');
+
+    // a later sake with no reading must not wipe the stored one
+    await call('POST', '/sakes', { name: '獺祭 39', brewery: '旭酒造' });
+    const final = await call<Brewery[]>('GET', '/breweries');
+    expect(final.body.find((x) => x.name === '旭酒造')!.yomigana).toBe('あさひしゅぞう');
+  });
+
+  it('12. brewery upsert stores yomigana and search matches on it', async () => {
+    await call('POST', '/breweries', { name: '木屋正酒造', yomigana: 'きやしょうしゅぞう' });
+    const hit = await call<Brewery[]>('GET', `/breweries?q=${encodeURIComponent('きやしょう')}`);
+    expect(hit.body.some((b) => b.name === '木屋正酒造')).toBe(true);
+    expect(hit.body[0].yomigana).toBe('きやしょうしゅぞう');
+  });
+});
+
+describe('db migration (ensureColumns — idempotent ALTER)', () => {
+  it('13. adds v1.1 columns to a v1-schema table without new columns', () => {
+    // a table created by an older (v1) db.ts run — no brand/yomigana columns
+    const legacy = new Database(':memory:');
+    legacy.run('CREATE TABLE sakes (id TEXT PRIMARY KEY, name TEXT, name_norm TEXT)');
+    legacy.run('CREATE TABLE breweries (id TEXT PRIMARY KEY, name TEXT, name_norm TEXT)');
+
+    ensureColumns(legacy, 'sakes', { brand: 'TEXT', yomigana: 'TEXT', brandYomigana: 'TEXT' });
+    ensureColumns(legacy, 'breweries', { yomigana: 'TEXT' });
+    // running again must be a no-op (SQLite throws "duplicate column" on a re-ADD)
+    ensureColumns(legacy, 'sakes', { brand: 'TEXT', yomigana: 'TEXT', brandYomigana: 'TEXT' });
+
+    const sakeCols = new Set(
+      (legacy.query('PRAGMA table_info(sakes)').all() as { name: string }[]).map((r) => r.name),
+    );
+    expect(sakeCols.has('brand')).toBe(true);
+    expect(sakeCols.has('yomigana')).toBe(true);
+    expect(sakeCols.has('brandYomigana')).toBe(true);
+    const breweryCols = new Set(
+      (legacy.query('PRAGMA table_info(breweries)').all() as { name: string }[]).map((r) => r.name),
+    );
+    expect(breweryCols.has('yomigana')).toBe(true);
+
+    // the added columns actually store data
+    legacy.run(
+      "INSERT INTO sakes (id, name, name_norm, brand, yomigana, brandYomigana) VALUES ('x', 'スパークリング', 'スパークリング', '獺祭', 'すぱー', 'だっさい')",
+    );
+    const row = legacy.query('SELECT brand, brandYomigana FROM sakes WHERE id = ?').get('x') as
+      { brand: string; brandYomigana: string };
+    expect(row.brand).toBe('獺祭');
+    expect(row.brandYomigana).toBe('だっさい');
+    legacy.close();
+  });
+});
+
+describe('TASTING_SCHEMA (AI autofill contract — v1.1 delta)', () => {
+  it('14. required set equals property keys (OpenAI strict-mode invariant) + covers v1.1 fields', async () => {
+    // dynamic import: ./db is already cached to :memory: above, so ./index reuses it (no real file).
+    const { TASTING_SCHEMA } = await import('./index');
+    const props = Object.keys(TASTING_SCHEMA.properties);
+    const required = TASTING_SCHEMA.required;
+    expect(new Set(required)).toEqual(new Set(props)); // strict mode rejects any property not in required
+    expect(required.length).toBe(props.length); // and required must carry no duplicates
+    for (const k of ['brand', 'yomigana', 'brandYomigana', 'breweryYomigana']) {
+      expect(props).toContain(k);
+    }
+    expect(TASTING_SCHEMA.properties.amakara.type).toEqual(['integer', 'null']); // 1..8 matrix
+    expect(TASTING_SCHEMA.properties.noutan.type).toEqual(['integer', 'null']);
   });
 });

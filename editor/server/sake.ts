@@ -13,6 +13,7 @@ export type TokuteiMeisho =
 export interface Brewery {
   id: string;
   name: string;
+  yomigana: string | null; // 読み (hiragana); null when unknown
   region: string | null;
   note: string | null;
   created_at: string | null;
@@ -22,7 +23,11 @@ export interface Brewery {
 export interface Sake { // GET response — join resolved + riceType parsed, name_norm stripped
   id: string;
   name: string;
+  yomigana: string | null; // 読み of the sake name (hiragana)
+  brand: string | null; // 銘柄
+  brandYomigana: string | null; // 読み of the brand
   brewery: string | null; // LEFT JOIN brewery display name
+  breweryYomigana: string | null; // LEFT JOIN breweries.yomigana
   brewery_id: string | null;
   tokuteiMeisho: TokuteiMeisho | null;
   riceType: string[]; // parsed from JSON; [] when none
@@ -37,7 +42,11 @@ export interface Sake { // GET response — join resolved + riceType parsed, nam
 
 export interface SakeInput { // POST (augment) / PUT (replace) shared. brewery = name → server resolves id
   name: string;
+  yomigana?: string | null;
+  brand?: string | null;
+  brandYomigana?: string | null;
   brewery?: string | null;
+  breweryYomigana?: string | null; // resolved onto breweries.yomigana via resolveBreweryId
   tokuteiMeisho?: TokuteiMeisho | null;
   riceType?: string[];
   seimaiBuai?: number | null;
@@ -49,6 +58,7 @@ export interface SakeInput { // POST (augment) / PUT (replace) shared. brewery =
 
 export interface BreweryInput {
   name: string;
+  yomigana?: string | null;
   region?: string | null;
   note?: string | null;
 }
@@ -75,7 +85,7 @@ function toSake(row: SakeRow): Sake {
 
 function getSakeById(id: string): Sake | null {
   const row = db.query(
-    `SELECT s.*, b.name AS brewery FROM sakes s
+    `SELECT s.*, b.name AS brewery, b.yomigana AS breweryYomigana FROM sakes s
      LEFT JOIN breweries b ON b.id = s.brewery_id WHERE s.id = ?`,
   ).get(id) as SakeRow | null;
   return row ? toSake(row) : null;
@@ -83,20 +93,29 @@ function getSakeById(id: string): Sake | null {
 
 function getBreweryById(id: string): Brewery | null {
   return db.query(
-    'SELECT id, name, region, note, created_at, updated_at FROM breweries WHERE id = ?',
+    'SELECT id, name, yomigana, region, note, created_at, updated_at FROM breweries WHERE id = ?',
   ).get(id) as Brewery | null;
 }
 
-// find-or-create by normalized name; only returns the id (does not patch region/note).
-export function resolveBreweryId(name: string): string {
+// find-or-create by normalized name; returns the id. Patches only yomigana (COALESCE) when a
+// reading is supplied for an existing brewery — never region/note (those are the brewery form's job).
+export function resolveBreweryId(name: string, yomigana?: string | null): string {
   const norm = normalizeName(name);
   const hit = db.query('SELECT id FROM breweries WHERE name_norm = ?').get(norm) as { id: string } | null;
-  if (hit) return hit.id;
+  if (hit) {
+    if (yomigana) {
+      db.run(
+        'UPDATE breweries SET yomigana = COALESCE(?, yomigana), updated_at = ? WHERE id = ?',
+        [yomigana, now(), hit.id],
+      );
+    }
+    return hit.id;
+  }
   const id = newId();
   const t = now();
   db.run(
-    'INSERT INTO breweries (id, name, name_norm, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
-    [id, name.trim(), norm, t, t],
+    'INSERT INTO breweries (id, name, name_norm, yomigana, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+    [id, name.trim(), norm, yomigana ?? null, t, t],
   );
   return id;
 }
@@ -106,16 +125,18 @@ export function resolveBreweryId(name: string): string {
 export const upsertSake = db.transaction((b: SakeInput) => {
   const name = b.name.trim();
   const norm = normalizeName(name);
-  const brewery_id = b.brewery ? resolveBreweryId(b.brewery) : null;
+  const brewery_id = b.brewery ? resolveBreweryId(b.brewery, b.breweryYomigana) : null;
   const rice = b.riceType?.length ? JSON.stringify(b.riceType) : null;
   const found = db.query('SELECT id FROM sakes WHERE brewery_id IS ? AND name_norm = ?')
     .get(brewery_id, norm) as { id: string } | null;
   if (found) {
     db.run(
-      `UPDATE sakes SET tokuteiMeisho = COALESCE(?, tokuteiMeisho), riceType = COALESCE(?, riceType),
+      `UPDATE sakes SET yomigana = COALESCE(?, yomigana), brand = COALESCE(?, brand), brandYomigana = COALESCE(?, brandYomigana),
+        tokuteiMeisho = COALESCE(?, tokuteiMeisho), riceType = COALESCE(?, riceType),
         seimaiBuai = COALESCE(?, seimaiBuai), alcohol = COALESCE(?, alcohol), nihonshuDo = COALESCE(?, nihonshuDo),
         sando = COALESCE(?, sando), note = COALESCE(?, note), updated_at = ? WHERE id = ?`,
-      [b.tokuteiMeisho ?? null, rice, b.seimaiBuai ?? null, b.alcohol ?? null,
+      [b.yomigana ?? null, b.brand ?? null, b.brandYomigana ?? null,
+        b.tokuteiMeisho ?? null, rice, b.seimaiBuai ?? null, b.alcohol ?? null,
         b.nihonshuDo ?? null, b.sando ?? null, b.note ?? null, now(), found.id],
     );
     return { id: found.id, created: false };
@@ -123,9 +144,10 @@ export const upsertSake = db.transaction((b: SakeInput) => {
   const id = newId();
   const t = now();
   db.run(
-    `INSERT INTO sakes (id, name, name_norm, brewery_id, tokuteiMeisho, riceType, seimaiBuai, alcohol, nihonshuDo, sando, note, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [id, name, norm, brewery_id, b.tokuteiMeisho ?? null, rice, b.seimaiBuai ?? null,
+    `INSERT INTO sakes (id, name, name_norm, yomigana, brand, brandYomigana, brewery_id, tokuteiMeisho, riceType, seimaiBuai, alcohol, nihonshuDo, sando, note, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [id, name, norm, b.yomigana ?? null, b.brand ?? null, b.brandYomigana ?? null, brewery_id,
+      b.tokuteiMeisho ?? null, rice, b.seimaiBuai ?? null,
       b.alcohol ?? null, b.nihonshuDo ?? null, b.sando ?? null, b.note ?? null, t, t],
   );
   return { id, created: true };
@@ -139,16 +161,16 @@ const upsertBrewery = db.transaction((b: BreweryInput) => {
   const found = db.query('SELECT id FROM breweries WHERE name_norm = ?').get(norm) as { id: string } | null;
   if (found) {
     db.run(
-      'UPDATE breweries SET region = COALESCE(?, region), note = COALESCE(?, note), updated_at = ? WHERE id = ?',
-      [b.region ?? null, b.note ?? null, now(), found.id],
+      'UPDATE breweries SET yomigana = COALESCE(?, yomigana), region = COALESCE(?, region), note = COALESCE(?, note), updated_at = ? WHERE id = ?',
+      [b.yomigana ?? null, b.region ?? null, b.note ?? null, now(), found.id],
     );
     return { id: found.id, created: false };
   }
   const id = newId();
   const t = now();
   db.run(
-    'INSERT INTO breweries (id, name, name_norm, region, note, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [id, name, norm, b.region ?? null, b.note ?? null, t, t],
+    'INSERT INTO breweries (id, name, name_norm, yomigana, region, note, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    [id, name, norm, b.yomigana ?? null, b.region ?? null, b.note ?? null, t, t],
   );
   return { id, created: true };
 });
@@ -159,14 +181,20 @@ export const sake = new Hono();
 sake.get('/sakes', (c) => {
   const q = c.req.query('q');
   const norm = q ? normalizeName(q) : '';
+  // Match the normalized query against name_norm + the variable-text reading/brand columns.
+  // LOWER(s.brand) approximates normalizeName on the ASCII subset (kanji/kana are a no-op); yomigana
+  // is hiragana so the lowered norm compares as-is. Same param bound once per column, all ESCAPE'd.
+  const like = `%${likeEscape(norm)}%`;
   const rows = (norm
     ? db.query(
-      `SELECT s.*, b.name AS brewery FROM sakes s
+      `SELECT s.*, b.name AS brewery, b.yomigana AS breweryYomigana FROM sakes s
          LEFT JOIN breweries b ON b.id = s.brewery_id
-         WHERE s.name_norm LIKE ? ESCAPE '\\' ORDER BY s.updated_at DESC`,
-    ).all(`%${likeEscape(norm)}%`)
+         WHERE s.name_norm LIKE ? ESCAPE '\\' OR s.yomigana LIKE ? ESCAPE '\\'
+            OR LOWER(s.brand) LIKE ? ESCAPE '\\' OR s.brandYomigana LIKE ? ESCAPE '\\'
+         ORDER BY s.updated_at DESC`,
+    ).all(like, like, like, like)
     : db.query(
-      `SELECT s.*, b.name AS brewery FROM sakes s
+      `SELECT s.*, b.name AS brewery, b.yomigana AS breweryYomigana FROM sakes s
          LEFT JOIN breweries b ON b.id = s.brewery_id ORDER BY s.updated_at DESC`,
     ).all()) as SakeRow[];
   return c.json(rows.map(toSake));
@@ -193,12 +221,13 @@ sake.put('/sakes/:id', async (c) => {
   const name = typeof b.name === 'string' ? b.name : '';
   const norm = normalizeName(name);
   if (!norm) return c.json({ error: 'name required' }, 400);
-  const brewery_id = b.brewery ? resolveBreweryId(b.brewery) : null;
+  const brewery_id = b.brewery ? resolveBreweryId(b.brewery, b.breweryYomigana) : null;
   const rice = b.riceType?.length ? JSON.stringify(b.riceType) : null;
   const res = db.run(
-    `UPDATE sakes SET name = ?, name_norm = ?, brewery_id = ?, tokuteiMeisho = ?, riceType = ?,
-      seimaiBuai = ?, alcohol = ?, nihonshuDo = ?, sando = ?, note = ?, updated_at = ? WHERE id = ?`,
-    [name.trim(), norm, brewery_id, b.tokuteiMeisho ?? null, rice, b.seimaiBuai ?? null,
+    `UPDATE sakes SET name = ?, name_norm = ?, yomigana = ?, brand = ?, brandYomigana = ?, brewery_id = ?,
+      tokuteiMeisho = ?, riceType = ?, seimaiBuai = ?, alcohol = ?, nihonshuDo = ?, sando = ?, note = ?, updated_at = ? WHERE id = ?`,
+    [name.trim(), norm, b.yomigana ?? null, b.brand ?? null, b.brandYomigana ?? null, brewery_id,
+      b.tokuteiMeisho ?? null, rice, b.seimaiBuai ?? null,
       b.alcohol ?? null, b.nihonshuDo ?? null, b.sando ?? null, b.note ?? null, now(), c.req.param('id')],
   );
   return res.changes ? c.json({ ok: true }) : c.json({ error: 'not found' }, 404);
@@ -214,13 +243,14 @@ sake.delete('/sakes/:id', (c) => {
 sake.get('/breweries', (c) => {
   const q = c.req.query('q');
   const norm = q ? normalizeName(q) : '';
+  const like = `%${likeEscape(norm)}%`;
   const rows = norm
     ? db.query(
-      `SELECT id, name, region, note, created_at, updated_at FROM breweries
-         WHERE name_norm LIKE ? ESCAPE '\\' ORDER BY name ASC`,
-    ).all(`%${likeEscape(norm)}%`)
+      `SELECT id, name, yomigana, region, note, created_at, updated_at FROM breweries
+         WHERE name_norm LIKE ? ESCAPE '\\' OR yomigana LIKE ? ESCAPE '\\' ORDER BY name ASC`,
+    ).all(like, like)
     : db.query(
-      'SELECT id, name, region, note, created_at, updated_at FROM breweries ORDER BY name ASC',
+      'SELECT id, name, yomigana, region, note, created_at, updated_at FROM breweries ORDER BY name ASC',
     ).all();
   return c.json(rows);
 });
@@ -241,8 +271,8 @@ sake.put('/breweries/:id', async (c) => {
   const norm = normalizeName(name);
   if (!norm) return c.json({ error: 'name required' }, 400);
   const res = db.run(
-    'UPDATE breweries SET name = ?, name_norm = ?, region = ?, note = ?, updated_at = ? WHERE id = ?',
-    [name.trim(), norm, b.region ?? null, b.note ?? null, now(), c.req.param('id')],
+    'UPDATE breweries SET name = ?, name_norm = ?, yomigana = ?, region = ?, note = ?, updated_at = ? WHERE id = ?',
+    [name.trim(), norm, b.yomigana ?? null, b.region ?? null, b.note ?? null, now(), c.req.param('id')],
   );
   return res.changes ? c.json({ ok: true }) : c.json({ error: 'not found' }, 404);
 });

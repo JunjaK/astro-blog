@@ -56,6 +56,7 @@ db.run(`
     id         TEXT PRIMARY KEY,
     name       TEXT NOT NULL,
     name_norm  TEXT NOT NULL UNIQUE,
+    yomigana   TEXT,
     region     TEXT,
     note       TEXT,
     created_at TEXT,
@@ -67,6 +68,9 @@ db.run(`
     id            TEXT PRIMARY KEY,
     name          TEXT NOT NULL,
     name_norm     TEXT NOT NULL,
+    brand         TEXT,
+    yomigana      TEXT,
+    brandYomigana TEXT,
     brewery_id    TEXT,
     tokuteiMeisho TEXT,
     riceType      TEXT,
@@ -80,3 +84,18 @@ db.run(`
     UNIQUE(brewery_id, name_norm)
   )
 `);
+
+// Idempotent column migration (v1.1 delta). CREATE TABLE IF NOT EXISTS above is a no-op when the
+// table predates a column (a prior test run / deployed .data/blog.db has the v1 shape), so add any
+// missing column via PRAGMA table_info → ALTER TABLE ADD COLUMN. Exported so sake.test.ts can prove
+// it upgrades a v1-schema table. `table`/`columns` are code literals (never user input) → safe DDL.
+export function ensureColumns(database: Database, table: string, columns: Record<string, string>) {
+  const existing = new Set(
+    (database.query(`PRAGMA table_info(${table})`).all() as { name: string }[]).map((r) => r.name),
+  );
+  for (const [name, type] of Object.entries(columns)) {
+    if (!existing.has(name)) database.run(`ALTER TABLE ${table} ADD COLUMN ${name} ${type}`);
+  }
+}
+ensureColumns(db, 'breweries', { yomigana: 'TEXT' });
+ensureColumns(db, 'sakes', { brand: 'TEXT', yomigana: 'TEXT', brandYomigana: 'TEXT' });
