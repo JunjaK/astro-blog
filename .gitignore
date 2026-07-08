@@ -31,10 +31,10 @@ image-assets/
 .playwright-mcp/
 
 # e2e outputs (all under e2e/)
-e2e/screenshots/
-e2e/etc/
-e2e/test-results/
-e2e/report/
+**/e2e/screenshots/
+**/e2e/etc/
+**/e2e/test-results/
+**/e2e/report/
 
 # backup files
 image-assets-backup/

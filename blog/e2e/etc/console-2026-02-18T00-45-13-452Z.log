@@ -1,4 +1,0 @@
-[    4891ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4322/favicon.ico:0
-[   43822ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4322/node_modules/.vite/deps/chunk-B53UTRTY.js?v=bcc56e42:194
-[  100627ms] [WARNING] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently @ :24
-[  477539ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:4322/node_modules/.vite/deps/chunk-B53UTRTY.js?v=bcc56e42:194
