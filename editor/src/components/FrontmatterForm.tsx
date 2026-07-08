@@ -15,7 +15,8 @@ import { DatePicker, TagInput, ThumbnailInput } from './fields';
 
 type DrinkKind = NonNullable<Frontmatter['drinkKind']>;
 
-export const CATEGORIES = ['daily', 'diary', 'game', 'music', 'tasting', 'web'];
+// blog frontmatter 컨벤션(Capitalized: 'category: Music')과 동일 값으로 저장. 게이트들은 전부 toLowerCase 비교.
+export const CATEGORIES = ['Daily', 'Diary', 'Game', 'Music', 'Tasting', 'Web'];
 const LYRICS_TYPES: { value: LyricsKind; label: string }[] = [
   { value: 'jpop', label: 'J-POP (원문·루비·번역)' },
   { value: 'kpop', label: 'K-POP (가사만)' },
@@ -33,6 +34,16 @@ const DB_PICK_KEYS = ['brand', 'brandYomigana', 'yomigana', 'brewery', 'breweryY
 // Subset persisted back to the sake master on save. breweryYomigana는 서버
 // resolveBreweryId가 브루어리 레코드에 COALESCE 반영.
 const MASTER_SAVE_KEYS = ['brand', 'brandYomigana', 'yomigana', 'brewery', 'breweryYomigana', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando'] as const;
+
+// "旭酒造 - 獺祭 45" 결합 query에서 확정 양조장 접두사를 벗겨 사케명만 남긴다. 미일치 시 원문 유지.
+function stripBreweryPrefix(q: string, brewery: string | null | undefined) {
+  const b = brewery?.trim();
+  if (b && q.startsWith(b)) {
+    const rest = q.slice(b.length).replace(/^\s*[-–—·:]\s*/, '').trim();
+    if (rest) return rest;
+  }
+  return q;
+}
 
 // AI-autofillable fields, in review-panel order. `estimate` = AI-must-not-invent numeric.
 // brand/yomigana류는 문자열 — 「추정」 뱃지 없음.
@@ -52,8 +63,6 @@ const AUTOFILL_ROWS: { key: keyof TastingAutofill; label: string; estimate?: boo
   { key: 'noutan', label: '濃淡' },
   { key: 'flavorTags', label: '향미 태그' },
 ];
-
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 function isEmpty(v: unknown): boolean {
   return v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0);
@@ -241,7 +250,9 @@ function TastingAutofillPanel({ current, defaultQuery, onApply, onDbPick }: {
 
     // Best-effort master save (checked objective keys only, name = panel query). Applied patch
     // never rolls back on save failure. saveName empty → skip.
-    const saveName = query.trim();
+    // placeholder가 "양조장 - 사케명" 결합형을 유도하므로, 확정 양조장과 일치하는 접두사는 name에서 제거.
+    const brewery = (checked.has('brewery') && typeof result.brewery === 'string' ? result.brewery : undefined) ?? current.brewery;
+    const saveName = stripBreweryPrefix(query.trim(), brewery);
     if (saveToMaster && saveName) {
       const input: SakeInput = { name: saveName };
       for (const k of MASTER_SAVE_KEYS) {
@@ -417,9 +428,8 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
         </Field>
       </div>
       <Field label="분류">
-        {/* value (data) stays lowercase; label is capitalized for display */}
         <Select
-          value={(value.category ?? '').toLowerCase()}
+          value={CATEGORIES.find((c) => c.toLowerCase() === (value.category ?? '').toLowerCase()) ?? null}
           onValueChange={(v) => {
             const cat = v ?? undefined;
             const patch: Partial<Frontmatter> = { category: cat };
@@ -430,7 +440,7 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
         >
           <SelectTrigger className="w-full"><SelectValue placeholder="분류 선택" /></SelectTrigger>
           <SelectContent>
-            {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{cap(c)}</SelectItem>)}
+            {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
           </SelectContent>
         </Select>
       </Field>

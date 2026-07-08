@@ -28,7 +28,7 @@ function NewPost() {
   // POST /posts (create) lands with the publish step. For now: fill the form + write.
   const navigate = useNavigate();
   const richRef = useRef<RichEditorHandle>(null);
-  const [fm, setFm] = useState<Frontmatter>({ category: 'web', title: '', created: '' });
+  const [fm, setFm] = useState<Frontmatter>({ category: 'Web', title: '', created: '' });
   const type = fm.category ?? 'web';
   const actions = (bar: boolean) => (
     <div className={bar ? 'row editor-save-bar' : 'row'}>
