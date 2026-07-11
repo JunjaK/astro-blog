@@ -15,6 +15,14 @@ function AuthGuard() {
   return <Outlet />;
 }
 
+// 세션이 유효하면(토큰 만료 전) /login 접근을 막고 /posts로 보냄. 만료되면 로그인 폼 노출.
+function GuestGuard() {
+  const q = useQuery({ queryKey: ['auth', 'me'], queryFn: auth.me, retry: false, staleTime: 5 * 60_000 });
+  if (q.isLoading) return <p className="muted">확인 중…</p>;
+  if (q.data) return <Navigate to="/posts" replace />;
+  return <LoginPage />;
+}
+
 function App() {
   return (
     <div className="app-shell">
@@ -27,7 +35,7 @@ function App() {
       </header>
       <main className="app-main">
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<GuestGuard />} />
           <Route element={<AuthGuard />}>
             <Route path="/" element={<Navigate to="/posts" replace />} />
             <Route path="/posts" element={<PostsPage />} />
