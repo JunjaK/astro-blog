@@ -71,6 +71,13 @@ export function AmakaraNoutanPicker({ amakara, noutan, onChange }: {
   };
   const onPointerUp = () => { pressed.current = false; };
 
+  // Auxiliary sliders (touch-friendly). Reflect current value or roving focus when unset;
+  // moving either commits BOTH axes (pair-commit, mirrors grid). 甘辛=하단 가로, 濃淡=우측 세로.
+  const axVal = amakara ?? focus.ax;
+  const nouVal = noutan ?? focus.nou;
+  const setAx = (v: number) => commit(clampVal(v), noutan ?? focus.nou);
+  const setNou = (v: number) => commit(amakara ?? focus.ax, clampVal(v));
+
   return (
     <div className="amakara-noutan-picker">
       <div className="amakara-noutan-picker__pole amakara-noutan-picker__pole--top">濃醇</div>
@@ -109,6 +116,29 @@ export function AmakaraNoutanPicker({ amakara, noutan, onChange }: {
         <div className="amakara-noutan-picker__pole amakara-noutan-picker__pole--right">辛口</div>
       </div>
       <div className="amakara-noutan-picker__pole amakara-noutan-picker__pole--bottom">淡麗</div>
+      {/* 보조 슬라이더 (터치용). 가로 2개 — 방향이 명확하고 Safari 포함 전 브라우저 안정. pair-commit 동일. */}
+      <div className="amakara-noutan-picker__sliders">
+        <label className="amakara-noutan-picker__srow">
+          <span className="amakara-noutan-picker__scap">甘</span>
+          <input
+            type="range" min={1} max={8} step={1} value={axVal}
+            className="amakara-noutan-picker__slider"
+            aria-label="甘辛 (1 甘口 ~ 8 辛口)"
+            onChange={(e) => setAx(Number(e.target.value))}
+          />
+          <span className="amakara-noutan-picker__scap">辛</span>
+        </label>
+        <label className="amakara-noutan-picker__srow">
+          <span className="amakara-noutan-picker__scap">淡</span>
+          <input
+            type="range" min={1} max={8} step={1} value={nouVal}
+            className="amakara-noutan-picker__slider"
+            aria-label="濃淡 (1 淡麗 ~ 8 濃醇)"
+            onChange={(e) => setNou(Number(e.target.value))}
+          />
+          <span className="amakara-noutan-picker__scap">濃</span>
+        </label>
+      </div>
       <div className="amakara-noutan-picker__foot">
         <span className="amakara-noutan-picker__readout" aria-live="polite">
           {hasValue ? coordLabel(amakara, noutan) : '미선택'}

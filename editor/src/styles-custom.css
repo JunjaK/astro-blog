@@ -230,6 +230,11 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   border-radius: 8px; padding: 4px 8px; font-size: 12px; cursor: pointer;
 }
 .amakara-noutan-picker__clear:hover { color: var(--text); }
+/* auxiliary sliders — touch-friendly 보조 선택 (甘辛/濃淡 하단 가로 2개). pair-commit 동일. */
+.amakara-noutan-picker__sliders { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 4px; }
+.amakara-noutan-picker__srow { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.amakara-noutan-picker__scap { font-size: 12px; color: var(--c-muted); width: 1.2em; text-align: center; flex-shrink: 0; }
+.amakara-noutan-picker__slider { flex: 1; height: 22px; accent-color: var(--c-accent); cursor: pointer; margin: 0; }
 
 /* AI autofill trigger + inline review panel (never a modal) */
 .tasting-ai { display: flex; flex-direction: column; gap: 8px; }
@@ -286,6 +291,19 @@ body { margin: 0; background: var(--bg); color: var(--text); }
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
     justify-content: flex-end;
   }
+}
+
+/* ── phone (≤500px): 폰 전용 미세 조정. 데탑/태블릿 무영향 ── */
+@media (max-width: 500px) {
+  /* 8×8 피커: 폰에서 그리드가 화면 폭을 최대한 쓰도록 폴/여백 축소 → 셀 확대 + 선택 점 키워 가시성 확보.
+     터치 조작은 그리드 좌표 매핑이라 아무데나 터치/드래그로 선택됨(셀 크기는 시인성만 좌우). */
+  .amakara-noutan-picker { max-width: none; }
+  .amakara-noutan-picker__mid { gap: 3px; }
+  .amakara-noutan-picker__pole--left,
+  .amakara-noutan-picker__pole--right { font-size: 11px; }
+  .amakara-noutan-picker__grid { gap: 1px; padding: 3px; }
+  .amakara-noutan-picker__cell[aria-checked='true']::after { inset: 22%; }
+  .amakara-noutan-picker__readout { font-size: 14px; }
 }
 
 /* ── 사케/양조장 관리 페이지 (SakesPage) ── */
