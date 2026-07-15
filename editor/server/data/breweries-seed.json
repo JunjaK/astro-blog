@@ -1,0 +1,1449 @@
+{
+  "$comment": [
+    "蔵元(양조장) 마스터 시드 — 리뷰 대상 데이터. seed-breweries.ts가 읽는다.",
+    "수치 스펙(정미보합/알콜/니혼슈도/산도)은 의도적으로 없음: BY·로트마다 바뀌는 값이라 마스터에",
+    "박으면 「마스터」 배지가 거짓이 된다. 스펙은 기존 AI 추정→사용자 확인→저장 경로가 담당.",
+    "각 항목의 sources = 조사 시 실제로 열어본 URL. flags = 투입 전 확인이 필요한 주의점.",
+    "brands 는 배열이다 — 「・」로 이은 문자열을 쓰면 「スクウェア・ワン」처럼 이름 안에 가운뎃점이",
+    "든 브랜드가 조용히 쪼개진다. 브랜드 요미가나는 조사한 적이 없어 시드하지 않는다(환각 금지).",
+    "조사일 2026-07-16. note는 seed가 officialUrl로 조립한다(代表銘柄는 이제 brands 테이블)."
+  ],
+  "breweries": [
+    {
+      "name": "朝日酒造",
+      "yomigana": "あさひしゅぞう",
+      "prefecture": "新潟県",
+      "address": "長岡市朝日880-1",
+      "formalName": "朝日酒造株式会社",
+      "officialUrl": "https://www.asahi-shuzo.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/朝日酒造_(新潟県)",
+        "https://www.asahi-shuzo.co.jp/"
+      ],
+      "flags": [
+        "동명 「朝日酒造」가 福井県·鹿児島県에도 실재",
+        "山口의 旭酒造(현 株式会社獺祭)와 동음이자 — 朝日/旭 혼동 주의"
+      ],
+      "brands": [
+        "久保田",
+        "朝日山",
+        "越州"
+      ]
+    },
+    {
+      "name": "八海醸造",
+      "yomigana": "はっかいじょうぞう",
+      "prefecture": "新潟県",
+      "address": "南魚沼市長森1051",
+      "formalName": "八海醸造株式会社",
+      "officialUrl": "https://www.hakkaisan.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/八海醸造"
+      ],
+      "flags": [
+        "「酒造」가 아니라 「醸造」, 읽기도 「じょうぞう」",
+        "소재지를 「魚沼市」로 오기한 2차 정보 다수 — 정확히는 「南魚沼市」"
+      ],
+      "brands": [
+        "八海山"
+      ]
+    },
+    {
+      "name": "石本酒造",
+      "yomigana": "いしもとしゅぞう",
+      "prefecture": "新潟県",
+      "address": "新潟市江南区北山847-1",
+      "formalName": "石本酒造株式会社",
+      "officialUrl": "https://koshinokanbai.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/石本酒造"
+      ],
+      "flags": [],
+      "brands": [
+        "越乃寒梅"
+      ]
+    },
+    {
+      "name": "宮尾酒造",
+      "yomigana": "みやおしゅぞう",
+      "prefecture": "新潟県",
+      "address": "村上市上片町5-15",
+      "formalName": "宮尾酒造株式会社",
+      "officialUrl": "https://www.shimeharitsuru.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/宮尾酒造",
+        "https://www.niigata-sake.or.jp/kuramoto/"
+      ],
+      "flags": [],
+      "brands": [
+        "〆張鶴"
+      ]
+    },
+    {
+      "name": "菊水酒造",
+      "yomigana": "きくすいしゅぞう",
+      "prefecture": "新潟県",
+      "address": "新発田市島潟750",
+      "formalName": "菊水酒造株式会社",
+      "officialUrl": "https://www.kikusui-sake.com/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/菊水酒造_(新潟県)",
+        "https://www.niigata-sake.or.jp/kuramoto/"
+      ],
+      "flags": [
+        "동명 「菊水酒造株式会社」가 高知県 安芸市에도 실재 — 현으로 구별 필요"
+      ],
+      "brands": [
+        "菊水",
+        "ふなぐち菊水一番しぼり",
+        "無冠帝"
+      ]
+    },
+    {
+      "name": "白瀧酒造",
+      "yomigana": "しらたきしゅぞう",
+      "prefecture": "新潟県",
+      "address": "南魚沼郡湯沢町大字湯沢2640",
+      "formalName": "白瀧酒造株式会社",
+      "officialUrl": "https://www.jozen.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/白瀧酒造"
+      ],
+      "flags": [
+        "「瀧」은 구자체 — 「白滝酒造」로 쓰지 않음"
+      ],
+      "brands": [
+        "上善如水",
+        "湊屋藤助",
+        "魚沼"
+      ]
+    },
+    {
+      "name": "麒麟山酒造",
+      "yomigana": "きりんざんしゅぞう",
+      "prefecture": "新潟県",
+      "address": "東蒲原郡阿賀町津川46",
+      "formalName": "麒麟山酒造株式会社",
+      "officialUrl": "https://kirinzan.co.jp/",
+      "sources": [
+        "https://kirinzan.co.jp/about/",
+        "https://www.niigata-sake.or.jp/kuramoto/kirinzan/"
+      ],
+      "flags": [
+        "기업DB계 사이트는 「津川3636」으로 기재하나 공식+현 주조조합 모두 「津川46」 — 후자 채택"
+      ],
+      "brands": [
+        "麒麟山"
+      ]
+    },
+    {
+      "name": "吉乃川",
+      "yomigana": "よしのがわ",
+      "prefecture": "新潟県",
+      "address": "長岡市摂田屋4丁目8番12号",
+      "formalName": "吉乃川株式会社",
+      "officialUrl": "https://yosinogawa.co.jp/",
+      "sources": [
+        "https://yosinogawa.co.jp/company/about.php"
+      ],
+      "flags": [
+        "사명에 「酒造」「醸造」가 없음 (吉乃川株式会社) — 명칭과 사명이 동일"
+      ],
+      "brands": [
+        "吉乃川",
+        "極上吉乃川"
+      ]
+    },
+    {
+      "name": "青木酒造",
+      "yomigana": "あおきしゅぞう",
+      "prefecture": "新潟県",
+      "address": "南魚沼市塩沢1214",
+      "formalName": "青木酒造株式会社",
+      "officialUrl": "http://www.kakurei.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/青木酒造"
+      ],
+      "flags": [
+        "동명 「青木酒造」가 愛知県·茨城県에도 실재 — 현으로 구별 필요"
+      ],
+      "brands": [
+        "鶴齢",
+        "雪男",
+        "牧之"
+      ]
+    },
+    {
+      "name": "尾畑酒造",
+      "yomigana": "おばたしゅぞう",
+      "prefecture": "新潟県",
+      "address": "佐渡市真野新町449",
+      "formalName": "尾畑酒造株式会社",
+      "officialUrl": "https://www.obata-shuzo.com/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/尾畑酒造"
+      ],
+      "flags": [
+        "佐渡島 소재"
+      ],
+      "brands": [
+        "真野鶴"
+      ]
+    },
+    {
+      "name": "北雪酒造",
+      "yomigana": "ほくせつしゅぞう",
+      "prefecture": "新潟県",
+      "address": "佐渡市徳和2377-2",
+      "formalName": "株式会社北雪酒造",
+      "officialUrl": "https://sake-hokusetsu.com/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/北雪酒造"
+      ],
+      "flags": [
+        "법인격 전치 (「株式会社北雪酒造」)",
+        "佐渡島 소재. 해외 NOBU 콜라보로 알려짐"
+      ],
+      "brands": [
+        "北雪"
+      ]
+    },
+    {
+      "name": "久須美酒造",
+      "yomigana": "くすみしゅぞう",
+      "prefecture": "新潟県",
+      "address": "長岡市小島谷1537-2",
+      "formalName": "久須美酒造株式会社",
+      "officialUrl": "https://www.kamenoo.jp/",
+      "sources": [
+        "https://japansake.or.jp/sakagura/jp/niigata/kusumi-shuzou/",
+        "https://www.niigata-sake.or.jp/interview/k74.html"
+      ],
+      "flags": [
+        "⚠ officialUrl 미검증 — kamenoo.jp가 SSL 인증서 오류로 열리지 않음",
+        "만화 『夏子の酒』의 모델 蔵"
+      ],
+      "brands": [
+        "清泉",
+        "亀の翁"
+      ]
+    },
+    {
+      "name": "今代司酒造",
+      "yomigana": "いまよつかさしゅぞう",
+      "prefecture": "新潟県",
+      "address": "新潟市中央区鏡が岡1番1号",
+      "formalName": "今代司酒造株式会社",
+      "officialUrl": "https://imayotsukasa.co.jp/",
+      "sources": [
+        "https://imayotsukasa.co.jp/en/company-en/"
+      ],
+      "flags": [
+        "난독 — 「いまよつかさ」 (공식 영문 Imayo Tsukasa 로 확인)"
+      ],
+      "brands": [
+        "今代司"
+      ]
+    },
+    {
+      "name": "丸山酒造場",
+      "yomigana": "まるやましゅぞうじょう",
+      "prefecture": "新潟県",
+      "address": "上越市三和区塔ノ輪617",
+      "formalName": "株式会社丸山酒造場",
+      "officialUrl": "https://maruyama-shuzojo.jp/",
+      "sources": [
+        "https://maruyama-shuzojo.jp/about.html"
+      ],
+      "flags": [
+        "「丸山酒造」가 아니라 「丸山酒造場」 — 埼玉県의 「丸山酒造株式会社」와 혼동 주의"
+      ],
+      "brands": [
+        "雪中梅"
+      ]
+    },
+    {
+      "name": "新政酒造",
+      "yomigana": "あらまさしゅぞう",
+      "prefecture": "秋田県",
+      "address": "秋田市大町6-2-35",
+      "formalName": "新政酒造株式会社",
+      "officialUrl": "http://www.aramasa.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/新政酒造",
+        "https://osake.or.jp/map/"
+      ],
+      "flags": [
+        "⚠ 공식 사이트 https 접속 시 인증서 호스트명 불일치 — URL은 Wikipedia 기재값(http)"
+      ],
+      "brands": [
+        "新政",
+        "No.6",
+        "Colors"
+      ]
+    },
+    {
+      "name": "飛良泉本舗",
+      "yomigana": "ひらいづみほんぽ",
+      "prefecture": "秋田県",
+      "address": "にかほ市平沢中町59",
+      "formalName": "株式会社飛良泉本舗",
+      "officialUrl": "https://www.hiraizumi.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/飛良泉本舗",
+        "https://osake.or.jp/map/"
+      ],
+      "flags": [
+        "읽기는 「ひらいづみ」(づ) — 「ひらいずみ」 표기 자료도 있으니 주의",
+        "1487년 창업, 秋田 최고(最古)의 酒蔵"
+      ],
+      "brands": [
+        "飛良泉"
+      ]
+    },
+    {
+      "name": "齋彌酒造店",
+      "yomigana": "さいやしゅぞうてん",
+      "prefecture": "秋田県",
+      "address": "由利本荘市石脇字石脇53",
+      "formalName": "株式会社齋彌酒造店",
+      "officialUrl": "https://www.yukinobosha.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/齋彌酒造店",
+        "https://osake.or.jp/map/"
+      ],
+      "flags": [
+        "자체 주의: 정확히는 「齋彌」 — 「斎弥」「斉弥」「齋弥」는 정식명이 아님"
+      ],
+      "brands": [
+        "雪の茅舎",
+        "由利正宗"
+      ]
+    },
+    {
+      "name": "秋田酒類製造",
+      "yomigana": "あきたしゅるいせいぞう",
+      "prefecture": "秋田県",
+      "address": "秋田市川元むつみ町4-12",
+      "formalName": "秋田酒類製造株式会社",
+      "officialUrl": "https://www.takashimizu.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/秋田酒類製造",
+        "https://osake.or.jp/map/"
+      ],
+      "flags": [
+        "현내에 「秋田」로 시작하는 유사명 다수 (秋田銘醸/秋田酒造/秋田醸造/秋田県醗酵工業) — 혼동 주의"
+      ],
+      "brands": [
+        "高清水"
+      ]
+    },
+    {
+      "name": "秋田銘醸",
+      "yomigana": "あきためいじょう",
+      "prefecture": "秋田県",
+      "address": "湯沢市大工町4-23",
+      "formalName": "秋田銘醸株式会社",
+      "officialUrl": "https://www.ranman.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/秋田銘醸",
+        "https://japansake.or.jp/sakagura/jp/akita/"
+      ],
+      "flags": [
+        "「秋田銘醸」과 「秋田醸造」는 특히 혼동하기 쉬움"
+      ],
+      "brands": [
+        "爛漫"
+      ]
+    },
+    {
+      "name": "両関酒造",
+      "yomigana": "りょうぜきしゅぞう",
+      "prefecture": "秋田県",
+      "address": "湯沢市前森4-3-18",
+      "formalName": "両関酒造株式会社",
+      "officialUrl": "https://www.ryozeki.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/両関酒造",
+        "https://www.ryozeki.co.jp/"
+      ],
+      "flags": [
+        "「花邑」는 특약점 한정 브랜드"
+      ],
+      "brands": [
+        "両関",
+        "花邑"
+      ]
+    },
+    {
+      "name": "日の丸醸造",
+      "yomigana": "ひのまるじょうぞう",
+      "prefecture": "秋田県",
+      "address": "横手市増田町増田字七日町114-2",
+      "formalName": "日の丸醸造株式会社",
+      "officialUrl": "https://hinomaru-sake.com/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/日の丸醸造",
+        "https://japansake.or.jp/sakagura/jp/akita/"
+      ],
+      "flags": [
+        "주소 표기 흔들림: 중앙회는 「横手市増田町七日町114-2」, Wikipedia는 字 포함 상세형 — 상세형 채택"
+      ],
+      "brands": [
+        "まんさくの花",
+        "日の丸"
+      ]
+    },
+    {
+      "name": "小玉醸造",
+      "yomigana": "こだまじょうぞう",
+      "prefecture": "秋田県",
+      "address": "潟上市飯田川飯塚字飯塚34-1",
+      "formalName": "小玉醸造株式会社",
+      "officialUrl": "https://www.kodamajozo.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/小玉醸造",
+        "https://osake.or.jp/map/"
+      ],
+      "flags": [
+        "味噌·醤油(ヤマキウ)도 만드는 겸업 蔵"
+      ],
+      "brands": [
+        "太平山"
+      ]
+    },
+    {
+      "name": "福禄寿酒造",
+      "yomigana": "ふくろくじゅしゅぞう",
+      "prefecture": "秋田県",
+      "address": "南秋田郡五城目町字下タ町48",
+      "formalName": "福禄寿酒造株式会社",
+      "officialUrl": "https://fukurokuju.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/福禄寿酒造",
+        "https://osake.or.jp/map/"
+      ],
+      "flags": [],
+      "brands": [
+        "一白水成",
+        "福禄寿"
+      ]
+    },
+    {
+      "name": "山本酒造店",
+      "yomigana": "やまもとしゅぞうてん",
+      "prefecture": "秋田県",
+      "address": "山本郡八峰町八森字八森269",
+      "formalName": "株式会社山本酒造店",
+      "officialUrl": "https://www.yamamoto-brewery.com/",
+      "sources": [
+        "https://osake.or.jp/brewers11/",
+        "https://www.yamamoto-brewery.com/"
+      ],
+      "flags": [
+        "蔵元名 「山本」과 대표명칭 「山本」이 동일해 헷갈림",
+        "Wikipedia 기사 없음 — 읽기/주소는 秋田県酒造協同組合 근거"
+      ],
+      "brands": [
+        "山本",
+        "白瀑"
+      ]
+    },
+    {
+      "name": "天寿酒造",
+      "yomigana": "てんじゅしゅぞう",
+      "prefecture": "秋田県",
+      "address": "由利本荘市矢島町城内字八森下117",
+      "formalName": "天寿酒造株式会社",
+      "officialUrl": "http://www.tenju.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/天寿酒造",
+        "https://osake.or.jp/map/"
+      ],
+      "flags": [],
+      "brands": [
+        "天寿",
+        "鳥海山"
+      ]
+    },
+    {
+      "name": "浅舞酒造",
+      "yomigana": "あさまいしゅぞう",
+      "prefecture": "秋田県",
+      "address": "横手市平鹿町浅舞字浅舞388",
+      "formalName": "浅舞酒造株式会社",
+      "officialUrl": "https://amanoto.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/浅舞酒造",
+        "https://japansake.or.jp/sakagura/jp/akita/"
+      ],
+      "flags": [
+        "같은 横手市平鹿町浅舞에 舞鶴酒造(田从)도 소재 — 주소 근접"
+      ],
+      "brands": [
+        "天の戸"
+      ]
+    },
+    {
+      "name": "木村酒造",
+      "yomigana": "きむらしゅぞう",
+      "prefecture": "秋田県",
+      "address": "湯沢市田町2-1-11",
+      "formalName": "株式会社木村酒造",
+      "officialUrl": "http://www.fukukomachi.com/",
+      "sources": [
+        "https://osake.or.jp/brewers32/",
+        "https://japansake.or.jp/sakagura/jp/akita/"
+      ],
+      "flags": [
+        "Wikipedia 기사 없음 — 읽기/주소는 秋田県酒造協同組合 근거"
+      ],
+      "brands": [
+        "福小町"
+      ]
+    },
+    {
+      "name": "北鹿",
+      "yomigana": "ほくしか",
+      "prefecture": "秋田県",
+      "address": "大館市有浦2-2-3",
+      "formalName": "株式会社北鹿",
+      "officialUrl": "https://www.hokushika.jp/",
+      "sources": [
+        "https://www.hokushika.jp/",
+        "https://osake.or.jp/map/"
+      ],
+      "flags": [
+        "사명에 「酒造」 등이 없음 (株式会社北鹿)",
+        "Wikipedia 기사 없음 — 공식 사이트 근거"
+      ],
+      "brands": [
+        "北鹿",
+        "雪中貯蔵"
+      ]
+    },
+    {
+      "name": "刈穂酒造",
+      "yomigana": "かりほしゅぞう",
+      "prefecture": "秋田県",
+      "address": "大仙市神宮寺字神宮寺275",
+      "formalName": "刈穂酒造株式会社",
+      "officialUrl": "https://www.igeta.jp/",
+      "sources": [
+        "https://osake.or.jp/brewers20/",
+        "http://www.igeta.jp/about/"
+      ],
+      "flags": [
+        "秋田清酒(株) 산하 蔵 — 병입/저장/판매는 모회사 담당, 공식 사이트도 공용(igeta.jp)",
+        "형제 蔵 出羽鶴酒造 존재 — 3자 관계 주의",
+        "「刈穂」는 「かりほ」"
+      ],
+      "brands": [
+        "刈穂"
+      ]
+    },
+    {
+      "name": "獺祭",
+      "yomigana": "だっさい",
+      "prefecture": "山口県",
+      "address": "岩国市周東町獺越2167-4",
+      "formalName": "株式会社獺祭",
+      "officialUrl": "https://dassai.com/",
+      "sources": [
+        "https://dassai.com/news/info/005900.html",
+        "https://ja.wikipedia.org/wiki/旭酒造_(山口県)"
+      ],
+      "flags": [
+        "⚠ 2025-06-01자로 「旭酒造株式会社」→「株式会社獺祭(DASSAI Inc.)」로 사명 변경. 공식 릴리스 직접 확인함",
+        "그 결과 蔵元名과 대표명칭이 둘 다 「獺祭」가 됨",
+        "기존 글 blog/src/content/blog/tasting/dassai-45.mdx 는 brewery: 旭酒造 로 되어 있음 — 별건",
+        "日本酒造組合中央会·山口県酒造組合 목록은 2026-07 시점에도 구 사명 그대로(stale)"
+      ],
+      "brands": [
+        "獺祭"
+      ]
+    },
+    {
+      "name": "澄川酒造場",
+      "yomigana": "すみかわしゅぞうじょう",
+      "prefecture": "山口県",
+      "address": "萩市大字中小川611",
+      "formalName": "株式会社澄川酒造場",
+      "officialUrl": "https://toyobijin.jp/",
+      "sources": [
+        "https://toyobijin.jp/",
+        "https://japansake.or.jp/sakagura/jp/yamaguchi/"
+      ],
+      "flags": [],
+      "brands": [
+        "東洋美人"
+      ]
+    },
+    {
+      "name": "八百新酒造",
+      "yomigana": "やおしんしゅぞう",
+      "prefecture": "山口県",
+      "address": "岩国市今津町3-18-9",
+      "formalName": "八百新酒造株式会社",
+      "officialUrl": "https://yaoshin.co.jp/",
+      "sources": [
+        "https://yaoshin.co.jp/",
+        "https://japansake.or.jp/sakagura/jp/yamaguchi/"
+      ],
+      "flags": [],
+      "brands": [
+        "雁木"
+      ]
+    },
+    {
+      "name": "永山本家酒造場",
+      "yomigana": "ながやまほんけしゅぞうじょう",
+      "prefecture": "山口県",
+      "address": "宇部市大字車地138",
+      "formalName": "株式会社永山本家酒造場",
+      "officialUrl": "https://www.domainetaka.com/",
+      "sources": [
+        "https://www.domainetaka.com/",
+        "https://www.sakenomy.jp/brewery/K01N035017/"
+      ],
+      "flags": [
+        "같은 山口県 내에 별법인 「永山酒造合名会社」(山陽小野田市·山猿) 존재 — 동일 현 내 중복이라 특히 주의"
+      ],
+      "brands": [
+        "貴"
+      ]
+    },
+    {
+      "name": "酒井酒造",
+      "yomigana": "さかいしゅぞう",
+      "prefecture": "山口県",
+      "address": "岩国市中津町1-1-31",
+      "formalName": "酒井酒造株式会社",
+      "officialUrl": "https://gokyo-sake.co.jp/",
+      "sources": [
+        "https://gokyo-sake.co.jp/company/",
+        "https://japansake.or.jp/sakagura/jp/yamaguchi/"
+      ],
+      "flags": [
+        "타현 동명 蔵 유무는 1차 정보로 미확인"
+      ],
+      "brands": [
+        "五橋"
+      ]
+    },
+    {
+      "name": "大嶺酒造",
+      "yomigana": "おおみねしゅぞう",
+      "prefecture": "山口県",
+      "address": "美祢市秋芳町別府2585-2",
+      "formalName": "大嶺酒造株式会社",
+      "officialUrl": "https://www.ohmine.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/大嶺酒造",
+        "https://japansake.or.jp/sakagura/jp/yamaguchi/oomine-shuzou/"
+      ],
+      "flags": [
+        "대표명칭이 라틴 문자 「Ohmine」",
+        "1822년 창업 蔵이 1955년 폐업 → 2010년 면허 승계로 재흥 (현역)"
+      ],
+      "brands": [
+        "Ohmine"
+      ]
+    },
+    {
+      "name": "堀江酒場",
+      "yomigana": "ほりえさかば",
+      "prefecture": "山口県",
+      "address": "岩国市錦町広瀬6781",
+      "formalName": "有限会社堀江酒場",
+      "officialUrl": "https://www.horiesakaba.com/",
+      "sources": [
+        "https://www.horiesakaba.com/",
+        "https://japansake.or.jp/sakagura/jp/yamaguchi/"
+      ],
+      "flags": [
+        "「酒造」가 아니라 「酒場(さかば)」 — 오타 주의"
+      ],
+      "brands": [
+        "金雀"
+      ]
+    },
+    {
+      "name": "中島屋酒造場",
+      "yomigana": "なかしまやしゅぞうじょう",
+      "prefecture": "山口県",
+      "address": "周南市土井2丁目1番1号",
+      "formalName": "株式会社中島屋酒造場",
+      "officialUrl": "https://nakashimaya1823.jp/",
+      "sources": [
+        "https://nakashimaya1823.jp/"
+      ],
+      "flags": [
+        "「なかしまや」이지 「なかじまや」가 아님",
+        "주소는 공식 사이트만이 근거"
+      ],
+      "brands": [
+        "カネナカ",
+        "中島屋",
+        "寿"
+      ]
+    },
+    {
+      "name": "岩崎酒造",
+      "yomigana": "いわさきしゅぞう",
+      "prefecture": "山口県",
+      "address": "萩市東田町58番地",
+      "formalName": "岩崎酒造株式会社",
+      "officialUrl": "https://iwasakishuzou.com/",
+      "sources": [
+        "https://iwasakishuzou.com/page/company"
+      ],
+      "flags": [],
+      "brands": [
+        "長陽福娘"
+      ]
+    },
+    {
+      "name": "金光酒造",
+      "yomigana": "かねみつしゅぞう",
+      "prefecture": "山口県",
+      "address": "山口市嘉川5031",
+      "formalName": "金光酒造株式会社",
+      "officialUrl": "http://www.santouka.com/",
+      "sources": [
+        "https://japansake.or.jp/sakagura/jp/yamaguchi/",
+        "http://www.santouka.com/"
+      ],
+      "flags": [
+        "⚠ 広島県 東広島市에 동일 한자 「株式会社金光酒造」(賀茂金秀) 존재 — 완전 별법인. 법인격 위치가 다름",
+        "공식 사이트 문자깨짐으로 주소는 日本酒造組合中央会 근거"
+      ],
+      "brands": [
+        "山頭火"
+      ]
+    },
+    {
+      "name": "新谷酒造",
+      "yomigana": "しんたにしゅぞう",
+      "prefecture": "山口県",
+      "address": "山口市徳地堀1673-1",
+      "formalName": "新谷酒造株式会社",
+      "officialUrl": "https://wakamusume.com/",
+      "sources": [
+        "https://wakamusume.com/",
+        "https://japansake.or.jp/sakagura/jp/yamaguchi/"
+      ],
+      "flags": [
+        "제조소(徳地小古祖666-2)와 직매소(徳地堀1673-1)가 별개 — 조합 등록 주소인 후자 채택",
+        "「新谷」는 「しんたに」"
+      ],
+      "brands": [
+        "わかむすめ"
+      ]
+    },
+    {
+      "name": "村重酒造",
+      "yomigana": "むらしげしゅぞう",
+      "prefecture": "山口県",
+      "address": "岩国市御庄5-101-1",
+      "formalName": "村重酒造株式会社",
+      "officialUrl": "https://www.murashige-sake.co.jp/",
+      "sources": [
+        "https://www.murashige-sake.co.jp/",
+        "https://japansake.or.jp/sakagura/jp/yamaguchi/"
+      ],
+      "flags": [
+        "주소는 日本酒造組合中央会 근거 (공식 사이트에 주소 표기 없음)"
+      ],
+      "brands": [
+        "金冠黒松"
+      ]
+    },
+    {
+      "name": "木屋正酒造",
+      "yomigana": "きやしょうしゅぞう",
+      "prefecture": "三重県",
+      "address": "名張市本町314-1",
+      "formalName": "木屋正酒造合資会社",
+      "officialUrl": "https://kiyashow.com/",
+      "sources": [
+        "https://kiyashow.com/company/",
+        "https://ja.wikipedia.org/wiki/木屋正酒造"
+      ],
+      "flags": [
+        "법인격 표기 흔들림: 공식+Wikipedia는 「合資会社」, 중앙회+Sakenomy는 「株式会社」 — 공식 채택"
+      ],
+      "brands": [
+        "而今",
+        "高砂"
+      ]
+    },
+    {
+      "name": "清水清三郎商店",
+      "yomigana": "しみずせいざぶろうしょうてん",
+      "prefecture": "三重県",
+      "address": "鈴鹿市若松東3-9-33",
+      "formalName": "清水清三郎商店株式会社",
+      "officialUrl": "https://seizaburo.jp/",
+      "sources": [
+        "https://seizaburo.jp/company/",
+        "https://www.sakenomy.jp/brewery/K01N024013/"
+      ],
+      "flags": [
+        "읽기 출처 불일치: Sakenomy는 청음 「せいさぶろう」 — 공식 로마자 Seizaburo/도메인 seizaburo.jp 따라 탁음 채택"
+      ],
+      "brands": [
+        "作",
+        "鈴鹿川"
+      ]
+    },
+    {
+      "name": "寒紅梅酒造",
+      "yomigana": "かんこうばいしゅぞう",
+      "prefecture": "三重県",
+      "address": "津市栗真中山町433",
+      "formalName": "寒紅梅酒造株式会社",
+      "officialUrl": "https://kankoubai.jp/",
+      "sources": [
+        "https://kankoubai.jp/",
+        "https://japansake.or.jp/sakagura/jp/mie/page/2/"
+      ],
+      "flags": [
+        "kankoubai.com 은 404 — 실제 공식은 kankoubai.jp"
+      ],
+      "brands": [
+        "寒紅梅"
+      ]
+    },
+    {
+      "name": "早川酒造",
+      "yomigana": "はやかわしゅぞう",
+      "prefecture": "三重県",
+      "address": "三重郡菰野町小島468",
+      "formalName": "合名会社早川酒造",
+      "officialUrl": "https://hayakawa-syuzo.com/",
+      "sources": [
+        "https://hayakawa-syuzo.com/",
+        "https://japansake.or.jp/sakagura/jp/mie/page/3/"
+      ],
+      "flags": [
+        "⚠ 같은 현에 흡사명 별법인 「合資会社早川酒造部」(三重郡川越町·天一) 존재. 「田光」은 菰野町의 合名会社早川酒造 것"
+      ],
+      "brands": [
+        "田光",
+        "早春"
+      ]
+    },
+    {
+      "name": "瀧自慢酒造",
+      "yomigana": "たきじまんしゅぞう",
+      "prefecture": "三重県",
+      "address": "名張市赤目町柏原141",
+      "formalName": "瀧自慢酒造株式会社",
+      "officialUrl": "https://www.takijiman.jp/",
+      "sources": [
+        "https://www.takijiman.jp/",
+        "https://www.sakenomy.jp/brewery/K01N024037/"
+      ],
+      "flags": [],
+      "brands": [
+        "瀧自慢"
+      ]
+    },
+    {
+      "name": "元坂酒造",
+      "yomigana": "げんさかしゅぞう",
+      "prefecture": "三重県",
+      "address": "多気郡大台町柳原346-2",
+      "formalName": "元坂酒造株式会社",
+      "officialUrl": "https://www.gensaka.com/",
+      "sources": [
+        "https://www.gensaka.com/company/",
+        "https://www.sakenomy.jp/brewery/K01N024024/"
+      ],
+      "flags": [],
+      "brands": [
+        "酒屋八兵衛"
+      ]
+    },
+    {
+      "name": "森喜酒造場",
+      "yomigana": "もりきしゅぞうじょう",
+      "prefecture": "三重県",
+      "address": "伊賀市千歳41-2",
+      "formalName": "森喜酒造株式会社",
+      "officialUrl": "https://morikishuzo.co.jp/",
+      "sources": [
+        "https://morikishuzo.co.jp/",
+        "https://ja.wikipedia.org/wiki/森喜酒造場"
+      ],
+      "flags": [
+        "법인명 불일치: 공식 푸터는 「森喜酒造 株式会社」, 중앙회·Wikipedia·Sakenomy는 「合名会社森喜酒造場」 — 투입 전 현황 재확인 권장"
+      ],
+      "brands": [
+        "るみ子の酒",
+        "英",
+        "妙の華"
+      ]
+    },
+    {
+      "name": "大田酒造",
+      "yomigana": "おおたしゅぞう",
+      "prefecture": "三重県",
+      "address": "伊賀市上之庄1365-1",
+      "formalName": "株式会社大田酒造",
+      "officialUrl": "https://www.hanzo-sake.com/",
+      "sources": [
+        "https://www.hanzo-sake.com/profile/index.html",
+        "https://ja.wikipedia.org/wiki/大田酒造"
+      ],
+      "flags": [
+        "⚠ 滋賀県 草津市의 「太田酒造株式会社」(道灌)와 한자 1자 차이 (大/太)"
+      ],
+      "brands": [
+        "半蔵"
+      ]
+    },
+    {
+      "name": "タカハシ酒造",
+      "yomigana": "たかはししゅぞう",
+      "prefecture": "三重県",
+      "address": "四日市市松寺2-15-7",
+      "formalName": "株式会社タカハシ酒造",
+      "officialUrl": null,
+      "sources": [
+        "https://www.sakenomy.jp/brewery/K01N024008/",
+        "https://japansake.or.jp/sakagura/jp/mie/page/3/"
+      ],
+      "flags": [
+        "사명이 한자가 아니라 가타카나 「タカハシ」가 정식",
+        "熊本県의 「高橋酒造株式会社」(白岳)와 읽기 동일",
+        "공식 사이트 확인 불가 → officialUrl null"
+      ],
+      "brands": [
+        "天遊琳"
+      ]
+    },
+    {
+      "name": "若戎酒造",
+      "yomigana": "わかえびすしゅぞう",
+      "prefecture": "三重県",
+      "address": "伊賀市阿保1317",
+      "formalName": "若戎酒造株式会社",
+      "officialUrl": "https://www.wakaebis.co.jp/",
+      "sources": [
+        "https://www.wakaebis.co.jp/",
+        "https://www.sakenomy.jp/brewery/K01N024038/"
+      ],
+      "flags": [],
+      "brands": [
+        "若戎",
+        "義左衛門"
+      ]
+    },
+    {
+      "name": "福持酒造場",
+      "yomigana": "ふくもちしゅぞうじょう",
+      "prefecture": "三重県",
+      "address": "名張市安部田3905",
+      "formalName": "株式会社福持酒造場",
+      "officialUrl": null,
+      "sources": [
+        "https://www.sakenomy.jp/brewery/K01N024035/",
+        "https://japansake.or.jp/sakagura/jp/mie/"
+      ],
+      "flags": [
+        "공식 사이트 확인 불가 → officialUrl null"
+      ],
+      "brands": [
+        "天下錦"
+      ]
+    },
+    {
+      "name": "宮坂醸造",
+      "yomigana": "みやさかじょうぞう",
+      "prefecture": "長野県",
+      "address": "諏訪市元町1-16",
+      "formalName": "宮坂醸造株式会社",
+      "officialUrl": "https://www.masumi.co.jp/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/suwa/",
+        "https://ja.wikipedia.org/wiki/宮坂醸造"
+      ],
+      "flags": [
+        "協会7号酵母(真澄酵母) 발상 蔵"
+      ],
+      "brands": [
+        "真澄"
+      ]
+    },
+    {
+      "name": "岡崎酒造",
+      "yomigana": "おかざきしゅぞう",
+      "prefecture": "長野県",
+      "address": "上田市中央4-7-33",
+      "formalName": "岡崎酒造株式会社",
+      "officialUrl": "http://www.ueda.ne.jp/~okazaki/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/ueda/",
+        "https://ja.wikipedia.org/wiki/岡崎酒造"
+      ],
+      "flags": [
+        "「亀齢」이 広島県 亀齢酒造와 중복되어 「信州亀齢」로 개칭한 경위"
+      ],
+      "brands": [
+        "信州亀齢"
+      ]
+    },
+    {
+      "name": "大信州酒造",
+      "yomigana": "だいしんしゅうしゅぞう",
+      "prefecture": "長野県",
+      "address": "松本市島立2380",
+      "formalName": "大信州酒造株式会社",
+      "officialUrl": "https://www.daishinsyu.com/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/matsumoto/",
+        "http://www.daishinsyu.com/"
+      ],
+      "flags": [
+        "Wikipedia 기사 없음 — 읽기는 NAGANOSAKE.JP 후리가나 근거"
+      ],
+      "brands": [
+        "大信州"
+      ]
+    },
+    {
+      "name": "七笑酒造",
+      "yomigana": "ななわらいしゅぞう",
+      "prefecture": "長野県",
+      "address": "木曽郡木曽町福島5135",
+      "formalName": "七笑酒造株式会社",
+      "officialUrl": "https://www.nanawarai.co.jp/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/kiso/",
+        "https://ja.wikipedia.org/wiki/七笑酒造"
+      ],
+      "flags": [],
+      "brands": [
+        "七笑"
+      ]
+    },
+    {
+      "name": "佐久の花酒造",
+      "yomigana": "さくのはなしゅぞう",
+      "prefecture": "長野県",
+      "address": "佐久市下越620",
+      "formalName": "佐久の花酒造株式会社",
+      "officialUrl": "https://www.sakunohana.jp/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/saku/",
+        "https://www.sakunohana.jp/company.html"
+      ],
+      "flags": [
+        "표기 흔들림: 공식·조합은 「佐久の花」, 소매/평가 사이트는 「佐久乃花」"
+      ],
+      "brands": [
+        "佐久の花"
+      ]
+    },
+    {
+      "name": "小野酒造店",
+      "yomigana": "おのしゅぞうてん",
+      "prefecture": "長野県",
+      "address": "上伊那郡辰野町小野992-1",
+      "formalName": "株式会社小野酒造店",
+      "officialUrl": "https://yoakemae-ono.com/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/ina/",
+        "https://yoakemae-ono.com/"
+      ],
+      "flags": [],
+      "brands": [
+        "夜明け前"
+      ]
+    },
+    {
+      "name": "桝一市村酒造場",
+      "yomigana": "ますいちいちむらしゅぞうじょう",
+      "prefecture": "長野県",
+      "address": "上高井郡小布施町小布施807",
+      "formalName": "株式会社桝一市村酒造場",
+      "officialUrl": "http://masuichi.com/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/nagano/",
+        "https://ja.wikipedia.org/wiki/桝一市村酒造場"
+      ],
+      "flags": [
+        "대표명칭이 단일하지 않음 — 조합은 「スクウェア・ワン」, 공식은 白金/州/碧漪軒 등 병기"
+      ],
+      "brands": [
+        "スクウェア・ワン",
+        "白金"
+      ]
+    },
+    {
+      "name": "玉村本店",
+      "yomigana": "たまむらほんてん",
+      "prefecture": "長野県",
+      "address": "下高井郡山ノ内町大字平穏1163",
+      "formalName": "株式会社玉村本店",
+      "officialUrl": "http://www.tamamura-honten.co.jp/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/nakano/",
+        "https://tamamura-honten.co.jp/?mode=f1"
+      ],
+      "flags": [
+        "日本酒 「縁喜」보다 크래프트 맥주 「志賀高原ビール」 양조원으로 더 알려짐",
+        "Wikipedia 기사 없음"
+      ],
+      "brands": [
+        "縁喜"
+      ]
+    },
+    {
+      "name": "田中屋酒造店",
+      "yomigana": "たなかやしゅぞうてん",
+      "prefecture": "長野県",
+      "address": "飯山市大字飯山2227",
+      "formalName": "株式会社田中屋酒造店",
+      "officialUrl": "http://www.mizuo.co.jp/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/nakano/",
+        "https://ja.wikipedia.org/wiki/田中屋酒造店"
+      ],
+      "flags": [],
+      "brands": [
+        "水尾"
+      ]
+    },
+    {
+      "name": "遠藤酒造場",
+      "yomigana": "えんどうしゅぞうじょう",
+      "prefecture": "長野県",
+      "address": "須坂市須坂29",
+      "formalName": "株式会社遠藤酒造場",
+      "officialUrl": "http://www.keiryu.jp/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/nagano/",
+        "https://ja.wikipedia.org/wiki/遠藤酒造場"
+      ],
+      "flags": [
+        "주소 표기 흔들림: 조합은 「須坂市須坂29」, Wikipedia는 「須坂市大字須坂29」"
+      ],
+      "brands": [
+        "渓流"
+      ]
+    },
+    {
+      "name": "大澤酒造",
+      "yomigana": "おおさわしゅぞう",
+      "prefecture": "長野県",
+      "address": "佐久市茂田井2206",
+      "formalName": "大澤酒造株式会社",
+      "officialUrl": "http://osawa-sake.jp/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/saku/",
+        "https://ja.wikipedia.org/wiki/大澤酒造_(長野県)"
+      ],
+      "flags": [
+        "兵庫県 西宮市에도 「大澤酒造」가 존재했음(2005년 분할)",
+        "조합의 대표명칭 란은 「信濃のかたりべ」이나 전국 지명도는 「明鏡止水」가 높아 병기"
+      ],
+      "brands": [
+        "明鏡止水",
+        "信濃のかたりべ"
+      ]
+    },
+    {
+      "name": "酒千蔵野",
+      "yomigana": "しゅせんくらの",
+      "prefecture": "長野県",
+      "address": "長野市川中島町今井368-1",
+      "formalName": "株式会社酒千蔵野",
+      "officialUrl": "https://shusen.jp/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/nagano/",
+        "https://shusen.jp/",
+        "https://db.go-nagano.net/topics_detail6/id=11459"
+      ],
+      "flags": [
+        "읽기 출처 상이: NAGANOSAKE.JP는 「さけせんくらの」, SAKETIMES·공식 영문 SHUSEN KURANO는 「しゅせんくらの」 — 자사 표기 우선",
+        "1540년 창업, 信州 최고(最古)의 酒蔵"
+      ],
+      "brands": [
+        "桂正宗",
+        "川中島",
+        "幻舞"
+      ]
+    },
+    {
+      "name": "湯川酒造店",
+      "yomigana": "ゆかわしゅぞうてん",
+      "prefecture": "長野県",
+      "address": "木曽郡木祖村藪原1003-1",
+      "formalName": "株式会社湯川酒造店",
+      "officialUrl": "https://www.sake-kisoji.com/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/kiso/",
+        "https://ja.wikipedia.org/wiki/湯川酒造店"
+      ],
+      "flags": [
+        "주소 자체 흔들림: 조합은 「藪原」, Wikipedia는 「大字薮原」"
+      ],
+      "brands": [
+        "木曽路",
+        "十六代九郎右衛門"
+      ]
+    },
+    {
+      "name": "諏訪御湖鶴酒造場",
+      "yomigana": "すわみこつるしゅぞうじょう",
+      "prefecture": "長野県",
+      "address": "諏訪郡下諏訪町御田町3205-17",
+      "formalName": "磐栄運送株式会社 諏訪御湖鶴酒造場",
+      "officialUrl": "https://www.mikotsuru.com/",
+      "sources": [
+        "https://www.nagano-sake.or.jp/intro/suwa/",
+        "https://www.mikotsuru.com/"
+      ],
+      "flags": [
+        "법인격 특수: 전신 菱友醸造가 2017년 파산 → 磐栄運送(주)이 사업 승계. 조합 명부상도 「磐栄運送(株) 諏訪御湖鶴酒造場」",
+        "IWC2021 SAKE 부문 챔피언 사케"
+      ],
+      "brands": [
+        "御湖鶴"
+      ]
+    },
+    {
+      "name": "高木酒造",
+      "yomigana": "たかぎしゅぞう",
+      "prefecture": "山形県",
+      "address": "村山市富並1826",
+      "formalName": "高木酒造株式会社",
+      "officialUrl": null,
+      "sources": [
+        "https://ja.wikipedia.org/wiki/高木酒造",
+        "https://yamagata-sake.or.jp/pages/55/",
+        "https://www.sakenomy.jp/brewery/K01N006015/"
+      ],
+      "flags": [
+        "⚠ 동명 별법인이 高知県에 존재 (高木酒造株式会社·豊能梅)",
+        "공식 사이트 없음 — 현 주조조합 蔵元 페이지의 웹사이트 란도 「－」"
+      ],
+      "brands": [
+        "十四代"
+      ]
+    },
+    {
+      "name": "出羽桜酒造",
+      "yomigana": "でわざくらしゅぞう",
+      "prefecture": "山形県",
+      "address": "天童市一日町1-4-6",
+      "formalName": "出羽桜酒造株式会社",
+      "officialUrl": "https://www.dewazakura.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/出羽桜酒造",
+        "https://yamagata-sake.or.jp/pages/19/"
+      ],
+      "flags": [
+        "공식 회사개요 페이지(/company/)는 404 — 주소는 Wikipedia만 근거"
+      ],
+      "brands": [
+        "出羽桜"
+      ]
+    },
+    {
+      "name": "楯の川酒造",
+      "yomigana": "たてのかわしゅぞう",
+      "prefecture": "山形県",
+      "address": "酒田市山楯字清水田27番地",
+      "formalName": "楯の川酒造株式会社",
+      "officialUrl": "https://www.tatenokawa.com/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/楯の川酒造",
+        "https://www.tatenokawa.com/ja/sake/company/"
+      ],
+      "flags": [
+        "蔵元名은 「楯の川酒造」, 대표명칭은 「楯野川」 — の/野 로 표기가 다름",
+        "2010년부터 전량 純米大吟醸"
+      ],
+      "brands": [
+        "楯野川",
+        "子宝"
+      ]
+    },
+    {
+      "name": "亀の井酒造",
+      "yomigana": "かめのいしゅぞう",
+      "prefecture": "山形県",
+      "address": "鶴岡市羽黒町戸野字福ノ内1",
+      "formalName": "亀の井酒造株式会社",
+      "officialUrl": null,
+      "sources": [
+        "https://yamagata-sake.or.jp/pages/31/",
+        "https://japansake.or.jp/sakagura/jp/yamagata/kamenoi-shuzou-2/"
+      ],
+      "flags": [
+        "Wikipedia 기사 없음 — 읽기는 Sakenomy 표기 근거",
+        "공식 사이트 미확인"
+      ],
+      "brands": [
+        "くどき上手"
+      ]
+    },
+    {
+      "name": "酒田酒造",
+      "yomigana": "さかたしゅぞう",
+      "prefecture": "山形県",
+      "address": "酒田市日吉町2-3-25",
+      "formalName": "酒田酒造株式会社",
+      "officialUrl": "https://www.jokigen.com/",
+      "sources": [
+        "https://www.jokigen.com/company",
+        "https://yamagata-sake.or.jp/pages/19/"
+      ],
+      "flags": [
+        "Wikipedia 기사 없음 — 읽기는 소매DB 근거"
+      ],
+      "brands": [
+        "上喜元"
+      ]
+    },
+    {
+      "name": "水戸部酒造",
+      "yomigana": "みとべしゅぞう",
+      "prefecture": "山形県",
+      "address": "天童市大字原町乙7番地",
+      "formalName": "株式会社水戸部酒造",
+      "officialUrl": "https://www.mitobesake.com/",
+      "sources": [
+        "https://www.mitobesake.com/",
+        "https://yamagatakanko.com/attractions/detail_13636.html"
+      ],
+      "flags": [
+        "읽기는 山形県 공식 관광사이트 후리가나로 확인"
+      ],
+      "brands": [
+        "山形正宗",
+        "稲造"
+      ]
+    },
+    {
+      "name": "東北銘醸",
+      "yomigana": "とうほくめいじょう",
+      "prefecture": "山形県",
+      "address": "酒田市十里塚字村東山125番地の3",
+      "formalName": "東北銘醸株式会社",
+      "officialUrl": "https://www.hatsumago.co.jp/",
+      "sources": [
+        "https://www.hatsumago.co.jp/company/",
+        "https://yamagata-sake.or.jp/pages/19/"
+      ],
+      "flags": [
+        "사명에 「酒造」가 없음 (「銘醸」)",
+        "전량 生酛 造り"
+      ],
+      "brands": [
+        "初孫"
+      ]
+    },
+    {
+      "name": "小嶋総本店",
+      "yomigana": "こじまそうほんてん",
+      "prefecture": "山形県",
+      "address": "米沢市本町2-2-3",
+      "formalName": "株式会社小嶋総本店",
+      "officialUrl": "http://www.sake-toko.co.jp/main.php",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/小嶋総本店",
+        "https://japansake.or.jp/sakagura/jp/yamagata/"
+      ],
+      "flags": [
+        "「嶋」은 「島」이 아님",
+        "별법인 「株式会社東光の酒蔵」이 중앙회 명부에 병기 — 혼동 주의",
+        "officialUrl은 Wikipedia 기재값 — 직접 오픈 미실시",
+        "1597년 창업"
+      ],
+      "brands": [
+        "東光"
+      ]
+    },
+    {
+      "name": "月山酒造",
+      "yomigana": "がっさんしゅぞう",
+      "prefecture": "山形県",
+      "address": "寒河江市大字谷沢769-1",
+      "formalName": "月山酒造株式会社",
+      "officialUrl": "https://www.gassan-sake.co.jp/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/月山酒造",
+        "https://yamagata-sake.or.jp/pages/19/"
+      ],
+      "flags": [
+        "1972년 設楽酒造店·鈴木酒造·八幡屋酒造店 3사가 공동 설립한 합동 蔵"
+      ],
+      "brands": [
+        "銀嶺月山"
+      ]
+    },
+    {
+      "name": "冨士酒造",
+      "yomigana": "ふじしゅぞう",
+      "prefecture": "山形県",
+      "address": "鶴岡市大山3丁目32番48号",
+      "formalName": "冨士酒造株式会社",
+      "officialUrl": "https://www.e-sakenom.com/",
+      "sources": [
+        "https://www.e-sakenom.com/",
+        "https://www.sakenomy.jp/brewery/K01N006034/"
+      ],
+      "flags": [
+        "「冨士」의 「冨」는 갓머리(ウ冠) 없음 — 「富士酒造」가 아님",
+        "Wikipedia 기사 없음 — 읽기는 Sakenomy 근거"
+      ],
+      "brands": [
+        "栄光冨士"
+      ]
+    },
+    {
+      "name": "新藤酒造店",
+      "yomigana": "しんどうしゅぞうてん",
+      "prefecture": "山形県",
+      "address": "米沢市大字竹井1331",
+      "formalName": "有限会社新藤酒造店",
+      "officialUrl": "http://kurouzaemon.com/",
+      "sources": [
+        "https://yamagata-sake.or.jp/pages/71/",
+        "https://japansake.or.jp/sakagura/jp/yamagata/"
+      ],
+      "flags": [
+        "법인격은 有限会社",
+        "「酒造」가 아니라 「酒造店」",
+        "Wikipedia 기사 없음 — 읽기는 日本酒ガイド 근거"
+      ],
+      "brands": [
+        "雅山流",
+        "九郎左衛門"
+      ]
+    },
+    {
+      "name": "米鶴酒造",
+      "yomigana": "よねつるしゅぞう",
+      "prefecture": "山形県",
+      "address": "東置賜郡高畠町二井宿1076",
+      "formalName": "米鶴酒造株式会社",
+      "officialUrl": "http://www.yonetsuru.com/",
+      "sources": [
+        "https://ja.wikipedia.org/wiki/米鶴酒造",
+        "https://japansake.or.jp/sakagura/jp/yamagata/"
+      ],
+      "flags": [
+        "officialUrl은 Wikipedia 기재값 — 직접 오픈 미실시"
+      ],
+      "brands": [
+        "米鶴"
+      ]
+    }
+  ]
+}

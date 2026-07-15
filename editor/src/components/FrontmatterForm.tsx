@@ -254,13 +254,31 @@ function TastingAutofillPanel({ current, defaultQuery, onApply, onDbPick }: {
     const brewery = (checked.has('brewery') && typeof result.brewery === 'string' ? result.brewery : undefined) ?? current.brewery;
     const saveName = stripBreweryPrefix(query.trim(), brewery);
     if (saveToMaster && saveName) {
-      const input: SakeInput = { name: saveName };
-      for (const k of MASTER_SAVE_KEYS) {
-        if (checked.has(k) && result[k] !== undefined) Object.assign(input, { [k]: result[k] });
+      // v2 마스터는 사케 → 브랜드 → 양조장 체인이라 양조장 없이는 저장 자체가 성립하지 않는다.
+      // 「양조장」 체크를 꺼도 프론트매터의 현재 양조장으로 폴백한다(위 brewery). 그래도 없으면
+      // 서버 400을 맞고 "실패"라고만 말하는 대신 왜 못 넣는지 알린다.
+      if (!brewery) {
+        setSaveMsg({ text: '양조장이 비어 마스터에 저장하지 않았습니다 — 글은 정상 저장됩니다', ok: false });
+      } else {
+        const input: SakeInput = { name: saveName };
+        for (const k of MASTER_SAVE_KEYS) {
+          if (checked.has(k) && result[k] !== undefined) Object.assign(input, { [k]: result[k] });
+        }
+        input.brewery = brewery; // 체크 여부와 무관하게 확정값으로 고정 (위 폴백 포함)
+        api.upsertSake(input)
+          .then(({ created }) => setSaveMsg({ text: created ? '마스터에 추가됨' : '기존 마스터 갱신됨', ok: true }))
+          .catch((err: unknown) => {
+            // 400 = 서버가 브랜드를 추측하지 않고 거절(그 양조장에 브랜드가 2개 이상). 무엇을 하면
+            // 되는지 알려준다 — 「저장 실패」로 뭉뚱그리면 사용자가 원인을 알 수 없다.
+            const is400 = err instanceof Error && err.message.startsWith('400');
+            setSaveMsg({
+              text: is400
+                ? '브랜드를 지정해야 마스터에 저장됩니다 (이 양조장은 브랜드가 여러 개) — 글은 정상 저장됩니다'
+                : '마스터 저장 실패 — 글은 정상 저장됩니다',
+              ok: false,
+            });
+          });
       }
-      api.upsertSake(input)
-        .then(({ created }) => setSaveMsg({ text: created ? '마스터에 추가됨' : '기존 마스터 갱신됨', ok: true }))
-        .catch(() => setSaveMsg({ text: '마스터 저장 실패 — 글은 정상 저장됩니다', ok: false }));
     }
     close();
   };

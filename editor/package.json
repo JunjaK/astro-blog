@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "server": "bun run server/index.ts",
     "start": "bun run server/index.ts",
-    "seed": "bun run server/seed.ts"
+    "seed": "bun run server/seed.ts",
+    "seed:breweries": "bun run server/seed-breweries.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

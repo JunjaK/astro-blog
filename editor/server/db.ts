@@ -57,21 +57,48 @@ db.run(`
     name       TEXT NOT NULL,
     name_norm  TEXT NOT NULL UNIQUE,
     yomigana   TEXT,
-    region     TEXT,
+    prefecture TEXT,
+    address    TEXT,
     note       TEXT,
     created_at TEXT,
     updated_at TEXT
   )
 `);
+// v2: 蔵元 1:n 브랜드 1:n 사케. brand 는 v1 에서 sakes 의 TEXT 컬럼이었다 — 실체가 없어서 표기
+// 흔들림을 막지 못했고(brand 엔 name_norm 도 없었다), 브랜드 rename 이 전 행 UPDATE 였다.
+// UNIQUE 는 (brewery_id, name_norm): 브랜드명은 蔵元 간 충돌한다 — 長野 岡崎酒造가 広島 亀齢酒造와
+// 겹쳐 「信州亀齢」로 개칭한 게 실례. 전역 UNIQUE 였으면 둘 중 하나를 못 넣는다.
+db.run(`
+  CREATE TABLE IF NOT EXISTS brands (
+    id         TEXT PRIMARY KEY,
+    name       TEXT NOT NULL,
+    name_norm  TEXT NOT NULL,
+    yomigana   TEXT,
+    brewery_id TEXT NOT NULL,
+    note       TEXT,
+    created_at TEXT,
+    updated_at TEXT,
+    UNIQUE(brewery_id, name_norm)
+  )
+`);
+db.run('CREATE INDEX IF NOT EXISTS idx_brands_brewery ON brands(brewery_id)');
+
+// v1→v2 sakes 재작성. sakes.brewery_id 는 제거 — brand_id 가 있으면 蔵元은 브랜드 경유로 도출되고,
+// 둘 다 들면 서로 어긋날 수 있는 사본이 된다. DROP 이 아니라 RENAME 인 이유: 이 파일은 서버 기동 때
+// 돌기 때문에, 배포 시점에 누가 사케를 써놨으면 조용히 날아간다. 0행이면 빈 백업이라 무해.
+const sakeCols = new Set(
+  (db.query('PRAGMA table_info(sakes)').all() as { name: string }[]).map((r) => r.name),
+);
+if (sakeCols.has('brewery_id')) {
+  db.run('ALTER TABLE sakes RENAME TO sakes_v1_backup');
+}
 db.run(`
   CREATE TABLE IF NOT EXISTS sakes (
     id            TEXT PRIMARY KEY,
     name          TEXT NOT NULL,
     name_norm     TEXT NOT NULL,
-    brand         TEXT,
     yomigana      TEXT,
-    brandYomigana TEXT,
-    brewery_id    TEXT,
+    brand_id      TEXT NOT NULL,
     tokuteiMeisho TEXT,
     riceType      TEXT,
     seimaiBuai    INTEGER,
@@ -81,9 +108,10 @@ db.run(`
     note          TEXT,
     created_at    TEXT,
     updated_at    TEXT,
-    UNIQUE(brewery_id, name_norm)
+    UNIQUE(brand_id, name_norm)
   )
 `);
+db.run('CREATE INDEX IF NOT EXISTS idx_sakes_brand ON sakes(brand_id)');
 
 // Idempotent column migration (v1.1 delta). CREATE TABLE IF NOT EXISTS above is a no-op when the
 // table predates a column (a prior test run / deployed .data/blog.db has the v1 shape), so add any
@@ -97,5 +125,19 @@ export function ensureColumns(database: Database, table: string, columns: Record
     if (!existing.has(name)) database.run(`ALTER TABLE ${table} ADD COLUMN ${name} ${type}`);
   }
 }
-ensureColumns(db, 'breweries', { yomigana: 'TEXT' });
-ensureColumns(db, 'sakes', { brand: 'TEXT', yomigana: 'TEXT', brandYomigana: 'TEXT' });
+// Idempotent column rename (v1.2 delta). Same PRAGMA-guard shape as ensureColumns: rename only when
+// the old name is still there AND the new one isn't, so a re-run (or a fresh CREATE TABLE above,
+// which already has the new name) is a no-op. Preserves existing values — ADD+DROP would not.
+export function renameColumn(database: Database, table: string, from: string, to: string) {
+  const cols = new Set(
+    (database.query(`PRAGMA table_info(${table})`).all() as { name: string }[]).map((r) => r.name),
+  );
+  if (cols.has(from) && !cols.has(to)) database.run(`ALTER TABLE ${table} RENAME COLUMN ${from} TO ${to}`);
+}
+
+// v1.2: breweries.region was one free-text box that in practice held 「都道府県 + 詳細住所」 glued
+// together (e.g. '秋田県にかほし平沢町') → split into prefecture (47-item picker) + address (free text).
+// Rename BEFORE ensureColumns so the PRAGMA check below sees the new name and skips re-adding it.
+renameColumn(db, 'breweries', 'region', 'prefecture');
+ensureColumns(db, 'breweries', { yomigana: 'TEXT', prefecture: 'TEXT', address: 'TEXT' });
+// sakes 는 위에서 v2 스키마로 재작성되므로 v1.1 의 ensureColumns(brand/yomigana/brandYomigana)는 불필요.

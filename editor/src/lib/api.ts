@@ -150,26 +150,45 @@ async function autofillTasting(query: string): Promise<TastingAutofill> {
 }
 
 // ── 사케/양조장 마스터 데이터 (editor 전용 SQLite, /editor-api/sake/*) — BE=SSOT ──
+// 都道府県 47개는 서버가 SSOT (server/prefectures.ts) — 시드 검증과 폼 셀렉트가 같은 배열을 본다.
+export { PREFECTURES, type Prefecture } from '../../server/prefectures';
+
 export interface Brewery {
   id: string;
   name: string;
   yomigana: string | null; // 양조장 읽기 (v1.1)
-  region: string | null;
+  prefecture: string | null; // 都道府県 (v1.2) — PREFECTURES 중 하나
+  address: string | null; // 세부 주소, 市区町村 이하 자유 텍스트 (v1.2)
   note: string | null;
   created_at: string | null;
   updated_at: string | null;
 }
 
-// GET 응답 (LEFT JOIN brewery 이름 + 서버가 riceType JSON.parse 완료).
+// 브랜드(銘柄) — v2에서 sakes의 TEXT 컬럼이 아니라 실체가 됐다. 蔵元 1:n 브랜드.
+export interface Brand {
+  id: string;
+  name: string;
+  yomigana: string | null;
+  brewery: string | null; // join된 양조장 이름(표시용)
+  breweryYomigana: string | null;
+  brewery_id: string;
+  note: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+// GET 응답 (sakes → brands → breweries 2-hop join + 서버가 riceType JSON.parse 완료).
+// brewery/brand는 이름 문자열로 내려온다 — 저장은 brand_id 하나뿐(양조장은 브랜드 경유로 도출).
 export interface Sake {
   id: string;
   name: string;
-  brand: string | null; // 銘柄 (v1.1)
+  brand: string | null; // join된 銘柄 이름 (v2: brands.name)
   yomigana: string | null; // 술 이름 읽기 (v1.1)
-  brandYomigana: string | null; // 브랜드 읽기 (v1.1)
-  brewery: string | null; // 해석된 양조장 이름(표시용)
-  breweryYomigana: string | null; // join된 양조장 읽기 (b.yomigana AS breweryYomigana)
-  brewery_id: string | null;
+  brandYomigana: string | null; // join된 브랜드 읽기 (v2: brands.yomigana)
+  brand_id: string; // NOT NULL — 사케는 브랜드 없이 존재하지 않는다
+  brewery: string | null; // 2-hop join된 양조장 이름(표시용)
+  breweryYomigana: string | null;
+  brewery_id: string | null; // 도출값(brands.brewery_id) — sakes에는 이 컬럼이 없다
   tokuteiMeisho: TokuteiMeisho | null;
   riceType: string[]; // 없으면 []
   seimaiBuai: number | null;
@@ -181,12 +200,14 @@ export interface Sake {
   updated_at: string | null;
 }
 
-// POST(augment) / PUT(replace) 공용. brewery=이름(서버가 id 해석). `| null`로 PUT 명시 clear.
+// POST(augment) / PUT(replace) 공용. brewery/brand=이름(서버가 id 해석). `| null`로 PUT 명시 clear.
+// v2: brewery는 사실상 필수 — 없으면 400. brand 생략 시 서버가 해당 양조장의 브랜드를 찾아 붙이고,
+// 브랜드가 2개 이상이면 추측하지 않고 400 (조용히 아무 데나 붙이지 않는다).
 export interface SakeInput {
   name: string;
-  brand?: string | null; // 銘柄 (v1.1)
+  brand?: string | null; // 銘柄
   yomigana?: string | null; // 술 이름 읽기 (v1.1)
-  brandYomigana?: string | null; // 브랜드 읽기 (v1.1)
+  brandYomigana?: string | null; // 서버 resolveBrandId가 브랜드 레코드에 반영
   brewery?: string | null;
   breweryYomigana?: string | null; // 서버 resolveBreweryId가 브루어리 레코드에 반영 (v1.1)
   tokuteiMeisho?: TokuteiMeisho | null;
@@ -198,38 +219,50 @@ export interface SakeInput {
   note?: string | null;
 }
 
-export interface BreweryInput {
+export interface BrandInput {
   name: string;
-  yomigana?: string | null; // 양조장 읽기 (v1.1)
-  region?: string | null;
+  yomigana?: string | null;
+  brewery: string; // 필수 — 브랜드는 양조장 없이 존재할 수 없다
+  breweryYomigana?: string | null;
   note?: string | null;
 }
 
-// Thrown by deleteBrewery on 409 "brewery in use". Carries the referencing sake count so the UI
-// can show a blocking "N개 참조 중" message (mirrors the AutofillError .status idiom).
+export interface BreweryInput {
+  name: string;
+  yomigana?: string | null; // 양조장 읽기 (v1.1)
+  prefecture?: string | null; // 都道府県 (v1.2)
+  address?: string | null; // 세부 주소 (v1.2)
+  note?: string | null;
+}
+
+// 409 "in use" — 참조가 남아 있어 삭제를 막았을 때. UI가 「N개 참조 중」 blocking 메시지를 띄우도록
+// 개수와 종류를 함께 나른다 (AutofillError의 .status 관용구 미러). v2에서 참조는 두 종류:
+// 양조장은 브랜드가, 브랜드는 사케가 물고 있다.
 export class SakeRefError extends Error {
   status: number;
   count: number;
-  constructor(count: number, message?: string) {
-    super(message ?? 'brewery in use');
+  kind: 'brand' | 'sake';
+  constructor(count: number, kind: 'brand' | 'sake', message?: string) {
+    super(message ?? 'in use');
     this.name = 'SakeRefError';
     this.status = 409;
     this.count = count;
+    this.kind = kind;
   }
 }
 
-// DELETE a brewery. Own fetch (not req<T>) to surface the 409 count as a SakeRefError.
-// 401 reuses the global bounce; 409 → SakeRefError(count); other non-2xx → generic Error.
-async function deleteBrewery(id: string): Promise<{ ok: true }> {
-  const res = await fetch(`${BASE}/sake/breweries/${id}`, {
+// DELETE with 409 surfacing. Own fetch (not req<T>) to turn the 409 body into a SakeRefError.
+// 401 reuses the global bounce; other non-2xx → generic Error.
+async function deleteWithRefCheck(path: string, fallbackKind: 'brand' | 'sake'): Promise<{ ok: true }> {
+  const res = await fetch(`${BASE}${path}`, {
     method: 'DELETE',
     credentials: 'same-origin',
     headers: { 'X-Requested-With': 'XMLHttpRequest' },
   });
   if (res.status === 401) { bounceToLogin(); throw new Error('unauthorized'); }
   if (res.status === 409) {
-    const body = await res.json() as { error: string; count: number };
-    throw new SakeRefError(body.count);
+    const body = await res.json() as { error: string; count: number; kind?: 'brand' | 'sake' };
+    throw new SakeRefError(body.count, body.kind ?? fallbackKind);
   }
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json() as Promise<{ ok: true }>;
@@ -262,5 +295,17 @@ export const api = {
     req<{ brewery: Brewery; created: boolean }>('/sake/breweries', { method: 'POST', body: JSON.stringify(input), headers: { 'Content-Type': 'application/json' } }),
   updateBrewery: (id: string, input: BreweryInput) =>
     req<{ ok: true }>(`/sake/breweries/${id}`, { method: 'PUT', body: JSON.stringify(input), headers: { 'Content-Type': 'application/json' } }),
-  deleteBrewery,
+  deleteBrewery: (id: string) => deleteWithRefCheck(`/sake/breweries/${id}`, 'brand'),
+  // 브랜드(銘柄) CRUD. breweryId 지정 = 그 양조장의 브랜드만(사케 폼의 후보 좁히기).
+  searchBrands: (q?: string, breweryId?: string) => {
+    const p = new URLSearchParams();
+    if (q) p.set('q', q);
+    if (breweryId) p.set('brewery_id', breweryId);
+    return req<Brand[]>(`/sake/brands${p.size ? `?${p}` : ''}`);
+  },
+  upsertBrand: (input: BrandInput) =>
+    req<{ brand: Brand; created: boolean }>('/sake/brands', { method: 'POST', body: JSON.stringify(input), headers: { 'Content-Type': 'application/json' } }),
+  updateBrand: (id: string, input: BrandInput) =>
+    req<{ ok: true }>(`/sake/brands/${id}`, { method: 'PUT', body: JSON.stringify(input), headers: { 'Content-Type': 'application/json' } }),
+  deleteBrand: (id: string) => deleteWithRefCheck(`/sake/brands/${id}`, 'sake'),
 };
