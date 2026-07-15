@@ -1,5 +1,10 @@
 // Thin client for the editor backend (Hono) mounted at /editor-api.
 // All content state lives server-side (RPi SQLite); no IndexedDB/local cache.
+//
+// 都道府県 47개는 서버가 SSOT (server/prefectures.ts) — 시드 검증과 폼 셀렉트가 같은 배열을 본다.
+// import + re-export (순수 re-export 는 이 파일 안에서 Prefecture 를 쓸 수 없다).
+import { PREFECTURES, type Prefecture } from '../../server/prefectures';
+
 const BASE = '/editor-api';
 const LOGIN_URL = `${import.meta.env.BASE_URL}login`; // '/editor/login'
 
@@ -82,6 +87,7 @@ export interface Frontmatter {
   brandYomigana?: string; // 브랜드 읽기 (히라가나)
   brewery?: string;
   breweryYomigana?: string; // 양조장 읽기 (히라가나)
+  prefecture?: Prefecture; // 産地(도도부현, v1.2). 상세 주소는 마스터 전용 — 글엔 싣지 않는다
   tokuteiMeisho?: TokuteiMeisho;
   riceType?: string[];
   seimaiBuai?: number;
@@ -112,7 +118,7 @@ export const TOKUTEI_MEISHO = [
 // drinkKind는 서버가 nihonshu 하드코딩 → 응답에 없음.
 export type TastingAutofill = Partial<Pick<Frontmatter,
   'brand' | 'yomigana' | 'brandYomigana' | 'breweryYomigana'
-  | 'brewery' | 'tokuteiMeisho' | 'riceType' | 'seimaiBuai' | 'alcohol'
+  | 'brewery' | 'prefecture' | 'tokuteiMeisho' | 'riceType' | 'seimaiBuai' | 'alcohol'
   | 'nihonshuDo' | 'sando' | 'amakara' | 'noutan' | 'flavorTags'>>;
 
 export interface DocResponse {
@@ -150,8 +156,7 @@ async function autofillTasting(query: string): Promise<TastingAutofill> {
 }
 
 // ── 사케/양조장 마스터 데이터 (editor 전용 SQLite, /editor-api/sake/*) — BE=SSOT ──
-// 都道府県 47개는 서버가 SSOT (server/prefectures.ts) — 시드 검증과 폼 셀렉트가 같은 배열을 본다.
-export { PREFECTURES, type Prefecture } from '../../server/prefectures';
+export { PREFECTURES, type Prefecture };
 
 export interface Brewery {
   id: string;
@@ -189,6 +194,7 @@ export interface Sake {
   brewery: string | null; // 2-hop join된 양조장 이름(표시용)
   breweryYomigana: string | null;
   brewery_id: string | null; // 도출값(brands.brewery_id) — sakes에는 이 컬럼이 없다
+  prefecture: string | null; // 양조장의 産地 (breweries.prefecture 조인) — DB 픽 소스
   tokuteiMeisho: TokuteiMeisho | null;
   riceType: string[]; // 없으면 []
   seimaiBuai: number | null;

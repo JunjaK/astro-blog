@@ -1,4 +1,4 @@
-import type { Frontmatter, LyricsKind, Sake, SakeInput, TastingAutofill, TokuteiMeisho } from '../lib/api';
+import type { Frontmatter, LyricsKind, Prefecture, Sake, SakeInput, TastingAutofill, TokuteiMeisho } from '../lib/api';
 import type { ReactNode } from 'react';
 import { useEffect, useId, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { api, AutofillError, TOKUTEI_MEISHO } from '../lib/api';
+import { api, AutofillError, PREFECTURES, TOKUTEI_MEISHO } from '../lib/api';
 import { NIHONSHU_FLAVOR_LABELS } from '../lib/nihonshuFlavors';
 import { AmakaraNoutanPicker } from './AmakaraNoutanPicker';
 import { DatePicker, TagInput, ThumbnailInput } from './fields';
@@ -29,10 +29,12 @@ const DRINK_KINDS: { value: DrinkKind; label: string }[] = [
   { value: 'other', label: '기타 주류' },
 ];
 // DB-pick objective keys (Sake → Frontmatter, authoritative augment). Includes join-only
-// breweryYomigana. Subjective keys (amakara/noutan/flavorTags) and title are never in master.
-const DB_PICK_KEYS = ['brand', 'brandYomigana', 'yomigana', 'brewery', 'breweryYomigana', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando'] as const;
+// breweryYomigana/prefecture. Subjective keys (amakara/noutan/flavorTags) and title are never in master.
+const DB_PICK_KEYS = ['brand', 'brandYomigana', 'yomigana', 'brewery', 'breweryYomigana', 'prefecture', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando'] as const;
 // Subset persisted back to the sake master on save. breweryYomigana는 서버
 // resolveBreweryId가 브루어리 레코드에 COALESCE 반영.
+// prefecture는 없다 — 도도부현/주소는 「양조장」 폼이 소유하고 resolveBreweryId도 절대 건드리지 않는다
+// (사케 저장이 양조장 소재지를 덮어쓰면 안 된다). 읽기(DB_PICK)는 하되 쓰기는 안 한다.
 const MASTER_SAVE_KEYS = ['brand', 'brandYomigana', 'yomigana', 'brewery', 'breweryYomigana', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando'] as const;
 
 // "旭酒造 - 獺祭 45" 결합 query에서 확정 양조장 접두사를 벗겨 사케명만 남긴다. 미일치 시 원문 유지.
@@ -53,6 +55,7 @@ const AUTOFILL_ROWS: { key: keyof TastingAutofill; label: string; estimate?: boo
   { key: 'yomigana', label: '술이름 요미가나' },
   { key: 'brewery', label: '양조장' },
   { key: 'breweryYomigana', label: '양조장 요미가나' },
+  { key: 'prefecture', label: '산지(도도부현)' },
   { key: 'tokuteiMeisho', label: '특정명칭' },
   { key: 'riceType', label: '원료미' },
   { key: 'seimaiBuai', label: '정미보합(%)', estimate: true },
@@ -540,6 +543,21 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
               </Field>
               <Field label="양조장(酒蔵)" badge={aiBadge('brewery')}>
                 <Input value={value.brewery ?? ''} onChange={(e) => set({ brewery: e.target.value })} />
+              </Field>
+              {/* 産地 — Select 강제. 47개 밖의 값은 카드에서 조용히 사라지므로 자유 입력을 두지 않는다. */}
+              <Field label="산지(産地)" badge={aiBadge('prefecture')}>
+                <Select
+                  value={value.prefecture ?? null}
+                  onValueChange={(v) => set({ prefecture: (v as Prefecture | null) ?? undefined })}
+                >
+                  <SelectTrigger className="w-full" data-testid="fm-prefecture-select">
+                    <SelectValue placeholder="도도부현 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">(없음)</SelectItem>
+                    {PREFECTURES.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               </Field>
               <Field label="특정명칭(特定名称)" badge={aiBadge('tokuteiMeisho')}>
                 <Select

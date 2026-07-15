@@ -12,6 +12,7 @@ const CANONICAL =
   `  yomigana={frontmatter.yomigana}\n` +
   `  brewery={frontmatter.brewery}\n` +
   `  breweryYomigana={frontmatter.breweryYomigana}\n` +
+  `  prefecture={frontmatter.prefecture}\n` +
   `  tokuteiMeisho={frontmatter.tokuteiMeisho}\n` +
   `  riceType={frontmatter.riceType}\n` +
   `  seimaiBuai={frontmatter.seimaiBuai}\n` +

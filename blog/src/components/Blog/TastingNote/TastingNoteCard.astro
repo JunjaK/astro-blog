@@ -8,6 +8,7 @@ type TokuteiMeisho =
 interface Props {
   drinkKind?: DrinkKind;
   brewery?: string;
+  prefecture?: string; // 産地(도도부현). 상세 주소는 에디터 마스터 전용 — 카드엔 싣지 않는다.
   brand?: string;
   yomigana?: string;
   brandYomigana?: string;
@@ -32,6 +33,7 @@ interface Spec {
 const {
   drinkKind,
   brewery,
+  prefecture,
   brand,
   yomigana,
   brandYomigana,
@@ -102,8 +104,17 @@ const flavors = flavorTags ?? [];
       </div>
     )}
 
-    {(brand || yomigana || specs.length > 0) && (
+    {(prefecture || brand || yomigana || specs.length > 0) && (
       <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
+        {prefecture && (
+          <Fragment>
+            <dt class="text-muted-foreground">
+              産地
+              <span class="ml-1 text-xs">산지</span>
+            </dt>
+            <dd class="text-foreground">{prefecture}</dd>
+          </Fragment>
+        )}
         {brand && (
           <Fragment>
             <dt class="text-muted-foreground">

@@ -6,6 +6,7 @@ import { IMPORTS, isManagedImport, manageImports, segmentMdx } from './mdx';
 const TASTING_CANONICAL = `<TastingNoteCard
   drinkKind={frontmatter.drinkKind}
   brewery={frontmatter.brewery}
+  prefecture={frontmatter.prefecture}
   tokuteiMeisho={frontmatter.tokuteiMeisho}
   riceType={frontmatter.riceType}
   seimaiBuai={frontmatter.seimaiBuai}

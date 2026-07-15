@@ -46,6 +46,7 @@ export interface Sake { // GET response — 2-hop join resolved + riceType parse
   brewery: string | null; // 2-hop: sakes → brands → breweries.name
   breweryYomigana: string | null;
   brewery_id: string | null;
+  prefecture: string | null; // 양조장의 産地 — 글의 prefecture 를 DB 픽으로 채우는 소스
   tokuteiMeisho: TokuteiMeisho | null;
   riceType: string[]; // parsed from JSON; [] when none
   seimaiBuai: number | null;
@@ -126,7 +127,7 @@ function toSake(row: SakeRow): Sake {
 // breweries 만 방어적으로 LEFT (brewery_id 는 DB 가 강제하지 않는 논리 FK).
 const SAKE_SELECT = `
   SELECT s.*, br.name AS brand, br.yomigana AS brandYomigana, br.brewery_id AS brewery_id,
-         b.name AS brewery, b.yomigana AS breweryYomigana
+         b.name AS brewery, b.yomigana AS breweryYomigana, b.prefecture AS prefecture
     FROM sakes s
     JOIN brands br ON br.id = s.brand_id
     LEFT JOIN breweries b ON b.id = br.brewery_id`;

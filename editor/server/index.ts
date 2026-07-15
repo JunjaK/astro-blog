@@ -6,6 +6,7 @@ import { serveStatic } from 'hono/bun';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import sharp from 'sharp';
 import { db } from './db';
+import { PREFECTURES } from './prefectures';
 import { catalogImage, setImageUsage, writeVariants } from './images';
 import { isManagedImport, manageImports, segmentMdx } from './mdx';
 import { sake } from './sake';
@@ -248,13 +249,20 @@ const TASTING_SYSTEM_PROMPT
 export const TASTING_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['brand', 'yomigana', 'brandYomigana', 'brewery', 'breweryYomigana', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando', 'amakara', 'noutan', 'flavorTags'],
+  required: ['brand', 'yomigana', 'brandYomigana', 'brewery', 'breweryYomigana', 'prefecture', 'tokuteiMeisho', 'riceType', 'seimaiBuai', 'alcohol', 'nihonshuDo', 'sando', 'amakara', 'noutan', 'flavorTags'],
   properties: {
     brand: { type: ['string', 'null'], description: '銘柄(브랜드명). 술이름과 다를 수 있다. 확신 못 하면 null.' },
     yomigana: { type: ['string', 'null'], description: '술이름 읽기(히라가나). 모르면 null.' },
     brandYomigana: { type: ['string', 'null'], description: '브랜드 읽기(히라가나). 모르면 null.' },
     brewery: { type: ['string', 'null'], description: '양조장(酒蔵) 이름. 확신 못 하면 null.' },
     breweryYomigana: { type: ['string', 'null'], description: '양조장 읽기(히라가나). 모르면 null.' },
+    // enum 강제 — 「山口」처럼 県 빠진 값이 오면 47개 목록에 없어 Select가 빈칸으로 렌더되고
+    // 다음 저장 때 조용히 사라진다. 스키마로 구조를 강제해서 그 경로 자체를 없앤다.
+    prefecture: {
+      type: ['string', 'null'],
+      enum: [...PREFECTURES, null],
+      description: '양조장 소재 都道府県(産地). 47값 중 하나 또는 null. 확신 못 하면 null.',
+    },
     tokuteiMeisho: {
       type: ['string', 'null'],
       enum: ['純米大吟醸', '大吟醸', '純米吟醸', '吟醸', '特別純米', '特別本醸造', '純米', '本醸造', '普通酒', null],
