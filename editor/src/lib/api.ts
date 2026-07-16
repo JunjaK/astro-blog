@@ -66,6 +66,10 @@ export interface PostDetail {
   raw: string; // full MDX (frontmatter + body)
 }
 
+// mirrors server/posts.ts SLUG_RE exactly (Contract SSOT) — FE gates canSave with the same regex so
+// a normal user never trips the server's 400 'invalid slug', and doubles as the path-traversal guard.
+export const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
 export interface Frontmatter {
   title?: string;
   category?: string;
@@ -153,6 +157,64 @@ async function autofillTasting(query: string): Promise<TastingAutofill> {
   if (res.status === 401) { bounceToLogin(); throw new AutofillError(401, 'unauthorized'); }
   if (!res.ok) throw new AutofillError(res.status, `${res.status} ${res.statusText}`);
   return res.json() as Promise<TastingAutofill>;
+}
+
+// Status + raw server error string — mirrors AutofillError's "own fetch to expose .status" idiom,
+// but createPost's 400s aren't interchangeable ('invalid slug' needs different UI copy than
+// 'invalid category'), so callers here need the actual body text, not just the status.
+export class PostApiError extends Error {
+  status: number;
+  constructor(status: number, message?: string) {
+    super(message ?? String(status));
+    this.name = 'PostApiError';
+    this.status = status;
+  }
+}
+
+async function readErrorBody(res: Response): Promise<string | undefined> {
+  const body = await res.json().catch(() => null) as { error?: string } | null;
+  return body?.error;
+}
+
+// Create: own fetch (not req<T>) so onError can branch on both status and the server's error string.
+async function createPost(frontmatter: Frontmatter, body: string, slug: string): Promise<{ id: string }> {
+  const res = await fetch(`${BASE}/posts`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+    body: JSON.stringify({ frontmatter, body, slug }),
+  });
+  if (res.status === 401) { bounceToLogin(); throw new PostApiError(401, 'unauthorized'); }
+  if (!res.ok) throw new PostApiError(res.status, await readErrorBody(res));
+  return res.json() as Promise<{ id: string }>;
+}
+
+// Local publish (write live MDX under BLOG_CONTENT). 503 = BLOG_CONTENT missing (prod/RPi — publish
+// is a local-only workflow by design, no git automation).
+async function publishPost(id: string): Promise<{ path: string; hash: string }> {
+  const res = await fetch(`${BASE}/publish/${id}`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+  });
+  if (res.status === 401) { bounceToLogin(); throw new PostApiError(401, 'unauthorized'); }
+  if (!res.ok) throw new PostApiError(res.status, await readErrorBody(res));
+  return res.json() as Promise<{ path: string; hash: string }>;
+}
+
+// Pure mappers (server error → Korean UI copy) — kept out of the component so they're unit-testable
+// without a renderer, same rationale as Pager.tsx's computePage.
+export function createPostErrorMessage(err: unknown): string {
+  if (err instanceof PostApiError) {
+    if (err.status === 409) return '같은 경로의 글이 이미 있습니다';
+    if (err.message === 'invalid slug') return '슬러그(URL)를 확인하세요';
+  }
+  return '저장 실패';
+}
+
+export function publishErrorMessage(err: unknown): string {
+  if (err instanceof PostApiError && err.status === 503) return '로컬에서만 발행 가능';
+  return '발행 실패';
 }
 
 // ── 사케/양조장 마스터 데이터 (editor 전용 SQLite, /editor-api/sake/*) — BE=SSOT ──
@@ -281,6 +343,8 @@ export const api = {
   getDoc: (id: string) => req<DocResponse>(`/doc/${id}`),
   savePost: (id: string, frontmatter: Frontmatter, body: string) =>
     req<{ ok: true }>(`/posts/${id}`, { method: 'PUT', body: JSON.stringify({ frontmatter, body }), headers: { 'Content-Type': 'application/json' } }),
+  createPost,
+  publishPost,
   uploadMedia: async (file: File): Promise<{ src: string }> => {
     const fd = new FormData();
     fd.append('file', file);
