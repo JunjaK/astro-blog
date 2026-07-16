@@ -5,6 +5,7 @@ import { PostsPage } from './routes/PostsPage';
 import { EditorPage } from './routes/EditorPage';
 import { LoginPage } from './routes/LoginPage';
 import { SakesPage } from './routes/SakesPage';
+import { SakeEditRoute } from './routes/sakes/EditRoute';
 
 const navClass = ({ isActive }: { isActive: boolean }) => (isActive ? 'nav-link nav-on' : 'nav-link');
 
@@ -39,7 +40,10 @@ function App() {
           <Route element={<AuthGuard />}>
             <Route path="/" element={<Navigate to="/posts" replace />} />
             <Route path="/posts" element={<PostsPage />} />
-            <Route path="/sakes" element={<SakesPage />} />
+            <Route path="/sakes" element={<Navigate to="/sakes/sake" replace />} />
+            <Route path="/sakes/:kind" element={<SakesPage />}>
+              <Route path=":id" element={<SakeEditRoute />} />
+            </Route>
             <Route path="/editor/*" element={<EditorPage />} />
           </Route>
         </Routes>
