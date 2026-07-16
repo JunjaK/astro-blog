@@ -1,14 +1,12 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { mkdir, unlink } from 'node:fs/promises';
-import matter from 'gray-matter';
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import sharp from 'sharp';
-import { db } from './db';
 import { PREFECTURES } from './prefectures';
-import { catalogImage, setImageUsage, writeVariants } from './images';
-import { isManagedImport, manageImports, segmentMdx } from './mdx';
+import { catalogImage, writeVariants } from './images';
+import { posts } from './posts';
 import { sake } from './sake';
 
 // Editor backend (Bun + Hono). Serves the built React SPA under /editor and the
@@ -77,49 +75,7 @@ app.get('/editor-api/health', (c) =>
 );
 
 app.route('/editor-api/sake', sake);
-
-// Post list (status dashboard). 'draft' state derivation comes with the publish step.
-app.get('/editor-api/posts', (c) =>
-  c.json(db.query('SELECT id, category, slug, title, source, created_at FROM posts ORDER BY created_at DESC').all()),
-);
-
-// Parsed doc for the rich editor: prose runs (md) + verbatim component blocks (raw).
-// `doc` is a prefix (Hono can't match a static suffix after a greedy :id{.+}).
-app.get('/editor-api/doc/:id{.+}', (c) => {
-  const row = db.query('SELECT category, frontmatter, body FROM posts WHERE id = ?').get(c.req.param('id')) as
-    | { category: string; frontmatter: string; body: string }
-    | null;
-  if (!row) return c.json({ error: 'not found' }, 404);
-  // hide managed import lines — they're regenerated on save from used components
-  const segments = segmentMdx(row.body).filter((s) => !(s.kind === 'raw' && isManagedImport(s.src)));
-  return c.json({ frontmatter: JSON.parse(row.frontmatter), segments });
-});
-
-// Single post (id may contain slashes → rest-capture). `raw` = full MDX
-// (frontmatter + body) for editing both in one shot.
-app.get('/editor-api/posts/:id{.+}', (c) => {
-  const row = db.query('SELECT * FROM posts WHERE id = ?').get(c.req.param('id')) as
-    | { frontmatter: string; body: string; [k: string]: unknown }
-    | null;
-  if (!row) return c.json({ error: 'not found' }, 404);
-  const raw = matter.stringify(row.body, JSON.parse(row.frontmatter));
-  return c.json({ ...row, raw });
-});
-
-// Save edits: structured frontmatter (object) + body. DB only; publish is later.
-app.put('/editor-api/posts/:id{.+}', async (c) => {
-  const id = c.req.param('id');
-  const { frontmatter, body } = await c.req.json<{ frontmatter?: Record<string, unknown>; body?: string }>();
-  if (!frontmatter || typeof body !== 'string') return c.json({ error: 'bad payload' }, 400);
-  const finalBody = manageImports(body); // auto-inject imports for components used
-  const res = db.run(
-    'UPDATE posts SET frontmatter = ?, body = ?, title = ?, version = version + 1, updated_at = ? WHERE id = ?',
-    [JSON.stringify(frontmatter), finalBody, String(frontmatter.title ?? ''), new Date().toISOString(), id],
-  );
-  if (!res.changes) return c.json({ error: 'not found' }, 404);
-  setImageUsage(id, finalBody); // track which images this post references (orphan detection)
-  return c.json({ ok: true });
-});
+app.route('/editor-api', posts); // GET/POST/PUT posts + doc + publish (server/posts.ts) — no extra prefix, same URLs as before
 
 // Image upload → webp (EXIF/GPS stripped by sharp default), content-hash name.
 app.post('/editor-api/media', async (c) => {
