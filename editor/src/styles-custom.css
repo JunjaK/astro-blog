@@ -7,6 +7,9 @@
   --text: #ededed;
   --c-muted: #8a8a8a;
   --c-accent: #ededed;
+  /* canonical "ok/success" green — unifies 4 sites that had drifted onto two close shades */
+  --ok: #7fff9f;
+  --ok-surface: #2a4a32;
 }
 
 * { box-sizing: border-box; }
@@ -34,8 +37,14 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .muted { color: var(--c-muted); font-size: 14px; }
 
 .badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
-.badge.ok { color: #7fff9f; border-color: #2a4a32; }
+.badge.ok { color: var(--ok); border-color: var(--ok-surface); }
 .badge.down { color: #ff8a8a; border-color: #4a2a2a; }
+
+/* mirrors DbBadge's former inline Tailwind arbitrary-value styling (FrontmatterForm.tsx) */
+.db-badge {
+  border-radius: 999px; border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent);
+  background: var(--ok-surface); padding: 2px 6px; font-size: 10px; line-height: 1; color: var(--ok);
+}
 
 .post-list { list-style: none; padding: 0; }
 .post-list a, a.post-list { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
@@ -256,7 +265,7 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .tasting-ai__foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; }
 .tasting-ai__foot .tasting-ai__actions { margin-top: 0; }
 .tasting-ai__save { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--c-muted); }
-.tasting-ai__savemsg { margin: 0; font-size: 13px; color: #7fdf9f; }
+.tasting-ai__savemsg { margin: 0; font-size: 13px; color: var(--ok); }
 
 /* larger slider thumb on touch (crop zoom) */
 @media (hover: none) {
@@ -340,10 +349,12 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 /* clickable master rows: reuse .post-table chrome, move padding onto the button so the whole row is a hit target */
 .sakes-list li { padding: 0; }
 .sakes-list li.row-active { background: var(--elevated); }
+/* also used on <a>/<Link> rows (PostsPage) — text-decoration/color reset so it reads
+   identically to the <button> case above. */
 .row-btn {
   display: flex; align-items: center; gap: 12px; width: 100%;
-  padding: 9px 4px; background: none; border: none; color: var(--text);
-  text-align: left; cursor: pointer; font: inherit;
+  padding: 9px 4px; background: none; border: none; color: inherit;
+  text-align: left; text-decoration: none; cursor: pointer; font: inherit;
 }
 .row-btn:hover { background: var(--surface); }
 .row-btn .post-title { flex: 1; }
@@ -351,6 +362,20 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 
 /* empty / search-empty state */
 .sakes-empty { margin: 16px 0; }
+
+/* 「더 보기」 pager row (usePager/Pager) */
+.sakes-more { display: flex; justify-content: center; margin: 16px 0; }
+
+/* full-screen route-based edit view (fixed overlay, list stays mounted underneath) */
+.sake-edit-overlay {
+  position: fixed; inset: 0; z-index: 50; background: var(--bg);
+  overflow-y: auto; overscroll-behavior: contain;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+/* inline save-failure text (EditorPage) — matches .sake-editor__msg.err */
+.editor-save-err { margin: 0; font-size: 13px; color: #ff8a8a; }
 
 /* inline master-detail editor panel (single column, below search) */
 .sake-editor {
@@ -363,7 +388,7 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .sake-editor__field { display: grid; gap: 6px; }
 .sake-editor__actions { border-top: 1px solid var(--border); padding-top: 12px; }
 .sake-editor__msg { margin: 0; font-size: 13px; }
-.sake-editor__msg.ok { color: #7fdf9f; }
+.sake-editor__msg.ok { color: var(--ok); }
 .sake-editor__msg.err { color: #ff8a8a; }
 .sake-editor__msg.block {
   color: #ff8a8a; border: 1px solid #4a2a2a; border-radius: 8px;

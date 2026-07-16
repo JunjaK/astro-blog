@@ -110,10 +110,7 @@ function AiBadge() {
 // DB master authoritative-fill marker (green). Outranks AiBadge; cleared on manual edit.
 function DbBadge() {
   return (
-    <span
-      className="rounded-full border border-[#7fff9f]/40 bg-[#2a4a32] px-1.5 py-0.5 text-[10px] leading-none text-[#7fff9f]"
-      title="마스터 DB에서 확정 채움"
-    >
+    <span className="db-badge" title="마스터 DB에서 확정 채움">
       마스터
     </span>
   );
