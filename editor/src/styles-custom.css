@@ -118,6 +118,20 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   flex: 1; padding: 8px 12px; border-radius: 8px;
   border: 1px solid var(--border); background: var(--surface); color: var(--text);
 }
+.login-page .login-error { margin: 10px 0 0; font-size: 13px; color: #ff8a8a; }
+.login-page .btn-primary { position: relative; }
+/* 로딩 스피너: 200ms 지연 등장 — 빠른 응답은 무표시, 느린 응답만 회전 표시 */
+.login-spinner {
+  display: inline-block; width: 12px; height: 12px; margin-left: 8px; vertical-align: -1px;
+  border: 2px solid transparent; border-top-color: currentColor; border-right-color: currentColor;
+  border-radius: 50%; opacity: 0;
+  animation: login-spin 0.7s linear infinite, login-appear 0s linear 200ms forwards;
+}
+@keyframes login-spin { to { transform: rotate(360deg); } }
+@keyframes login-appear { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .login-spinner { animation: login-appear 0s linear 200ms forwards; }
+}
 
 .slash-menu {
   display: flex; flex-direction: column; min-width: 200px; max-height: 320px; overflow-y: auto;

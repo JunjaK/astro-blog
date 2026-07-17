@@ -35,10 +35,12 @@ export function LoginPage() {
           autoComplete="current-password"
         />
         <button type="submit" className="btn-primary" disabled={busy} data-testid="login-submit-button">
-          {busy ? '확인 중…' : '로그인'}
+          로그인
+          {/* 200ms 지연 후 표시 — 로컬처럼 빠른 응답에선 아예 안 보여 깜박임 제거 */}
+          {busy && <span className="login-spinner" aria-hidden="true" />}
         </button>
-        {error && <p className="muted" data-testid="login-error">비밀번호가 올바르지 않습니다.</p>}
       </form>
+      {error && <p className="login-error" role="alert" data-testid="login-error">비밀번호가 올바르지 않습니다.</p>}
     </section>
   );
 }
