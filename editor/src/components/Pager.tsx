@@ -30,8 +30,8 @@ export function Pager({ remaining, onMore }: { remaining: number; onMore: () => 
   if (remaining <= 0) return null;
   return (
     <div className="sakes-more">
-      <Button type="button" variant="outline" onClick={onMore} data-testid="pager-more-button">
-        더 보기 (남은 {remaining})
+      <Button type="button" variant="secondary" onClick={onMore} data-testid="pager-more-button">
+        더 보기 <span className="pager-more__count">{`(${remaining}개 남음)`}</span>
       </Button>
     </div>
   );

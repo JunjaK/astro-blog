@@ -36,9 +36,10 @@ describe('Pager component', () => {
     const el = Pager({ remaining: 48, onMore }) as unknown as ElementLike;
     expect(el.props.className).toBe('sakes-more');
     const button = el.props.children as ElementLike;
-    expect(button.props.variant).toBe('outline');
+    expect(button.props.variant).toBe('secondary');
     expect(button.props['data-testid']).toBe('pager-more-button');
     expect(button.props.onClick).toBe(onMore);
-    expect(JSON.stringify(button.props.children)).toContain('48');
+    // claude design: "더 보기 (N개 남음)" — not "(남은 N)"
+    expect(JSON.stringify(button.props.children)).toContain('48개 남음');
   });
 });
