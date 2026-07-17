@@ -51,7 +51,7 @@ export function BreweryList() {
 
   return (
     <>
-      <div className="row">
+      <div className="list-header">
         <h1 className="page-title"><span>양조장</span><span className="page-title__count">{countLabel(!!list.data, items.length, filtered.length, hasQuery)}</span></h1>
         <Link to="new" className={buttonVariants({})} data-testid="sakes-add-button"><Plus className="size-4" />추가</Link>
       </div>
