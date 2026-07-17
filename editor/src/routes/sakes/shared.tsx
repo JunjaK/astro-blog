@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Search, Trash2 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,7 +34,7 @@ export function countLabel(loaded: boolean, total: number, filtered: number, has
 export function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="sake-editor__field">
-      <Label className="text-muted-foreground text-xs font-normal">{label}</Label>
+      <Label className="text-muted-foreground font-mono text-[11px] font-medium tracking-wide uppercase">{label}</Label>
       {children}
     </div>
   );
@@ -59,7 +59,7 @@ export function SearchBar({ input, onInput, onSubmit, onReset, showReset, placeh
         onChange={(e) => onInput(e.target.value)}
         onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onSubmit(); } }}
       />
-      <Button type="button" onClick={onSubmit} data-testid="sakes-search-submit">검색</Button>
+      <Button type="button" variant="secondary" onClick={onSubmit} data-testid="sakes-search-submit"><Search className="size-4" />검색</Button>
       {showReset && (
         <Button type="button" variant="outline" onClick={onReset} data-testid="sakes-search-reset">초기화</Button>
       )}
@@ -105,7 +105,7 @@ export function EditorMsg({ msg }: { msg: Msg | null }) {
 // CSS(.sake-edit-overlay)는 D1이 이미 병합(fixed inset-0, overflow-y auto, overscroll contain).
 // mount 시 「← 목록」 버튼에 포커스 이동 + body 스크롤락, unmount 시 원복 — 둘 다 lifecycle 정당화된 effect.
 // Esc 바인딩은 의도적으로 없음(FrontmatterForm의 combobox/slash-menu Escape 시맨틱과 충돌 — Phase 2 보정 2③).
-export function EditOverlay({ title, onBack, children }: { title: string; onBack: () => void; children: ReactNode }) {
+export function EditOverlay({ kind, title, onBack, children }: { kind: string; title: string; onBack: () => void; children: ReactNode }) {
   const backRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -117,19 +117,24 @@ export function EditOverlay({ title, onBack, children }: { title: string; onBack
 
   return (
     <div className="sake-edit-overlay">
-      <div className="row sake-edit-overlay__header">
-        <button
-          ref={backRef}
-          type="button"
-          className={buttonVariants({ variant: 'outline' })}
-          onClick={onBack}
-          data-testid="sakes-edit-back"
-        >
-          ← 목록
-        </button>
-        <h2>{title}</h2>
+      <div className="sake-edit-overlay__header">
+        <div className="sake-edit-overlay__header-inner">
+          <button
+            ref={backRef}
+            type="button"
+            className={buttonVariants({ variant: 'outline' })}
+            onClick={onBack}
+            data-testid="sakes-edit-back"
+          >
+            ← 목록
+          </button>
+          <div className="sake-edit-overlay__titlewrap">
+            <span className="sake-edit-overlay__kind">{kind}</span>
+            <span className="sake-edit-overlay__title">{title}</span>
+          </div>
+        </div>
       </div>
-      {children}
+      <div className="sake-edit-overlay__body">{children}</div>
     </div>
   );
 }

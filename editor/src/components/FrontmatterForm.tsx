@@ -92,9 +92,9 @@ function errMessage(status: number): string {
 
 function Field({ label, badge, children }: { label: string; badge?: ReactNode; children: ReactNode }) {
   return (
-    <div className="grid gap-1.5">
+    <div className="grid gap-2">
       <div className="flex items-center gap-2">
-        <Label className="text-muted-foreground text-xs font-normal">{label}</Label>
+        <Label className="text-muted-foreground font-mono text-[11px] font-medium tracking-wide uppercase">{label}</Label>
         {badge}
       </div>
       {children}

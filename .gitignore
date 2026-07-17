@@ -30,6 +30,9 @@ image-assets/
 # playwright mcp temp files
 .playwright-mcp/
 
+# harness-managed agent worktrees (linked git worktrees, never commit)
+.claude/worktrees/
+
 # e2e outputs (all under e2e/)
 **/e2e/screenshots/
 **/e2e/etc/

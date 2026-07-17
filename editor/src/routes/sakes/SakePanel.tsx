@@ -1,5 +1,6 @@
 import type { Sake, SakeInput, TokuteiMeisho } from '../../lib/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ListState } from '@/components/ListState';
@@ -92,7 +93,7 @@ export function SakeList() {
     <>
       <div className="row">
         <h1>사케 {countLabel(!!list.data, items.length, filtered.length, hasQuery)}</h1>
-        <Link to="new" className={buttonVariants({})} data-testid="sakes-add-button">+ 추가</Link>
+        <Link to="new" className={buttonVariants({})} data-testid="sakes-add-button"><Plus className="size-4" />추가</Link>
       </div>
 
       <SearchBar
@@ -120,7 +121,7 @@ export function SakeList() {
                 <span className="post-cat">{s.brewery ?? '—'}</span>
                 <span className="post-title">{s.name}</span>
                 {(s.tokuteiMeisho || s.seimaiBuai !== null) && (
-                  <span className="slash-hint">
+                  <span className="row-meta">
                     {[s.tokuteiMeisho, s.seimaiBuai !== null ? `정미 ${s.seimaiBuai}%` : null].filter(Boolean).join(' · ')}
                   </span>
                 )}
@@ -145,12 +146,12 @@ export function SakeEdit({ id }: { id: string }) {
   const goBack = () => navigate('..');
 
   if (!isNew && list.isLoading) {
-    return <EditOverlay title="불러오는 중…" onBack={goBack}><p className="muted">불러오는 중…</p></EditOverlay>;
+    return <EditOverlay kind="SAKE" title="불러오는 중…" onBack={goBack}><p className="muted">불러오는 중…</p></EditOverlay>;
   }
   const existing = isNew ? null : (list.data?.find((s) => s.id === id) ?? null);
   if (!isNew && !existing) {
     return (
-      <EditOverlay title="이미 삭제된 항목입니다" onBack={goBack}>
+      <EditOverlay kind="SAKE" title="이미 삭제된 항목입니다" onBack={goBack}>
         <p className="muted sakes-empty">이미 삭제된 항목입니다.</p>
       </EditOverlay>
     );
@@ -225,7 +226,7 @@ function SakeEditForm({ id, isNew, initial }: { id: string; isNew: boolean; init
   };
 
   return (
-    <EditOverlay title={isNew ? '새 항목' : (form.name || '(이름 없음)')} onBack={goBack}>
+    <EditOverlay kind="SAKE" title={isNew ? '새 항목' : (form.name || '(이름 없음)')} onBack={goBack}>
       <div className="sake-editor" data-testid="sakes-editor">
         <div className="sake-editor__grid">
           <div className="sake-editor__full">

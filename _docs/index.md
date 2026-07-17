@@ -5,6 +5,7 @@
 ## Active
 
 ### Planning
+- [editor UI/UX 수리 + 글 생성/발행 구현](./active/processing/2026-07-17/2026-07-17-editor-uiux-fix-plan.md) — `processing` · 2026-07-17 · team-run (Leader+FE+BE+C-infra+UIUX). 버튼 44px floor, 「더 보기」 클라 페이지네이션, SakesPage 라우트 편집뷰, 글 생성 POST /posts + 로컬 발행(git 수동). Designer 4명(BE+D1+D2∥D3, 겹침 0), 병합 BE→D1→(D2∥D3). base `b1a7b4c`.
 - [사케/양조장 마스터 DB + API — editor 전용, DB-우선 autofill + 관리 페이지](./complete/2026-07-07/2026-07-07-sake-master-db-plan.md) — `complete` · 2026-07-07 · team-run (Leader+FE+BE+C-infra+UIUX). breweries+sakes 2테이블, `/editor-api/sake/*` 9라우트, name_norm dedup, 값-복사 스냅샷. Designer 3명(겹침 0). base `dc2eb1b`.
 - [블로그 글쓰기 전용 웹앱 (Notion-style Editor + RPi 발행 백엔드)](./active/planning/2026-06-28/2026-06-28-blog-editor-app-plan.md) — `planning` · 2026-06-28 · team-brainstorm (Leader+FE+BE+Infra+UIUX). [diagram](./active/planning/2026-06-28/2026-06-28-blog-editor-app-plan.visual.html)
 

@@ -1,5 +1,6 @@
 import type { Brand, BrandInput } from '../../lib/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ListState } from '@/components/ListState';
@@ -49,7 +50,7 @@ export function BrandList() {
     <>
       <div className="row">
         <h1>브랜드 {countLabel(!!list.data, items.length, filtered.length, hasQuery)}</h1>
-        <Link to="new" className={buttonVariants({})} data-testid="sakes-add-button">+ 추가</Link>
+        <Link to="new" className={buttonVariants({})} data-testid="sakes-add-button"><Plus className="size-4" />추가</Link>
       </div>
 
       <SearchBar
@@ -75,7 +76,7 @@ export function BrandList() {
             <li key={b.id}>
               <Link className="row-btn" to={b.id} data-testid={`sakes-row-${i}`}>
                 <span className="post-title">{b.name}</span>
-                {b.brewery && <span className="slash-hint">{b.brewery}</span>}
+                {b.brewery && <span className="row-meta">{b.brewery}</span>}
               </Link>
             </li>
           ))}
@@ -95,12 +96,12 @@ export function BrandEdit({ id }: { id: string }) {
   const goBack = () => navigate('..');
 
   if (!isNew && list.isLoading) {
-    return <EditOverlay title="불러오는 중…" onBack={goBack}><p className="muted">불러오는 중…</p></EditOverlay>;
+    return <EditOverlay kind="BRAND" title="불러오는 중…" onBack={goBack}><p className="muted">불러오는 중…</p></EditOverlay>;
   }
   const existing = isNew ? null : (list.data?.find((b) => b.id === id) ?? null);
   if (!isNew && !existing) {
     return (
-      <EditOverlay title="이미 삭제된 항목입니다" onBack={goBack}>
+      <EditOverlay kind="BRAND" title="이미 삭제된 항목입니다" onBack={goBack}>
         <p className="muted sakes-empty">이미 삭제된 항목입니다.</p>
       </EditOverlay>
     );
@@ -174,25 +175,31 @@ function BrandEditForm({ id, isNew, initial }: { id: string; isNew: boolean; ini
   };
 
   return (
-    <EditOverlay title={isNew ? '새 항목' : (form.name || '(이름 없음)')} onBack={goBack}>
+    <EditOverlay kind="BRAND" title={isNew ? '새 항목' : (form.name || '(이름 없음)')} onBack={goBack}>
       <div className="sake-editor" data-testid="sakes-editor">
-        <Field label="이름 *">
-          <Input value={form.name} placeholder="예: 獺祭" data-testid="sakes-editor-name-input" onChange={(e) => update({ name: e.target.value })} />
-        </Field>
-        <Field label="요미가나(읽기)">
-          <Input value={form.yomigana} placeholder="히라가나" onChange={(e) => update({ yomigana: e.target.value })} />
-        </Field>
-        <Field label="양조장(酒蔵) *">
-          <Input
-            value={form.brewery}
-            placeholder="양조장 이름 (없으면 새로 생성됩니다)"
-            data-testid="sakes-editor-brewery-input"
-            onChange={(e) => update({ brewery: e.target.value })}
-          />
-        </Field>
-        <Field label="메모">
-          <Textarea value={form.note} onChange={(e) => update({ note: e.target.value })} />
-        </Field>
+        <div className="sake-editor__grid">
+          <div className="sake-editor__full">
+            <Field label="이름 *">
+              <Input value={form.name} placeholder="예: 獺祭" data-testid="sakes-editor-name-input" onChange={(e) => update({ name: e.target.value })} />
+            </Field>
+          </div>
+          <Field label="요미가나(읽기)">
+            <Input value={form.yomigana} placeholder="히라가나" onChange={(e) => update({ yomigana: e.target.value })} />
+          </Field>
+          <Field label="양조장(酒蔵) *">
+            <Input
+              value={form.brewery}
+              placeholder="양조장 이름 (없으면 새로 생성됩니다)"
+              data-testid="sakes-editor-brewery-input"
+              onChange={(e) => update({ brewery: e.target.value })}
+            />
+          </Field>
+          <div className="sake-editor__full">
+            <Field label="메모">
+              <Textarea value={form.note} onChange={(e) => update({ note: e.target.value })} />
+            </Field>
+          </div>
+        </div>
         <EditorMsg msg={msg} />
         <EditorActions
           isNew={isNew}

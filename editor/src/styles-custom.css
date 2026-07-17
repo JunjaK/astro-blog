@@ -1,19 +1,41 @@
 :root {
-  /* custom mono tokens for the hand-styled UI; namespaced to avoid clashing with
+  /* claude design "Editor Redesign" token set — namespaced to avoid clashing with
      shadcn's --muted/--accent/--border (which it owns). --border reuses shadcn's. */
   --bg: #0a0a0a;
-  --surface: #161616;
-  --elevated: #1e1e1e;
+  --surface: #141414;
+  --surface2: #1b1b1b;
+  --surface3: #232323;
+  --elevated: #232323; /* hover/active fill for code blocks, slash-menu, picker cells — aligned to --surface3 */
+  --border2: #333;
+  --hair: #1c1c1c;
   --text: #ededed;
-  --c-muted: #8a8a8a;
-  --c-accent: #ededed;
-  /* canonical "ok/success" green — unifies 4 sites that had drifted onto two close shades */
-  --ok: #7fff9f;
-  --ok-surface: #2a4a32;
+  --c-muted: #8f8f8f;
+  --muted2: #666;
+  /* warm accent replaces the former plain-white "--c-accent" — cascades into focus rings/sliders too */
+  --c-accent: #e0a34a;
+  --accent-hi: #eeb768;
+  --accent-ink: #1c1305;
+  --accent-dim: rgba(224, 163, 74, .14);
+  /* canonical "ok/success" green */
+  --ok: #5cbf86;
+  --green-bg: rgba(92, 191, 134, .12);
+  --green-bd: rgba(92, 191, 134, .4);
+  /* canonical error red — was scattered as literal #ff8a8a across 4 files */
+  --red: #ea6a72;
+  --red-bg: rgba(234, 106, 114, .1);
+  --red-bd: rgba(234, 106, 114, .42);
+  --mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: 'Pretendard', 'Noto Sans JP', -apple-system, system-ui, sans-serif;
+  /* responsive button/input/tab heights (design: desktop 38/40/42, mobile 36/38/34 — density over
+     the 44px WCAG floor, deliberate single-user-tool tradeoff, confirmed with user) */
+  --tap: 38px; --inp: 40px; --tab: 42px;
+}
+@media (max-width: 639px) {
+  :root { --tap: 36px; --inp: 38px; --tab: 34px; }
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text); }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); }
 
 .app-shell {
   max-width: 860px; margin: 0 auto;
@@ -37,33 +59,35 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .muted { color: var(--c-muted); font-size: 14px; }
 
 .badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
-.badge.ok { color: var(--ok); border-color: var(--ok-surface); }
-.badge.down { color: #ff8a8a; border-color: #4a2a2a; }
+.badge.ok { color: var(--ok); border-color: var(--green-bd); }
+.badge.down { color: var(--red); border-color: var(--red-bd); }
 
 /* mirrors DbBadge's former inline Tailwind arbitrary-value styling (FrontmatterForm.tsx) */
 .db-badge {
-  border-radius: 999px; border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent);
-  background: var(--ok-surface); padding: 2px 6px; font-size: 10px; line-height: 1; color: var(--ok);
+  border-radius: 4px; border: 1px solid var(--green-bd);
+  background: var(--green-bg); padding: 0 6px; height: 17px; line-height: 17px;
+  font: 600 9.5px/17px var(--mono); letter-spacing: .04em; color: var(--ok);
 }
 
 .post-list { list-style: none; padding: 0; }
 .post-list a, a.post-list { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
 
-.post-table { list-style: none; padding: 0; margin: 12px 0 0; }
+.post-table { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--hair); }
 .post-table li {
-  display: flex; align-items: center; gap: 12px;
-  padding: 9px 4px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+  padding: 0; border-bottom: 1px solid var(--hair);
 }
-.post-cat { font-size: 11px; color: var(--c-muted); min-width: 56px; text-transform: uppercase; }
-.post-title { flex: 1; font-size: 14px; color: var(--text); text-decoration: none; }
-.post-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+.post-cat { flex: none; width: 64px; font: 500 10px/1 var(--mono); letter-spacing: .06em; color: var(--muted2); text-transform: uppercase; }
+.post-title { flex: 1; min-width: 0; font: 500 14.5px/1.35 var(--sans); color: var(--text); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.post-title:hover { text-decoration: none; }
+.post-date { flex: none; font: 400 12px/1 var(--mono); color: var(--muted2); }
 
 .title-row { display: flex; align-items: center; gap: 12px; }
 .type-select {
   padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border);
   background: var(--surface); color: var(--text); font-size: 13px;
 }
-.field-label { display: block; margin: 14px 0 4px; font-size: 11px; color: var(--c-muted); text-transform: uppercase; letter-spacing: .04em; }
+.field-label { display: block; margin: 14px 0 4px; font: 500 11px/1 var(--mono); color: var(--c-muted); text-transform: uppercase; letter-spacing: .04em; }
 .raw-mdx {
   width: 100%; min-height: 55vh; resize: vertical;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.6;
@@ -83,9 +107,10 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .rawmdx-src:focus { outline: none; }
 
 .btn-primary {
-  background: var(--c-accent); color: var(--bg); border: none; border-radius: 8px;
-  padding: 8px 14px; font-weight: 600; cursor: pointer;
+  height: var(--tap); background: var(--c-accent); color: var(--accent-ink); border: none; border-radius: 8px;
+  padding: 0 20px; font: 600 13px/1 var(--sans); cursor: pointer;
 }
+.btn-primary:hover { background: var(--accent-hi); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .editor-canvas {
@@ -113,12 +138,17 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .editor-canvas .ProseMirror pre { background: var(--elevated); padding: 12px 14px; border-radius: 8px; overflow-x: auto; line-height: 1.5; }
 .editor-canvas .ProseMirror pre code { background: none; padding: 0; }
 
-.login-page form { display: flex; gap: 8px; margin-top: 12px; }
-.login-page input {
-  flex: 1; padding: 8px 12px; border-radius: 8px;
-  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+.login-page { max-width: 860px; margin: 0 auto; }
+.login-page .login-label {
+  font: 600 13px/1 var(--mono); color: var(--c-muted); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 16px;
 }
-.login-page .login-error { margin: 10px 0 0; font-size: 13px; color: #ff8a8a; }
+.login-page form { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; align-items: stretch; }
+.login-page input {
+  flex: 1; min-width: 220px; height: var(--inp); padding: 0 14px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text); font: 14px/1 var(--sans);
+}
+.login-page input:focus-visible { outline: none; border-color: var(--c-accent); }
+.login-page .login-error { margin: 12px 0 0; font-size: 13px; color: var(--red); }
 .login-page .btn-primary { position: relative; }
 /* 로딩 스피너: 200ms 지연 등장 — 빠른 응답은 무표시, 느린 응답만 회전 표시 */
 .login-spinner {
@@ -262,7 +292,7 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 /* AI autofill trigger + inline review panel (never a modal) */
 .tasting-ai { display: flex; flex-direction: column; gap: 8px; }
 .tasting-ai__bar { display: flex; gap: 8px; align-items: center; }
-.tasting-ai__error { margin: 0; font-size: 13px; color: #ff8a8a; }
+.tasting-ai__error { margin: 0; font-size: 13px; color: var(--red); }
 .tasting-ai__panel { display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: var(--surface); }
 .tasting-ai__empty { margin: 0; font-size: 13px; color: var(--c-muted); }
 .tasting-ai__caveat { margin: 0; font-size: 12px; color: #ffcf8a; border: 1px solid #5a4326; border-radius: 8px; padding: 6px 10px; background: rgba(255, 207, 138, .06); }
@@ -331,89 +361,105 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 
 /* ── 사케/양조장 관리 페이지 (SakesPage) ── */
 
-/* header nav: brand link + 글/사케 pill */
+/* header nav: brand link + 글/사케 pill (claude design navPill) */
 .app-brand { color: var(--text); font-weight: 700; font-size: 15px; text-decoration: none; }
 .app-nav { display: flex; gap: 6px; }
 .nav-link {
-  padding: 6px 12px; border: 1px solid var(--border); border-radius: 999px;
-  background: var(--surface); color: var(--c-muted); font-size: 13px; text-decoration: none;
+  height: 34px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 16px; border: 1px solid var(--border2); border-radius: 20px;
+  background: var(--surface); color: var(--c-muted); font: 500 13px/1 var(--sans); text-decoration: none;
 }
 .nav-link:hover { color: var(--text); }
-.nav-on { background: var(--elevated); color: var(--text); }
+.nav-on { border-color: var(--c-accent); background: var(--accent-dim); color: var(--accent-hi); }
 .nav-link:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
 
-/* segment toggle — hand-rolled tabs (no ui/tabs); visible surfaces, active = elevated */
+/* segment toggle — hand-rolled tabs (no ui/tabs); equal-width grid, active = surface3 */
 .seg-toggle {
-  display: flex; gap: 6px; margin: 4px 0 20px;
-  padding: 4px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg);
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: 4px 0 22px;
+  padding: 4px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface);
 }
 .seg {
-  flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
-  background: var(--surface); color: var(--c-muted); font-size: 14px; cursor: pointer;
+  height: var(--tab); border: 1px solid transparent; border-radius: 7px;
+  background: transparent; color: var(--c-muted); font: 500 13.5px/1 var(--sans); cursor: pointer;
   transition: background .12s, color .12s;
 }
 .seg:hover { color: var(--text); }
-.seg-on { background: var(--elevated); color: var(--text); font-weight: 600; }
+.seg-on { border-color: var(--border2); background: var(--surface3); color: var(--text); font-weight: 600; }
 .seg:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
 
 /* search bar: input + 검색/초기화 */
-.sakes-search { display: flex; gap: 8px; align-items: center; margin: 0 0 16px; }
+.sakes-search { display: flex; gap: 8px; align-items: center; margin: 0 0 22px; }
 .sakes-search__input { flex: 1; }
 
 /* clickable master rows: reuse .post-table chrome, move padding onto the button so the whole row is a hit target */
 .sakes-list li { padding: 0; }
-.sakes-list li.row-active { background: var(--elevated); }
+.sakes-list li.row-active { background: var(--surface3); }
 /* also used on <a>/<Link> rows (PostsPage) — text-decoration/color reset so it reads
    identically to the <button> case above. */
 .row-btn {
-  display: flex; align-items: center; gap: 12px; width: 100%;
-  padding: 9px 4px; background: none; border: none; color: inherit;
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  padding: 13px 8px; background: none; border: none; color: inherit;
   text-align: left; text-decoration: none; cursor: pointer; font: inherit;
 }
 .row-btn:hover { background: var(--surface); }
 .row-btn .post-title { flex: 1; }
 .row-btn:focus-visible { outline: 2px solid var(--c-accent); outline-offset: -2px; }
+.row-meta { flex: none; font: 400 12px/1 var(--mono); color: var(--c-muted); text-align: right; max-width: 44%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-yomi { font: 400 12px/1 var(--mono); color: var(--muted2); }
 
 /* empty / search-empty state */
-.sakes-empty { margin: 16px 0; }
+.sakes-empty {
+  margin: 0; padding: 40px 24px; text-align: center;
+  border: 1px dashed var(--border2); border-radius: 10px;
+  font: 400 13px/1.6 var(--sans); color: var(--c-muted);
+}
 
 /* 「더 보기」 pager row (usePager/Pager) */
-.sakes-more { display: flex; justify-content: center; margin: 16px 0; }
+.sakes-more { display: flex; justify-content: center; margin: 24px 0 0; }
 
-/* full-screen route-based edit view (fixed overlay, list stays mounted underneath) */
+/* full-screen route-based edit view (fixed overlay, list stays mounted underneath) —
+   full-bleed page, not a modal: header is sticky/blurred, content is NOT wrapped in another
+   card (see .sake-editor below) so it reads as a real page, matching claude design's choice. */
 .sake-edit-overlay {
   position: fixed; inset: 0; z-index: 50; background: var(--bg);
   overflow-y: auto; overscroll-behavior: contain;
-  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
-    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  padding: 0 max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
 }
+.sake-edit-overlay__header {
+  position: sticky; top: 0; z-index: 5;
+  margin: 0 -16px; padding: max(14px, env(safe-area-inset-top)) 16px 0;
+  background: rgba(10, 10, 10, .9); backdrop-filter: blur(10px);
+}
+.sake-edit-overlay__header-inner {
+  max-width: 900px; margin: 0 auto; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px; justify-content: space-between;
+}
+.sake-edit-overlay__titlewrap { min-width: 0; display: flex; align-items: center; gap: 10px; }
+.sake-edit-overlay__kind { flex: none; font: 400 11px/1 var(--mono); color: var(--muted2); text-transform: uppercase; letter-spacing: .05em; }
+.sake-edit-overlay__title { font: 600 15px/1.2 var(--sans); color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sake-edit-overlay__body { max-width: 900px; margin: 0 auto; padding: 26px 0 40px; }
 
 /* inline save-failure text (EditorPage) — matches .sake-editor__msg.err */
-.editor-save-err { margin: 0; font-size: 13px; color: #ff8a8a; }
+.editor-save-err { margin: 0; font-size: 13px; color: var(--red); }
 
-/* inline master-detail editor panel (single column, below search) */
-.sake-editor {
-  display: flex; flex-direction: column; gap: 12px;
-  border: 1px solid var(--border); border-radius: 12px;
-  padding: 16px; margin: 0 0 18px; background: var(--surface);
-}
-.sake-editor__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* full-bleed sake/brewery/brand edit fields — NO card chrome (claude design "Editor Redesign":
+   the edit view is a real page, not a floating card; overlay chrome/background already reads
+   as "page" so wrapping fields in another bordered surface just looked like a modal — removed). */
+.sake-editor { display: flex; flex-direction: column; gap: 0; }
+.sake-editor__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 20px; }
 .sake-editor__full { grid-column: 1 / -1; }
-.sake-editor__field { display: grid; gap: 6px; }
-.sake-editor__actions { border-top: 1px solid var(--border); padding-top: 12px; }
-.sake-editor__msg { margin: 0; font-size: 13px; }
+.sake-editor__field { display: grid; gap: 8px; }
+.sake-editor__actions { border-top: 1px solid var(--border); margin-top: 28px; padding-top: 20px; }
+.sake-editor__msg { margin: 0 0 16px; font-size: 13px; }
 .sake-editor__msg.ok { color: var(--ok); }
-.sake-editor__msg.err { color: #ff8a8a; }
+.sake-editor__msg.err { color: var(--red); }
 .sake-editor__msg.block {
-  color: #ff8a8a; border: 1px solid #4a2a2a; border-radius: 8px;
-  padding: 8px 10px; background: rgba(255, 138, 138, .06);
+  color: var(--red); border: 1px solid var(--red-bd); border-radius: 8px;
+  padding: 8px 10px; background: var(--red-bg);
 }
 
 @media (max-width: 639px) {
-  .seg { min-height: 44px; }
   .app-nav { gap: 4px; }
-  .nav-link { min-height: 44px; display: inline-flex; align-items: center; }
-  .sakes-list .row-btn { min-height: 44px; }
   .sake-editor__grid { grid-template-columns: 1fr; }
   .sakes-search { flex-wrap: wrap; }
 }

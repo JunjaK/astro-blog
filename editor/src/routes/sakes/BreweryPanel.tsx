@@ -1,5 +1,6 @@
 import type { Brewery, BreweryInput } from '../../lib/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ListState } from '@/components/ListState';
@@ -52,7 +53,7 @@ export function BreweryList() {
     <>
       <div className="row">
         <h1>양조장 {countLabel(!!list.data, items.length, filtered.length, hasQuery)}</h1>
-        <Link to="new" className={buttonVariants({})} data-testid="sakes-add-button">+ 추가</Link>
+        <Link to="new" className={buttonVariants({})} data-testid="sakes-add-button"><Plus className="size-4" />추가</Link>
       </div>
 
       <SearchBar
@@ -79,7 +80,7 @@ export function BreweryList() {
               <Link className="row-btn" to={b.id} data-testid={`sakes-row-${i}`}>
                 <span className="post-title">{b.name}</span>
                 {(b.prefecture || b.address) && (
-                  <span className="slash-hint">{[b.prefecture, b.address].filter(Boolean).join(' · ')}</span>
+                  <span className="row-meta">{[b.prefecture, b.address].filter(Boolean).join(' · ')}</span>
                 )}
               </Link>
             </li>
@@ -100,12 +101,12 @@ export function BreweryEdit({ id }: { id: string }) {
   const goBack = () => navigate('..');
 
   if (!isNew && list.isLoading) {
-    return <EditOverlay title="불러오는 중…" onBack={goBack}><p className="muted">불러오는 중…</p></EditOverlay>;
+    return <EditOverlay kind="BREWERY" title="불러오는 중…" onBack={goBack}><p className="muted">불러오는 중…</p></EditOverlay>;
   }
   const existing = isNew ? null : (list.data?.find((b) => b.id === id) ?? null);
   if (!isNew && !existing) {
     return (
-      <EditOverlay title="이미 삭제된 항목입니다" onBack={goBack}>
+      <EditOverlay kind="BREWERY" title="이미 삭제된 항목입니다" onBack={goBack}>
         <p className="muted sakes-empty">이미 삭제된 항목입니다.</p>
       </EditOverlay>
     );
@@ -176,36 +177,44 @@ function BreweryEditForm({ id, isNew, initial }: { id: string; isNew: boolean; i
   };
 
   return (
-    <EditOverlay title={isNew ? '새 항목' : (form.name || '(이름 없음)')} onBack={goBack}>
+    <EditOverlay kind="BREWERY" title={isNew ? '새 항목' : (form.name || '(이름 없음)')} onBack={goBack}>
       <div className="sake-editor" data-testid="sakes-editor">
-        <Field label="이름 *">
-          <Input value={form.name} placeholder="양조장 이름" data-testid="sakes-editor-name-input" onChange={(e) => update({ name: e.target.value })} />
-        </Field>
-        <Field label="요미가나(읽기)">
-          <Input value={form.yomigana} placeholder="히라가나" onChange={(e) => update({ yomigana: e.target.value })} />
-        </Field>
-        <Field label="도도부현(都道府県)">
-          <Select value={form.prefecture || null} onValueChange={(v) => update({ prefecture: v || '' })}>
-            <SelectTrigger className="w-full" data-testid="sakes-editor-prefecture-select">
-              <SelectValue placeholder="도도부현 선택" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">(없음)</SelectItem>
-              {PREFECTURES.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </Field>
-        <Field label="세부 주소(住所)">
-          <Input
-            value={form.address}
-            placeholder="예: にかほ市平沢字中町59"
-            data-testid="sakes-editor-address-input"
-            onChange={(e) => update({ address: e.target.value })}
-          />
-        </Field>
-        <Field label="메모">
-          <Textarea value={form.note} onChange={(e) => update({ note: e.target.value })} />
-        </Field>
+        <div className="sake-editor__grid">
+          <div className="sake-editor__full">
+            <Field label="이름 *">
+              <Input value={form.name} placeholder="양조장 이름" data-testid="sakes-editor-name-input" onChange={(e) => update({ name: e.target.value })} />
+            </Field>
+          </div>
+          <Field label="요미가나(읽기)">
+            <Input value={form.yomigana} placeholder="히라가나" onChange={(e) => update({ yomigana: e.target.value })} />
+          </Field>
+          <Field label="도도부현(都道府県)">
+            <Select value={form.prefecture || null} onValueChange={(v) => update({ prefecture: v || '' })}>
+              <SelectTrigger className="w-full" data-testid="sakes-editor-prefecture-select">
+                <SelectValue placeholder="도도부현 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">(없음)</SelectItem>
+                {PREFECTURES.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <div className="sake-editor__full">
+            <Field label="세부 주소(住所)">
+              <Input
+                value={form.address}
+                placeholder="예: にかほ市平沢字中町59"
+                data-testid="sakes-editor-address-input"
+                onChange={(e) => update({ address: e.target.value })}
+              />
+            </Field>
+          </div>
+          <div className="sake-editor__full">
+            <Field label="메모">
+              <Textarea value={form.note} onChange={(e) => update({ note: e.target.value })} />
+            </Field>
+          </div>
+        </div>
         <EditorMsg msg={msg} />
         <EditorActions
           isNew={isNew}
