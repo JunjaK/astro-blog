@@ -56,6 +56,10 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
 }
 
 .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* list-page header: title + de-emphasized count, baseline-aligned (posts/sake tabs) */
+.page-title { display: flex; align-items: baseline; gap: 10px; margin: 0; font: 600 17px/1 var(--sans); color: var(--text); }
+.page-title__count { font: 500 13px/1 var(--mono); color: var(--muted2); }
 .muted { color: var(--c-muted); font-size: 14px; }
 
 .badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
@@ -416,6 +420,7 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
 
 /* 「더 보기」 pager row (usePager/Pager) */
 .sakes-more { display: flex; justify-content: center; margin: 24px 0 0; }
+.pager-more__count { color: var(--c-muted); font-family: var(--mono); font-size: 12px; }
 
 /* full-screen route-based edit view (fixed overlay, list stays mounted underneath) —
    full-bleed page, not a modal: header is sticky/blurred, content is NOT wrapped in another

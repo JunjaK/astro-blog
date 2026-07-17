@@ -67,11 +67,12 @@ export function SearchBar({ input, onInput, onSubmit, onReset, showReset, placeh
   );
 }
 
-export function EditorActions({ isNew, canSave, pending, onCancel, onSave, onDelete }: {
+// claude design "Editor Redesign": actions row is 삭제 ← → 저장 only — no 취소/cancel button
+// (「← 목록」 in the overlay header already covers leave-without-saving).
+export function EditorActions({ isNew, canSave, pending, onSave, onDelete }: {
   isNew: boolean;
   canSave: boolean;
   pending: boolean;
-  onCancel: () => void;
   onSave: () => void;
   onDelete: () => void;
 }) {
@@ -86,8 +87,7 @@ export function EditorActions({ isNew, canSave, pending, onCancel, onSave, onDel
           </Button>
         )}
       </div>
-      <div className="flex items-center gap-2">
-        <Button type="button" variant="outline" onClick={onCancel} data-testid="sakes-editor-cancel">취소</Button>
+      <div className="flex items-center gap-3">
         <Button type="button" onClick={onSave} disabled={!canSave || pending} data-testid="sakes-editor-save">
           {pending ? '저장 중…' : '저장'}
         </Button>

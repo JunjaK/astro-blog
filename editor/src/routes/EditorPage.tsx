@@ -87,7 +87,7 @@ function NewPost() {
   const actions = (bar: boolean) => (
     <div className={bar ? 'row editor-save-bar' : 'row'}>
       <Button type="button" variant="outline" onClick={handleBack} data-testid="editor-back-button">← 뒤로</Button>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-[14px]">
         {createErr && <span className="editor-save-err">{createErr}</span>}
         <Button type="button" disabled={!canSave || create.isPending} onClick={() => create.mutate()} data-testid="editor-save-button">
           {create.isPending ? '저장 중…' : '저장'}
@@ -168,7 +168,7 @@ function EditExisting({ id }: { id: string }) {
   const actions = (bar: boolean) => (
     <div className={bar ? 'row editor-save-bar' : 'row'}>
       <Button type="button" variant="outline" onClick={handleBack} data-testid="editor-back-button">← 뒤로</Button>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-[14px]">
         <span className={statusClass}>{statusText}</span>
         <Button
           type="button"

@@ -25,7 +25,7 @@ export function PostsPage() {
   return (
     <section>
       <div className="row">
-        <h1>글 {posts.data ? `(${items.length})` : ''}</h1>
+        <h1 className="page-title"><span>글</span>{posts.data && <span className="page-title__count">({items.length})</span>}</h1>
         <Button render={<Link to="/editor/new" />} data-testid="posts-new-button"><Plus className="size-4" />새 글</Button>
       </div>
       <ListState

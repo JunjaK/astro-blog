@@ -92,7 +92,7 @@ export function SakeList() {
   return (
     <>
       <div className="row">
-        <h1>사케 {countLabel(!!list.data, items.length, filtered.length, hasQuery)}</h1>
+        <h1 className="page-title"><span>사케</span><span className="page-title__count">{countLabel(!!list.data, items.length, filtered.length, hasQuery)}</span></h1>
         <Link to="new" className={buttonVariants({})} data-testid="sakes-add-button"><Plus className="size-4" />추가</Link>
       </div>
 
@@ -292,7 +292,6 @@ function SakeEditForm({ id, isNew, initial }: { id: string; isNew: boolean; init
           isNew={isNew}
           canSave={canSave}
           pending={save.isPending}
-          onCancel={goBack}
           onSave={() => save.mutate()}
           onDelete={onDelete}
         />
