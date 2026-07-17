@@ -57,6 +57,11 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
 
 .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 
+/* list-page header row (title+count ↔ action button) — baseline-aligned per claude design,
+   with its own bottom margin so the row doesn't sit flush against the content below it
+   (lost when .post-table's old top-margin was replaced by a border-top hairline). */
+.list-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+
 /* list-page header: title + de-emphasized count, baseline-aligned (posts/sake tabs) */
 .page-title { display: flex; align-items: baseline; gap: 10px; margin: 0; font: 600 17px/1 var(--sans); color: var(--text); }
 .page-title__count { font: 500 13px/1 var(--mono); color: var(--muted2); }
