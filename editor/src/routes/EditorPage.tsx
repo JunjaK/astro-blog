@@ -14,6 +14,17 @@ export function EditorPage() {
   return !id || id === 'new' ? <NewPost /> : <EditExisting id={id} />;
 }
 
+// prod (no BLOG_CONTENT mounted) can't write the file server-side, so publishPost hands back the
+// rendered MDX instead — trigger the browser's native save-file flow for it (no library needed).
+function downloadMdx(filename: string, content: string) {
+  const url = URL.createObjectURL(new Blob([content], { type: 'text/markdown;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // Upload a pending thumbnail (blob:) chosen via ThumbnailInput → /files/media URL.
 async function flushThumbnail(fm: Frontmatter): Promise<Frontmatter> {
   const t = fm.thumbnail;
@@ -150,7 +161,14 @@ function EditExisting({ id }: { id: string }) {
   const publish = useMutation({
     mutationFn: () => api.publishPost(id),
     onMutate: () => setPublishMsg(null),
-    onSuccess: ({ path }) => setPublishMsg({ text: `발행됨 (${path})`, kind: 'ok' }),
+    onSuccess: (result) => {
+      if (result.mode === 'written') {
+        setPublishMsg({ text: `발행됨 (${result.path})`, kind: 'ok' });
+      } else {
+        downloadMdx(result.filename, result.content);
+        setPublishMsg({ text: `다운로드됨 (${result.filename}) — blog/ 콘텐츠에 넣고 직접 커밋하세요`, kind: 'ok' });
+      }
+    },
     onError: (err) => setPublishMsg({ text: publishErrorMessage(err), kind: 'err' }),
   });
 

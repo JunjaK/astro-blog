@@ -107,20 +107,30 @@ posts.put('/posts/:id{.+}', async (c) => {
 // containment (resolve + prefix check) is the only id-shape boundary enforced here on purpose: a
 // strict id-format regex would false-positive on legitimate multi-segment/non-ASCII legacy ids
 // (e.g. diary/2024/foo) that predate the slug regex added at creation time.
+//
+// prod (RPi editor container) has no BLOG_CONTENT mounted at all — it's a separate Docker image
+// from blog's, no shared filesystem. Rather than write into some volume-mounted git checkout (a
+// second writer touching the same tree the blog CI/user work in, with no git-level conflict
+// detection since this handler only does raw file I/O — a silent-drift risk), this branch hands
+// the rendered MDX straight back so the user can place it and commit by hand later. Git stays
+// 100% manual either way; this only changes *where* the file ends up.
 posts.post('/publish/:id{.+}', async (c) => {
   const row = db.query('SELECT id, frontmatter, body FROM posts WHERE id = ?').get(c.req.param('id')) as
     | { id: string; frontmatter: string; body: string }
     | null;
   if (!row) return c.json({ error: 'not found' }, 404);
+  const mdx = matter.stringify(row.body, JSON.parse(row.frontmatter));
+
   const BLOG_CONTENT = blogContent();
-  if (!existsSync(BLOG_CONTENT)) return c.json({ error: 'content dir missing' }, 503);
+  if (!existsSync(BLOG_CONTENT)) {
+    return c.json({ mode: 'download', filename: `${row.id.split('/').pop()}.mdx`, content: mdx });
+  }
   const root = resolve(BLOG_CONTENT);
   const target = resolve(root, `${row.id}.mdx`);
   if (target !== root && !target.startsWith(root + sep)) return c.json({ error: 'invalid path' }, 400);
-  const mdx = matter.stringify(row.body, JSON.parse(row.frontmatter));
   await mkdir(dirname(target), { recursive: true });
   await Bun.write(target, mdx);
   const hash = createHash('sha256').update(mdx).digest('hex').slice(0, 16); // same recipe as seed.ts:23
   db.run('UPDATE posts SET published_mdx_hash = ? WHERE id = ?', [hash, row.id]);
-  return c.json({ path: `${row.id}.mdx`, hash });
+  return c.json({ mode: 'written', path: `${row.id}.mdx`, hash });
 });

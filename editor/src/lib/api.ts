@@ -189,9 +189,14 @@ async function createPost(frontmatter: Frontmatter, body: string, slug: string):
   return res.json() as Promise<{ id: string }>;
 }
 
-// Local publish (write live MDX under BLOG_CONTENT). 503 = BLOG_CONTENT missing (prod/RPi — publish
-// is a local-only workflow by design, no git automation).
-async function publishPost(id: string): Promise<{ path: string; hash: string }> {
+// Local publish (write live MDX under BLOG_CONTENT). When BLOG_CONTENT isn't mounted (prod/RPi —
+// editor and blog are separate containers, no shared checkout), the server hands back the
+// rendered MDX instead so the caller can offer it as a download — git stays manual either way.
+export type PublishResult =
+  | { mode: 'written'; path: string; hash: string }
+  | { mode: 'download'; filename: string; content: string };
+
+async function publishPost(id: string): Promise<PublishResult> {
   const res = await fetch(`${BASE}/publish/${id}`, {
     method: 'POST',
     credentials: 'same-origin',
@@ -199,7 +204,7 @@ async function publishPost(id: string): Promise<{ path: string; hash: string }> 
   });
   if (res.status === 401) { bounceToLogin(); throw new PostApiError(401, 'unauthorized'); }
   if (!res.ok) throw new PostApiError(res.status, await readErrorBody(res));
-  return res.json() as Promise<{ path: string; hash: string }>;
+  return res.json() as Promise<PublishResult>;
 }
 
 // Pure mappers (server error → Korean UI copy) — kept out of the component so they're unit-testable
@@ -212,8 +217,7 @@ export function createPostErrorMessage(err: unknown): string {
   return '저장 실패';
 }
 
-export function publishErrorMessage(err: unknown): string {
-  if (err instanceof PostApiError && err.status === 503) return '로컬에서만 발행 가능';
+export function publishErrorMessage(_err: unknown): string {
   return '발행 실패';
 }
 

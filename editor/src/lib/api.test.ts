@@ -39,12 +39,11 @@ describe('createPostErrorMessage — branches by server error string/status', ()
   });
 });
 
-describe('publishErrorMessage — branches by status only', () => {
-  test('503 (BLOG_CONTENT missing — prod/RPi) → local-only message', () => {
-    expect(publishErrorMessage(new PostApiError(503, 'content dir missing'))).toBe('로컬에서만 발행 가능');
-  });
-
-  test('other statuses (404, 500) → generic failure message', () => {
+// BLOG_CONTENT-missing (prod/RPi) is no longer a publish error — the server returns a 200
+// download-mode payload instead (see PublishResult in api.ts), so publishErrorMessage now has
+// nothing status-specific to branch on; every real failure (404/500/network) is a generic message.
+describe('publishErrorMessage — generic failure message regardless of status', () => {
+  test('PostApiError statuses (404, 500) → generic failure message', () => {
     expect(publishErrorMessage(new PostApiError(404, 'not found'))).toBe('발행 실패');
     expect(publishErrorMessage(new PostApiError(500, 'boom'))).toBe('발행 실패');
   });

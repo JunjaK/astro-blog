@@ -30,7 +30,7 @@ interface ErrRes { error: string }
 interface ListItem { id: string; category: string; slug: string; title: string | null; source: string; created_at: string | null }
 interface DocRes { frontmatter: Record<string, unknown>; segments: { kind: string; src: string }[] }
 interface RawRes { id: string; category: string; title: string | null; source: string; raw: string; frontmatter: string; body: string }
-interface PublishRes { path: string; hash: string }
+type PublishRes = { mode: 'written'; path: string; hash: string } | { mode: 'download'; filename: string; content: string };
 
 const VALID_FM = { title: '테스트 글', category: 'Diary', created: '2026-07-17' };
 
@@ -173,13 +173,17 @@ describe('posts router — publish (POST /publish/:id{.+})', () => {
     expect(res.body.error).toBe('not found');
   });
 
-  it('13. publish 503s when BLOG_CONTENT root is missing (checked BEFORE mkdir)', async () => {
+  it('13. publish falls back to a download payload when BLOG_CONTENT root is missing (prod — no shared writable dir)', async () => {
     const created = await call<CreateRes>('POST', '/posts', { frontmatter: VALID_FM, body: 'x', slug: 'root-missing' });
     rmSync(BLOG_CONTENT, { recursive: true, force: true });
     try {
-      const res = await call<ErrRes>('POST', `/publish/${created.body.id}`);
-      expect(res.status).toBe(503);
-      expect(res.body.error).toBe('content dir missing');
+      const res = await call<PublishRes>('POST', `/publish/${created.body.id}`);
+      expect(res.status).toBe(200);
+      expect(res.body.mode).toBe('download');
+      if (res.body.mode === 'download') {
+        expect(res.body.filename).toBe('root-missing.mdx');
+        expect(res.body.content).toBe(matter.stringify('x', VALID_FM));
+      }
       expect(existsSync(BLOG_CONTENT)).toBe(false); // recursive mkdir must NOT have silently created the root
     } finally {
       mkdirSync(BLOG_CONTENT, { recursive: true }); // restore for the remaining tests
@@ -192,6 +196,8 @@ describe('posts router — publish (POST /publish/:id{.+})', () => {
     });
     const res = await call<PublishRes>('POST', `/publish/${created.body.id}`);
     expect(res.status).toBe(200);
+    expect(res.body.mode).toBe('written');
+    if (res.body.mode !== 'written') throw new Error('expected written mode');
     expect(res.body.path).toBe(`${created.body.id}.mdx`);
 
     const filePath = join(BLOG_CONTENT, `${created.body.id}.mdx`);
