@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import https from 'node:https';
 import path from 'node:path';
+import { unified } from '@astrojs/markdown-remark';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
@@ -40,6 +41,10 @@ const SCSS_Logger = {
 export default defineConfig({
   // Enable React to support React JSX components.
   site: 'https://www.jun-devlog.win',
+  // Astro 7 changed the default to 'jsx', which drops whitespace between inline
+  // elements. Pinned to the pre-v7 lossless behaviour; switching to 'jsx' needs a
+  // visual pass over the posts first.
+  compressHTML: true,
   integrations: [react(), svelte(), vue(), sitemap({
     filter: (page) => !page.includes('/404'),
   }), expressiveCode({
@@ -50,8 +55,12 @@ export default defineConfig({
     service: passthroughImageService(),
   },
   markdown: {
-    remarkPlugins: [remarkMermaidToHtml, remarkMath, remarkLyricsBlock],
-    rehypePlugins: [rehypeKatex, rehypeImgAttrs],
+    // Astro 7 defaults to the satteri processor; keep the remark/rehype pipeline
+    // since mermaid/math/lyrics/katex/img-attrs plugins depend on it. MDX inherits this.
+    processor: unified({
+      remarkPlugins: [remarkMermaidToHtml, remarkMath, remarkLyricsBlock],
+      rehypePlugins: [rehypeKatex, rehypeImgAttrs],
+    }),
     syntaxHighlight: false,
   },
   vite: {

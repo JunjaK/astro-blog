@@ -1,6 +1,6 @@
 # Astro Blog - jun-devlog
 
-Personal developer blog built with Astro 6, featuring multi-framework islands (React 19, Vue 3.5, Svelte 5).
+Personal developer blog built with Astro 7, featuring multi-framework islands (React 19, Vue 3.5, Svelte 5).
 
 **Site:** https://www.jun-devlog.win
 **Node:** 24 (mise) | **Package Manager:** bun
@@ -17,7 +17,9 @@ Personal developer blog built with Astro 6, featuring multi-framework islands (R
 
 ```bash
 # blog: run from blog/  ·  editor: run from editor/
-bun dev               # Dev server (--mode dev)
+bun dev               # Dev server (--mode dev) — Astro 7 runs it as a daemon;
+                      #   stop/inspect with `astro dev stop|status|logs`
+
 bun run build         # Production build (--mode prd)
 bun run preview       # Preview built site
 bun run all-preprocess-md  # Run all markdown preprocessors (removeUnused → addMdEnter → convertLoader)
@@ -116,6 +118,8 @@ Hydration directives: `client:visible`, `client:idle`, `client:load`
 - Lucide + Iconify for icons
 
 ### Content & Markdown
+- Astro 7 defaults to the `satteri` markdown processor; this repo pins the remark/rehype
+  pipeline via `markdown.processor: unified({...})` from `@astrojs/markdown-remark` (MDX inherits it)
 - MDX support via `@astrojs/mdx`
 - Code blocks: `astro-expressive-code` with kanagawa-dragon/catppuccin-latte themes
 - Math: `remark-math` + `rehype-katex`
@@ -139,7 +143,7 @@ playground: { title, duration, techStacks?, thumbnail?, description? }
 
 | Category | Packages |
 |----------|----------|
-| Core | astro 5, react 19, vue 3.5, svelte 5 |
+| Core | astro 7 (Vite 8 / Rust compiler), react 19, vue 3.5, svelte 5 |
 | Styling | tailwindcss 4, tw-animate-css, sass, tailwind-merge, CVA |
 | UI | radix-ui/*, framer-motion, embla-carousel, vaul, cmdk |
 | Content | @astrojs/mdx, expressive-code, katex, mermaid, giscus |
