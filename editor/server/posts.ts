@@ -78,7 +78,7 @@ posts.post('/posts', async (c) => {
      VALUES (?, ?, ?, ?, ?, ?, NULL, 'editor', NULL, 1, ?, ?)`,
     [id, category, id, title, JSON.stringify(frontmatter), finalBody, t, t],
   );
-  setImageUsage(id, finalBody); // track which images this post references (orphan detection)
+  setImageUsage(id, finalBody, frontmatter); // track which images this post references (orphan detection)
   return c.json({ id }, 201);
 });
 
@@ -93,7 +93,7 @@ posts.put('/posts/:id{.+}', async (c) => {
     [JSON.stringify(frontmatter), finalBody, String(frontmatter.title ?? ''), new Date().toISOString(), id],
   );
   if (!res.changes) return c.json({ error: 'not found' }, 404);
-  setImageUsage(id, finalBody); // track which images this post references (orphan detection)
+  setImageUsage(id, finalBody, frontmatter); // track which images this post references (orphan detection)
   return c.json({ ok: true });
 });
 

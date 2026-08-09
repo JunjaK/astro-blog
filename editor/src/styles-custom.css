@@ -236,10 +236,15 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
 .mdx-media-cap { width: 100%; margin-top: 6px; font-size: 16px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
 .mdx-media-add { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 120px; border: 1px dashed var(--border); border-radius: 6px; background: transparent; color: var(--c-muted); cursor: pointer; }
 .mdx-media-x { background: none; border: none; color: var(--c-muted); cursor: pointer; min-width: 44px; min-height: 44px; }
-/* client-only (blob:) media → high-contrast inverse pill + dashed frame; uploaded → plain. */
+/* uploading (blob:) media → high-contrast inverse pill + dashed frame; uploaded → plain. */
 .mdx-media-pending { margin-left: 8px; font-style: normal; font-size: 11px; color: var(--bg); background: var(--c-accent); border-radius: 999px; padding: 1px 8px; }
 .mdx-media[data-pending] { border-style: dashed; }
 .mdx-media[data-pending] .mdx-media-el { outline: 2px dashed var(--c-muted); outline-offset: -2px; }
+.mdx-media-failed { margin-left: 8px; font-style: normal; font-size: 11px; color: #fff; background: #b3261e; border-radius: 999px; padding: 1px 4px 1px 8px; }
+.mdx-media-retry { margin-left: 6px; font-size: 11px; color: #fff; background: rgb(255 255 255 / 22%); border: none; border-radius: 999px; padding: 1px 8px; cursor: pointer; }
+.mdx-media[data-failed] { border-color: #b3261e; }
+.gallery-item[data-pending] img { outline: 2px dashed var(--c-muted); outline-offset: -2px; }
+.gallery-retry { display: block; width: 100%; margin-top: 4px; font-size: 11px; color: #fff; background: #b3261e; border: none; border-radius: 6px; padding: 4px 8px; cursor: pointer; }
 
 /* RawMdx collapsed chip (TOC / Polaroid / MusicCard / fences) */
 .rawmdx-chip {

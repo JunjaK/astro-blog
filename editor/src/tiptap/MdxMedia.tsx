@@ -1,7 +1,7 @@
 import { Node } from '@tiptap/core';
 import { NodeViewWrapper, ReactNodeViewRenderer, type ReactNodeViewProps } from '@tiptap/react';
-import { useRef } from 'react';
-import { pendingMedia } from './pendingMedia';
+import { useEffect, useRef, useState } from 'react';
+import { attachMedia, mediaUpload } from './mediaUploads';
 
 type Tag = 'ImageLoader' | 'VideoLoader';
 
@@ -9,29 +9,67 @@ type Tag = 'ImageLoader' | 'VideoLoader';
 const attr = (name: string, v: string) =>
   /["\n]/.test(v) ? `${name}={${JSON.stringify(v)}}` : `${name}="${v}"`;
 
-function MdxMediaView({ node, updateAttributes, deleteNode }: ReactNodeViewProps) {
+function MdxMediaView({ editor, node, getPos, updateAttributes, deleteNode }: ReactNodeViewProps) {
   const tag = node.attrs.tag as Tag;
   const src = node.attrs.src as string;
   const alt = node.attrs.alt as string;
   const fileRef = useRef<HTMLInputElement>(null);
+  const [failed, setFailed] = useState(false);
   const label = tag === 'VideoLoader' ? '동영상' : '이미지';
-  const pending = src.startsWith('blob:'); // client-only, not yet uploaded to /files
+  const upload = mediaUpload(src); // set only while a blob: preview is still uploading
+  const uploading = !!upload && !failed;
+
+  // blob: → /files/media, outside the undo stack: the swap is bookkeeping, not a user edit, and on
+  // the history stack a single ⌘Z would revert src to a preview URL that no longer resolves.
+  // Reads the live node rather than the closure's `node` — the position may have moved.
+  const applySrc = (uploaded: string) => {
+    const pos = getPos();
+    if (pos == null) return;
+    editor.chain().command(({ tr }) => {
+      tr.setNodeAttribute(pos, 'src', uploaded);
+      tr.setMeta('addToHistory', false);
+      return true;
+    }).run();
+  };
+
+  // Subscribing to an already-running upload — an event/handler can't express "this promise, which
+  // may have been started before this view mounted, has settled".
+  useEffect(() => {
+    const pending = mediaUpload(src);
+    if (!pending) return;
+    let alive = true;
+    pending.promise.then(
+      (uploaded) => { if (alive) applySrc(uploaded); },
+      () => { if (alive) setFailed(true); },
+    );
+    return () => { alive = false; };
+  }, [src]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function onPick(files: FileList | null) {
     const f = files?.[0];
     if (!f) return;
-    const url = URL.createObjectURL(f);
-    pendingMedia.set(url, f);
-    updateAttributes({ src: url });
+    setFailed(false);
+    updateAttributes({ src: attachMedia(f) });
     if (fileRef.current) fileRef.current.value = '';
   }
 
+  function onRetry() {
+    setFailed(false);
+    upload?.retry().then(applySrc, () => setFailed(true));
+  }
+
   return (
-    <NodeViewWrapper className="mdx-media" data-tag={tag} data-pending={pending || undefined}>
+    <NodeViewWrapper className="mdx-media" data-tag={tag} data-pending={uploading || undefined} data-failed={failed || undefined}>
       <div className="mdx-media-head">
         <span className="mdx-media-tag">
           {label} · {tag}
-          {pending && <em className="mdx-media-pending">미저장 · 저장 시 업로드</em>}
+          {uploading && <em className="mdx-media-pending">업로드 중…</em>}
+          {failed && (
+            <em className="mdx-media-failed">
+              업로드 실패
+              <button type="button" className="mdx-media-retry" onClick={onRetry}>재시도</button>
+            </em>
+          )}
         </span>
         <button type="button" className="mdx-media-x" onClick={() => deleteNode()} title="블록 삭제">✕</button>
       </div>

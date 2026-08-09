@@ -2,7 +2,8 @@ import { useRef, useState } from 'react';
 import { Plus, RefreshCw, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { pendingMedia } from '../tiptap/pendingMedia';
+import { cn } from '@/lib/utils';
+import { attachMedia, mediaUpload } from '../tiptap/mediaUploads';
 import { CropDialog } from './CropDialog';
 
 // Native date input — far better than a cramped calendar popover on mobile.
@@ -91,53 +92,91 @@ export function TagInput({ value, onChange, suggestions, placeholder = '태그 �
 }
 
 // The box IS the control: empty → + to add; filled → hover to replace / remove.
-// Pick → crop/resize dialog → object-URL preview + register pending; upload on save.
+// Pick / drop / paste → crop dialog → upload starts at once, object-URL preview until it lands.
 export function ThumbnailInput({ value, onChange }: { value?: string; onChange: (src: string) => void }) {
   const ref = useRef<HTMLInputElement>(null);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const [over, setOver] = useState(false);
+  const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
   const pick = () => ref.current?.click();
+
+  // Single funnel for picker / drop / paste. The crop step decodes through <img>/<canvas>, so a
+  // format the browser can't decode (HEIC) dead-ends in the dialog with no feedback — reject it
+  // up front. Body images have no such limit (server converts) — see RichEditor's handlers.
+  const take = (f: File | null | undefined) => {
+    if (!f) return;
+    if (!f.type.startsWith('image/') || /heic|heif/i.test(f.type)) {
+      setError('브라우저가 열 수 없는 형식입니다 (HEIC 등) — JPG/PNG/WebP로 변환해 주세요');
+      return;
+    }
+    setError('');
+    setCropSrc(URL.createObjectURL(f));
+  };
+
   return (
-    <div className="group border-input relative aspect-video w-44 overflow-hidden rounded-md border border-dashed">
-      {value
-        ? (
-          <>
-            <img src={value} alt="" className="size-full object-cover" />
-            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/55 opacity-0 transition-opacity group-hover:opacity-100 [@media(hover:none)]:opacity-100">
-              <button type="button" onClick={pick} title="교체" className="flex size-11 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 sm:size-8">
-                <RefreshCw className="size-4" />
-              </button>
-              <button type="button" onClick={() => onChange('')} title="제거" className="flex size-11 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 sm:size-8">
-                <X className="size-4" />
-              </button>
-            </div>
-          </>
-          )
-        : (
-          <button type="button" onClick={pick} className="text-muted-foreground hover:bg-accent hover:text-foreground flex size-full items-center justify-center">
-            <Plus className="size-6" />
-          </button>
-          )}
-      <input
-        ref={ref}
-        type="file"
-        accept="image/*"
-        hidden
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) setCropSrc(URL.createObjectURL(f));
-          if (ref.current) ref.current.value = '';
-        }}
-      />
+    <div className="grid gap-1.5">
+      {/* ponytail: paste needs focus (tabIndex) — hover-scoped paste would steal ⌘V from the body editor */}
+      <div
+        tabIndex={0}
+        onPaste={(e) => take(e.clipboardData.files[0])}
+        onDragOver={(e) => { e.preventDefault(); setOver(true); }}
+        onDragLeave={(e) => { if (!(e.relatedTarget instanceof Node && e.currentTarget.contains(e.relatedTarget))) setOver(false); }}
+        onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files[0]); }}
+        className={cn(
+          'group border-input focus-visible:ring-ring relative aspect-video w-44 overflow-hidden rounded-md border border-dashed focus-visible:ring-2 focus-visible:outline-none',
+          over && 'border-primary bg-primary/10',
+        )}
+      >
+        {value
+          ? (
+            <>
+              <img src={value} alt="" className="pointer-events-none size-full object-cover" />
+              <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/55 opacity-0 transition-opacity group-hover:opacity-100 [@media(hover:none)]:opacity-100">
+                <button type="button" onClick={pick} title="교체" className="flex size-11 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 sm:size-8">
+                  <RefreshCw className="size-4" />
+                </button>
+                <button type="button" onClick={() => onChange('')} title="제거" className="flex size-11 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 sm:size-8">
+                  <X className="size-4" />
+                </button>
+              </div>
+            </>
+            )
+          : (
+            <button type="button" onClick={pick} className="text-muted-foreground hover:bg-accent hover:text-foreground flex size-full items-center justify-center">
+              <Plus className="size-6" />
+            </button>
+            )}
+        <input
+          ref={ref}
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(e) => {
+            take(e.target.files?.[0]);
+            if (ref.current) ref.current.value = '';
+          }}
+        />
+      </div>
+      <p className={cn('text-[11px]', error ? 'text-destructive' : 'text-muted-foreground')}>
+        {error || (uploading ? '업로드 중…' : '클릭 · 드래그&드롭 · 상자 선택 후 ⌘V 붙여넣기')}
+      </p>
       {cropSrc && (
         <CropDialog
           src={cropSrc}
           onCancel={() => { URL.revokeObjectURL(cropSrc); setCropSrc(null); }}
           onConfirm={(blob) => {
             URL.revokeObjectURL(cropSrc);
-            const url = URL.createObjectURL(blob);
-            pendingMedia.set(url, new File([blob], 'thumbnail.webp', { type: 'image/webp' }));
-            onChange(url);
+            const preview = attachMedia(new File([blob], 'thumbnail.webp', { type: 'image/webp' }));
+            onChange(preview);
             setCropSrc(null);
+            setUploading(true);
+            setError('');
+            // Safe to call a possibly-stale onChange: it forwards a patch, not a rebuilt object.
+            mediaUpload(preview)?.promise.then(
+              (src) => { onChange(src); setUploading(false); },
+              () => { setUploading(false); setError('썸네일 업로드 실패 — 다시 첨부해 주세요'); },
+            );
           }}
         />
       )}

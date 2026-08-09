@@ -386,7 +386,10 @@ function TastingAutofillPanel({ current, defaultQuery, onApply, onDbPick }: {
   );
 }
 
-export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onChange: (fm: Frontmatter) => void }) {
+// onChange takes a PATCH, never a rebuilt object: callbacks that resolve later (crop → upload,
+// autofill) would otherwise write `{...value}` captured at their render and silently revert every
+// field edited in the meantime. The owner applies the patch with a functional setState.
+export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onChange: (patch: Partial<Frontmatter>) => void }) {
   const [aiFilled, setAiFilled] = useState<Set<string>>(new Set());
   const [dbFilled, setDbFilled] = useState<Set<string>>(new Set());
 
@@ -401,12 +404,12 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
     const keys = Object.keys(patch);
     if (aiFilled.size && keys.some((k) => aiFilled.has(k))) setAiFilled(without(keys));
     if (dbFilled.size && keys.some((k) => dbFilled.has(k))) setDbFilled(without(keys));
-    onChange({ ...value, ...patch });
+    onChange(patch);
   };
 
   // Autofill-apply keeps the AI badge (opposite of `set`); it supersedes any DbBadge on the key.
   const applyAutofill = (patch: Partial<Frontmatter>, keys: string[]) => {
-    onChange({ ...value, ...patch });
+    onChange(patch);
     setAiFilled((prev) => new Set([...prev, ...keys]));
     if (dbFilled.size) setDbFilled(without(keys));
   };
@@ -424,7 +427,7 @@ export function FrontmatterForm({ value, onChange }: { value: Frontmatter; onCha
       keys.push(k);
     }
     if (!keys.length) return;
-    onChange({ ...value, ...patch });
+    onChange(patch);
     setDbFilled((prev) => new Set([...prev, ...keys]));
     if (aiFilled.size) setAiFilled(without(keys));
   };

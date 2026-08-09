@@ -1,7 +1,7 @@
 import { Node } from '@tiptap/core';
 import { NodeViewWrapper, ReactNodeViewRenderer, type ReactNodeViewProps } from '@tiptap/react';
-import { useRef } from 'react';
-import { pendingMedia } from './pendingMedia';
+import { useEffect, useRef, useState } from 'react';
+import { attachMedia, mediaUpload } from './mediaUploads';
 
 // Gallery block: holds the images you add; editor shows them raw. The real
 // DiaryCarousel / PolaroidGalleryScrapbook renders in the published blog (viewer).
@@ -20,25 +20,58 @@ const LABEL: Record<GalleryVariant, string> = {
   polaroid: 'PolaroidGalleryScrapbook',
 };
 
-function GalleryView({ node, updateAttributes, deleteNode }: ReactNodeViewProps) {
+function GalleryView({ editor, node, getPos, updateAttributes, deleteNode }: ReactNodeViewProps) {
   const variant = node.attrs.variant as GalleryVariant;
   const items = node.attrs.items as GalleryItem[];
   const fileRef = useRef<HTMLInputElement>(null);
+  const [failed, setFailed] = useState<string[]>([]);
 
   const setItems = (next: GalleryItem[]) => updateAttributes({ items: next });
   const patch = (i: number, p: Partial<GalleryItem>) => setItems(items.map((x, j) => (j === i ? { ...x, ...p } : x)));
 
-  // Attach = local preview only (object URL). Upload happens on save (flushUploads).
+  // blob: → /files/media, outside the undo stack (see MdxMedia). Re-reads the live items instead of
+  // the closure's, so a swap that lands while other items are still uploading can't clobber them.
+  const applySrc = (from: string, to: string) => {
+    const pos = getPos();
+    if (pos == null) return;
+    const live = editor.state.doc.nodeAt(pos)?.attrs.items as GalleryItem[] | undefined;
+    if (!live) return;
+    editor.chain().command(({ tr }) => {
+      tr.setNodeAttribute(pos, 'items', live.map((it) => (it.src === from ? { ...it, src: to } : it)));
+      tr.setMeta('addToHistory', false);
+      return true;
+    }).run();
+  };
+
+  // Subscribe to whichever items are still uploading (see MdxMedia for why this is an effect).
+  useEffect(() => {
+    let alive = true;
+    for (const it of items) {
+      const pending = mediaUpload(it.src);
+      if (!pending) continue;
+      pending.promise.then(
+        (uploaded) => { if (alive) applySrc(it.src, uploaded); },
+        () => { if (alive) setFailed((f) => (f.includes(it.src) ? f : [...f, it.src])); },
+      );
+    }
+    return () => { alive = false; };
+  }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Attach starts the upload immediately; the object URL is just the preview until it resolves.
   function onPick(files: FileList | null) {
     if (!files?.length) return;
     const blank: Partial<GalleryItem> = variant === 'polaroid' ? { title: '', caption: '', description: '' } : { alt: '' };
-    const added = Array.from(files).map((f) => {
-      const url = URL.createObjectURL(f);
-      pendingMedia.set(url, f);
-      return { src: url, ...blank };
-    });
+    const added = Array.from(files).map((f) => ({ src: attachMedia(f), ...blank }));
     setItems([...items, ...added]);
     if (fileRef.current) fileRef.current.value = '';
+  }
+
+  function onRetry(src: string) {
+    setFailed((f) => f.filter((s) => s !== src));
+    mediaUpload(src)?.retry().then(
+      (uploaded) => applySrc(src, uploaded),
+      () => setFailed((f) => (f.includes(src) ? f : [...f, src])),
+    );
   }
 
   return (
@@ -49,8 +82,11 @@ function GalleryView({ node, updateAttributes, deleteNode }: ReactNodeViewProps)
       </div>
       <div className="gallery-grid">
         {items.map((it, i) => (
-          <figure key={it.src + i} className="gallery-item">
+          <figure key={it.src + i} className="gallery-item" data-pending={(it.src.startsWith('blob:') && !failed.includes(it.src)) || undefined}>
             <img src={it.src} alt={it.alt ?? it.title ?? ''} loading="lazy" decoding="async" />
+            {failed.includes(it.src) && (
+              <button type="button" className="gallery-retry" onClick={() => onRetry(it.src)}>업로드 실패 · 재시도</button>
+            )}
             {variant === 'polaroid' ? (
               <div className="gallery-fields">
                 <input

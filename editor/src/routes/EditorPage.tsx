@@ -2,12 +2,16 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { RichEditor, type RichEditorHandle } from '../components/RichEditor';
+import { RichEditor, type RichEditorHandle, type Segment } from '../components/RichEditor';
 import { FrontmatterForm } from '../components/FrontmatterForm';
-import { pendingMedia } from '../tiptap/pendingMedia';
+import { MediaNotUploadedError, mediaUpload } from '../tiptap/mediaUploads';
 import { api, createPostErrorMessage, type Frontmatter, publishErrorMessage, SLUG_RE } from '../lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+
+// Hoisted, NOT an inline `[]`: RichEditor reloads (and so wipes) the doc whenever this identity
+// changes, so a fresh array per render meant every frontmatter keystroke erased the body.
+const NO_SEGMENTS: Segment[] = [];
 
 export function EditorPage() {
   const id = useParams()['*'] ?? '';
@@ -25,15 +29,16 @@ function downloadMdx(filename: string, content: string) {
   URL.revokeObjectURL(url);
 }
 
-// Upload a pending thumbnail (blob:) chosen via ThumbnailInput → /files/media URL.
+// ThumbnailInput starts the upload on attach and swaps the src itself; this only covers saving
+// before that lands. A failed upload leaves a blob: src — refuse rather than write a dead URL.
 async function flushThumbnail(fm: Frontmatter): Promise<Frontmatter> {
-  const t = fm.thumbnail;
-  if (t?.startsWith('blob:') && pendingMedia.has(t)) {
-    const { src } = await api.uploadMedia(pendingMedia.get(t)!);
-    URL.revokeObjectURL(t);
-    pendingMedia.delete(t);
+  const pending = mediaUpload(fm.thumbnail);
+  if (pending) {
+    const src = await pending.promise.catch(() => null);
+    if (!src) throw new MediaNotUploadedError();
     return { ...fm, thumbnail: src };
   }
+  if (fm.thumbnail?.startsWith('blob:')) throw new MediaNotUploadedError();
   return fm;
 }
 
@@ -72,7 +77,7 @@ function NewPost() {
   const canSave = canSaveNewPost(fm, slug);
 
   useDirtyGuard(dirty);
-  const update = (next: Frontmatter) => { setFm(next); setDirty(true); setCreateErr(null); };
+  const update = (patch: Partial<Frontmatter>) => { setFm((prev) => ({ ...prev, ...patch })); setDirty(true); setCreateErr(null); };
   const handleSlugChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSlug(e.target.value);
     setDirty(true);
@@ -92,7 +97,7 @@ function NewPost() {
       qc.invalidateQueries({ queryKey: ['posts'] });
       navigate(`/editor/${id}`, { replace: true });
     },
-    onError: (err) => setCreateErr(createPostErrorMessage(err)),
+    onError: (err) => setCreateErr(err instanceof MediaNotUploadedError ? err.message : createPostErrorMessage(err)),
   });
 
   const actions = (bar: boolean) => (
@@ -116,11 +121,12 @@ function NewPost() {
         onChange={handleSlugChange}
         placeholder="my-post-slug"
         data-testid="editor-slug-input"
+        className="mb-5"
       />
       <FrontmatterForm value={fm} onChange={update} />
       <label className="field-label">content</label>
       {/* key=type remounts so the slash palette reflects the chosen category */}
-      <RichEditor key={type} ref={richRef} segments={[]} type={type} lyricsType={fm.lyricsType} onDirty={() => { setDirty(true); setCreateErr(null); }} />
+      <RichEditor key={type} ref={richRef} segments={NO_SEGMENTS} type={type} lyricsType={fm.lyricsType} onDirty={() => { setDirty(true); setCreateErr(null); }} />
       {actions(true)}
     </section>
   );
@@ -138,7 +144,7 @@ function EditExisting({ id }: { id: string }) {
 
   if (doc.data && fm === null) setFm(doc.data.frontmatter);
   const clearMsgs = () => { setSaveErr(null); setPublishMsg(null); };
-  const update = (next: Frontmatter) => { setFm(next); setDirty(true); clearMsgs(); };
+  const update = (patch: Partial<Frontmatter>) => { setFm((prev) => (prev ? { ...prev, ...patch } : prev)); setDirty(true); clearMsgs(); };
 
   useDirtyGuard(dirty);
   const handleBack = () => { if (confirmLeave(dirty)) navigate(-1); };
@@ -155,7 +161,7 @@ function EditExisting({ id }: { id: string }) {
       setDirty(false);
       qc.invalidateQueries({ queryKey: ['posts'] });
     },
-    onError: () => setSaveErr('저장 실패'),
+    onError: (err) => setSaveErr(err instanceof MediaNotUploadedError ? err.message : '저장 실패'),
   });
 
   const publish = useMutation({
