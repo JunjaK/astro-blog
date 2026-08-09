@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "server": "bun run server/index.ts",
     "start": "bun run server/index.ts",
+    "prune:media": "bun run server/prune-media.ts",
     "seed": "bun run server/seed.ts",
     "seed:breweries": "bun run server/seed-breweries.ts"
   },
