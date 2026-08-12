@@ -49,7 +49,9 @@ jobs:
           retention-days: 1
 
   deploy:
-    runs-on: self-hosted
+    # raspi4 로 고정. `self-hosted` 만 쓰면 junserver(x64) 에도 잡히는데, 이 잡은 RPi 의
+    # /home/jun/blog-files 볼륨과 :4321 nginx 를 전제로 한다 — 다른 머신에 뜨면 안 된다.
+    runs-on: [self-hosted, raspi4]
     needs: build
     steps:
       - name: Checkout

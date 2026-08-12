@@ -42,7 +42,8 @@ jobs:
         run: bun run build
 
   deploy:
-    runs-on: self-hosted
+    # raspi4 로 고정 (main.yml 과 동일 이유). 8/9 배포가 여기로 잡힌 건 운이었다.
+    runs-on: [self-hosted, raspi4]
     needs: build
     steps:
       - name: Checkout
