@@ -1,10 +1,15 @@
 ---
 name: convert-heic
-description: Convert HEIC images to WebP, update all MDX image paths and thumbnail frontmatter
+description: [DEPRECATED, legacy image-assets only] Convert HEIC images to WebP, update all MDX image paths and thumbnail frontmatter
 user_invocable: true
 ---
 
 # Convert HEIC to WebP & Update All MDX Paths
+
+> **DEPRECATED — 레거시 자산 전용.** 새 이미지는 에디터에 첨부하면 그 자리에서
+> `/files/media` 로 업로드된다 (rsync·커밋 불필요). 이 커맨드는 `blog/image-assets/` 를
+> 전제로 하며, 그 디렉터리는 기존 글이 참조하는 과거 자산으로 동결됐다. 새 이미지를
+> 거기에 넣지 말 것. 정리는 `/prune-media`.
 
 Takes an MDX file and does a full pass: HEIC→WebP conversion, image path normalization, thumbnail frontmatter path update, Typora source sync, and original HEIC cleanup.
 

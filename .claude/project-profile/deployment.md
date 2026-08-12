@@ -30,5 +30,10 @@
 - Type: **SSG** (static site; `passthroughImageService()` — no build-time image optimization)
 
 ## Image Asset Publishing (separate from CI)
-- Local: `image-assets/` at repo root → rsync to RPi `/home/jun/blog-files/`
-- Skills: `/publish-images` (rsync + preprocess), `/preprocess-md` (preprocess only)
+- **Current path**: editor attach → immediate upload to `/files/media/<hash>.webp` (+ variants).
+  No rsync, no commit. Cleanup via `/prune-media`.
+- **Frozen**: `blog/image-assets/` → rsync to RPi `/home/jun/blog-files/`. Legacy assets only —
+  existing posts still reference them. Do not add new images.
+  Commands (`/publish-images`, `/preprocess-md`, `/generate-thumbs`, `/convert-heic`,
+  `/process-diary-mdx`) remain for re-publishing those, marked deprecated.
+- `/publish-images --full` needs `--exclude=media/` or it deletes every editor upload.

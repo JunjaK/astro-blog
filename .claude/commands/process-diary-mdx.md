@@ -1,10 +1,15 @@
 ---
 name: process-diary-mdx
-description: Full diary MDX processing pipeline - HEIC conversion, path normalization, DiaryCarousel restructuring, and Typora sync
+description: [DEPRECATED, legacy image-assets only] Full diary MDX processing pipeline - HEIC conversion, path normalization, DiaryCarousel restructuring, and Typora sync
 user_invocable: true
 ---
 
 # Process Diary MDX
+
+> **DEPRECATED — 레거시 자산 전용.** 새 이미지는 에디터에 첨부하면 그 자리에서
+> `/files/media` 로 업로드된다 (rsync·커밋 불필요). 이 커맨드는 `blog/image-assets/` 를
+> 전제로 하며, 그 디렉터리는 기존 글이 참조하는 과거 자산으로 동결됐다. 새 이미지를
+> 거기에 넣지 말 것. 정리는 `/prune-media`.
 
 Takes a raw Typora-exported diary MDX file and processes it end-to-end:
 1. HEIC → WebP conversion

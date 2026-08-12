@@ -1,10 +1,15 @@
 ---
 name: generate-thumbs
-description: Generate downscaled WebP thumbnails for blog/project/playground content
+description: [DEPRECATED, legacy image-assets only] Generate downscaled WebP thumbnails for blog/project/playground content
 user_invocable: true
 ---
 
 # Generate Thumbnails
+
+> **DEPRECATED — 레거시 자산 전용.** 새 이미지는 에디터에 첨부하면 그 자리에서
+> `/files/media` 로 업로드된다 (rsync·커밋 불필요). 이 커맨드는 `blog/image-assets/` 를
+> 전제로 하며, 그 디렉터리는 기존 글이 참조하는 과거 자산으로 동결됐다. 새 이미지를
+> 거기에 넣지 말 것. 정리는 `/prune-media`.
 
 Generates downscaled WebP thumbnails from original images referenced in MDX frontmatter `thumbnail:` fields.
 

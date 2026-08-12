@@ -154,10 +154,31 @@ playground: { title, duration, techStacks?, thumbnail?, description? }
 
 ## Image Assets & Deployment
 
-- **Local storage**: `blog/image-assets/` (not in `src/content/`)
+**New images go through the editor, not `image-assets/`.** Attaching an image in the editor
+uploads it immediately to `/files/media/<content-hash>.webp` (+ `-480/-960/-1600` variants,
+EXIF/GPS stripped, HEIC converted server-side). Nothing to rsync, nothing to commit.
+
 - **Server path**: `/home/jun/blog-files/` on RPi (Docker bind mount → nginx `/files/`)
+  - `media/` — editor uploads. The only place new images land
+  - `blog/`, `project/`, `playground/`, `daily/` — legacy assets published from `image-assets/`
 - **SSH access**: `ssh raspi` (key-based auth via `~/.ssh/config`)
-- **Skills**: `/publish-images` (rsync + preprocess), `/preprocess-md` (preprocess only)
+- **Cleanup**: `/prune-media` — reports `/files/media` files no reference points at (dry-run,
+  moves to a trash dir, never unlinks). `bun run prune:media` for the local `.media`
+
+### `blog/image-assets/` — frozen (legacy reference only)
+
+Kept because existing posts reference `/files/blog/**`, `/files/project/**` etc., and those files
+must stay on the server. **Do not add new images here.** The commands built around it
+(`/publish-images`, `/preprocess-md`, `/generate-thumbs`, `/convert-heic`, `/process-diary-mdx`)
+still work for re-publishing legacy assets, but are not the path for new content.
+
+Two gotchas if you ever do run them:
+
+- `/publish-images --full` uses `rsync --delete` against `/home/jun/blog-files/`, which now also
+  holds `media/`. Without `--exclude=media/` it deletes every editor upload. Incremental (default)
+  is unaffected.
+- Local `image-assets/` holds raw originals (png/jpeg/MOV) the server never needed; a full sync
+  reports ~6900 files to transfer. That is expected, not drift.
 
 ## E2E Testing
 

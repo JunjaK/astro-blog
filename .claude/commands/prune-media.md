@@ -7,8 +7,11 @@ user_invocable: true
 # Prune Media (운영)
 
 에디터가 업로드한 미디어(`/home/jun/blog-files/media`) 중 **어디서도 참조되지 않는** 파일을 찾아
-휴지통으로 옮긴다. 블로그 글이 쓰는 `image-assets` 계열은 대상이 아니다 — 그건 `/publish-images` 의
-`removeUnusedImages.js` 소관.
+휴지통으로 옮긴다. 새 이미지는 전부 이 경로로 들어오므로(에디터 첨부 = 즉시 업로드), 쌓이는 고아를
+회수하는 건 여기가 유일한 수단이다.
+
+동결된 `blog/image-assets/` 계열(`/files/blog`, `/files/project` …)은 대상이 아니다 —
+deprecated 된 `/publish-images` 의 `removeUnusedImages.js` 소관이고, 새로 늘어나지 않는다.
 
 ## 왜 로컬과 RPi 를 오가는가
 

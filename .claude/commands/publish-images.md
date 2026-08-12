@@ -1,10 +1,15 @@
 ---
 name: publish-images
-description: Sync local image-assets to RPi server and run markdown preprocessing
+description: [DEPRECATED, legacy image-assets only] Sync local image-assets to RPi server and run markdown preprocessing
 user_invocable: true
 ---
 
 # Publish Images
+
+> **DEPRECATED — 레거시 자산 전용.** 새 이미지는 에디터에 첨부하면 그 자리에서
+> `/files/media` 로 업로드된다 (rsync·커밋 불필요). 이 커맨드는 `blog/image-assets/` 를
+> 전제로 하며, 그 디렉터리는 기존 글이 참조하는 과거 자산으로 동결됐다. 새 이미지를
+> 거기에 넣지 말 것. 정리는 `/prune-media`.
 
 Syncs local `image-assets/` directory to the Raspberry Pi server via rsync and runs markdown preprocessing.
 
@@ -31,8 +36,11 @@ Syncs local `image-assets/` directory to the Raspberry Pi server via rsync and r
      Run one rsync per changed subdirectory. This avoids scanning the entire file tree.
    - **Full clean** (when user passes `--full` or `--clean` argument): Sync everything with `--delete`
      ```bash
-     rsync -avz --progress --delete image-assets/ raspi:/home/jun/blog-files/
+     rsync -avz --progress --delete --exclude=media/ image-assets/ raspi:/home/jun/blog-files/
      ```
+     `--exclude=media/` is NOT optional. `/home/jun/blog-files/media/` holds the editor's uploads
+     and has no local counterpart, so `--delete` without it wipes every image uploaded through
+     the editor. Incremental (the default above) has no `--delete` and is unaffected.
    - If no changes detected in dry-run, skip rsync entirely and inform the user.
 
 4. **Fix permissions on server**: After syncing, fix permissions for all transferred files:
