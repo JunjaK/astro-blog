@@ -32,13 +32,13 @@ import ImageLoader from '@/components/Blog/ImageLoader.astro';
 
 ## 프로젝트
 
-{/* TODO: 스크린샷 경로 채우기 */}
 <ProjectCarousel images={[
   '/files/project/nivoca-legacy/01-dictionary.webp',
   '/files/project/nivoca-legacy/02-wordbooks.webp',
   '/files/project/nivoca-legacy/03-ocr.webp',
-  '/files/project/nivoca-legacy/04-quiz.webp',
-  '/files/project/nivoca-legacy/05-jlpt.webp',
+  '/files/project/nivoca-legacy/04-quiz-word.webp',
+  '/files/project/nivoca-legacy/05-quiz-cloze.webp',
+  '/files/project/nivoca-legacy/06-ai-chat.webp',
   ]} client:visible />
 
 ### 사이트 링크
@@ -86,7 +86,22 @@ nihongo-vocabook/
   - node , pnpm 조합보다 빠르다고 하기에 써봄.
   - 라이브러리 모두 최신 것을 씀, + 개인 프로젝트이기 때문에 버전 제약이 없어 신기술 채택.
 
-{/* TODO: 초기 화면 스크린샷 */}
+초기 화면은 이랬습니다. 사전 검색 결과를 고르면 단어 · 읽기 · 뜻이 채워지고, 알파벳으로 친 입력이 waragana를 거쳐 히라가나로 들어갑니다.
+
+<table>
+  <tr>
+    <th style="width: 50%;">단어 추가 (사전 검색)</th>
+    <th style="width: 50%;">이미지 OCR로 단어 추가</th>
+  </tr>
+  <tr>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/early-ui-add-word.webp" alt="초기 UI - 사전 검색 결과와 단어 추가 폼" />
+    </td>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/early-ui-ocr.webp" alt="초기 UI - 이미지 OCR로 단어를 추가하는 화면" />
+    </td>
+  </tr>
+</table>
 
 ### 초기 설계
 
@@ -167,7 +182,20 @@ nihongo-vocabook/
 
 그 외 일일 목표(기본 20단어), JLPT / 우선순위 필터, 학습 리마인더 알림, 성취 22종(단어 수 · 연속 학습일 · 누적 복습 수 · 무결점 세션 등)을 설정에서 조절할 수 있게 함.
 
-{/* TODO: 퀴즈 화면 / 간격 미리보기 / 예문 빈칸 카드 스크린샷 */}
+<table>
+  <tr>
+    <th style="width: 50%;">단어 카드 (flip)</th>
+    <th style="width: 50%;">예문 빈칸 카드 (3지선다)</th>
+  </tr>
+  <tr>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/04-quiz-word.webp" alt="퀴즈 - 단어 카드와 Again/Hard/Good/Easy 평가 버튼" />
+    </td>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/05-quiz-cloze.webp" alt="퀴즈 - 예문에서 대상 단어를 가린 빈칸 채우기 카드" />
+    </td>
+  </tr>
+</table>
 
 ### 기능 확장
 
@@ -176,6 +204,46 @@ nihongo-vocabook/
 3. 각 단어의 예문 제공
 4. 한자와 예문 데이터는 llm(claude sonnet) 생성으로 처리 
 5. ui/ux 전면 개편. 
+
+단어 상세에서 한자를 누르면 그 한자의 음독 / 훈독과 뜻이 그 자리에서 펼쳐집니다. 예문에는 후리가나와 한국어 해석을 같이 붙였습니다.
+
+<table>
+  <tr>
+    <th style="width: 50%;">단어 상세</th>
+    <th style="width: 50%;">예문 · 한자 음독/훈독</th>
+  </tr>
+  <tr>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/07-word-detail.webp" alt="단어 상세 - 뜻, JLPT 난이도, 우선순위, 학습 현황" />
+    </td>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/08-word-detail-kanji.webp" alt="단어 상세 - 예문과 한자를 눌러 펼친 음독 / 훈독 팝오버" />
+    </td>
+  </tr>
+</table>
+
+UI는 한 번에 갈아엎은 게 아니라 계속 손봤음. 그래서 이 글에 실린 스크린샷도 찍힌 시점이 제각각이라 조금씩 다름.
+
+- 하단 탭: 「암기 완료」 자리를 「어시스턴트」가 가져감. 온디바이스 LLM을 붙이면서 교체
+- 탭 바: 화면 바닥에 붙은 평평한 바 → 액티브 탭 pill → 바 전체가 떠 있는 캡슐 형태
+- 단어 상세: 난이도 · 우선순위 · 학습 현황을 한 화면에 드러내고, 구독 단어장 배지 추가
+
+로고도 이때 같이 갈아엎었습니다.
+
+<table>
+  <tr>
+    <th style="width: 50%;">초기 로고</th>
+    <th style="width: 50%;">개편 후</th>
+  </tr>
+  <tr>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/logo-initial.webp" alt="초기 로고" />
+    </td>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/logo-final-full.webp" alt="개편 후 로고 (가로형)" />
+    </td>
+  </tr>
+</table>
 
 ### React Native 및 Expo 도입
 
@@ -243,7 +311,39 @@ flutter로 전환한 이유는 ios/android 동시 지원, 크로스 플랫폼이
   당장은 편했지만, 백엔드를 직접 운영하기로 하면서 그대로 이전 비용이 됨.
 - 바이브 코딩의 대가. "동작한다"와 "검증했다"를 구분하는 규율이 늦게 잡혔음.
   
-{/* TODO: 회고 관련 이미지 자리 */}
+온디바이스 LLM이 실제로 어떻게 안 됐는지는 화면에 그대로 남아있습니다. 입력이 조금만 길어져도 토큰 한도(2048)를 넘겨 끊기고, 세션 자체가 안 열리는 경우도 잦았습니다.
+
+<table>
+  <tr>
+    <th style="width: 50%;">토큰 한도 초과 · 세션 생성 실패</th>
+    <th style="width: 50%;">function calling 시도</th>
+  </tr>
+  <tr>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/llm-fail-token-limit.webp" alt="온디바이스 LLM - 입력 토큰 2630이 한도 2048을 넘겨 실패한 화면" />
+    </td>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/llm-toolcalling-trial.webp" alt="온디바이스 LLM - function calling 시도 화면" />
+    </td>
+  </tr>
+</table>
+
+"동작한다"와 "검증했다"의 차이도 이런 식으로 드러났습니다. 한자 상세 패널이 평가 버튼을 덮어버려서, 화면상으로는 멀쩡한데 정작 답을 고를 수 없었습니다.
+
+<table>
+  <tr>
+    <th style="width: 50%;">응답 실패</th>
+    <th style="width: 50%;">패널이 평가 버튼을 가린 화면</th>
+  </tr>
+  <tr>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/llm-fail-2.webp" alt="온디바이스 LLM 응답 실패 화면" />
+    </td>
+    <td>
+      <ImageLoader src="/files/project/nivoca-legacy/vibecoding-broken-ui.webp" alt="퀴즈 화면에서 한자 상세 패널이 평가 버튼을 덮어버린 화면" />
+    </td>
+  </tr>
+</table>
 
 
 
