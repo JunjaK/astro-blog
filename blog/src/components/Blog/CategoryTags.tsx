@@ -16,6 +16,7 @@ type BadgeProps = {
 function StatedBadge({ category, selectedCategory, onClick }: BadgeProps) {
   return (
     <motion.div
+      className="shrink-0"
       initial={false}
       animate={{
         scale: selectedCategory === category ? 1.1 : 1,
@@ -36,9 +37,12 @@ function StatedBadge({ category, selectedCategory, onClick }: BadgeProps) {
 }
 
 export default function CategoryTags({ categories, selectedCategory, onSelectCategory }: Props) {
+  // 줄바꿈 대신 가로 스크롤. flex-wrap + 고정 높이(h-[3rem])였을 때는 카테고리가 늘어나면
+  // 둘째 줄이 그 높이 밖으로 밀려 아래 검색 영역에 잘렸다. py-1.5 는 badge 의 scale
+  // 애니메이션이 스크롤 컨테이너에 잘리지 않게 하는 여백.
   return (
-    <div className="flex flex-wrap gap-2 items-center h-[3rem]">
-      <div className="ml-1 font-medium text-sm tracking-wide text-muted-foreground">
+    <div className="flex items-center gap-2 overflow-x-auto overscroll-x-contain py-1.5">
+      <div className="ml-1 shrink-0 font-medium text-sm tracking-wide text-muted-foreground">
         Categories:
       </div>
       {categories.map((category) => (

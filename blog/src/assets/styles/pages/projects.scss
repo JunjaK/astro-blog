@@ -6,7 +6,10 @@
   width: 100%;
 
   // 기본 (모바일): 1열
-  grid-template-columns: 1fr;
+  // minmax(0, ...) 필수 — `1fr` 은 `minmax(auto, 1fr)` 이라 트랙 최소폭이 카드의
+  // min-content 로 잡힌다. 그러면 트랙이 컨테이너보다 넓어져 카드와 썸네일이
+  // 화면 밖으로 삐져나간다 (모바일 1열에서 특히 눈에 띔).
+  grid-template-columns: minmax(0, 1fr);
 
   .project-article-wrapper {
     height: 100%;
@@ -65,11 +68,13 @@
         }
         .tech-stack-list {
           display: flex;
-          flex-wrap: nowrap;
+          // nowrap + flex-shrink:0 아이콘 조합이라 스택이 많은 프로젝트(니보카 15개)에서
+          // 줄이 카드 밖으로 삐져나갔다. 그리드 트랙까지 그 min-content 로 끌려가
+          // 모바일에서 카드째 화면을 벗어났다.
+          flex-wrap: wrap;
           align-items: center;
           gap: 0.5rem;
-          overflow: visible;
-          scrollbar-width: thin;
+          min-width: 0;
           .tech-icon {
             flex-shrink: 0;
             padding: 0.2rem;
@@ -83,7 +88,7 @@
 
   // 600px 이상: 2열
   @media (min-width: 800px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     .project-thumbnail {
       height: 190px;
     }
@@ -91,7 +96,7 @@
 
   // 900px 이상: 3열
   @media (min-width: 1200px) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     .project-thumbnail {
       height: 187px;
     }
