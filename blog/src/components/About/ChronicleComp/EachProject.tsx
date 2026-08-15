@@ -21,8 +21,11 @@ export function EachProject({ title, duration, desc, techStackIcon }: Props) {
       <p className="text-zinc-700 dark:text-zinc-300">
         {desc}
       </p>
-      <div className="flex gap-1 items-center">
-        <div className="text-muted-foreground text-sm">
+      {/* flex-wrap 필수 — nowrap 이면 스택이 8개만 넘어가도 아이콘 줄이 카드 밖으로
+          삐져나간다 (9개 기준 모바일에서 45px). 페이지 가로 스크롤은 안 생겨서
+          눈으로만 깨져 보인다. */}
+      <div className="flex flex-wrap gap-1 items-center min-w-0">
+        <div className="text-muted-foreground text-sm shrink-0">
           Used:
         </div>
         {techStackIcon.map((icon) => (
