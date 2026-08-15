@@ -6,8 +6,8 @@
 ## Directory Layout (under `blog/`)
 ```
 _docs/                       # (at ROOT, not blog/) Design plans & architecture docs
-image-assets/                # FROZEN legacy image storage (rsync to RPi). New images go
-                             #   through the editor → /files/media. Do not add here.
+image-assets/                # Images for HAND-AUTHORED mdx (rsync to RPi, gitignored).
+                             #   Posts written in the editor upload to /files/media instead.
 e2e/                         # Playwright + agent-browser tests (outputs gitignored)
 scripts/                     # Build scripts (bundle-icons.mjs)
 src/

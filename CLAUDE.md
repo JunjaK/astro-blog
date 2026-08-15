@@ -165,12 +165,36 @@ EXIF/GPS stripped, HEIC converted server-side). Nothing to rsync, nothing to com
 - **Cleanup**: `/prune-media` — reports `/files/media` files no reference points at (dry-run,
   moves to a trash dir, never unlinks). `bun run prune:media` for the local `.media`
 
-### `blog/image-assets/` — frozen (legacy reference only)
+### `blog/image-assets/` — legacy path, still the only one for hand-authored MDX
 
-Kept because existing posts reference `/files/blog/**`, `/files/project/**` etc., and those files
-must stay on the server. **Do not add new images here.** The commands built around it
-(`/publish-images`, `/preprocess-md`, `/generate-thumbs`, `/convert-heic`, `/process-diary-mdx`)
-still work for re-publishing legacy assets, but are not the path for new content.
+Two authoring routes exist, and they use different image paths:
+
+| You write the post… | Images go… | How |
+|---|---|---|
+| in the editor (`/editor`) | `/files/media/<hash>.webp` | attach → uploaded immediately, nothing to do |
+| as an MDX file by hand | `/files/<collection>/…` | put them in `image-assets/`, then rsync |
+
+So `image-assets/` is **not retired** — it is what hand-written posts (playground entries, project
+pages, anything authored outside the editor) still use. What changed is that it is no longer the
+default: if the post is being written in the editor, do not put images here.
+
+Publishing a hand-authored post's images (scope the rsync to the new files — a full sync reports
+~6900 legacy originals the server never needed):
+
+```bash
+cd blog
+bun run node ./src/utils/convertToWebp.js --apply          # png/jpeg → webp (dry-run first)
+bun run node ./src/utils/generateVariants.js --match <slug>  # 480/960/1600 + dim manifest
+rsync -avz --include='<slug>*' --exclude='*' image-assets/<collection>/ raspi:/home/jun/blog-files/<collection>/
+```
+
+`generateVariants` walks *references in content*, so variants only appear after the MDX points at
+the images. Commit the resulting `src/data/imageManifest.json` — `image-assets/` itself is
+gitignored, so the images travel by rsync only.
+
+The older commands (`/publish-images`, `/preprocess-md`, `/generate-thumbs`, `/convert-heic`,
+`/process-diary-mdx`) are marked deprecated: they assume the pre-editor workflow where *every*
+post's images lived here. They still work for legacy bulk operations.
 
 Two gotchas if you ever do run them:
 

@@ -32,8 +32,9 @@
 ## Image Asset Publishing (separate from CI)
 - **Current path**: editor attach → immediate upload to `/files/media/<hash>.webp` (+ variants).
   No rsync, no commit. Cleanup via `/prune-media`.
-- **Frozen**: `blog/image-assets/` → rsync to RPi `/home/jun/blog-files/`. Legacy assets only —
-  existing posts still reference them. Do not add new images.
-  Commands (`/publish-images`, `/preprocess-md`, `/generate-thumbs`, `/convert-heic`,
-  `/process-diary-mdx`) remain for re-publishing those, marked deprecated.
+- **Hand-authored MDX** (playground / project pages written as files, not in the editor):
+  `blog/image-assets/<collection>/` → convertToWebp → generateVariants --match <slug> →
+  rsync scoped to the new files. Commit `src/data/imageManifest.json`; the images are gitignored.
+- Commands (`/publish-images`, `/preprocess-md`, `/generate-thumbs`, `/convert-heic`,
+  `/process-diary-mdx`) are deprecated — they assume the pre-editor bulk workflow.
 - `/publish-images --full` needs `--exclude=media/` or it deletes every editor upload.
