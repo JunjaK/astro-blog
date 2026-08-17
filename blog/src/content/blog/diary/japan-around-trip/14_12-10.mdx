@@ -8,7 +8,10 @@ thumbnail: /files/blog/diary/japan-around-trip/assets/image-20250115055255290.we
 ---  
 import ImageLoader from '@/components/Blog/ImageLoader.astro';  
 import VideoLoader from '@/components/Blog/VideoLoader.astro';  
-import TableOfContents from '@/components/Blog/TableOfContents.astro';  
+import TableOfContents from '@/components/Blog/TableOfContents.astro';
+
+import { TravelMap, VisitedList } from '@/components/Blog/TravelMap';
+import { spots } from '@/data/diarySpots/14_12-10';  
   
   
 <TableOfContents>  
@@ -22,28 +25,12 @@ import TableOfContents from '@/components/Blog/TableOfContents.astro';
   
 ### 루트  
   
-<ImageLoader src="/files/blog/diary/japan-around-trip/assets/image-20250114042458462.webp" alt="image-20250114042458462" />  
+<TravelMap spots={spots} originalImageSrc="/files/blog/diary/japan-around-trip/assets/image-20250114042458462.webp" client:visible />  
   
 ### 방문한 곳  
-  
-- 기후현 다카야마시  
-  - 미야가와 아침시장  
-  
-- 기후현 히다후루카와시  
-  - 시라카베 도죠가이  
-  - 사쿠라 기념품 가게  
-  - 치요노마츠바라 공원  
-  - 아지도코로 후루카와 https://maps.app.goo.gl/2s9GN7SjSA6RD8bDA  
-  - 키타 공원, 케타와카미야 신사  
-  
-- 기후현 오쿠히다 온센고 히라유  
-  - 히라유 신사  
-  - 히라유 민속 박물관  
-  - 히라유 노 유  
-  - 히라유 온센 아시유  
-  - 카페 머스타체 https://maps.app.goo.gl/W8yyABrbZY4Q5X276  
-  - 라멘 사카바 야도라기 https://maps.app.goo.gl/34rMjTb9obrqvU5m9  
-  
+
+<VisitedList spots={spots} />
+
 ## 일정  
   
 어제 시라카와고 버스를 타기 위해 미야가와 아침시장을 느긋하게 돌아보지 못하여,  
