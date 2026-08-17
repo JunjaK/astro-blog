@@ -44,3 +44,9 @@ image-assets-backup/
 
 # temp plan files
 plan.md
+
+# 1회성 스크립트의 원본 다운로드 (결과물만 커밋한다)
+**/.tmp/
+
+# 에이전트 작업 부산물 (스크린샷·로그 등)
+_workspace/
