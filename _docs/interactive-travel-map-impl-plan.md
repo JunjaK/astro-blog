@@ -15,7 +15,13 @@
 | 5. 루트 곡선 + draw-in | ✅ | catmull-rom 렌더 확인. **애니메이션은 구조만 검증, 재생은 미관측** — 아래 |
 | 6. 마커 + 툴팁 + 스크롤 + a11y | ✅ | hover/클릭/키보드/엣지플립/리사이즈 전수 확인. **결함 2건 잡음** — 아래 |
 | 7. 모바일 two-tap | ✅ | coarse 경로 전수 확인. **원안 전제가 틀려서 방식 교체** — 아래 |
-| 8~13 | ⬜ | |
+| 8. VisitedList + details + 폴백 | ✅ | **VisitedList 를 별도 export 로 분리** — 아래 |
+| 9~13 | ⬜ | |
+
+커밋: `2535dce`(T1) · `9a4efa7`(T2) · `77228b2`(T3) · `fd88837`(T4~7) · `810b5ed`(docs) · `148ac94`(T8).
+브랜치 **`feat/travel-map`** (base `518f863`). T4~7 이 한 커밋인 이유는 `TravelMap.tsx` / `travel-map.css`
+가 신규 파일이라 네 태스크가 같은 파일에 누적됐기 때문 — 쪼개면 실제로 테스트한 적 없는 중간
+상태가 히스토리에 들어간다.
 
 타입체크 베이스라인: `bun astro check` → **15 errors (전부 기존 코드)**. net-new 0 을 유지한다.
 
@@ -618,6 +624,20 @@ tappedIndexRef.current = index; // 이후 스크롤 경로
 
 **Goal:** D6 의 실체. `방문한 곳` 목록을 spots 에서 렌더해 본문에서 목록을 지울 근거를 만든다.
 
+**계획에서 바꾼 것 — `VisitedList` 를 `TravelMap` 안이 아니라 별도 export 로 뺀다.** 안에 넣으면 ① 순수 표시인데 하이드레이션된 아일랜드에 갇히고 ② 자기 헤딩(`### 방문한 곳`) 아래에 놓을 수 없어 27편의 헤딩 구조와 ToC 를 전부 건드려야 한다. 빼면 `client:*` 없이 **정적 HTML** 로 렌더된다(검증 페이지의 아일랜드는 `TravelMap` 하나뿐임을 확인).
+
+MDX 사용 형태:
+
+```mdx
+### 루트
+<TravelMap spots={spots} originalImageSrc="…" client:visible />
+
+### 방문한 곳
+<VisitedList spots={spots} />          {/* client:* 없음 — 정적 */}
+```
+
+**부수 이득:** 지도 fetch 가 죽어도 목록은 그대로 렌더된다(실측 확인). 데이터가 지도 아일랜드의 생사에 묶이지 않는다.
+
 - [ ] **Step 1: `VisitedList.tsx`**
 
 ```tsx
@@ -673,8 +693,24 @@ export function VisitedList({ spots }: { spots: DiarySpot[] }) {
 </div>
 ```
 
-- [ ] **Step 3:** 수동 확인 — 정상 로드 / DevTools 로 `/geo/muni/21.json` 차단 후 폴백 / `originalImageSrc` 없는 경우
+- [ ] **Step 3:** 수동 확인 — 정상 로드 / `/geo/muni/*.json` 차단 후 폴백 / `originalImageSrc` 없는 경우
 - [ ] **Step 4:** 커밋
+
+**⚠️ `<details>` 가 접혔는지 판정할 때 `getBoundingClientRect()` 를 믿지 말 것.** 접힌 상태에서도 608×658 같은 값을 돌려준다(실측). `element.checkVisibility()` 가 정답이고, 최종 확인은 스크린샷으로 한다.
+
+**에러 폴백 시 크레딧도 숨긴다.** 지도를 못 그렸으면 쓴 데이터가 없는데 국토교통성 표기만 남는 건 사실과 다르다.
+
+**검증 결과 (2026-08-17, 실측):**
+
+| 항목 | 결과 |
+|---|---|
+| 그룹핑 | 3개 — 다카야마시(2) · 히다시(1) · 시라카와무라(1), 방문 순서 유지 |
+| `mapUrl` | 링크 2개, `target="_blank" rel="noreferrer"` |
+| 하이드레이션 | 페이지의 `<astro-island>` 1개 (`TravelMap`) — `VisitedList` 는 정적 |
+| `<details>` | 접힘 시 이미지 비표시(스크린샷 확인), summary 클릭 시 표시 |
+| 네트워크 abort | 에러 문구 노출 · 폴백 이미지 본문 승격 · `details`/`svg`/크레딧 부재 · **목록은 생존** |
+
+**⚠️ Task 11 에서 확인할 것:** 검증 페이지엔 글 본문 스타일(`.article-entry`)이 없어서 목록의 불릿·들여쓰기가 안 보인다. 실제 글에 넣었을 때 중첩 `ul` 이 제대로 보이는지 본다.
 
 ---
 
