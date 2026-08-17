@@ -1,0 +1,160 @@
+/* =========================================================================
+   TravelMap — diary 글의 그날 동선 지도.
+   DiaryGallery/polaroid-flip.css 와 같은 방식: CSS 모듈 아님, `tm-` 프리픽스.
+
+   색 토큰 주의 — 이 사이트는 다크 셀렉터가 두 벌이다.
+     · shadcn HSL 토큰(--background/--muted/--border/--primary…) → `.dark` 클래스
+     · 사이트 토큰(--accent-color, --green-*)                    → `[data-theme="dark"]`
+   ModeToggle/ThemeInit 이 둘을 항상 같이 세팅하므로 섞어 써도 어긋나지 않는다.
+   ========================================================================= */
+
+/* 땅/바깥은 「어느 토큰이냐」가 아니라 「땅이 바깥보다 밝다」가 규칙이다.
+   그 관계가 두 테마에서 같아야 해서 토큰이 서로 뒤집힌다 — 스왑 지점을 여기 둘로 모은다.
+   (땅을 바깥보다 어둡게 두면 라이트에서 흰 바탕에 흰 땅이 돼 형상이 거의 안 보인다. 실측함) */
+.tm-wrapper {
+  --tm-void: hsl(var(--muted));
+  --tm-land: hsl(var(--background));
+
+  position: relative;
+  width: 100%;
+  height: min(45vw, 24rem);
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: var(--tm-void);
+}
+
+.dark .tm-wrapper {
+  --tm-void: hsl(var(--background));
+  --tm-land: hsl(var(--muted));
+}
+
+.tm-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tm-muni {
+  fill: var(--tm-land);
+  stroke: hsl(var(--muted-foreground) / 0.45);
+  stroke-width: 0.75;
+}
+
+/* ── 루트 ────────────────────────────────────────────────────────────────
+   --accent-color 는 hex 라 hsl() 로 감싸지 않는다 (#059669 라이트 / #10b981 다크).
+   시정촌 경계선(0.75px 회색)과 색·굵기 양쪽으로 구분된다. */
+.tm-route {
+  fill: none;
+  stroke: var(--accent-color);
+  stroke-width: 2.5;
+  stroke-opacity: 0.85;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 길이를 잰 뒤에만 붙는다 — 재기 전에 그리면 전체 선이 한 프레임 번쩍인다 */
+.tm-route-draw {
+  stroke-dasharray: var(--tm-route-length);
+  stroke-dashoffset: var(--tm-route-length);
+  animation: tm-route-draw 800ms ease-out forwards;
+}
+
+@keyframes tm-route-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tm-route-draw {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ── 마커 ────────────────────────────────────────────────────────────────
+   dot 은 --primary, 숫자는 --primary-foreground. 두 테마에서 자동 반전되며 19:1 이 나온다.
+   dot 을 녹색(--accent-color)으로 칠하고 흰 숫자를 얹으면 라이트 3.8:1 · 다크는 더 낮아
+   WCAG AA 에 못 미친다 — ehime-brewery-map 작업기의 「밝은 원에는 어두운 글자」와 같은 결론.
+   녹색은 루트 선과 glow 가 담당한다. */
+.tm-glow {
+  fill: var(--accent-color);
+  fill-opacity: 0.18;
+  pointer-events: none;
+}
+
+.tm-dot {
+  fill: hsl(var(--primary));
+  stroke: var(--tm-land);
+  stroke-width: 2;
+  cursor: pointer;
+  transition: r 200ms ease;
+}
+
+.tm-dot:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tm-dot { transition: none; }
+}
+
+.tm-num {
+  fill: hsl(var(--primary-foreground));
+  font-size: 11px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── 툴팁 ──────────────────────────────────────────────────────────────── */
+.tm-tooltip {
+  position: absolute;
+  z-index: 2;
+  max-width: 14rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.375rem;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.12);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.tm-tooltip-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.tm-tooltip-sub {
+  margin: 0.1rem 0 0;
+  color: hsl(var(--muted-foreground));
+}
+
+.tm-loading,
+.tm-error {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: var(--type-caption, 0.8125rem);
+  color: hsl(var(--muted-foreground));
+}
+
+/* 국토교통성 크레딧 — 라이선스 의무라 상시 노출한다 */
+.tm-credit {
+  margin: 0.25rem 0 0;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: hsl(var(--muted-foreground));
+}
+
+.tm-credit a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
