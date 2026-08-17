@@ -185,7 +185,8 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
                   // GeoJSON feature 에 안정적인 id 가 없다. 배열 순서가 파일 순서라 고정이다.
                   key={feature.properties.name || i}
                   d={projected.pathGen(feature) ?? ''}
-                  className="tm-muni"
+                  // 2개 이상 현이면 현 단위 실루엣으로 (내부 경계선 제거)
+                  className={codes.length >= 2 ? 'tm-muni tm-muni--plain' : 'tm-muni'}
                 />
               ))}
             </g>
