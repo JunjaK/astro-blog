@@ -1,4 +1,4 @@
-import { groupSpotsByCity } from './groupSpots';
+import { groupSpots } from './groupSpots';
 import type { DiarySpot } from './types';
 
 import './travel-map.css';
@@ -11,7 +11,8 @@ import './travel-map.css';
  * 지도 아일랜드 안에 넣으면 쓸데없이 하이드레이션되고, 자기 헤딩 아래에 놓을 수도 없다.
  */
 export function VisitedList({ spots, className }: { spots: DiarySpot[]; className?: string }) {
-  const groups = groupSpotsByCity(spots);
+  // 목록은 항상 도시 단위 — 지도가 현 단위로 물러나도 상세는 유지한다
+  const groups = groupSpots(spots, 'city');
 
   if (groups.length === 0) return null;
 

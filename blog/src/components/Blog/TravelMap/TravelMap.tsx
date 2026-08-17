@@ -5,7 +5,7 @@ import { geoMercator, geoPath } from 'd3-geo';
 import { curveCatmullRom, line } from 'd3-shape';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { groupAnchor, groupSpotsByCity, isPlottable } from './groupSpots';
+import { groupAnchor, groupSpots, isPlottable } from './groupSpots';
 import { prefectureCodes } from './prefectures';
 import { SpotMarker } from './SpotMarker';
 import { TravelMapTooltip } from './TravelMapTooltip';
@@ -64,9 +64,13 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
   const codes = useMemo(() => prefectureCodes(spots.map(s => s.prefecture)), [spots]);
   const geo = useGeoData(codes);
 
-  // 마커는 장소가 아니라 **도시 그룹** 단위다 (groupSpots.ts 주석 참조).
-  // 상세 장소는 VisitedList 가 같은 그룹핑으로 전부 보여준다.
-  const groups = useMemo(() => groupSpotsByCity(spots), [spots]);
+  // 마커 입도를 배경 입도에 맞춘다 — 현 실루엣을 그리는 날(2개 이상 현)은 마커도 현 단위다.
+  // 상세 장소는 VisitedList 가 항상 도시 단위 그룹핑으로 전부 보여준다.
+  const isMultiPrefecture = codes.length >= 2;
+  const groups = useMemo(
+    () => groupSpots(spots, isMultiPrefecture ? 'prefecture' : 'city'),
+    [spots, isMultiPrefecture],
+  );
   // 좌표가 하나도 없는 도시 그룹은 지도에 못 찍는다. 목록(VisitedList)에는 그대로 남는다.
   const plotted = useMemo(() => groups.filter(isPlottable), [groups]);
 
@@ -140,7 +144,7 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
     const target = document.getElementById(anchor);
     if (!target) {
       if (import.meta.env.DEV)
-        console.warn(`[TravelMap] anchor #${anchor} 를 찾지 못했습니다 (${group.city})`);
+        console.warn(`[TravelMap] anchor #${anchor} 를 찾지 못했습니다 (${group.label})`);
       return;
     }
 
@@ -186,7 +190,7 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
                   key={feature.properties.name || i}
                   d={projected.pathGen(feature) ?? ''}
                   // 2개 이상 현이면 현 단위 실루엣으로 (내부 경계선 제거)
-                  className={codes.length >= 2 ? 'tm-muni tm-muni--plain' : 'tm-muni'}
+                  className={isMultiPrefecture ? 'tm-muni tm-muni--plain' : 'tm-muni'}
                 />
               ))}
             </g>
@@ -199,13 +203,13 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
                 if (!point) return null;
                 return (
                   <text
-                    key={`label-${group.city}-${i}`}
+                    key={`label-${group.label}-${i}`}
                     x={point[0]}
                     y={point[1] + 22}
                     className="tm-city"
                     aria-hidden="true"
                   >
-                    {group.city}
+                    {group.label}
                   </text>
                 );
               })}
@@ -216,11 +220,11 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
                 if (!point) return null;
                 return (
                   <SpotMarker
-                    key={`marker-${group.city}-${i}`}
+                    key={`marker-${group.label}-${i}`}
                     index={i}
                     x={point[0]}
                     y={point[1]}
-                    label={`${i + 1}. ${group.prefecture} ${group.city}, ${group.spots.length}곳${groupAnchor(group) ? ' — 본문으로 이동' : ''}`}
+                    label={`${i + 1}. ${group.label}, ${group.spots.length}곳${groupAnchor(group) ? ' — 본문으로 이동' : ''}`}
                     active={activeIndex === i}
                     onActivate={setActiveIndex}
                     onDeactivate={deactivate}
@@ -233,7 +237,7 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
         )}
         {activeGroup && activePoint && (
           <TravelMapTooltip
-            title={`${activeGroup.prefecture} ${activeGroup.city}`}
+            title={activeGroup.label}
             sub={activeGroup.spots.map(spot => spot.name).join(' · ')}
             x={activePoint[0]}
             y={activePoint[1]}
