@@ -18,7 +18,8 @@
     "all-preprocess-md": "node ./src/utils/removeUnusedImages.js && node ./src/utils/addMdEnter.js && node ./src/utils/convertLoader.js",
     "astro": "astro",
     "test:e2e:ab": "vitest run --config vitest.e2e.config.ts",
-    "bundle-icons": "node scripts/bundle-icons.mjs"
+    "bundle-icons": "node scripts/bundle-icons.mjs",
+    "check-spots": "bun scripts/check-diary-spots.ts"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.2",
