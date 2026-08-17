@@ -1,12 +1,7 @@
+import { groupSpotsByCity } from './groupSpots';
 import type { DiarySpot } from './types';
 
 import './travel-map.css';
-
-type CityGroup = {
-  city: string;
-  prefecture: string;
-  spots: DiarySpot[];
-};
 
 /**
  * 본문에서 지운 「방문한 곳」 목록을 spots 에서 다시 만든다 (설계 스펙 결정 6-B).
@@ -16,16 +11,7 @@ type CityGroup = {
  * 지도 아일랜드 안에 넣으면 쓸데없이 하이드레이션되고, 자기 헤딩 아래에 놓을 수도 없다.
  */
 export function VisitedList({ spots, className }: { spots: DiarySpot[]; className?: string }) {
-  // 같은 도시를 하루에 두 번 들르면 그룹도 두 번 나온다 — 지도의 번호 순서와 어긋나지 않게
-  // 도시로 합치지 않고 방문 순서를 유지한다.
-  const groups: CityGroup[] = [];
-  for (const spot of spots) {
-    const last = groups.at(-1);
-    if (last && last.city === spot.city && last.prefecture === spot.prefecture)
-      last.spots.push(spot);
-    else
-      groups.push({ city: spot.city, prefecture: spot.prefecture, spots: [spot] });
-  }
+  const groups = groupSpotsByCity(spots);
 
   if (groups.length === 0) return null;
 

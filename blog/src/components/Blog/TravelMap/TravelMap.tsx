@@ -1,82 +1,39 @@
 import type { GeoProjection } from 'd3-geo';
-import type { MultiPoint } from 'geojson';
 import type { CSSProperties } from 'react';
 
 import { geoMercator, geoPath } from 'd3-geo';
 import { curveCatmullRom, line } from 'd3-shape';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { groupAnchor, groupSpotsByCity } from './groupSpots';
 import { prefectureCodes } from './prefectures';
 import { SpotMarker } from './SpotMarker';
 import { TravelMapTooltip } from './TravelMapTooltip';
-import type { DiarySpot, TravelMapProps } from './types';
+import type { TravelMapProps } from './types';
 import { useGeoData } from './useGeoData';
 
 import './travel-map.css';
 
 const PADDING = 24;
-/** spots 가 한 점에 몰린 날이 지도 전체를 차지하지 않게 하는 최소 폭(도 단위, 약 2km) */
-const MIN_SPAN = 0.02;
-
-/**
- * 그날 spots 를 감싸는 사각형. 지도 축척은 배경 GeoJSON 이 아니라 이것에 맞춘다 —
- * 도도부현 전체에 맞추면 하루가 한 도시 안일 때 점이 한 곳에 뭉친다.
- *
- * Polygon 이 아니라 MultiPoint 로 돌려준다. d3-geo 의 ring winding 규약은 GeoJSON 스펙과
- * 반대라, 사각형을 Polygon 으로 만들면 방향을 한 번 틀리는 순간 fitExtent 가 「지구 전체」를
- * 잡아 축척이 통째로 망가진다(같은 이유로 scripts/split-muni-geojson.mjs 가 원본을 뒤집는다).
- * 점 집합에는 winding 이 없어서 그 함정 자체가 사라진다 — bounds 는 어차피 동일하다.
- */
-function spotsExtent(spots: DiarySpot[]): MultiPoint {
-  const lngs = spots.map(s => s.lng);
-  const lats = spots.map(s => s.lat);
-
-  let west = Math.min(...lngs);
-  let east = Math.max(...lngs);
-  let south = Math.min(...lats);
-  let north = Math.max(...lats);
-
-  if (east - west < MIN_SPAN) {
-    const mid = (east + west) / 2;
-    west = mid - MIN_SPAN / 2;
-    east = mid + MIN_SPAN / 2;
-  }
-  if (north - south < MIN_SPAN) {
-    const mid = (north + south) / 2;
-    south = mid - MIN_SPAN / 2;
-    north = mid + MIN_SPAN / 2;
-  }
-
-  // 15% 여백 — 가장자리 spot 이 테두리에 붙지 않게
-  const padX = (east - west) * 0.15;
-  const padY = (north - south) * 0.15;
-
-  return {
-    type: 'MultiPoint',
-    coordinates: [
-      [west - padX, south - padY],
-      [east + padX, north + padY],
-    ],
-  };
-}
-
 /**
  * 방문 순서대로 이은 곡선. 마운트 시 stroke-dashoffset 으로 그려 들어온다.
  * 길이는 DOM 에 붙은 뒤에야 잴 수 있어 한 번 더 렌더한다 — 재기 전에는 숨긴다.
  */
-function RoutePath({ spots, projection }: { spots: DiarySpot[]; projection: GeoProjection }) {
+type RoutePoint = { lat: number; lng: number };
+
+function RoutePath({ points, projection }: { points: RoutePoint[]; projection: GeoProjection }) {
   const pathRef = useRef<SVGPathElement>(null);
   const [length, setLength] = useState<number | null>(null);
 
   const d = useMemo(() => {
-    const toPoint = (spot: DiarySpot) => projection([spot.lng, spot.lat]);
-    const generator = line<DiarySpot>()
-      .x(spot => toPoint(spot)?.[0] ?? 0)
-      .y(spot => toPoint(spot)?.[1] ?? 0)
+    const toPoint = (point: RoutePoint) => projection([point.lng, point.lat]);
+    const generator = line<RoutePoint>()
+      .x(point => toPoint(point)?.[0] ?? 0)
+      .y(point => toPoint(point)?.[1] ?? 0)
       .curve(curveCatmullRom.alpha(0.5));
 
-    return generator(spots) ?? '';
-  }, [spots, projection]);
+    return generator(points) ?? '';
+  }, [points, projection]);
 
   useEffect(() => {
     setLength(pathRef.current?.getTotalLength() ?? null);
@@ -107,16 +64,25 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
   const codes = useMemo(() => prefectureCodes(spots.map(s => s.prefecture)), [spots]);
   const geo = useGeoData(codes);
 
+  // 마커는 장소가 아니라 **도시 그룹** 단위다 (groupSpots.ts 주석 참조).
+  // 상세 장소는 VisitedList 가 같은 그룹핑으로 전부 보여준다.
+  const groups = useMemo(() => groupSpotsByCity(spots), [spots]);
+
+  // 축척은 그날 spots 의 bbox 가 아니라 **도도부현 전체**에 맞춘다.
+  // spots bbox 로 맞춰봤더니(2026-08-17 실측) 다카야마시 하나가 2,166km² 라 하루 동선
+  // 축척에서는 화면 전체가 시 하나 안이었다 — 그릴 경계선이 없어 흰 캔버스에 루트만 떠 있었다.
+  // 현 단위로 빼면 시정촌 경계가 배경으로 살아난다.
+  // (원거리 도서는 split-muni-geojson.mjs 에서 제외했다. 안 빼면 도쿄도가 남북 1,237km 다.)
   const projected = useMemo(() => {
-    if (geo.status !== 'ready' || dims.width === 0 || dims.height === 0 || spots.length === 0)
+    if (geo.status !== 'ready' || dims.width === 0 || dims.height === 0 || geo.data.features.length === 0)
       return null;
 
     const projection = geoMercator().fitExtent(
       [[PADDING, PADDING], [dims.width - PADDING, dims.height - PADDING]],
-      spotsExtent(spots),
+      geo.data,
     );
     return { projection, pathGen: geoPath(projection) };
-  }, [geo.status, dims.width, dims.height, spots]);
+  }, [geo, dims.width, dims.height]);
 
   // 6. 부수효과 — 컨테이너 크기 추적 (viewBox 재계산 → 리플로우)
   useEffect(() => {
@@ -143,7 +109,7 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
     tappedIndexRef.current = null;
   }
 
-  function selectSpot(spot: DiarySpot, index: number) {
+  function selectGroup(index: number) {
     // 터치: 첫 탭은 툴팁만, 같은 마커 두 번째 탭에서 이동한다.
     //
     // 판정에 activeIndex 를 쓰면 안 된다 — Android Chrome 은 탭 후 호환용 마우스 이벤트를
@@ -156,19 +122,23 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
       return;
     }
     tappedIndexRef.current = index;
+
+    const group = groups[index];
+    const anchor = group && groupAnchor(group);
+
     // anchor 가 없으면 스크롤할 곳이 없다 — 활성 상태만 유지한다.
     // 토글로 두면 데스크톱에서 hover 로 뜬 툴팁이 클릭하는 순간 사라지고,
     // 커서가 그대로라 mouseenter 가 다시 안 걸려 툴팁이 돌아오지 않는다.
     // 해제는 터치의 「바깥 탭」(Task 7)이 담당한다.
-    if (!spot.anchor) {
+    if (!anchor) {
       setActiveIndex(index);
       return;
     }
 
-    const target = document.getElementById(spot.anchor);
+    const target = document.getElementById(anchor);
     if (!target) {
       if (import.meta.env.DEV)
-        console.warn(`[TravelMap] anchor #${spot.anchor} 를 찾지 못했습니다 (spot: ${spot.name})`);
+        console.warn(`[TravelMap] anchor #${anchor} 를 찾지 못했습니다 (${group.city})`);
       return;
     }
 
@@ -176,11 +146,11 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
   }
 
   // 8. JSX
-  if (spots.length === 0) return null;
+  if (groups.length === 0) return null;
 
-  const activeSpot = activeIndex === null ? null : spots[activeIndex];
-  const activePoint = activeSpot && projected
-    ? projected.projection([activeSpot.lng, activeSpot.lat])
+  const activeGroup = activeIndex === null ? null : groups[activeIndex];
+  const activePoint = activeGroup && projected
+    ? projected.projection([activeGroup.lng, activeGroup.lat])
     : null;
 
   return (
@@ -217,32 +187,51 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
                 />
               ))}
             </g>
-            {spots.length >= 2 && <RoutePath spots={spots} projection={projected.projection} />}
+            {groups.length >= 2 && <RoutePath points={groups} projection={projected.projection} />}
+            {/* 도시 라벨은 마커보다 **먼저** 그린다. SVG 는 문서 순서가 paint 순서라
+                겹칠 때 마커가 위로 올라온다 (라벨이 가려지는 건 허용) */}
             <g>
-              {spots.map((spot, i) => {
-                const point = projected.projection([spot.lng, spot.lat]);
+              {groups.map((group, i) => {
+                const point = projected.projection([group.lng, group.lat]);
+                if (!point) return null;
+                return (
+                  <text
+                    key={`label-${group.city}-${i}`}
+                    x={point[0]}
+                    y={point[1] + 22}
+                    className="tm-city"
+                    aria-hidden="true"
+                  >
+                    {group.city}
+                  </text>
+                );
+              })}
+            </g>
+            <g>
+              {groups.map((group, i) => {
+                const point = projected.projection([group.lng, group.lat]);
                 if (!point) return null;
                 return (
                   <SpotMarker
-                    key={`${spot.name}-${i}`}
-                    spot={spot}
+                    key={`marker-${group.city}-${i}`}
                     index={i}
                     x={point[0]}
                     y={point[1]}
+                    label={`${i + 1}. ${group.prefecture} ${group.city}, ${group.spots.length}곳${groupAnchor(group) ? ' — 본문으로 이동' : ''}`}
                     active={activeIndex === i}
                     onActivate={setActiveIndex}
                     onDeactivate={deactivate}
-                    onSelect={selectSpot}
+                    onSelect={selectGroup}
                   />
                 );
               })}
             </g>
           </svg>
         )}
-        {activeSpot && activePoint && (
+        {activeGroup && activePoint && (
           <TravelMapTooltip
-            title={activeSpot.name}
-            sub={activeSpot.description ?? activeSpot.city}
+            title={`${activeGroup.prefecture} ${activeGroup.city}`}
+            sub={activeGroup.spots.map(spot => spot.name).join(' · ')}
             x={activePoint[0]}
             y={activePoint[1]}
             containerWidth={dims.width}
