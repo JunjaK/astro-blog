@@ -135,6 +135,55 @@
   color: hsl(var(--muted-foreground));
 }
 
+/* ── 방문한 곳 목록 / 원본 스크린샷 ────────────────────────────────────────
+   목록은 본문 산문 안에 놓이므로 글의 ul 스타일을 그대로 받는다. 최소만 손댄다. */
+.tm-visited a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.tm-details {
+  margin-top: 0.5rem;
+}
+
+.tm-details > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.tm-details > summary::marker,
+.tm-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.tm-details > summary::before {
+  content: '▸';
+  display: inline-block;
+  transition: transform 150ms ease;
+}
+
+.tm-details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tm-details > summary::before { transition: none; }
+}
+
+.tm-details > img,
+.tm-fallback {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-top: 0.5rem;
+  border-radius: 0.375rem;
+}
+
 .tm-loading,
 .tm-error {
   position: absolute;

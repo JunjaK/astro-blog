@@ -95,7 +95,7 @@ function RoutePath({ spots, projection }: { spots: DiarySpot[]; projection: GeoP
   );
 }
 
-export function TravelMap({ spots, className }: TravelMapProps) {
+export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps) {
   // 5. 로컬 state + 파생
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ width: 0, height: 0 });
@@ -250,13 +250,27 @@ export function TravelMap({ spots, className }: TravelMapProps) {
           />
         )}
       </div>
-      <p className="tm-credit">
-        출처:
-        {' '}
-        <a href="https://nlftp.mlit.go.jp/ksj/" target="_blank" rel="noreferrer">
-          国土数値情報（行政区域データ）国土交通省
-        </a>
-      </p>
+      {/* 라이선스 의무 표기. 지도를 못 그렸으면 쓴 데이터가 없으므로 표기도 하지 않는다 */}
+      {geo.status !== 'error' && (
+        <p className="tm-credit">
+          출처:
+          {' '}
+          <a href="https://nlftp.mlit.go.jp/ksj/" target="_blank" rel="noreferrer">
+            国土数値情報（行政区域データ）国土交通省
+          </a>
+        </p>
+      )}
+      {originalImageSrc && (geo.status === 'error'
+        // 지도가 죽으면 스크린샷이 대체재가 아니라 본문이 된다 — 접어두지 않는다
+        ? (
+            <img className="tm-fallback" src={originalImageSrc} alt="여행 루트 (원본 구글 맵 스크린샷)" />
+          )
+        : (
+            <details className="tm-details">
+              <summary>구글 맵 원본 보기</summary>
+              <img src={originalImageSrc} alt="여행 루트 (원본 구글 맵 스크린샷)" />
+            </details>
+          ))}
     </div>
   );
 }
