@@ -5,7 +5,7 @@ import { geoMercator, geoPath } from 'd3-geo';
 import { curveCatmullRom, line } from 'd3-shape';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { groupAnchor, groupSpotsByCity } from './groupSpots';
+import { groupAnchor, groupSpotsByCity, isPlottable } from './groupSpots';
 import { prefectureCodes } from './prefectures';
 import { SpotMarker } from './SpotMarker';
 import { TravelMapTooltip } from './TravelMapTooltip';
@@ -67,6 +67,8 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
   // 마커는 장소가 아니라 **도시 그룹** 단위다 (groupSpots.ts 주석 참조).
   // 상세 장소는 VisitedList 가 같은 그룹핑으로 전부 보여준다.
   const groups = useMemo(() => groupSpotsByCity(spots), [spots]);
+  // 좌표가 하나도 없는 도시 그룹은 지도에 못 찍는다. 목록(VisitedList)에는 그대로 남는다.
+  const plotted = useMemo(() => groups.filter(isPlottable), [groups]);
 
   // 축척은 그날 spots 의 bbox 가 아니라 **도도부현 전체**에 맞춘다.
   // spots bbox 로 맞춰봤더니(2026-08-17 실측) 다카야마시 하나가 2,166km² 라 하루 동선
@@ -123,7 +125,7 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
     }
     tappedIndexRef.current = index;
 
-    const group = groups[index];
+    const group = plotted[index];
     const anchor = group && groupAnchor(group);
 
     // anchor 가 없으면 스크롤할 곳이 없다 — 활성 상태만 유지한다.
@@ -146,9 +148,9 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
   }
 
   // 8. JSX
-  if (groups.length === 0) return null;
+  if (plotted.length === 0) return null;
 
-  const activeGroup = activeIndex === null ? null : groups[activeIndex];
+  const activeGroup = activeIndex === null ? null : plotted[activeIndex];
   const activePoint = activeGroup && projected
     ? projected.projection([activeGroup.lng, activeGroup.lat])
     : null;
@@ -187,11 +189,11 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
                 />
               ))}
             </g>
-            {groups.length >= 2 && <RoutePath points={groups} projection={projected.projection} />}
+            {plotted.length >= 2 && <RoutePath points={plotted} projection={projected.projection} />}
             {/* 도시 라벨은 마커보다 **먼저** 그린다. SVG 는 문서 순서가 paint 순서라
                 겹칠 때 마커가 위로 올라온다 (라벨이 가려지는 건 허용) */}
             <g>
-              {groups.map((group, i) => {
+              {plotted.map((group, i) => {
                 const point = projected.projection([group.lng, group.lat]);
                 if (!point) return null;
                 return (
@@ -208,7 +210,7 @@ export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps
               })}
             </g>
             <g>
-              {groups.map((group, i) => {
+              {plotted.map((group, i) => {
                 const point = projected.projection([group.lng, group.lat]);
                 if (!point) return null;
                 return (

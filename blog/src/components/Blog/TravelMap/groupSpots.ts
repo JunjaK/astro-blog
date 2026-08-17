@@ -4,10 +4,17 @@ export type SpotGroup = {
   city: string;
   prefecture: string;
   spots: DiarySpot[];
-  /** 그룹 중심 — 지도 마커 좌표 */
-  lat: number;
-  lng: number;
+  /** 좌표를 가진 장소들의 중심 — 지도 마커 위치. 하나도 없으면 null 이라 지도에 못 찍는다 */
+  lat: number | null;
+  lng: number | null;
 };
+
+/** 지도에 찍을 수 있는 그룹. lat/lng 가 확정된 것만 통과한다 */
+export type PlottableGroup = SpotGroup & { lat: number; lng: number };
+
+export function isPlottable(group: SpotGroup): group is PlottableGroup {
+  return group.lat !== null && group.lng !== null;
+}
 
 /**
  * 연속된 같은 도시를 한 그룹으로 묶는다. 지도 마커와 「방문한 곳」 목록이 같은 계산을 쓴다.
@@ -26,12 +33,15 @@ export function groupSpotsByCity(spots: DiarySpot[]): SpotGroup[] {
     if (last && last.city === spot.city && last.prefecture === spot.prefecture)
       last.spots.push(spot);
     else
-      groups.push({ city: spot.city, prefecture: spot.prefecture, spots: [spot], lat: 0, lng: 0 });
+      groups.push({ city: spot.city, prefecture: spot.prefecture, spots: [spot], lat: null, lng: null });
   }
 
   for (const group of groups) {
-    group.lat = group.spots.reduce((sum, spot) => sum + spot.lat, 0) / group.spots.length;
-    group.lng = group.spots.reduce((sum, spot) => sum + spot.lng, 0) / group.spots.length;
+    const located = group.spots.filter(spot => spot.lat !== undefined && spot.lng !== undefined);
+    if (located.length === 0) continue;
+
+    group.lat = located.reduce((sum, spot) => sum + spot.lat!, 0) / located.length;
+    group.lng = located.reduce((sum, spot) => sum + spot.lng!, 0) / located.length;
   }
 
   return groups;

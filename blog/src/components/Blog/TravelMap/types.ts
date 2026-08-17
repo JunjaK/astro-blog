@@ -2,8 +2,14 @@ import type { PrefectureName } from './prefectures';
 
 export type DiarySpot = {
   name: string;
-  lat: number;
-  lng: number;
+  /**
+   * 좌표는 선택이다. 지도 마커는 **도시 그룹** 단위로 찍히고 그 좌표는 그룹에 속한
+   * 장소들의 중심점이므로, 그룹마다 대표 장소 하나만 있으면 지도가 성립한다.
+   * 장소 단위로 전수 조사하는 것은 지금 아무도 쓰지 않는 데이터를 모으는 일이다.
+   * 나중에 더 채우면 중심점이 그만큼 정밀해진다.
+   */
+  lat?: number;
+  lng?: number;
   /** 도시/구역. 예: '다카야마시'. 「방문한 곳」 목록의 그룹 키이자 후속 playground 의 집계 키 */
   city: string;
   /** 배경 GeoJSON 선택과 좌표 검증(point-in-polygon)의 근거 */

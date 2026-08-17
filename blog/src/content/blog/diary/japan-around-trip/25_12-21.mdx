@@ -9,6 +9,9 @@ thumbnail: /files/blog/diary/japan-around-trip/assets/CleanShot_2025-10-25_16.01
 import { DiaryCarousel } from '@/components/Blog/DiaryGallery';  
 import ImageLoader from '@/components/Blog/ImageLoader.astro';  
 import TableOfContents from '@/components/Blog/TableOfContents.astro';  
+
+import { TravelMap, VisitedList } from '@/components/Blog/TravelMap';
+import { spots } from '@/data/diarySpots/25_12-21';
   
 <TableOfContents>  
 - 루트 및 방문한 곳  
@@ -29,18 +32,12 @@ import TableOfContents from '@/components/Blog/TableOfContents.astro';
 ## 루트 및 방문한 곳  
   
 ### 루트  
-<ImageLoader src="/files/blog/diary/japan-around-trip/assets/CleanShot_2025-03-30_22.01.33.webp" alt="12월 21일 루트" />  
+<TravelMap spots={spots} originalImageSrc="/files/blog/diary/japan-around-trip/assets/CleanShot_2025-03-30_22.01.33.webp" client:visible />
   
 ### 방문한 곳  
-- 도쿄도 도쿄  
-  - 아사쿠사  
-  - 아키하바라 — 간다 신사, 아키하바라 거리  
-  - 나카메구로 — 스게카리 공원, 사이고우야마 공원, 스타벅스 리저브  
-  - 아자부다이 힐즈  
-  - 신바시 — 타바코 천국, 카니지고쿠  
-  
-  
-  
+
+<VisitedList spots={spots} />
+
 ## 일정  
   
 <DiaryCarousel client:visible  
