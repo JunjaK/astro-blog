@@ -41,6 +41,17 @@ function toD3Winding(geometry) {
   return { ...geometry, coordinates };
 }
 
+// 도도부현 전체에 fitExtent 하므로 원거리 도서를 빼야 한다. 도쿄도를 그대로 두면
+// 오가사와라·이즈 제도 때문에 남북 1,237km 가 잡혀 23구가 점이 된다(실측).
+//
+// 거리 임계값으로 자동 판정하면 안 된다 — 니이가타의 糸魚川市 는 중심에서 1.1° 떨어졌지만
+// 엄연한 본토 도시라 같이 잘려나간다. 그래서 이름으로 명시한다.
+// 이번 여행 16개 현 중 해당되는 건 도쿄도 하나뿐이다. 가고시마·오키나와·시마네를
+// 추가할 때 같은 처리가 필요하다.
+const ISLAND_MUNICIPALITIES = new Set([
+  '小笠原村', '三宅村', '御蔵島村', '新島村', '神津島村', '八丈町', '青ヶ島村', '利島村',
+]);
+
 const src = JSON.parse(fs.readFileSync(SRC, 'utf8'));
 
 // 「所属未定地」(치바·도쿄·오키나와 3건, 매립지 경계 미확정)는 N03_007 이 null 이다.
@@ -52,6 +63,7 @@ for (const f of src.features) {
 }
 
 const byCode = new Map();
+const dropped = [];
 let missing = 0;
 
 for (const f of src.features) {
@@ -61,15 +73,23 @@ for (const f of src.features) {
     continue;
   }
   if (KEEP.size && !KEEP.has(code)) continue;
+
+  const name = f.properties.N03_004 ?? f.properties.N03_003 ?? '';
+  if (ISLAND_MUNICIPALITIES.has(name)) {
+    dropped.push(`${code}/${name}`);
+    continue;
+  }
+
   if (!byCode.has(code)) byCode.set(code, []);
   // 렌더에 쓰지 않는 property 는 버려 용량을 줄인다
   byCode.get(code).push({
     type: 'Feature',
-    properties: { name: f.properties.N03_004 ?? f.properties.N03_003 ?? '' },
+    properties: { name },
     geometry: toD3Winding(f.geometry),
   });
 }
 
+if (dropped.length) console.log('원거리 도서 제외:', dropped.join(', '));
 if (missing) console.warn(`⚠ N03_007 없는 feature ${missing}건 — 확인 필요`);
 
 fs.mkdirSync(OUT, { recursive: true });
