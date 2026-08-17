@@ -2,847 +2,433 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship an interactive D3 SVG map component (`<TravelMap>`) that replaces the static Google Maps screenshot in Tokyo diary posts, rendering numbered spot markers on a Tokyo 23-ward boundary with hover tooltips and click-to-scroll to in-post sections.
+**Status:** 개정 2026-08-17 — 저자와 디테일 7건 확정 후 재작성. **Task 1~4 완료(미커밋)**
 
-**Architecture:** React island hydrated on `client:visible`. D3 is used for geographic math only (`geoMercator`, `geoPath`, `line`, `curveCatmullRom`); all DOM is owned by React so state transitions re-render naturally. Geographic boundaries ship as a static GeoJSON asset under `public/maps/`. A preset registry (`GEO_REGIONS`) maps the `geoRegion` prop to the appropriate GeoJSON URL. Spot data is authored inline in MDX via `export const spots = [...]`, matching the existing `PolaroidGalleryScrapbook` convention.
+### 진행 상황 (2026-08-17)
 
-**Tech Stack:** Astro 5, React 19, TypeScript, D3 v7 (already installed), Tailwind CSS 4 + SCSS page tokens, Playwright (e2e), Bun, Node 24.
+| Task | 상태 | 비고 |
+|---|---|---|
+| 1. GeoJSON 확보·분할 | ✅ | 16개 478KB. **winding 수정 포함 — 아래 참조** |
+| 2. 타입 + 도도부현 매핑 | ✅ | `PREFECTURES` 16곳 ↔ geojson 16개 1:1 확인 |
+| 3. `useGeoData` | ✅ | `@types/geojson` 실제 타입 사용(`unknown` 제거) |
+| 4. `TravelMap` 골격 | ✅ | 기후현 42 features 렌더·라이트/다크 육안 확인 |
+| 5. 루트 곡선 + draw-in | ✅ | catmull-rom 렌더 확인. **애니메이션은 구조만 검증, 재생은 미관측** — 아래 |
+| 6. 마커 + 툴팁 + 스크롤 + a11y | ✅ | hover/클릭/키보드/엣지플립/리사이즈 전수 확인. **결함 2건 잡음** — 아래 |
+| 7. 모바일 two-tap | ✅ | coarse 경로 전수 확인. **원안 전제가 틀려서 방식 교체** — 아래 |
+| 8~13 | ⬜ | |
 
-**Reference spec:** `_docs/interactive-travel-map-plan.md`
+타입체크 베이스라인: `bun astro check` → **15 errors (전부 기존 코드)**. net-new 0 을 유지한다.
 
-**Branch:** Create `feat/travel-map` before starting (all tasks assume this is the working branch).
+### ⚠️ d3-geo winding 함정 (Task 1 에서 발견, 후속 계획도 해당)
+
+**d3-geo 의 ring winding 규약은 GeoJSON 스펙(RFC 7946)과 반대다.** 원본은 스펙대로 외곽 링이 CCW 인데, d3 는 그걸 「이 폴리곤 **바깥** 전부」로 읽는다.
+
+```
+高山市 as-is    geoArea 12.566 sr (= 4π, 지구 전체)   → geoPath 가 화면 전체를 덮는 덩어리를 그린다
+高山市 reversed geoArea 0.000053 sr ≈ 2,151 km²      → 실제 면적 2,177 km² 와 일치
+```
+
+`scripts/split-muni-geojson.mjs` 의 `toD3Winding()` 이 **면적으로 판정해** 4π 를 넘으면 링을 뒤집는다(원본 winding 이 바뀌어도 자기교정). 결과 파일은 「d3 전용」이고 RFC 7946 을 따르지 않는다 — 다른 도구로 열 사람은 이걸 알아야 한다.
+
+같은 함정이 **직접 만든 GeoJSON 에도 적용된다.** `spotsExtent()` 가 사각형을 `Polygon` 이 아니라 `MultiPoint` 로 돌려주는 이유가 이것이다 — 점 집합에는 winding 이 없어서 방향을 틀릴 여지 자체가 없고 bounds 는 동일하다.
+
+검증: 전 16파일 669 features 의 `geoArea` 가 전부 정상 범위, 최대가 高山市 2,166 km²(일본 최대 면적 시).
+**Reference spec:** [`interactive-travel-map-plan.md`](./interactive-travel-map-plan.md) (§3 결정표는 이 문서의 §0 결정 로그로 갱신됨)
+**후속 기능:** [`japan-trip-map`](./active/planning/2026-08-16/2026-08-16-japan-trip-map-final.md) — 이 기능이 남기는 `spots` 를 집계한다
+
+**Goal:** diary 글 1편의 그날 동선을 인터랙티브 SVG 지도로 렌더하는 `<TravelMap>` 을 만들고, `japan-around-trip` 27편의 구글맵 스크린샷 + `방문한 곳` 목록을 대체한다.
+
+**Architecture:** React island (`client:visible`). D3 는 지리 연산 전용(`geoMercator`, `geoPath`, `line`, `curveCatmullRom`)이고 DOM 은 React 소유. 배경은 시정촌(市区町村) 경계 GeoJSON 을 도도부현 단위로 분할해 `public/geo/muni/{code}.json` 으로 정적 배포하고, 글이 쓰는 현만 fetch 한다. 축척은 **그날 spots 의 bounding box** 에 맞춘다.
+
+**Tech Stack:** Astro 7.2.0, React 19.2, TypeScript, D3 v7 (설치됨), Tailwind 4 + SCSS, Playwright, Bun, Node 24. 모든 경로는 모노레포 분리 이후 기준 — 블로그 코드는 `blog/` 하위다.
+
+**Branch:** `feat/travel-map` 을 만들고 시작한다.
 
 ---
 
-## File Structure
+## 0. 결정 로그 (2026-08-17 확정 — 원안을 덮어쓴다)
 
-**New files:**
+| # | 원안 | 확정 | 사유 |
+|---|---|---|---|
+| D1 | 25-01-tokyo 2편 마이그레이션 | **`japan-around-trip/14_12-10` 1편 파일럿 → 검증 후 26편 복제.** 도쿄 2편은 후순위 | 원안대로면 `japan-around-trip` 28편에 `spots` 가 안 생겨 후속 계획 0절의 「좌표 해소」 전제가 무너진다. 또 도쿄 편 `방문한 곳` 은 `- 우에노` 처럼 도도부현이 없어 결정 6-A(city/prefecture)가 공회전한다 |
+| D2 | 지도 extent = 도도부현/23구 GeoJSON 에 fit | **그날 spots 의 bbox 에 fit** (루트 지도) | 스크린샷을 대체하는 게 목적이다. 도도부현 축척이면 하루가 한 도시 안일 때 점 1개로 뭉쳐 스크린샷보다 정보량이 적어진다 |
+| D3 | 배경 = 도도부현 경계 프리셋 레지스트리(`GEO_REGIONS`) | **시정촌 경계, 도도부현 코드로 분할된 파일.** 레지스트리 폐기 | bbox 축척에서 경계선이 보이려면 시정촌 단위여야 한다. 어느 파일을 쓸지는 `spot.prefecture` 가 이미 알려주므로 레지스트리는 중복 |
+| D4 | spot = 개별 장소 (원안 유지) | **유지.** ~195건 | D2 의 귀결 |
+| D5 | `export const spots` 를 MDX 인라인 | **`blog/src/data/diarySpots/{slug}.ts` 편당 파일**, MDX 는 import | 후속 playground 와 검증 스크립트가 그냥 import 로 읽는다. MDX named export 를 `import.meta.glob` 으로 긁는 경로는 타입이 약하다 |
+| D6 | `방문한 곳` bullet list 삭제 (결정 6/6-A) | **spots 가 SSOT, 목록은 `<TravelMap>` 이 spots 에서 렌더** | 중복 0 · 손실 0 으로 결정 6의 「목록 삭제」 요구를 충족한다. `mapUrl` 필드로 원문의 구글맵 링크까지 보존 |
+| D7 | 좌표 조사 방법 미정 | **단축 URL 62건은 리다이렉트 해석 스크립트, 나머지 ~130건은 사람이 입력.** 좌표는 절대 생성하지 않는다 | 환각 하드라인. 미입력은 `lat: 0` 으로 두고 검증 스크립트가 빌드에서 잡는다 |
 
-| Path | Responsibility |
+### 원안에서 죽은 항목
+
+- **`rehype-slug` 추가 게이트 (구 Task 1 Step 1b) — 불필요.** 로컬 `dist`(2026-08-15 빌드)와 라이브 양쪽에서 heading id 확인됨: `루트-및-방문한-곳`, `츠키시마-몬쟈-스트리트`, `여행-목적`. 한글 슬러그가 이미 붙는다. `astro.config.mjs` 는 손대지 않는다.
+- **`GEO_REGIONS` 레지스트리 / `tokyo-23ku.geojson` / topojson 변환 절차** — D3 으로 대체.
+- **오가사와라 제도 대응** — 도쿄도 bbox 가 실제로 위도 24.75~35.90 까지 뻗는 것은 확인했으나(오가사와라촌·미쿠라지마촌·하치죠쵸), bbox fit 에서는 화면 밖이라 처리 불필요. 도도부현 fit 을 되살릴 때만 부활한다.
+- `astro.config.mjs` 의 markdown 파이프라인은 Astro 7 에서 `processor: unified({...})` 로 핀 고정돼 있다. 원안의 `remarkPlugins/rehypePlugins` 스니펫은 현재 구조와 맞지 않는다.
+
+### 실측 데이터 규모 (`blog/src/content/blog/diary/japan-around-trip/`, 28편)
+
+| 항목 | 실측 |
 |---|---|
-| `src/components/Blog/TravelMap/TravelMap.tsx` | Main React component; owns all interaction state |
-| `src/components/Blog/TravelMap/SpotMarker.tsx` | Single spot dot: glow + numbered dot + tooltip trigger |
-| `src/components/Blog/TravelMap/TravelMapTooltip.tsx` | Positioned tooltip rendered over the SVG |
-| `src/components/Blog/TravelMap/types.ts` | `DiarySpot`, `TravelMapProps` |
-| `src/components/Blog/TravelMap/regions.ts` | `GEO_REGIONS` registry + `GeoRegion` union type |
-| `src/components/Blog/TravelMap/useGeoData.ts` | `fetch`-backed hook with module-level cache |
-| `src/components/Blog/TravelMap/styles.module.scss` | Component-scoped styles (CSS vars + animations) |
-| `src/components/Blog/TravelMap/index.ts` | Barrel export |
-| `public/maps/tokyo-23ku.geojson` | Tokyo 23 wards boundary (~100KB) |
-| `e2e/travel-map.noauth.spec.ts` | Playwright desktop + mobile e2e |
+| `방문한 곳` 보유 | 27편 (`01_intro` 없음). `##` 1편(`02_11-28`) + `###` 26편 |
+| 상위 「{도도부현} {시}」 항목 | 56건 |
+| 하위 개별 장소 | 168건 + 인라인형(`— A, B, C`) ~25건. `03_11-29` 은 3단 중첩까지 존재 |
+| `maps.app.goo.gl` 단축 URL | 62건 (개별 장소의 약 32%) |
+| `### 루트` + 구글맵 스크린샷 | 26편 |
 
-**Files to modify:**
+### GeoJSON 출처 (실물 확인 완료)
 
-| Path | Change |
+| 항목 | 값 |
 |---|---|
-| `src/content/blog/diary/25-01-tokyo/01_01-20.mdx` | Replace `<ImageLoader>` route screenshot with `<TravelMap>`; remove `방문한 곳` bullet list; add explicit section ids where needed |
-| `src/content/blog/diary/25-01-tokyo/02_01-21.mdx` | Same treatment |
+| 저장소 | [`smartnews-smri/japan-topography`](https://github.com/smartnews-smri/japan-topography) — 국토수치정보 N03(행정구역)을 가공한 오픈데이터 |
+| 원본 파일 | `data/municipality/geojson/s0001/N03-21_210101.json` — 전국 시정촌, 1,897 features, 1.65MB, 간소화 0.1% |
+| property | `N03_001` 도도부현(일본어 `岐阜県`) · `N03_003` 정령시 · `N03_004` 시구정촌 · `N03_007` 행정구역코드 |
+| 도도부현별 분할 크기 | 기후 38KB · 도쿄 31KB · 히로시마 31KB · 아오모리 37KB · 이시카와 17KB |
+| 라이선스 | 상용 포함 무상. 스마트뉴스 크레딧 불요, **국토교통성 「国土数値情報（行政区域データ）」 표기 의무** |
+| 더 정밀한 판이 필요할 때 | 같은 저장소 `s0010`(간소화 1%)에 도도부현별 파일이 이미 있다. 해안이 중요한 편에서 육안 확인 후 그 현만 교체 |
 
 ---
 
-## Task 1: Verify heading anchor scheme and fetch Tokyo 23-ward GeoJSON
+## 파일 구조
 
-**Goal:** Confirm that in-post headings receive `id` attributes (required for `scrollIntoView` by id) and stage the GeoJSON asset. This is a gate task — anchor behavior must be understood before the click handler is designed.
+**신규:**
 
-**Files:**
-- Create: `public/maps/tokyo-23ku.geojson`
-- Read: any built diary post page in the browser DevTools
+| 경로 | 책임 |
+|---|---|
+| `blog/src/components/Blog/TravelMap/TravelMap.tsx` | 메인 컴포넌트. 인터랙션 상태 소유 |
+| `blog/src/components/Blog/TravelMap/SpotMarker.tsx` | 번호 dot + glow |
+| `blog/src/components/Blog/TravelMap/TravelMapTooltip.tsx` | SVG 위에 뜨는 툴팁 |
+| `blog/src/components/Blog/TravelMap/VisitedList.tsx` | spots → 「방문한 곳」 목록 렌더 (D6) |
+| `blog/src/components/Blog/TravelMap/types.ts` | `DiarySpot`, `TravelMapProps` |
+| `blog/src/components/Blog/TravelMap/prefectures.ts` | 한글 도도부현 → `{ code, ja }` 매핑 |
+| `blog/src/components/Blog/TravelMap/useGeoData.ts` | 도도부현 코드 배열 → fetch + 병합 + 세션 캐시 |
+| `blog/src/components/Blog/TravelMap/travel-map.css` | 컴포넌트 스타일. **CSS 모듈 아님** — 이 저장소엔 `*.module.*` 사용처가 0이고, 컴포넌트 로컬 스타일 관례는 `DiaryGallery/polaroid-flip.css` 처럼 옆에 둔 평범한 `.css` + 프리픽스(`tm-`)다. 컴포넌트 하나 때문에 스타일 메커니즘을 새로 들이지 않는다 |
+| `blog/src/components/Blog/TravelMap/index.ts` | barrel |
+| `blog/src/data/diarySpots/14_12-10.ts` | 파일럿 편 spots (이후 편당 1개씩 추가) |
+| `blog/public/geo/muni/{code}.json` | 도도부현별 시정촌 경계 (여행 대상 16현만 커밋) |
+| `blog/scripts/split-muni-geojson.mjs` | 1회성 — 전국 파일 → 도도부현 분할 |
+| `blog/scripts/resolve-map-urls.mjs` | 1회성 — 단축 URL 해석 + spots 초안 생성 |
+| `blog/scripts/check-diary-spots.mjs` | 상시 검증 (`bun run check-spots`) |
+| `blog/e2e/travel-map.noauth.spec.ts` | Playwright |
 
-- [ ] **Step 1: Start the dev server and inspect heading ids**
+**수정:** `blog/src/content/blog/diary/japan-around-trip/14_12-10.mdx` (파일럿) → 검증 후 나머지 26편.
+
+---
+
+## Task 1: GeoJSON 확보 + 도도부현 분할
+
+**Goal:** `public/geo/muni/{code}.json` 을 만든다. 좌표·컴포넌트 작업의 전제.
+
+- [ ] **Step 1: 전국 시정촌 파일 내려받기 (커밋하지 않는다)**
 
 ```bash
-bun dev
+cd blog
+mkdir -p .tmp public/geo/muni
+curl -fL -o .tmp/muni-japan.json \
+  https://raw.githubusercontent.com/smartnews-smri/japan-topography/main/data/municipality/geojson/s0001/N03-21_210101.json
 ```
 
-Open `http://localhost:4321/blog/diary/25-01-tokyo/01_01-20` in a browser. Open DevTools and run in the console:
+기대: 약 1.65MB. `node -e "console.log(require('./.tmp/muni-japan.json').features.length)"` → `1897`.
+
+- [ ] **Step 2: 분할 스크립트 작성** — `blog/scripts/split-muni-geojson.mjs`
 
 ```js
-Array.from(document.querySelectorAll('.article-entry h2, .article-entry h3')).map(h => ({ text: h.textContent, id: h.id }))
-```
-
-Record the output. There are three possible outcomes:
-
-1. **All headings have ids** → Astro's MDX pipeline already runs `rehype-slug` implicitly or via a default. Proceed: spot `anchor` values will match these ids.
-2. **Headings have no ids** → `rehype-slug` is not configured. Add it in Task 1b (below).
-3. **Partial/inconsistent** → Unlikely; treat as case 2.
-
-- [ ] **Step 1b (only if Step 1 shows no ids): Add rehype-slug**
-
-```bash
-bun add -D rehype-slug
-```
-
-Modify `astro.config.mjs` at the `markdown` block:
-
-```js
-// before
-markdown: {
-  remarkPlugins: [remarkMermaidToHtml, remarkMath],
-  rehypePlugins: [rehypeKatex],
-  syntaxHighlight: false,
-},
-
-// after
-import rehypeSlug from 'rehype-slug';
-// ...
-markdown: {
-  remarkPlugins: [remarkMermaidToHtml, remarkMath],
-  rehypePlugins: [rehypeSlug, rehypeKatex],
-  syntaxHighlight: false,
-},
-```
-
-Restart `bun dev` and re-verify: every `h2`/`h3` inside `.article-entry` must have an `id` matching the text slugified with hangul preserved. The output should line up with the `createSlug` function in `src/components/Blog/TableOfContents.astro:18-24`.
-
-- [ ] **Step 2: Download the Tokyo 23-ward GeoJSON**
-
-Source: `dataofjapan/land` repo (MIT licensed). The `tokyo/ku.json` file is a TopoJSON file in the repo; we want the expanded GeoJSON. Use the pre-converted mirror:
-
-```bash
-mkdir -p public/maps
-curl -fL -o public/maps/tokyo-23ku.geojson \
-  https://raw.githubusercontent.com/dataofjapan/land/master/tokyo.topojson
-```
-
-If the above is TopoJSON (confirm with `head -c 200 public/maps/tokyo-23ku.geojson`), convert it to GeoJSON:
-
-```bash
-bun add -D topojson-client
-bun x topojson-client topo2geo tokyo=public/maps/tokyo-23ku.geojson < public/maps/tokyo-23ku.geojson > public/maps/tokyo-23ku.geojson.tmp
-mv public/maps/tokyo-23ku.geojson.tmp public/maps/tokyo-23ku.geojson
-```
-
-Then remove the dev dependency (only used for conversion):
-
-```bash
-bun remove topojson-client
-```
-
-- [ ] **Step 3: Filter to the 23 wards only**
-
-The source file may include Tama district wards and outlying islands. Filter to the 23 `ku` features. Create `scripts/filter-tokyo-23ku.mjs` (temporary, deleted at end of task):
-
-```js
+// 전국 시정촌 GeoJSON → 도도부현 코드별 파일.
+// 코드는 N03_007(행정구역코드) 앞 2자리를 쓴다. N03_007 이 없는 feature 는 없다고 가정하지 않고 검증한다.
 import fs from 'node:fs';
+import path from 'node:path';
 
-const WARDS_23 = new Set([
-  '千代田区', '中央区', '港区', '新宿区', '文京区', '台東区', '墨田区',
-  '江東区', '品川区', '目黒区', '大田区', '世田谷区', '渋谷区', '中野区',
-  '杉並区', '豊島区', '北区', '荒川区', '板橋区', '練馬区', '足立区',
-  '葛飾区', '江戸川区',
-]);
+const SRC = '.tmp/muni-japan.json';
+const OUT = 'public/geo/muni';
 
-const src = JSON.parse(fs.readFileSync('public/maps/tokyo-23ku.geojson', 'utf8'));
-const filtered = {
-  type: 'FeatureCollection',
-  features: src.features.filter(f => WARDS_23.has(f.properties?.ward_ja ?? f.properties?.N03_004 ?? f.properties?.name)),
-};
+// 이번 여행이 지나는 도도부현만 커밋한다. 전부 필요해지면 이 배열을 비운다.
+const KEEP = new Set(['02', '13', '12', '15', '16', '17', '20', '21', '23', '26', '27', '33', '34', '04', '05', '18']);
 
-if (filtered.features.length !== 23) {
-  console.warn(`Warning: expected 23 features, got ${filtered.features.length}. Inspect properties and adjust.`);
-  console.warn('First feature properties:', JSON.stringify(src.features[0]?.properties, null, 2));
+const src = JSON.parse(fs.readFileSync(SRC, 'utf8'));
+const byCode = new Map();
+let missing = 0;
+
+for (const f of src.features) {
+  const code = f.properties?.N03_007?.slice(0, 2);
+  if (!code) { missing += 1; continue; }
+  if (KEEP.size && !KEEP.has(code)) continue;
+  if (!byCode.has(code)) byCode.set(code, []);
+  // 렌더에 쓰지 않는 property 는 버려 용량을 줄인다
+  byCode.get(code).push({
+    type: 'Feature',
+    properties: { name: f.properties.N03_004 ?? f.properties.N03_003 ?? '' },
+    geometry: f.geometry,
+  });
 }
 
-fs.writeFileSync('public/maps/tokyo-23ku.geojson', JSON.stringify(filtered));
-console.log(`Wrote ${filtered.features.length} features.`);
+if (missing) console.warn(`N03_007 없는 feature ${missing}건 — 확인 필요`);
+
+fs.mkdirSync(OUT, { recursive: true });
+for (const [code, features] of byCode) {
+  const file = path.join(OUT, `${code}.json`);
+  fs.writeFileSync(file, JSON.stringify({ type: 'FeatureCollection', features }));
+  console.log(`${file}  ${features.length} features  ${(fs.statSync(file).size / 1024).toFixed(0)}KB`);
+}
 ```
 
-Run it:
+- [ ] **Step 3: 실행 + 크기 확인**
 
 ```bash
-node scripts/filter-tokyo-23ku.mjs
+node scripts/split-muni-geojson.mjs
 ```
 
-If the count is not 23, inspect the logged `properties` object and update the property-name fallback chain in the script. Re-run until `Wrote 23 features.` appears.
+기대: 16개 파일, 각 15~40KB. 하나라도 100KB 를 넘으면 그 현만 나중에 단순화 대상으로 기록한다.
 
-Delete the script:
+- [ ] **Step 4: 라이선스 표기 준비**
+
+`국토수치정보（행정구역데이터）／国土交通省` 크레딧을 지도 하단에 상시 노출한다 (Task 5 에서 컴포넌트에 넣는다). 문구는 링크 포함:
+`출처: 国土数値情報（行政区域データ）国土交通省` → `https://nlftp.mlit.go.jp/ksj/`
+
+- [ ] **Step 5: 커밋**
 
 ```bash
-rm scripts/filter-tokyo-23ku.mjs
+git add blog/public/geo/muni blog/scripts/split-muni-geojson.mjs
+git commit -m "chore(travel-map): add municipality geojson split by prefecture"
 ```
 
-- [ ] **Step 4: Sanity-check the GeoJSON**
-
-```bash
-node -e "const g=require('./public/maps/tokyo-23ku.geojson'); console.log('features:', g.features.length); console.log('bbox sample:', g.features[0].geometry.type);"
-```
-
-Expected output:
-```
-features: 23
-bbox sample: Polygon
-```
-(or `MultiPolygon` — either is acceptable.)
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add public/maps/tokyo-23ku.geojson
-# If Step 1b ran:
-git add astro.config.mjs package.json bun.lock
-git commit -m "chore: add tokyo 23-ward geojson and rehype-slug"
-```
+`.tmp/` 는 커밋하지 않는다 — `.gitignore` 에 없으면 추가한다.
 
 ---
 
-## Task 2: Scaffold `TravelMap/` folder — types, regions registry, barrel export
+## Task 2: 타입 + 도도부현 매핑
 
-**Goal:** Pure-TS scaffolding. No rendering yet.
+**Goal:** 순수 TS. 렌더 없음.
 
-**Files:**
-- Create: `src/components/Blog/TravelMap/types.ts`
-- Create: `src/components/Blog/TravelMap/regions.ts`
-- Create: `src/components/Blog/TravelMap/index.ts`
-
-- [ ] **Step 1: Create `types.ts`**
+- [ ] **Step 1: `blog/src/components/Blog/TravelMap/types.ts`**
 
 ```ts
-// src/components/Blog/TravelMap/types.ts
-import type { GeoRegion } from './regions';
+import type { PrefectureName } from './prefectures';
 
 export type DiarySpot = {
   name: string;
   lat: number;
   lng: number;
+  /** 도시/구역. 예: '다카야마시'. 후속 playground 의 도시 그룹핑 키 */
+  city: string;
+  /** 한글 도도부현. 예: '기후현'. 배경 GeoJSON 선택과 좌표 검증에 쓴다 */
+  prefecture: PrefectureName;
   description?: string;
+  /** 본문 헤딩 id. 대응 헤딩이 없으면 생략 — 클릭은 무동작이 된다 */
   anchor?: string;
+  /** 원문 `방문한 곳` 에 있던 구글맵 단축 URL. 목록 렌더에서 링크로 살린다 */
+  mapUrl?: string;
 };
 
 export type TravelMapProps = {
-  geoRegion: GeoRegion;
   spots: DiarySpot[];
+  /** 대체 대상이던 구글맵 스크린샷. <details> 안에 보존한다 */
   originalImageSrc?: string;
   className?: string;
 };
 ```
 
-- [ ] **Step 2: Create `regions.ts`**
+`geoRegion` prop 은 없다 — 배경은 `spots[].prefecture` 에서 도출한다 (D3).
+
+- [ ] **Step 2: `blog/src/components/Blog/TravelMap/prefectures.ts`**
 
 ```ts
-// src/components/Blog/TravelMap/regions.ts
-export const GEO_REGIONS = {
-  'tokyo-23ku': {
-    url: '/maps/tokyo-23ku.geojson',
-  },
+// 한글 표기 → { 행정구역코드 2자리, 일본어 표기 }.
+// code 는 public/geo/muni/{code}.json 파일명.
+// ja 는 이 기능에서는 안 쓰지만, 후속 japan-trip-map 의 전국 도도부현 레이어가
+// GeoJSON N03_001(일본어)와 이름 매칭을 해야 해서 같이 둔다 — 매핑을 두 벌 만들지 않는다.
+export const PREFECTURES = {
+  홋카이도: { code: '01', ja: '北海道' },
+  아오모리현: { code: '02', ja: '青森県' },
+  이와테현: { code: '03', ja: '岩手県' },
+  미야기현: { code: '04', ja: '宮城県' },
+  아키타현: { code: '05', ja: '秋田県' },
+  후쿠시마현: { code: '07', ja: '福島県' },
+  치바현: { code: '12', ja: '千葉県' },
+  도쿄도: { code: '13', ja: '東京都' },
+  니이가타현: { code: '15', ja: '新潟県' },
+  도야마현: { code: '16', ja: '富山県' },
+  이시카와현: { code: '17', ja: '石川県' },
+  후쿠이현: { code: '18', ja: '福井県' },
+  나가노현: { code: '20', ja: '長野県' },
+  기후현: { code: '21', ja: '岐阜県' },
+  아이치현: { code: '23', ja: '愛知県' },
+  교토부: { code: '26', ja: '京都府' },
+  오사카부: { code: '27', ja: '大阪府' },
+  오카야마현: { code: '33', ja: '岡山県' },
+  히로시마현: { code: '34', ja: '広島県' },
 } as const;
 
-export type GeoRegion = keyof typeof GEO_REGIONS;
+export type PrefectureName = keyof typeof PREFECTURES;
 
-export function getRegionUrl(region: GeoRegion): string {
-  return GEO_REGIONS[region].url;
+export function prefectureCodes(names: readonly PrefectureName[]): string[] {
+  return [...new Set(names.map(n => PREFECTURES[n].code))];
 }
 ```
 
-- [ ] **Step 3: Create `index.ts` barrel (placeholder; `TravelMap` export added later)**
+여행이 지나지 않는 현은 넣지 않는다 — 필요해질 때 한 줄씩 추가한다. 오타로 `이시키와현` 같은 값이 들어오면 타입 에러로 잡힌다 (원문에 실제로 4건 있던 오타다).
+
+- [ ] **Step 3: barrel `index.ts`**
 
 ```ts
-// src/components/Blog/TravelMap/index.ts
+export { TravelMap } from './TravelMap';
+export { PREFECTURES } from './prefectures';
+export type { PrefectureName } from './prefectures';
 export type { DiarySpot, TravelMapProps } from './types';
-export type { GeoRegion } from './regions';
 ```
 
-- [ ] **Step 4: Typecheck**
+`TravelMap` export 는 Task 4 이후에 살아난다. 그 전까지는 타입만 export 한다.
 
-```bash
-bun astro check
-```
-
-Expected: 0 errors related to these new files.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add src/components/Blog/TravelMap/
-git commit -m "feat(travel-map): scaffold types and region registry"
-```
+- [ ] **Step 4: `bun astro check`** → 0 errors → 커밋
 
 ---
 
-## Task 3: Build `useGeoData` hook with module-level cache
+## Task 3: `useGeoData` — 도도부현 다중 fetch + 병합
 
-**Goal:** A React hook that fetches GeoJSON once per URL per session and returns `{data, status, error}`.
+**Goal:** 코드 배열을 받아 필요한 파일만 받고 하나의 FeatureCollection 으로 합친다. URL 단위 모듈 캐시로 한 세션 재요청을 막는다.
 
-**Files:**
-- Create: `src/components/Blog/TravelMap/useGeoData.ts`
-
-- [ ] **Step 1: Implement the hook**
+- [ ] **Step 1: `blog/src/components/Blog/TravelMap/useGeoData.ts`**
 
 ```ts
-// src/components/Blog/TravelMap/useGeoData.ts
 import { useEffect, useState } from 'react';
 
-import type { GeoRegion } from './regions';
-import { getRegionUrl } from './regions';
-
-export type GeoFeatureCollection = {
-  type: 'FeatureCollection';
-  features: Array<{
-    type: 'Feature';
-    geometry: { type: string; coordinates: unknown };
-    properties: Record<string, unknown>;
-  }>;
+export type GeoFeature = {
+  type: 'Feature';
+  properties: { name: string };
+  geometry: { type: string; coordinates: unknown };
 };
 
-type CacheEntry =
-  | { status: 'loading'; promise: Promise<GeoFeatureCollection> }
-  | { status: 'ready'; data: GeoFeatureCollection }
-  | { status: 'error'; error: Error };
+export type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] };
 
-const cache = new Map<string, CacheEntry>();
-
-async function loadGeoJson(url: string): Promise<GeoFeatureCollection> {
-  const existing = cache.get(url);
-  if (existing?.status === 'ready') return existing.data;
-  if (existing?.status === 'loading') return existing.promise;
-
-  const promise = fetch(url)
-    .then(async (res) => {
-      if (!res.ok) throw new Error(`GeoJSON fetch failed: ${res.status}`);
-      const data = (await res.json()) as GeoFeatureCollection;
-      cache.set(url, { status: 'ready', data });
-      return data;
-    })
-    .catch((err) => {
-      const error = err instanceof Error ? err : new Error(String(err));
-      cache.set(url, { status: 'error', error });
-      throw error;
-    });
-
-  cache.set(url, { status: 'loading', promise });
-  return promise;
-}
-
-export type UseGeoDataResult =
+type UseGeoDataResult =
   | { status: 'loading'; data: null; error: null }
   | { status: 'ready'; data: GeoFeatureCollection; error: null }
   | { status: 'error'; data: null; error: Error };
 
-export function useGeoData(region: GeoRegion): UseGeoDataResult {
+const cache = new Map<string, Promise<GeoFeatureCollection>>();
+
+function load(code: string): Promise<GeoFeatureCollection> {
+  const url = `/geo/muni/${code}.json`;
+  let entry = cache.get(url);
+  if (!entry) {
+    entry = fetch(url).then((res) => {
+      if (!res.ok) throw new Error(`GeoJSON fetch failed: ${url} ${res.status}`);
+      return res.json() as Promise<GeoFeatureCollection>;
+    });
+    // 실패한 Promise 를 캐시에 남기면 재시도가 영영 안 된다
+    entry.catch(() => cache.delete(url));
+    cache.set(url, entry);
+  }
+  return entry;
+}
+
+export function useGeoData(codes: readonly string[]): UseGeoDataResult {
+  const key = [...codes].sort().join(',');
   const [state, setState] = useState<UseGeoDataResult>({ status: 'loading', data: null, error: null });
 
   useEffect(() => {
-    const url = getRegionUrl(region);
-    const existing = cache.get(url);
-    if (existing?.status === 'ready') {
-      setState({ status: 'ready', data: existing.data, error: null });
-      return;
-    }
-
     let cancelled = false;
-    loadGeoJson(url)
-      .then((data) => { if (!cancelled) setState({ status: 'ready', data, error: null }); })
-      .catch((error) => { if (!cancelled) setState({ status: 'error', data: null, error }); });
-
+    Promise.all(key.split(',').filter(Boolean).map(load))
+      .then((parts) => {
+        if (cancelled) return;
+        setState({
+          status: 'ready',
+          data: { type: 'FeatureCollection', features: parts.flatMap(p => p.features) },
+          error: null,
+        });
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setState({ status: 'error', data: null, error: err instanceof Error ? err : new Error(String(err)) });
+      });
     return () => { cancelled = true; };
-  }, [region]);
+  }, [key]);
 
   return state;
 }
 ```
 
-- [ ] **Step 2: Typecheck**
+`key` 를 의존성으로 쓰는 이유: 배열 prop 은 매 렌더 새 참조라 그대로 넣으면 무한 fetch 가 된다.
 
-```bash
-bun astro check
-```
-
-Expected: 0 errors.
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add src/components/Blog/TravelMap/useGeoData.ts
-git commit -m "feat(travel-map): add useGeoData hook with session cache"
-```
+- [ ] **Step 2: `bun astro check`** → 커밋
 
 ---
 
-## Task 4: `TravelMap` skeleton — render prefecture boundary with ResizeObserver
+## Task 4: `TravelMap` 골격 — spots bbox 에 fit
 
-**Goal:** A minimal React component that renders the SVG, fetches the GeoJSON, and draws the 23 wards. No markers, no route yet.
+**Goal:** 배경 시정촌 경계를 그리고 축척을 그날 동선에 맞춘다. 마커·루트는 아직 없다.
 
-**Files:**
-- Create: `src/components/Blog/TravelMap/TravelMap.tsx`
-- Create: `src/components/Blog/TravelMap/styles.module.scss`
-- Modify: `src/components/Blog/TravelMap/index.ts`
+- [ ] **Step 1: 투영 유틸** — `TravelMap.tsx` 상단
 
-- [ ] **Step 1: Create `styles.module.scss`**
+```tsx
+import { geoMercator, geoPath } from 'd3-geo';
 
-```scss
-// src/components/Blog/TravelMap/styles.module.scss
-.wrapper {
-  position: relative;
-  width: 100%;
-  height: min(40vw, 22.5rem); // ~360px desktop; scales down on mobile
-  margin: 1rem 0;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  background: var(--color-surface, #f8f9fa);
-}
+const PADDING = 24;
+/** spots 가 한 점에 몰린 날이 지도 전체를 차지하지 않게 하는 최소 폭(도 단위, 약 2km) */
+const MIN_SPAN = 0.02;
 
-:global(.dark) .wrapper {
-  background: var(--color-surface, #1a1a1a);
-}
+function spotsExtent(spots: DiarySpot[]) {
+  const lngs = spots.map(s => s.lng);
+  const lats = spots.map(s => s.lat);
+  let [w, e] = [Math.min(...lngs), Math.max(...lngs)];
+  let [s, n] = [Math.min(...lats), Math.max(...lats)];
 
-.svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
+  if (e - w < MIN_SPAN) { const c = (e + w) / 2; w = c - MIN_SPAN / 2; e = c + MIN_SPAN / 2; }
+  if (n - s < MIN_SPAN) { const c = (n + s) / 2; s = c - MIN_SPAN / 2; n = c + MIN_SPAN / 2; }
 
-.prefecturePath {
-  fill: var(--color-surface-2, #e9ecef);
-  stroke: var(--color-border, #ced4da);
-  stroke-width: 1.5;
-}
-
-:global(.dark) .prefecturePath {
-  fill: var(--color-surface-2, #2a2a2a);
-  stroke: var(--color-border, #3a3a3a);
-}
-
-.loading,
-.errorNotice {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-size: 0.875rem;
-  color: var(--color-text-muted, #868e96);
+  // 15% 여백 — 가장자리 spot 이 테두리에 붙지 않게
+  const mx = (e - w) * 0.15;
+  const my = (n - s) * 0.15;
+  // Polygon 이 아니라 MultiPoint 다 — winding 함정 회피 (문서 상단 참조). bounds 는 동일하다.
+  return {
+    type: 'MultiPoint' as const,
+    coordinates: [[w - mx, s - my], [e + mx, n + my]],
+  };
 }
 ```
 
-- [ ] **Step 2: Create `TravelMap.tsx` skeleton**
+`d3-geo` / `d3-shape` 를 서브패키지로 import 한다. `import * as d3 from 'd3'` 를 쓰면 아일랜드 번들에 d3 전체가 들어온다 (`D3Test/LargeBarChart.tsx` 가 그렇게 하고 있지만 그건 플레이그라운드다). 설치 확인:
+
+```bash
+cd blog && bun add d3-geo d3-shape && bun add -D @types/d3-geo @types/d3-shape
+```
+
+- [ ] **Step 2: 컴포넌트 골격**
 
 ```tsx
-// src/components/Blog/TravelMap/TravelMap.tsx
-import * as d3 from 'd3';
-import { useEffect, useMemo, useRef, useState } from 'react';
-
-import styles from './styles.module.scss';
-import type { TravelMapProps } from './types';
-import { useGeoData } from './useGeoData';
-
-const PADDING = 40;
-
-export function TravelMap({ geoRegion, spots, originalImageSrc, className }: TravelMapProps) {
+export function TravelMap({ spots, originalImageSrc, className }: TravelMapProps) {
+  // 1. 로컬 state + 파생
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ width: 0, height: 0 });
-  const geo = useGeoData(geoRegion);
+  const codes = useMemo(() => prefectureCodes(spots.map(s => s.prefecture)), [spots]);
+  const geo = useGeoData(codes);
 
-  // ResizeObserver → dims
+  const projected = useMemo(() => {
+    if (geo.status !== 'ready' || !dims.width || !dims.height || spots.length === 0) return null;
+    const projection = geoMercator().fitExtent(
+      [[PADDING, PADDING], [dims.width - PADDING, dims.height - PADDING]],
+      spotsExtent(spots),
+    );
+    return { projection, pathGen: geoPath(projection) };
+  }, [geo.status, dims.width, dims.height, spots]);
+
+  // 2. 부수효과 — 컨테이너 크기 추적
   useEffect(() => {
     const el = wrapperRef.current;
     if (!el) return;
-    const ro = new ResizeObserver((entries) => {
-      const rect = entries[0].contentRect;
-      setDims({ width: rect.width, height: rect.height });
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setDims({ width, height });
     });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
-  // Projection + path generator
-  const projectionInfo = useMemo(() => {
-    if (geo.status !== 'ready' || dims.width === 0 || dims.height === 0) return null;
-    const projection = d3.geoMercator()
-      .fitExtent(
-        [[PADDING, PADDING], [dims.width - PADDING, dims.height - PADDING]],
-        geo.data as d3.ExtendedFeatureCollection,
-      );
-    const pathGen = d3.geoPath(projection);
-    return { projection, pathGen };
-  }, [geo, dims.width, dims.height]);
-
+  // 3. JSX
   return (
-    <div ref={wrapperRef} className={`${styles.wrapper} ${className ?? ''}`}>
-      {geo.status === 'loading' && <div className={styles.loading}>지도 불러오는 중…</div>}
-      {geo.status === 'error' && (
-        <div className={styles.errorNotice}>지도를 불러오지 못했습니다</div>
-      )}
-      {geo.status === 'ready' && projectionInfo && (
-        <svg
-          className={styles.svg}
-          viewBox={`0 0 ${dims.width} ${dims.height}`}
-          preserveAspectRatio="xMidYMid meet"
-          role="img"
-          aria-label="여행 루트 지도"
-        >
-          <g className="prefecture">
-            {geo.data.features.map((f, i) => (
-              <path key={i} d={projectionInfo.pathGen(f as d3.ExtendedFeature) ?? ''} className={styles.prefecturePath} />
-            ))}
-          </g>
-        </svg>
-      )}
-      {/* Spot markers and route added in later tasks */}
-      {originalImageSrc && (
-        <noscript />
-      )}
-      {/* spots prop is intentionally unused here; wired in Task 5/6 */}
-      {spots.length === 0 && null}
-    </div>
-  );
-}
-```
-
-- [ ] **Step 3: Update barrel export**
-
-```ts
-// src/components/Blog/TravelMap/index.ts
-export { TravelMap } from './TravelMap';
-export type { DiarySpot, TravelMapProps } from './types';
-export type { GeoRegion } from './regions';
-```
-
-- [ ] **Step 4: Manual verification**
-
-Create a throwaway test page or temporarily add `<TravelMap>` into an existing playground. Easiest path — add into `src/content/blog/diary/25-01-tokyo/01_01-20.mdx` at the top, just to verify rendering:
-
-```mdx
-import { TravelMap } from '@/components/Blog/TravelMap';
-
-<TravelMap geoRegion="tokyo-23ku" spots={[]} client:visible />
-```
-
-Start `bun dev` (if not running) and visit the page. Expected: the 23 wards render as grey polygons inside a bordered container. Resize the window → map reflows. Open DevTools → `<path>` elements render under `<g class="prefecture">`.
-
-**Remove the test usage before committing** (final MDX integration happens in Task 10/11).
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add src/components/Blog/TravelMap/
-git commit -m "feat(travel-map): render prefecture boundary with ResizeObserver"
-```
-
----
-
-## Task 5: Draw route path with catmull-rom curve and mount-time draw-in animation
-
-**Goal:** Connect spots with a smooth curve that animates in on first render.
-
-**Files:**
-- Modify: `src/components/Blog/TravelMap/TravelMap.tsx`
-- Modify: `src/components/Blog/TravelMap/styles.module.scss`
-
-- [ ] **Step 1: Add route styles**
-
-Append to `styles.module.scss`:
-
-```scss
-.routePath {
-  fill: none;
-  stroke: var(--color-primary, #4e7a3e);
-  stroke-width: 2.5;
-  stroke-opacity: 0.55;
-  stroke-dasharray: 6, 4;
-  stroke-linecap: round;
-
-  // Draw-in animation: set dash-offset to path length in JS via inline style
-  animation: travel-map-draw-in 800ms ease-out both;
-}
-
-:global(.dark) .routePath {
-  stroke: var(--color-primary, #7ebc68);
-}
-
-@keyframes travel-map-draw-in {
-  from {
-    stroke-dashoffset: var(--route-length, 1000);
-    stroke-dasharray: var(--route-length, 1000);
-  }
-  to {
-    stroke-dashoffset: 0;
-    stroke-dasharray: 6, 4;
-  }
-}
-```
-
-- [ ] **Step 2: Extend `TravelMap.tsx` to render the route**
-
-Find the existing SVG block in `TravelMap.tsx` and extend it. Replace the `<g className="prefecture">` section (and what follows up to `</svg>`) with:
-
-```tsx
-          <g className="prefecture">
-            {geo.data.features.map((f, i) => (
-              <path key={i} d={projectionInfo.pathGen(f as d3.ExtendedFeature) ?? ''} className={styles.prefecturePath} />
-            ))}
-          </g>
-          {spots.length >= 2 && (
-            <g className="route">
-              <RoutePath spots={spots} projection={projectionInfo.projection} />
-            </g>
-          )}
-```
-
-Above the `TravelMap` function definition, add:
-
-```tsx
-function RoutePath({ spots, projection }: { spots: TravelMapProps['spots']; projection: d3.GeoProjection }) {
-  const pathRef = useRef<SVGPathElement>(null);
-  const d = useMemo(() => {
-    const line = d3.line<{ lat: number; lng: number }>()
-      .x(s => projection([s.lng, s.lat])?.[0] ?? 0)
-      .y(s => projection([s.lng, s.lat])?.[1] ?? 0)
-      .curve(d3.curveCatmullRom.alpha(0.5));
-    return line(spots) ?? '';
-  }, [spots, projection]);
-
-  const [length, setLength] = useState<number | null>(null);
-  useEffect(() => {
-    if (pathRef.current) setLength(pathRef.current.getTotalLength());
-  }, [d]);
-
-  return (
-    <path
-      ref={pathRef}
-      d={d}
-      className={styles.routePath}
-      style={length ? ({ ['--route-length' as string]: `${length}` }) : undefined}
-    />
-  );
-}
-```
-
-Import `{ useRef, useMemo, useState, useEffect }` at the top if not already present.
-
-- [ ] **Step 3: Manual verification**
-
-Re-add the throwaway usage with real spots:
-
-```mdx
-import { TravelMap } from '@/components/Blog/TravelMap';
-export const testSpots = [
-  { name: '츠키시마', lat: 35.6636, lng: 139.7882 },
-  { name: '긴자', lat: 35.6716, lng: 139.7657 },
-  { name: '우에노', lat: 35.7099, lng: 139.7742 },
-];
-<TravelMap geoRegion="tokyo-23ku" spots={testSpots} client:visible />
-```
-
-Visit the page. Expected: dashed curved line connects the three coordinates. On first hydration the path animates from 0 → full length over 800ms. Refreshing re-runs the animation.
-
-Remove the test usage.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add src/components/Blog/TravelMap/
-git commit -m "feat(travel-map): draw route path with catmull-rom and draw-in animation"
-```
-
----
-
-## Task 6: `SpotMarker` — numbered dot + glow + hover tooltip + click-to-scroll + keyboard a11y
-
-**Goal:** Full desktop interaction for a single spot. Extract into its own component to keep `TravelMap.tsx` focused.
-
-**Files:**
-- Create: `src/components/Blog/TravelMap/SpotMarker.tsx`
-- Create: `src/components/Blog/TravelMap/TravelMapTooltip.tsx`
-- Modify: `src/components/Blog/TravelMap/TravelMap.tsx`
-- Modify: `src/components/Blog/TravelMap/styles.module.scss`
-
-- [ ] **Step 1: Add marker + tooltip styles**
-
-Append to `styles.module.scss`:
-
-```scss
-.spotGlow {
-  fill: var(--color-primary, #4e7a3e);
-  fill-opacity: 0.15;
-  pointer-events: none;
-}
-
-.spotDot {
-  fill: var(--color-primary, #4e7a3e);
-  stroke: var(--color-surface, #ffffff);
-  stroke-width: 2;
-  cursor: pointer;
-  transition: r 200ms ease;
-}
-
-.spotDot.active,
-.spotDot:hover {
-  // Active radius handled via attr from React; retain for keyboard :focus-visible
-}
-
-.spotDot:focus-visible {
-  outline: 2px solid var(--color-primary, #4e7a3e);
-  outline-offset: 2px;
-}
-
-.spotNumber {
-  fill: var(--color-surface, #ffffff);
-  font-size: 12px;
-  font-weight: 700;
-  text-anchor: middle;
-  dominant-baseline: central;
-  pointer-events: none;
-  user-select: none;
-}
-
-.tooltip {
-  position: absolute;
-  background: var(--color-surface, #ffffff);
-  color: var(--color-text, #212529);
-  border: 1px solid var(--color-border, #dee2e6);
-  border-radius: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  max-width: 14rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  pointer-events: none;
-  z-index: 2;
-  font-size: 0.8125rem;
-  line-height: 1.4;
-}
-
-:global(.dark) .tooltip {
-  background: var(--color-surface, #2a2a2a);
-  color: var(--color-text, #e9ecef);
-  border-color: var(--color-border, #3a3a3a);
-}
-
-.tooltipTitle {
-  font-weight: 600;
-  margin: 0 0 0.125rem;
-}
-
-.tooltipDesc {
-  margin: 0;
-  opacity: 0.75;
-}
-
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-```
-
-- [ ] **Step 2: Create `TravelMapTooltip.tsx`**
-
-```tsx
-// src/components/Blog/TravelMap/TravelMapTooltip.tsx
-import styles from './styles.module.scss';
-
-export type TooltipProps = {
-  title: string;
-  description?: string;
-  x: number;
-  y: number;
-  containerWidth: number;
-};
-
-const TOOLTIP_WIDTH = 224; // 14rem at 16px base
-const OFFSET = 12;
-
-export function TravelMapTooltip({ title, description, x, y, containerWidth }: TooltipProps) {
-  let left = x + OFFSET;
-  let top = Math.max(y - 10, 8);
-  if (left + TOOLTIP_WIDTH > containerWidth) {
-    left = Math.max(x - TOOLTIP_WIDTH - OFFSET, 8);
-  }
-
-  return (
-    <div className={styles.tooltip} style={{ left, top }} role="tooltip">
-      <p className={styles.tooltipTitle}>{title}</p>
-      {description && <p className={styles.tooltipDesc}>{description}</p>}
-    </div>
-  );
-}
-```
-
-- [ ] **Step 3: Create `SpotMarker.tsx`**
-
-```tsx
-// src/components/Blog/TravelMap/SpotMarker.tsx
-import styles from './styles.module.scss';
-import type { DiarySpot } from './types';
-
-export type SpotMarkerProps = {
-  spot: DiarySpot;
-  index: number;
-  x: number;
-  y: number;
-  active: boolean;
-  onActivate: (index: number) => void;
-  onScroll: (spot: DiarySpot) => void;
-  onBlurDeactivate: () => void;
-};
-
-export function SpotMarker({ spot, index, x, y, active, onActivate, onScroll, onBlurDeactivate }: SpotMarkerProps) {
-  const radius = active ? 8 : 5;
-  const ariaLabel = spot.description ? `${spot.name}, ${spot.description}` : spot.name;
-
-  return (
-    <g>
-      <circle cx={x} cy={y} r={10} className={styles.spotGlow} aria-hidden="true" />
-      <circle
-        cx={x}
-        cy={y}
-        r={radius}
-        className={`${styles.spotDot} ${active ? styles.active : ''}`}
-        role="button"
-        tabIndex={0}
-        aria-label={ariaLabel}
-        onMouseEnter={() => onActivate(index)}
-        onMouseLeave={onBlurDeactivate}
-        onFocus={() => onActivate(index)}
-        onBlur={onBlurDeactivate}
-        onClick={() => onScroll(spot)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onScroll(spot);
-          }
-        }}
-      />
-      <text x={x} y={y} className={styles.spotNumber} aria-hidden="true">{index + 1}</text>
-    </g>
-  );
-}
-```
-
-- [ ] **Step 4: Wire markers and tooltip into `TravelMap.tsx`**
-
-Add imports:
-
-```tsx
-import { SpotMarker } from './SpotMarker';
-import { TravelMapTooltip } from './TravelMapTooltip';
-```
-
-Inside the `TravelMap` function, add state and the scroll handler above the `return`:
-
-```tsx
-  const [activeSpotIndex, setActiveSpotIndex] = useState<number | null>(null);
-
-  const scrollToAnchor = (spot: typeof spots[number]) => {
-    if (!spot.anchor) return;
-    const el = document.getElementById(spot.anchor);
-    if (!el) {
-      if (import.meta.env.DEV) {
-        console.warn(`[TravelMap] anchor #${spot.anchor} not found for spot "${spot.name}"`);
-      }
-      return;
-    }
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-```
-
-Extend the SVG render to include spots and a sr-only list, and the tooltip. Replace the current SVG block with:
-
-```tsx
-      {geo.status === 'ready' && projectionInfo && (
-        <>
+    <div className={className}>
+      <div ref={wrapperRef} className={styles.wrapper}>
+        {geo.status === 'loading' && <div className={styles.loading}>지도 불러오는 중…</div>}
+        {geo.status === 'error' && <div className={styles.errorNotice}>지도를 불러오지 못했습니다</div>}
+        {geo.status === 'ready' && projected && (
           <svg
             className={styles.svg}
             viewBox={`0 0 ${dims.width} ${dims.height}`}
@@ -850,714 +436,430 @@ Extend the SVG render to include spots and a sr-only list, and the tooltip. Repl
             role="img"
             aria-label="여행 루트 지도"
           >
-            <g className="prefecture">
+            <g className="muni">
               {geo.data.features.map((f, i) => (
-                <path key={i} d={projectionInfo.pathGen(f as d3.ExtendedFeature) ?? ''} className={styles.prefecturePath} />
+                <path key={i} d={projected.pathGen(f) ?? ''} className={styles.muniPath} />
               ))}
             </g>
-            {spots.length >= 2 && (
-              <g className="route">
-                <RoutePath spots={spots} projection={projectionInfo.projection} />
-              </g>
-            )}
-            <g className="points">
-              {spots.map((spot, i) => {
-                const [x, y] = projectionInfo.projection([spot.lng, spot.lat]) ?? [0, 0];
-                return (
-                  <SpotMarker
-                    key={i}
-                    spot={spot}
-                    index={i}
-                    x={x}
-                    y={y}
-                    active={activeSpotIndex === i}
-                    onActivate={setActiveSpotIndex}
-                    onScroll={scrollToAnchor}
-                    onBlurDeactivate={() => setActiveSpotIndex(null)}
-                  />
-                );
-              })}
-            </g>
           </svg>
-          {activeSpotIndex !== null && (() => {
-            const spot = spots[activeSpotIndex];
-            const [x, y] = projectionInfo.projection([spot.lng, spot.lat]) ?? [0, 0];
-            return (
-              <TravelMapTooltip
-                title={spot.name}
-                description={spot.description}
-                x={x}
-                y={y}
-                containerWidth={dims.width}
-              />
-            );
-          })()}
-          <ol className={styles.srOnly}>
-            {spots.map((spot, i) => (
-              <li key={i}>
-                {spot.anchor ? <a href={`#${spot.anchor}`}>{spot.name}</a> : spot.name}
-              </li>
-            ))}
-          </ol>
-        </>
-      )}
-```
-
-- [ ] **Step 5: Manual verification (desktop)**
-
-With the test usage (spots with at least two entries and an `anchor` pointing at a real section id), verify on `bun dev`:
-
-1. Hovering a dot: glow + dot grows to r=8 + tooltip shows name/description near the dot.
-2. Tooltip flips to the left when near the right edge (add a spot near the right edge to test).
-3. Clicking a dot with valid `anchor` → page scrolls to that section smoothly.
-4. Clicking a dot without `anchor` → no navigation, no console error.
-5. Clicking a dot with unknown `anchor` → `console.warn` in dev, no scroll.
-6. Tab into the SVG → focus ring appears on first dot; arrow/tab moves to next; Enter triggers scroll.
-7. Screen-reader-only `<ol>` present in DOM (inspect).
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add src/components/Blog/TravelMap/
-git commit -m "feat(travel-map): numbered spot markers with tooltip, click-to-scroll, a11y"
-```
-
----
-
-## Task 7: Mobile two-tap interaction
-
-**Goal:** On touch devices (`pointer: coarse`), first tap shows the tooltip and activates the dot; second tap on the same dot scrolls. Tapping outside deactivates.
-
-**Files:**
-- Modify: `src/components/Blog/TravelMap/TravelMap.tsx`
-- Modify: `src/components/Blog/TravelMap/SpotMarker.tsx`
-
-- [ ] **Step 1: Detect coarse pointer in `TravelMap.tsx`**
-
-Inside the `TravelMap` component, above `return`, add:
-
-```tsx
-  const isCoarsePointer = useMemo(
-    () => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches,
-    [],
-  );
-```
-
-- [ ] **Step 2: Change marker behavior on coarse pointer**
-
-Replace the `onClick` handler passed to `SpotMarker` with a tap-aware handler:
-
-```tsx
-  const handleSpotTap = (spot: typeof spots[number], index: number) => {
-    if (isCoarsePointer) {
-      if (activeSpotIndex === index) {
-        scrollToAnchor(spot);
-      } else {
-        setActiveSpotIndex(index);
-      }
-      return;
-    }
-    scrollToAnchor(spot);
-  };
-```
-
-Update the `SpotMarker` prop wiring:
-
-```tsx
-                    onScroll={() => handleSpotTap(spot, i)}
-```
-
-- [ ] **Step 3: Handle "tap outside" to deactivate on mobile**
-
-Inside the `wrapperRef` div, add a click handler on the container:
-
-```tsx
-    <div
-      ref={wrapperRef}
-      className={`${styles.wrapper} ${className ?? ''}`}
-      onClick={(e) => {
-        if (!isCoarsePointer) return;
-        // Deactivate if click did not land on a spot dot
-        const target = e.target as HTMLElement;
-        if (!target.closest('circle.travel-map-spot-dot')) {
-          setActiveSpotIndex(null);
-        }
-      }}
-    >
-```
-
-Add the marker class hook in `SpotMarker.tsx` (append to the existing className):
-
-```tsx
-        className={`${styles.spotDot} travel-map-spot-dot ${active ? styles.active : ''}`}
-```
-
-- [ ] **Step 4: Suppress hover-based activation on coarse pointer**
-
-In `SpotMarker.tsx`, the `onMouseEnter`/`onMouseLeave` handlers do not fire on touch, but the `onFocus` fired by tap will conflict with the two-step flow. Guard `onFocus`:
-
-```tsx
-        onFocus={(e) => {
-          // Ignore focus caused by touch; tap handler manages state on coarse pointers
-          if ((e as any).nativeEvent.sourceCapabilities?.firesTouchEvents) return;
-          onActivate(index);
-        }}
-```
-
-TS doesn't type `sourceCapabilities`, so cast is acceptable here. If TS is stricter, replace with:
-
-```tsx
-        onFocus={(e) => {
-          const native = e.nativeEvent as FocusEvent & { sourceCapabilities?: { firesTouchEvents?: boolean } };
-          if (native.sourceCapabilities?.firesTouchEvents) return;
-          onActivate(index);
-        }}
-```
-
-- [ ] **Step 5: Manual verification (mobile)**
-
-Use Chrome DevTools → Toggle device toolbar (Cmd+Shift+M) → Pixel 5 profile. Hard-refresh the page.
-
-1. Tap a dot: tooltip appears, dot grows to r=8, no scroll.
-2. Tap the same dot again: scrolls to anchor.
-3. Tap a different dot: active state transfers, tooltip moves, no scroll.
-4. Tap outside any dot (on the prefecture background): active state clears, tooltip disappears.
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add src/components/Blog/TravelMap/
-git commit -m "feat(travel-map): two-tap interaction for mobile"
-```
-
----
-
-## Task 8: Details collapse for original screenshot + error fallback
-
-**Goal:** Render an expandable `<details>` block under the map that reveals `originalImageSrc`. On GeoJSON fetch error, show the screenshot as the primary fallback.
-
-**Files:**
-- Modify: `src/components/Blog/TravelMap/TravelMap.tsx`
-- Modify: `src/components/Blog/TravelMap/styles.module.scss`
-
-- [ ] **Step 1: Add styles**
-
-Append to `styles.module.scss`:
-
-```scss
-.detailsBlock {
-  margin-top: 0.5rem;
-
-  > summary {
-    cursor: pointer;
-    font-size: 0.8125rem;
-    color: var(--color-text-muted, #868e96);
-    list-style: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-
-    &::marker,
-    &::-webkit-details-marker { display: none; }
-
-    &::before {
-      content: '▸';
-      display: inline-block;
-      transition: transform 150ms ease;
-    }
-  }
-
-  &[open] > summary::before {
-    transform: rotate(90deg);
-  }
-
-  > img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    margin-top: 0.5rem;
-    border-radius: 0.375rem;
-  }
-}
-
-.errorFallbackBlock {
-  margin-top: 0.5rem;
-
-  > p {
-    font-size: 0.8125rem;
-    color: var(--color-text-muted, #868e96);
-    margin: 0 0 0.5rem;
-  }
-
-  > img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    border-radius: 0.375rem;
-  }
-}
-```
-
-- [ ] **Step 2: Restructure `TravelMap.tsx` return to handle all three statuses**
-
-Change the outer structure so `originalImageSrc` renders outside the map wrapper (so the error state can upgrade the screenshot to the primary content). Replace the component's `return (...)` with:
-
-```tsx
-  return (
-    <div className={className}>
-      <div
-        ref={wrapperRef}
-        className={styles.wrapper}
-        onClick={(e) => {
-          if (!isCoarsePointer) return;
-          const target = e.target as HTMLElement;
-          if (!target.closest('circle.travel-map-spot-dot')) {
-            setActiveSpotIndex(null);
-          }
-        }}
-      >
-        {geo.status === 'loading' && <div className={styles.loading}>지도 불러오는 중…</div>}
-        {geo.status === 'error' && (
-          <div className={styles.errorNotice}>지도를 불러오지 못했습니다</div>
-        )}
-        {geo.status === 'ready' && projectionInfo && (
-          <>
-            {/* existing <svg>...</svg>, tooltip, sr-only <ol> block unchanged */}
-          </>
         )}
       </div>
-      {geo.status === 'error' && originalImageSrc && (
-        <div className={styles.errorFallbackBlock}>
-          <img src={originalImageSrc} alt="여행 루트 (원본 구글 맵 스크린샷)" />
-        </div>
-      )}
-      {geo.status !== 'error' && originalImageSrc && (
-        <details className={styles.detailsBlock}>
-          <summary>구글 맵 원본 보기</summary>
-          <img src={originalImageSrc} alt="여행 루트 (원본 구글 맵 스크린샷)" />
-        </details>
-      )}
+      <p className={styles.credit}>
+        출처: <a href="https://nlftp.mlit.go.jp/ksj/" target="_blank" rel="noreferrer">
+          国土数値情報（行政区域データ）国土交通省
+        </a>
+      </p>
     </div>
   );
+}
 ```
 
-(Move the existing content — svg, tooltip, sr-only `<ol>` — into the `geo.status === 'ready'` branch unchanged.)
+**주의:** `fitExtent` 대상이 GeoJSON 이 아니라 `spotsExtent(spots)` 다. 배경은 화면 밖으로 잘려나가는 게 정상이고, SVG 가 알아서 클립한다.
 
-- [ ] **Step 3: Manual verification**
+- [ ] **Step 3: 스타일** — `travel-map.css`
 
-1. Normal load → `<details>` renders below the map; clicking `구글 맵 원본 보기` reveals the image; clicking again collapses. The `▸` indicator rotates to `▾` when open.
-2. Simulate a fetch error: in DevTools → Network → block `/maps/tokyo-23ku.geojson` → hard-refresh. Expected: the map wrapper shows "지도를 불러오지 못했습니다"; below it, the original screenshot renders at full size (not in a `<details>`).
-3. No `originalImageSrc` passed → neither block renders.
+**확인된 토큰 (2026-08-17, `global.css` 실물):** shadcn 토큰은 HSL 3값(`--background: 0 0% 100%`)이라 `hsl(var(--x))` 로 감싼다. 사이트 고유 토큰은 hex 라 그대로 쓴다(`--accent-color`: `#059669` 라이트 / `#10b981` 다크).
 
-- [ ] **Step 4: Commit**
+**이 사이트는 다크 셀렉터가 두 벌이다** — shadcn 토큰은 `.dark` **클래스**, 사이트 토큰(`--accent-color`·`--green-*`·`--text-*`)은 `[data-theme="dark"]:root`. `ModeToggle.tsx` 와 `ThemeInit.astro` 가 둘을 **항상 같이** 세팅하므로 섞어 써도 어긋나지 않지만, 둘 중 하나만 보고 판단하면 안 된다.
 
-```bash
-git add src/components/Blog/TravelMap/
-git commit -m "feat(travel-map): details collapse for original screenshot + error fallback"
+```css
+.tm-wrapper {
+  position: relative;
+  width: 100%;
+  height: min(45vw, 24rem);
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: hsl(var(--muted));      /* 바깥(이웃 현·바다) */
+}
+.tm-svg { display: block; width: 100%; height: 100%; }
+.tm-muni {
+  fill: hsl(var(--background));       /* 땅 */
+  stroke: hsl(var(--muted-foreground) / 0.45);
+  stroke-width: 0.75;
+}
 ```
 
----
+**규칙은 「땅이 바깥보다 밝다」이고, 그 관계가 두 테마에서 같아야 한다.** 그래서 토큰이 테마별로 서로 뒤집힌다 — 스왑 지점을 `--tm-land` / `--tm-void` 두 로컬 변수로 모으고 `.dark .tm-wrapper` 에서만 갈아끼운다.
 
-## Task 9: CSS tokens + dark mode verification
-
-**Goal:** Confirm the component adapts to dark mode and project CSS variables. Remove any hardcoded fallback colors that should live in variables.
-
-**Files:**
-- Modify: `src/components/Blog/TravelMap/styles.module.scss`
-- Read: `src/assets/styles/global.css`
-
-- [ ] **Step 1: Identify available CSS variables**
-
-```bash
-grep -E '^\s+--(color|background|foreground|primary|border|muted)' src/assets/styles/global.css | head -40
-```
-
-Cross-reference the tokens used in `styles.module.scss` with what actually exists in `global.css`. If the variable I used does not exist, either:
-- Replace with an existing token (e.g., `--foreground`, `--background`, `--primary`, `--border`, `--muted`, `--muted-foreground`), or
-- Add a new token in `global.css` (only if genuinely missing and widely needed).
-
-- [ ] **Step 2: Update `styles.module.scss` to use actual project tokens**
-
-Typical shadcn-style projects use `--background`, `--foreground`, `--primary`, `--primary-foreground`, `--border`, `--muted`, `--muted-foreground`. Update the file to bind to these. For example:
-
-```scss
-.wrapper {
-  background: hsl(var(--background));
-}
-.prefecturePath {
-  fill: hsl(var(--muted));
-  stroke: hsl(var(--border));
-}
-.routePath {
-  stroke: hsl(var(--primary));
-}
-.spotGlow { fill: hsl(var(--primary)); }
-.spotDot {
-  fill: hsl(var(--primary));
-  stroke: hsl(var(--background));
-}
-.spotNumber { fill: hsl(var(--primary-foreground)); }
-.tooltip {
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
-  border-color: hsl(var(--border));
-}
-.tooltipDesc { color: hsl(var(--muted-foreground)); }
-.loading, .errorNotice { color: hsl(var(--muted-foreground)); }
-.detailsBlock > summary { color: hsl(var(--muted-foreground)); }
-.errorFallbackBlock > p { color: hsl(var(--muted-foreground)); }
-```
-
-Remove the `:global(.dark)` override blocks — CSS variables handle dark mode automatically.
-
-(Adjust variable names to match what Step 1 found — the list above is an educated guess, not authoritative.)
-
-- [ ] **Step 3: Manual verification**
-
-1. Toggle dark mode via the site's theme toggle (top-right nav).
-2. Map colors invert: prefecture polygons become dark grey, route stroke stays visible, tooltip background follows theme, dot number stays readable.
-3. No FOUC on theme change — variables flip instantly.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add src/components/Blog/TravelMap/styles.module.scss
-git commit -m "style(travel-map): bind to shadcn CSS variables for dark mode"
-```
-
----
-
-## Task 10: Migrate `25-01-tokyo/01_01-20.mdx` to `<TravelMap>`
-
-**Goal:** Replace the existing `<ImageLoader>` route screenshot with `<TravelMap>`, remove the `방문한 곳` bullet list, and wire spot anchors to the actual section ids.
-
-**Files:**
-- Modify: `src/content/blog/diary/25-01-tokyo/01_01-20.mdx`
-
-- [ ] **Step 1: Collect spot coordinates**
-
-From the current post, the narrated day-1 spots are:
-- 나리타 공항 (arrival)
-- 모헤지 (츠키시마 몬자야키)
-- 이토야 긴자 (stationery)
-- 아메요코 상점가 (market)
-- 히츠지 (우에노 양고기)
-
-For each, look up the place on Google Maps, right-click → coordinates, and record to 4 decimals. Reference values (verify; they may drift by a few meters):
-
-| Spot | lat | lng |
+| | 바깥(`--tm-void`) | 땅(`--tm-land`) |
 |---|---|---|
-| 나리타 공항 | 35.7719 | 140.3929 |
-| 모헤지 (츠키시마) | 35.6636 | 139.7882 |
-| 이토야 긴자 | 35.6716 | 139.7657 |
-| 아메요코 상점가 | 35.7099 | 139.7742 |
-| 히츠지 (우에노) | 35.7089 | 139.7746 |
+| 라이트 | `--muted` 95.9% | `--background` 100% |
+| 다크 | `--background` 3.9% | `--muted` 15.9% |
 
-Adjust with your own lookups if any differ.
+처음엔 라이트에서 땅을 `--muted`, 바깥을 `--background` 로 뒀는데 흰 바탕에 흰 땅이 돼 형상이 거의 안 보였다(실측). 경계선도 `--border`(명도 90%)는 너무 옅어 `--muted-foreground` 를 45% 투명도로 쓴다.
 
-- [ ] **Step 2: Determine the target anchor ids**
+CSS 변수로만 색을 잡으면 다크모드는 자동 반영된다 — `.dark` 오버라이드 블록을 따로 쓰지 않는다.
 
-Run the same DevTools snippet from Task 1 Step 1 on the live 01_01-20 page:
+**마커 번호 대비 (Task 6 에서 적용):** dot 을 `--accent-color`(녹색)로 칠하고 그 위에 흰 숫자를 얹으면 라이트에서 3.8:1, 다크(#10b981)에서는 더 낮아 WCAG AA 미달이다. `ehime-brewery-map` 작업기에 저자가 같은 결론을 적어뒀다 —「밝은 원에는 어두운 글자가 맞다」. dot 은 `--primary` / 숫자는 `--primary-foreground` 로 두면 양쪽 테마에서 자동 반전되며 19:1 이 나온다. 녹색은 루트 선과 glow 가 담당한다.
 
-```js
-Array.from(document.querySelectorAll('.article-entry h2, .article-entry h3')).map(h => ({ text: h.textContent, id: h.id }))
+- [ ] **Step 4: 수동 확인**
+
+파일럿 편의 좌표가 아직 없다. **대략값을 지어내지 말고** GeoJSON 에서 시정촌 중심점을 뽑아 테스트 좌표로 쓴다 — 파일에서 계산한 실제 값이다.
+
+```bash
+node -e "const {geoCentroid}=require('d3-geo');const g=require('./public/geo/muni/21.json');
+for (const n of ['高山市','飛騨市','下呂市']) {const f=g.features.find(x=>x.properties.name===n);
+const [lng,lat]=geoCentroid(f);console.log(n,lat.toFixed(4),lng.toFixed(4));}"
 ```
 
-Record the slug for each `h3`: `여행 목적`, `츠키시마 몬쟈 스트리트`, `긴자`, `우에노`. The anchor slug depends on the `rehype-slug` output (e.g. `츠키시마-몬쟈-스트리트`).
+브라우저를 띄우기 전에 **수치로 먼저 검증**한다(더 싸고 정확하다): 위 좌표로 `spotsExtent` → `fitExtent` 를 재현해 ① 모든 spot 이 패딩 박스 안 픽셀로 떨어지는지 ② 남/북 순서가 y 축과 맞는지 ③ 전 feature 가 빈 문자열 아닌 path 를 내는지 ④ 비정상적으로 긴 path(수십만 자)가 없는지 — ④가 winding 사고의 신호다.
 
-- [ ] **Step 3: Edit the MDX**
+그다음 임시 `src/pages/tm-test.astro` 로 육안 확인한다(라이트/다크 두 벌을 한 페이지에 넣으면 한 번에 본다. 다크는 `class="dark" data-theme="dark"` 를 **둘 다** 걸어야 한다). **확인 후 임시 페이지는 반드시 지운다.**
 
-At the top of `src/content/blog/diary/25-01-tokyo/01_01-20.mdx` (after existing imports), add:
+**dev 서버 주의:** 4321 은 다른 프로젝트(`ehime-ken-horoyoi`)가 점유 중일 수 있다. Astro 7 은 dev 를 데몬으로 띄우므로 `bun dev` 가 이미 뜬 인스턴스를 알려준다(관측 시점엔 4322). 남의 서버를 죽이지 말고 `astro dev status` 로 확인부터 한다.
 
-```mdx
-import { TravelMap } from '@/components/Blog/TravelMap';
+- [ ] **Step 5: 커밋**
 
-export const daySpots = [
-  { name: '나리타 공항',       lat: 35.7719, lng: 140.3929, description: '도착',        anchor: '여행-목적' },
-  { name: '모헤지 (츠키시마)', lat: 35.6636, lng: 139.7882, description: '몬자야키',    anchor: '츠키시마-몬쟈-스트리트' },
-  { name: '이토야 긴자',       lat: 35.6716, lng: 139.7657, description: '문구점',      anchor: '긴자' },
-  { name: '아메요코 상점가',   lat: 35.7099, lng: 139.7742, description: '상점가',      anchor: '우에노' },
-  { name: '히츠지 (우에노)',   lat: 35.7089, lng: 139.7746, description: '양고기',      anchor: '우에노' },
+---
+
+## Task 5: 루트 path (catmull-rom + draw-in)
+
+- [ ] **Step 1:** `travel-map.css` 에 `.tm-route` + `.tm-route-draw` + `@keyframes tm-route-draw` 추가. 선 색은 `var(--accent-color)` — hex 토큰이라 `hsl()` 로 감싸지 않는다.
+- [ ] **Step 2:** `RoutePath` 서브컴포넌트 — `line<DiarySpot>()` + `curveCatmullRom.alpha(0.5)`, `getTotalLength()` 를 CSS 변수 `--tm-route-length` 로 넘겨 800ms draw-in.
+- [ ] **Step 3:** `spots.length >= 2` 일 때만 렌더.
+- [ ] **Step 4:** 수동 확인 → 커밋
+
+**원안에서 바꾼 것 — dasharray 를 애니메이션하지 않는다.** 원안은 `stroke-dasharray` 를 `var(--route-length)` → `6, 4` 로 보간해 「그려진 뒤 점선이 되는」 효과를 노렸는데, 길이가 다른 dash 리스트 사이 보간이라 중간 프레임이 지저분해진다. 선은 실선으로 두고 `stroke-dashoffset` 만 애니메이션한다. 점선 마감을 원하면 `.tm-route` 에 `stroke-dasharray: 6 4` 한 줄이면 되지만, 그러면 draw-in 과 상충하므로 둘 중 하나만 고른다.
+
+**길이를 재기 전에는 숨긴다.** `getTotalLength()` 는 DOM 에 붙은 뒤에만 되므로 한 번 더 렌더한다. 그 사이 그냥 그리면 전체 선이 한 프레임 번쩍인다 → 첫 렌더는 `visibility: hidden`(`display: none` 은 안 된다. 레이아웃이 없어져 길이를 못 잰다).
+
+**`prefers-reduced-motion: reduce` 가드를 넣는다.** 접근성 기본이고, 넣지 않으면 모션 민감 사용자에게 강제된다.
+
+**⚠️ 검증 한계 (2026-08-17):** headless Chrome 은 `prefers-reduced-motion: reduce` 를 참으로 보고하고 CSS 애니메이션을 즉시 종료 상태로 만든다. 따라서 **draw-in 이 실제로 800ms 동안 그려지는 장면은 관측하지 못했다.** 관측한 것은 여기까지다 —
+`--tm-route-length` 가 실측값 630.4 로 채워짐 · `stroke-dasharray` 가 630.403px 로 해석됨 · `getTotalLength()` 630 과 일치 · CSSOM 에 `animation: 800ms ease-out … forwards tm-route-draw` 와 `@keyframes tm-route-draw { 100% { stroke-dashoffset: 0 } }` 존재 · `getAnimations()` 가 해당 애니메이션을 반환 · reduced-motion 가드가 의도대로 `animation: none` 으로 덮음.
+**실제 재생은 사람이 일반 브라우저에서 한 번 봐야 한다.**
+
+---
+
+## Task 6: `SpotMarker` + 툴팁 + 클릭 스크롤 + 키보드
+
+- [ ] **Step 1:** `.tm-glow` / `.tm-dot` / `.tm-num` / `.tm-tooltip` 스타일
+- [ ] **Step 2:** `TravelMapTooltip.tsx` — 컨테이너 폭 기준 클램프, 우측 넘치면 좌측으로 뒤집기
+- [ ] **Step 3:** `SpotMarker.tsx` — `role="button"`, `tabIndex={0}`, Enter/Space, 활성 시 r 8→11
+- [ ] **Step 4:** `TravelMap.tsx` 에 `activeIndex` state + `selectSpot` 연결
+- [ ] **Step 5:** 수동 확인 → 커밋
+
+**원안에서 바꾼 것:**
+
+- `aria-label` 은 `{순번}. {name}, {city}` + anchor 가 있으면 `— 본문으로 이동`. 순번이 있어야 지도의 숫자와 스크린리더 낭독이 이어진다.
+- sr-only `<ol>` 은 만들지 않는다 — Task 8 의 `VisitedList` 가 **보이는** 목록으로 같은 역할을 한다.
+- 클래스는 `tm-` 프리픽스로 통일(`tm-dot`). e2e 셀렉터도 `circle.tm-dot` 을 쓴다.
+
+**🐞 결함 1 — `role="img"` 가 마커를 스크린리더에서 지운다 (원안의 버그).** 원안은 `<svg role="img">` 안에 `role="button"` dot 을 넣는데, `role="img"` 는 **하위 트리를 통째로 presentational 로 만들어** 그 버튼들에 AT 가 도달하지 못한다. 상호작용 요소를 품은 SVG 는 `role="group"` 이다. 수정 후 접근성 트리에 5개 버튼이 전부 라벨과 함께 노출되는 것을 확인했다.
+
+**🐞 결함 2 — anchor 없는 마커의 클릭 토글.** `anchor` 가 없을 때 활성 상태를 토글하면, 데스크톱에서 hover 로 뜬 툴팁이 클릭하는 순간 사라지고 **커서가 그대로라 `mouseenter` 가 다시 안 걸려 툴팁이 돌아오지 않는다**(실측). 토글은 터치에서만 의미가 있으므로 `setActiveIndex(index)` 로 멱등하게 둔다. 해제는 Task 7 의 「바깥 탭」이 담당한다.
+
+**검증 결과 (2026-08-17, 실측):**
+
+| 항목 | 결과 |
+|---|---|
+| 접근성 트리 | 마커 5개가 `button` 으로 노출, 라벨 `1. 飛騨市, 히다시 — 본문으로 이동` |
+| hover | 툴팁 표시(제목 + description ?? city), r 8 → 11 |
+| 클릭(anchor 있음) | `#sec-takayama` 로 스크롤, 헤딩이 뷰포트 상단 |
+| 클릭(anchor 없음) | 툴팁 유지, 스크롤 없음 (결함 2 수정 후) |
+| 클릭(anchor 대상 없음) | dev 경고 1건, 스크롤 없음, 에러 없음 |
+| Tab | `<circle>` 포커스, `:focus-visible` 매치, outline `2px solid #059669` |
+| Enter | `#sec-gero` 로 스크롤 |
+| 컨테이너 축소(1216 → 420px) | ResizeObserver 재투영, dot x 659 → 261 |
+| 툴팁 엣지 플립 | 420px 폭에서 dot x=296 → 툴팁 left 60.1 (좌측 반전), 래퍼 안에 물림 |
+
+**⚠️ Task 11 에서 확인할 것:** `scrollIntoView({ block: 'start' })` 는 요소를 뷰포트 최상단에 붙인다. 실제 블로그에 sticky 헤더가 있으면 제목이 가려진다 — 그때 대상 헤딩에 `scroll-margin-top` 이 필요한지 본다.
+
+---
+
+## Task 7: 모바일 two-tap
+
+`pointer: coarse` 에서 1탭 = 활성+툴팁, 같은 dot 2탭 = 스크롤, 바깥 탭 = 해제.
+
+- [ ] **Step 1:** `isCoarsePointer` 를 **마운트 후 effect 에서** 읽는다(`window.matchMedia('(pointer: coarse)')`). 렌더 결과가 아니라 핸들러 동작만 바꾸므로 하이드레이션 불일치가 없다.
+- [ ] **Step 2:** `selectSpot` 에 coarse 분기 + `tappedIndexRef` (아래 참조).
+- [ ] **Step 3:** 래퍼 `onClick` 에서 `(event.target as Element).closest('.tm-dot')` 이 없으면 `deactivate()`.
+- [ ] **Step 4:** 검증 → 커밋
+
+**🐞 원안의 전제가 틀렸다 — 「터치에서 `onMouseEnter` 는 안 뜬다」.** 브라우저는 탭 후 호환용 마우스 이벤트를 발생시킨다. 실측한 순서:
+
+```
+mouseover → mouseenter → pointerdown → click
+```
+
+즉 `click` 이 도착한 시점엔 `mouseenter` 가 이미 활성화를 끝냈다. 원안대로 `activeSpotIndex === index` 로 「두 번째 탭인가」를 판정하면 **첫 탭이 곧바로 두 번째 탭으로 오인돼 two-tap 이 one-tap 으로 붕괴한다.** 원안의 `sourceCapabilities.firesTouchEvents` 가드는 `onFocus` 만 막지 이걸 막지 못한다.
+
+**해법: 이벤트 출처를 캐지 말고 「탭으로 활성화된 인덱스」를 `tappedIndexRef` 로 따로 추적한다.** hover/focus 가 `activeIndex` 를 어떻게 바꾸든 판정이 오염되지 않는다. `sourceCapabilities`(Chrome 전용, 비표준) 의존도 사라진다.
+
+```tsx
+if (isCoarsePointer && tappedIndexRef.current !== index) {
+  tappedIndexRef.current = index;
+  setActiveIndex(index);
+  return;                       // 첫 탭 = 툴팁만
+}
+tappedIndexRef.current = index; // 이후 스크롤 경로
+```
+
+해제 시 `tappedIndexRef` 도 같이 비운다 — 안 비우면 해제 후 같은 마커를 다시 탭했을 때 툴팁 없이 곧바로 스크롤한다.
+
+**검증 방법:** headless 에 터치 에뮬레이션이 없다(`set device` 는 뷰포트만 바꾼다 — `coarse:false`, `maxTouchPoints:0`). 검증 페이지에서 하이드레이션 **전에** `window.matchMedia` 를 가로채 coarse 를 흉내낸다. 드라이버의 클릭이 `mouseenter → click` 순서라 위 붕괴 시나리오가 그대로 재현되므로, 이 방식이 오히려 정확한 회귀 테스트가 된다.
+
+**검증 결과 (2026-08-17, 실측):**
+
+| 시나리오 | 결과 |
+|---|---|
+| 이벤트 순서 | `mouseover → mouseenter → pointerdown → click` (붕괴 조건 재현됨) |
+| 탭 1 (마커 2) | 툴팁 `高山市 / 아침시장`, `scrollY` 0 — 스크롤 없음 |
+| 탭 2 (같은 마커) | `#sec-takayama` 로 스크롤 (`scrollY` 2259) |
+| 다른 마커 탭 | 툴팁 `下呂市 / 게로시` 로 이관, 스크롤 없음 |
+| 지도 배경 탭 | 툴팁 해제 |
+| 해제 후 같은 마커 재탭 | 다시 첫 탭으로 동작(툴팁만, 스크롤 없음) — ref 리셋 확인 |
+| 데스크톱(coarse 아님) | 한 번 클릭에 바로 스크롤 — 회귀 없음 |
+
+---
+
+## Task 8: `VisitedList` + 원본 스크린샷 `<details>` + 에러 폴백
+
+**Goal:** D6 의 실체. `방문한 곳` 목록을 spots 에서 렌더해 본문에서 목록을 지울 근거를 만든다.
+
+- [ ] **Step 1: `VisitedList.tsx`**
+
+```tsx
+export function VisitedList({ spots }: { spots: DiarySpot[] }) {
+  // city 순서는 spots 등장 순서를 따른다 — 그날 동선 순서다
+  const groups = useMemo(() => {
+    const out: { city: string; prefecture: string; items: DiarySpot[] }[] = [];
+    for (const s of spots) {
+      const last = out.at(-1);
+      if (last && last.city === s.city) last.items.push(s);
+      else out.push({ city: s.city, prefecture: s.prefecture, items: [s] });
+    }
+    return out;
+  }, [spots]);
+
+  return (
+    <ul className={styles.visited}>
+      {groups.map(g => (
+        <li key={`${g.prefecture}-${g.city}`}>
+          {g.prefecture} {g.city}
+          <ul>
+            {g.items.map(s => (
+              <li key={s.name}>
+                {s.mapUrl
+                  ? <a href={s.mapUrl} target="_blank" rel="noreferrer">{s.name}</a>
+                  : s.name}
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+같은 도시를 하루에 두 번 들르는 날은 그룹이 두 번 나온다 — 원문 목록도 그렇지 않지만, 동선 순서를 유지하는 쪽이 지도와 번호가 맞는다. 파일럿에서 육안 확인하고 어색하면 city 로 dedupe 하는 쪽으로 바꾼다.
+
+- [ ] **Step 2: `TravelMap.tsx` 구조 정리**
+
+```
+<div className={className}>
+  <div ref={wrapperRef} className={styles.wrapper}> …지도… </div>
+  <p className={styles.credit}>…국토교통성 크레딧…</p>
+  <VisitedList spots={spots} />
+  {geo.status === 'error' && originalImageSrc && <img …/>}          // 폴백: 스크린샷을 본문으로 승격
+  {geo.status !== 'error' && originalImageSrc && (
+    <details className={styles.detailsBlock}>
+      <summary>구글 맵 원본 보기</summary>
+      <img src={originalImageSrc} alt="여행 루트 (원본 구글 맵 스크린샷)" />
+    </details>
+  )}
+</div>
+```
+
+- [ ] **Step 3:** 수동 확인 — 정상 로드 / DevTools 로 `/geo/muni/21.json` 차단 후 폴백 / `originalImageSrc` 없는 경우
+- [ ] **Step 4:** 커밋
+
+---
+
+## Task 9: 좌표 조달 — 단축 URL 해석 + spots 초안 생성
+
+**Goal:** `blog/src/data/diarySpots/14_12-10.ts` 초안을 기계가 만들고, 사람이 빈칸을 채운다. **좌표를 추론하거나 생성하지 않는다.**
+
+- [ ] **Step 1: `blog/scripts/resolve-map-urls.mjs`**
+
+동작:
+1. 인자로 받은 slug 의 MDX 에서 `방문한 곳` 섹션을 **헤딩 레벨 무관(`^#+\s*방문한 곳`)** 으로 잘라낸다. `02_11-28` 만 `##` 라 `###` 로 좁히면 조용히 통째로 누락된다.
+2. 상위 항목 `- {도도부현} {도시}` 와 하위 항목을 파싱한다. 하위는 세 형태 모두 처리: 중첩 불릿(`  - X`), 인라인(`— A, B, C`), 3단 중첩(3단은 2단에 flat 하게 합친다).
+3. 항목에 `https://maps.app.goo.gl/...` 이 있으면 리다이렉트를 따라가 최종 URL 에서 좌표를 뽑는다 (`@lat,lng,zoom` 또는 `!3d{lat}!4d{lng}`). 두 패턴 다 없으면 좌표 없이 둔다.
+4. `src/data/diarySpots/{slug}.ts` 초안을 출력한다. 좌표 미해결 항목은 `lat: 0, lng: 0, // TODO 좌표` 로 남긴다.
+
+```bash
+node scripts/resolve-map-urls.mjs 14_12-10
+```
+
+요청 사이에 지연을 넣어 연속 호출하지 않는다. 이미 만든 파일이 있으면 덮어쓰지 말고 `.draft.ts` 로 뺀다 — 사람이 채운 좌표를 날리면 안 된다.
+
+- [ ] **Step 2: 파일럿 편 초안 생성 후 사람이 좌표 채우기**
+
+`14_12-10` 은 3도시(다카야마시 · 히다후루카와시 · 오쿠히다온센고 히라유) 12장소, 단축 URL 3건. 즉 **자동 3건 + 수동 9건**이다.
+
+결과 형태:
+
+```ts
+import type { DiarySpot } from '@/components/Blog/TravelMap';
+
+export const spots: DiarySpot[] = [
+  { name: '미야가와 아침시장', lat: 36.1428, lng: 137.2593, city: '다카야마시', prefecture: '기후현', anchor: '…' },
+  { name: '아지도코로 후루카와', lat: 0, lng: 0, city: '히다후루카와시', prefecture: '기후현', mapUrl: 'https://maps.app.goo.gl/2s9GN7SjSA6RD8bDA' },
+  // …
 ];
 ```
 
-(Replace anchor slugs with whatever Step 2 observed.)
+(위 좌표는 형태 예시다. 실제 값은 스크립트 결과 또는 사람이 확인한 값으로만 채운다.)
 
-Replace this block:
+- [ ] **Step 3: anchor 채우기**
 
-```mdx
-### 루트
+빌드된 페이지에서 헤딩 id 를 읽어 대응되는 spot 에만 넣는다. 헤딩이 이미 한글 슬러그 id 를 갖고 있으므로 별도 설정은 없다:
 
-<ImageLoader src="/files/blog/diary/25-01-tokyo/assets/CleanShot_2026-02-16_23.09.11@2x.png" alt="route" />
-
-### 방문한 곳
-
-- 우에노
-- 이케부쿠로
-- 긴자
-- 아메요코 상점가
+```bash
+cd blog && bun dev
+# 브라우저 콘솔
+Array.from(document.querySelectorAll('.article-entry h2, .article-entry h3')).map(h => ({ text: h.textContent, id: h.id }))
 ```
 
-with:
+`14_12-10` 의 헤딩은 서사 제목이라 장소명과 1:1 이 아니다. 짝이 없으면 `anchor` 를 넣지 않는다 (D-anchor 결정).
+
+- [ ] **Step 4:** 커밋
+
+---
+
+## Task 10: 검증 스크립트 `check-diary-spots`
+
+**Goal:** 좌표 오입력·환각·누락을 사람 눈이 아니라 스크립트가 잡는다. **컴포넌트 완성보다 먼저 통과시킨다.**
+
+- [ ] **Step 1: `blog/scripts/check-diary-spots.mjs`**
+
+체크 항목:
+
+1. `src/data/diarySpots/*.ts` 의 모든 spot 이 필수 필드(`name`, `lat`, `lng`, `city`, `prefecture`)를 갖는가
+2. `lat === 0 || lng === 0` 인 항목이 없는가 (미입력 감지) — **실패 처리**
+3. `prefecture` 가 `PREFECTURES` 에 있는가 — 원문 오타(`이시키와현` 4건) 유입 차단
+4. 좌표가 해당 `prefecture` 의 시정촌 폴리곤 안에 있는가 (point-in-polygon, `public/geo/muni/{code}.json` 대조) — **실패 처리.** 다른 현/다른 나라 좌표를 여기서 잡는다
+5. `anchor` 가 있으면 해당 MDX 에 그 id 를 만드는 헤딩이 실제로 있는가 (`TableOfContents.astro` 의 `createSlug` 와 같은 규칙으로 계산)
+6. 마이그레이션한 MDX 가 `spots` 를 import 하고 `<TravelMap>` 을 쓰는가
+7. **(마이그레이션 직전 1회만)** 원문 `방문한 곳` 을 레벨 무관으로 재파싱한 도시 집합 == `spots` 의 city 집합. 목록을 지우고 나면 이 체크는 근거를 잃으므로, 편마다 삭제 직전에 돌리고 통과 로그를 커밋 메시지에 남긴다
+8. **`PREFECTURES` 의 모든 code 에 `public/geo/muni/{code}.json` 이 존재하고, 그 반대도 성립하는가** — 타입은 통과하는데 fetch 가 404 나는 함정을 막는다. 고아 파일도 함께 리포트한다 (Task 2 시점에 수동으로 1회 확인함: 16 ↔ 16 일치)
+
+```bash
+cd blog && node scripts/check-diary-spots.mjs
+```
+
+`package.json` 에 `"check-spots": "node scripts/check-diary-spots.mjs"` 추가.
+
+- [ ] **Step 2:** 파일럿 편으로 통과 확인 → 커밋
+
+---
+
+## Task 11: 파일럿 마이그레이션 — `14_12-10.mdx`
+
+- [ ] **Step 1:** 삭제 직전 Task 10 의 체크 7번을 돌려 도시 집합 일치를 확인한다
+- [ ] **Step 2:** MDX 수정
+
+```mdx
+import { TravelMap } from '@/components/Blog/TravelMap';
+import { spots } from '@/data/diarySpots/14_12-10';
+```
+
+`## 루트 및 방문한 곳` 아래 `### 루트` 의 `<ImageLoader>` 와 `### 방문한 곳` 목록을 통째로 다음으로 교체한다:
 
 ```mdx
 ### 루트
 
 <TravelMap
-  geoRegion="tokyo-23ku"
-  spots={daySpots}
-  originalImageSrc="/files/blog/diary/25-01-tokyo/assets/CleanShot_2026-02-16_23.09.11@2x.png"
+  spots={spots}
+  originalImageSrc="/files/blog/diary/japan-around-trip/assets/{그 편의 루트 스크린샷}.webp"
   client:visible
 />
 ```
 
-Also update `TableOfContents` (lines 174–182 of the file) to drop the `방문한 곳` item:
+`<TableOfContents>` 에서 `방문한 곳` 줄을 뺀다. 스크린샷 경로는 `.png` 가 아니라 **`.webp`** 다 (본문 실제 값 확인 후 그대로 옮긴다).
 
-```mdx
-<TableOfContents>
-- 루트 및 방문한 곳
-  - 루트
-- 일정
-  - 츠키시마 몬쟈 스트리트
-  - 긴자
-  - 우에노
-</TableOfContents>
-```
-
-- [ ] **Step 4: Manual verification**
-
-Hard-refresh the page `/blog/diary/25-01-tokyo/01_01-20`.
-
-1. Map renders with 5 numbered dots in Tokyo 23 wards. Narita Airport sits outside Tokyo's 23-ward boundary — the dot should appear near the top-right corner of the SVG (fitExtent frames it correctly; it just sits on the surrounding blank area). Verify visually; if the dot is clipped, relax `PADDING` in `TravelMap.tsx`.
-2. Route dashes animate in on first mount.
-3. Hover dot 2 (모헤지) → tooltip shows name + description. Click → page scrolls to the 츠키시마 section.
-4. `<details>` toggle reveals the original screenshot.
-5. ToC does not list `방문한 곳`.
-
-Special case if Narita dot is clipped: the cleanest fix is to exclude it from `daySpots` (flight arrival doesn't need to be on the map). Alternatively, expand PADDING asymmetrically. Prefer excluding Narita if it clutters the layout.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add src/content/blog/diary/25-01-tokyo/01_01-20.mdx
-git commit -m "feat(blog): migrate 25-01-tokyo/01_01-20 to TravelMap"
-```
+- [ ] **Step 3:** 수동 확인
+  1. 기후현 북부 시정촌 경계 위에 12개 번호 dot, 그날 동선에 맞는 축척
+  2. 루트가 draw-in 애니메이션
+  3. hover → 툴팁 / 클릭 → anchor 있는 spot 만 스크롤
+  4. 지도 아래 「방문한 곳」 목록이 도시별로 렌더되고 단축 URL 3건이 링크
+  5. `<details>` 로 원본 스크린샷 열림
+  6. 다크모드 토글에서 색이 깨지지 않음
+  7. 국토교통성 크레딧 노출
+- [ ] **Step 4:** 커밋
 
 ---
 
-## Task 11: Migrate `25-01-tokyo/02_01-21.mdx` to `<TravelMap>`
+## Task 12: Playwright e2e
 
-**Goal:** Same treatment for day 2. Contents of day 2 may differ — read the file first and map spots accordingly.
+- [ ] **Step 1:** `blog/e2e/travel-map.noauth.spec.ts` — 대상은 `/blog/diary/japan-around-trip/14_12-10`
 
-**Files:**
-- Read: `src/content/blog/diary/25-01-tokyo/02_01-21.mdx`
-- Modify: `src/content/blog/diary/25-01-tokyo/02_01-21.mdx`
+케이스:
+1. `circle.travel-map-spot-dot` 개수 == `spots` 길이 (테스트가 데이터 파일을 import 해 비교 — 숫자를 하드코딩하지 않는다)
+2. (chromium) 첫 dot hover → `[role="tooltip"]` 에 그 spot 이름
+3. (chromium) anchor 가 있는 dot 클릭 → 대상 헤딩이 뷰포트 안
+4. `구글 맵 원본 보기` 클릭 → 원본 이미지 표시
+5. 「방문한 곳」 목록에 도시 3개가 순서대로 존재
+6. (mobile-chrome) 1탭 = 툴팁만, 같은 dot 2탭 = 스크롤
 
-- [ ] **Step 1: Identify day-2 spots**
+`client:visible` 이므로 각 케이스에서 `scrollIntoViewIfNeeded()` + 하이드레이션 대기가 필요하다 (기존 e2e 관례대로 2000ms, 불안정하면 3000ms).
 
-```bash
-grep -E '^###|^##' src/content/blog/diary/25-01-tokyo/02_01-21.mdx
-```
-
-List the narrative sections. For each substantive location mentioned, assemble the same table of `{name, lat, lng, description, anchor}` as in Task 10 Step 1.
-
-- [ ] **Step 2: Edit the MDX**
-
-Mirror Task 10 Step 3: add `import { TravelMap }` and `export const daySpots = [...]`, replace any existing route screenshot + 방문한 곳 bullet list with `<TravelMap ... />`. Update `TableOfContents` accordingly.
-
-If day 2 has no existing route screenshot (common for middle days), skip `originalImageSrc` and still add `<TravelMap>` under the first `### 루트` section (creating that section if it doesn't exist).
-
-- [ ] **Step 3: Manual verification**
-
-Hard-refresh `/blog/diary/25-01-tokyo/02_01-21`. Same checks as Task 10 Step 4, adjusted for day-2 spot count.
-
-- [ ] **Step 4: Commit**
+- [ ] **Step 2:**
 
 ```bash
-git add src/content/blog/diary/25-01-tokyo/02_01-21.mdx
-git commit -m "feat(blog): migrate 25-01-tokyo/02_01-21 to TravelMap"
+cd blog && bun x playwright test travel-map.noauth.spec.ts
 ```
+
+- [ ] **Step 3:** `bun astro check` + `bun run build` 0 errors → 커밋
 
 ---
 
-## Task 12: Playwright e2e spec + final verification
+## Task 13: 나머지 26편 복제
 
-**Goal:** Lock in regression protection for the user-facing behavior on both chromium and mobile-chrome.
+파일럿이 통과한 뒤에만 착수한다. 편당 반복:
 
-**Files:**
-- Create: `e2e/travel-map.noauth.spec.ts`
+1. `node scripts/resolve-map-urls.mjs {slug}` → 초안
+2. 사람이 좌표·anchor 채움
+3. `bun run check-spots` 통과 (체크 7번 포함)
+4. MDX 교체 + `<TableOfContents>` 정리
+5. 커밋
 
-- [ ] **Step 1: Write the e2e spec**
+배치로 돌릴 때 주의:
 
-```ts
-// e2e/travel-map.noauth.spec.ts
-import { expect, test } from '@playwright/test';
-
-const POST_URL = '/blog/diary/25-01-tokyo/01_01-20';
-
-test.describe('TravelMap — day 1', () => {
-  test('renders markers matching the spots export', async ({ page }) => {
-    await page.goto(POST_URL);
-
-    // client:visible hydration: scroll the map into view and wait for SVG spots
-    const mapWrapper = page.locator('svg[aria-label="여행 루트 지도"]');
-    await mapWrapper.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(2000);
-
-    const dots = mapWrapper.locator('circle.travel-map-spot-dot');
-    const count = await dots.count();
-    expect(count).toBeGreaterThanOrEqual(3);
-    // 1편의 daySpots 길이와 일치해야 한다
-    expect(count).toBe(5);
-  });
-
-  test('hover on a dot shows tooltip', async ({ page, browserName }) => {
-    test.skip(browserName !== 'chromium', 'hover is desktop-only');
-    await page.goto(POST_URL);
-    const map = page.locator('svg[aria-label="여행 루트 지도"]');
-    await map.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(2000);
-
-    await map.locator('circle.travel-map-spot-dot').first().hover();
-    const tooltip = page.locator('[role="tooltip"]');
-    await expect(tooltip).toBeVisible();
-    await expect(tooltip).toContainText('나리타'); // first spot
-  });
-
-  test('click on a dot scrolls to its anchor', async ({ page, browserName }) => {
-    test.skip(browserName !== 'chromium', 'desktop click test');
-    await page.goto(POST_URL);
-    const map = page.locator('svg[aria-label="여행 루트 지도"]');
-    await map.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(2000);
-
-    // Click the 2nd dot (모헤지/츠키시마)
-    await map.locator('circle.travel-map-spot-dot').nth(1).click();
-    await page.waitForTimeout(600); // smooth scroll
-
-    // Heading for 츠키시마 must be near the viewport top
-    const heading = page.getByRole('heading', { name: /츠키시마 몬쟈 스트리트/ });
-    await expect(heading).toBeInViewport();
-  });
-
-  test('details toggle reveals original screenshot', async ({ page }) => {
-    await page.goto(POST_URL);
-    const map = page.locator('svg[aria-label="여행 루트 지도"]');
-    await map.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(2000);
-
-    const details = page.getByText('구글 맵 원본 보기');
-    await details.click();
-    const img = page.locator('img[alt*="구글 맵 스크린샷"]');
-    await expect(img).toBeVisible();
-  });
-
-  test('mobile: first tap shows tooltip only; second tap scrolls', async ({ page, browserName, isMobile }) => {
-    test.skip(!isMobile, 'mobile-only behavior');
-    await page.goto(POST_URL);
-    const map = page.locator('svg[aria-label="여행 루트 지도"]');
-    await map.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(2000);
-
-    const firstDot = map.locator('circle.travel-map-spot-dot').nth(1);
-    await firstDot.tap();
-
-    const tooltip = page.locator('[role="tooltip"]');
-    await expect(tooltip).toBeVisible();
-
-    // Heading should NOT be in viewport yet
-    const heading = page.getByRole('heading', { name: /츠키시마 몬쟈 스트리트/ });
-    await expect(heading).not.toBeInViewport();
-
-    // Second tap on same dot
-    await firstDot.tap();
-    await page.waitForTimeout(600);
-    await expect(heading).toBeInViewport();
-  });
-});
-```
-
-- [ ] **Step 2: Run the tests**
-
-```bash
-bun x playwright test travel-map.noauth.spec.ts
-```
-
-Expected: all tests pass on `chromium`; the mobile test passes on `mobile-chrome`. Skipped tests appear as skipped (not failures).
-
-If any test fails, read the trace from `e2e/test-results/` and adjust either the component or the test. Common failure modes:
-- `Tooltip not visible`: hydration race — increase `waitForTimeout(2000)` to 3000.
-- `Heading not in viewport`: mdx anchor mismatch — verify the spot's `anchor` field against the actual DOM heading id.
-
-- [ ] **Step 3: Final manual sweep**
-
-```bash
-bun astro check
-bun run build
-```
-
-Both must complete with 0 errors. A warning about unused `CleanShot_2026-02-16_23.09.11@2x.png` is **not** expected because the image is still referenced via `originalImageSrc`.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add e2e/travel-map.noauth.spec.ts
-git commit -m "test(travel-map): playwright e2e for desktop and mobile"
-```
-
-- [ ] **Step 5: Push and open PR (optional)**
-
-```bash
-git push -u origin feat/travel-map
-gh pr create --title "feat: interactive travel map for diary posts" --body "$(cat <<'EOF'
-## Summary
-- New `<TravelMap>` React island renders an interactive D3 SVG map replacing the flat route screenshot in Tokyo diary posts
-- Per-post numbered spots, hover tooltip, click-to-scroll to in-post section; two-tap pattern on mobile
-- Original Google Maps screenshot preserved inside a collapsible `<details>` block
-
-## Design spec
-`_docs/interactive-travel-map-plan.md`
-
-## Test plan
-- [x] `bun x playwright test travel-map.noauth.spec.ts` on chromium + mobile-chrome
-- [x] `bun astro check`
-- [x] `bun run build`
-- [x] Manual dark-mode toggle spot-check
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-EOF
-)"
-```
+- `01_intro` 는 `방문한 곳` 이 없다 — 지도 대상이 아니다. 후속 계획 4.2 의 「`01_intro` 귀속」 결정도 여기서 함께 정리한다
+- `02_11-28` 은 `## 방문한 곳` (레벨 예외) + 루트 스크린샷 없음 → `originalImageSrc` 생략
+- `23_12-19` · `24_12-20` · `28_12-24` 는 인라인형(`— A, B, C`)
+- `03_11-29` 은 3단 중첩
+- `28_12-24` 는 `인천` 이 섞여 있다 (일본 아님) — spot 에서 제외하거나 `prefecture` 없는 항목으로 다루지 말고 그냥 뺀다
+- 해안이 크게 잡히는 편(`02_11-28` 토모노우라, `27_12-23` 마쓰시마, `22_12-18` 후로후시)에서 s0001 경계가 거칠면 그 현만 `s0010` 파일로 교체한다
 
 ---
 
-## Self-Review Notes
+## 후속 기능에 넘기는 것
 
-**Spec coverage check:**
-- §3 Decision 1 (Tokyo 23 wards GeoJSON) → Task 1
-- §3 Decision 2 (per-post scope) → covered by MDX authoring pattern in Tasks 10–11
-- §3 Decision 3 (inline spots export) → Task 10 Step 3
-- §3 Decision 4 (hover + click-to-scroll + two-tap) → Tasks 6 (desktop) + 7 (mobile)
-- §3 Decision 5 (preset registry) → Task 2
-- §3 Decision 6 (placement, remove bullet list) → Task 10 Step 3
-- §3 Decision 7 (details collapse) → Task 8
-- §3 Secondary (numbered dots) → Task 6 Step 3 (`<text>` element)
-- §3 Secondary (catmull-rom, draw-in animation) → Task 5
-- §3 Secondary (responsive viewBox + px360) → Task 4 styles.module.scss
-- §3 Secondary (dark mode via CSS variables) → Task 9
-- §9 Edge case: fetch error fallback → Task 8 Step 2
-- §9 Edge case: empty spots → Task 5 `spots.length >= 2` guard
-- §9 Edge case: anchor missing → Task 6 Step 4 `scrollToAnchor`
-- §10 Testing plan → Task 12
+[`japan-trip-map`](./active/planning/2026-08-16/2026-08-16-japan-trip-map-final.md) 이 이 작업 완료 시점에 받는 것.
 
-**Placeholder scan:** No `TBD`, `TODO`, or "implement later" markers. All code blocks are complete.
+**2026-08-17 — 그 계획의 D1 이 뒤집혔다: ECharts 6.1.0 → d3-geo 로 통일.** 따라서 넘기는 것이 데이터에서 코드까지 늘었다.
 
-**Type consistency:**
-- `DiarySpot` signature (`name/lat/lng/description?/anchor?`) consistent across types.ts, SpotMarker.tsx props, MDX usage.
-- `TravelMapProps.spots` used as `typeof spots[number]` in handlers — matches `DiarySpot[]`.
-- `GeoRegion` is a union derived from `GEO_REGIONS` keys; `geoRegion` prop type reflects this.
-- `UseGeoDataResult` discriminated union consistent with how `TravelMap.tsx` branches on `geo.status`.
+데이터:
 
-**Known trade-offs / follow-ups:**
-- The Narita Airport dot sits outside the 23-ward boundary and may look awkward; Task 10 Step 4 includes a fallback to drop it if visual evaluation rejects.
-- The `scrollToAnchor` uses Korean slugs as ids. If another part of the site later adds english-id conventions, spot `anchor` values must be updated in both diary entries.
+- `blog/src/data/diarySpots/*.ts` — 27편치 spots. 도시 좌표는 해당 city 의 spots 중심점으로 계산하면 되고 별도 조사가 불필요하다 (그 문서 9절 1번 해소)
+- `DIARY_CITIES` 는 spots 의 `city` 를 집계하면 나온다 — 손으로 큐레이트할 필요가 없어진다 (그 문서 4.2 표는 교차검증용으로만)
+
+코드 (복사하지 말고 import):
+
+- `prefectures.ts` — 한글↔일본어↔코드 매핑. `ja` 필드가 전국 도도부현 GeoJSON 의 `N03_001`(일본어) 매칭용이다 (그 문서 9절 2번 해소)
+- `useGeoData.ts` — URL 캐시 + 다중 fetch 병합. 전국 파일 1개를 받을 때도 그대로 쓴다
+- `SpotMarker` 의 접근성 규칙(`role="button"` + `tabIndex` + Enter/Space)과 `.credit` 블록(국토교통성 표기) — 두 지도가 같은 규칙을 쓴다
+
+자산:
+
+- 도도부현 레이어용 GeoJSON 후보: 같은 저장소 `data/municipality/geojson/s0001/prefectures.json` (317KB). 그 문서의 200KB 목표를 넘으므로 topojson 판을 쓰거나 `split-muni-geojson.mjs` 처럼 property 를 털어내고 단순화한다
+- **`d3-zoom` 은 그 계획에서만 필요하다** — 이 기능은 팬/줌이 명시적 non-goal 이므로 여기서 설치하지 않는다
+
+## 남은 미확인
+
+없음. 착수 전에 확인이 필요하던 항목(heading id · GeoJSON 출처/크기/property/라이선스 · 데이터 규모)은 2026-08-17 에 실물로 전부 확인했다. 새로 생기는 미확인은 이 절에 추가한다.

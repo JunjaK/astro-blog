@@ -1,8 +1,14 @@
 # Interactive Travel Map — Design Spec
 
-**Status:** Approved — ready for implementation plan
-**Date:** 2026-04-23
-**Scope:** Per-post interactive D3 map for diary entries, starting with `25-01-tokyo`
+**Status:** Approved — 구현 계획으로 이관됨
+**Date:** 2026-04-23 (개정 2026-08-17 — 결정 6-A 추가, 이후 결정 1·3·5·6 대체됨)
+**선후 관계:** 이 기능이 **선행**. 후속 = [japan-trip-map playground](./active/planning/2026-08-16/2026-08-16-japan-trip-map-final.md)
+**Scope:** Per-post interactive D3 map for diary entries, starting with `japan-around-trip/14_12-10`
+
+> ⚠️ **2026-08-17 — 이 스펙의 결정 1·3·5·6 은 구현 계획의 결정 로그가 대체한다.**
+> 착수 전 저자와 디테일 7건을 확정하면서 대상 글·축척·데이터 위치가 바뀌었다.
+> **SSOT 는 [`interactive-travel-map-impl-plan.md` §0 결정 로그](./interactive-travel-map-impl-plan.md)** 이고,
+> 이 문서는 문제 정의·인터랙션·접근성·엣지케이스의 근거로 남는다.
 
 ## 1. Problem
 
@@ -26,12 +32,14 @@ We adopt the same rendering approach, but differ in several places (see §3).
 
 | # | Decision | Rationale |
 |---|---|---|
-| 1 | **Map extent**: Tokyo 23 wards GeoJSON (from `dataofjapan/land`) | Matches the real travel envelope; small file (~100KB); fits prefecture/reference aesthetic |
+| ~~1~~ | ~~**Map extent**: Tokyo 23 wards GeoJSON~~ → **대체됨.** 시정촌 경계를 도도부현 단위로 분할해 배포하고, 축척은 그날 spots 의 bbox 에 fit | 도도부현 축척이면 하루가 한 도시 안일 때 점이 뭉쳐 스크린샷보다 정보량이 적어진다 (impl-plan D2·D3) |
 | 2 | **Scope**: per-post (one map per MDX file, showing that day's spots only) | Keeps data colocated with narrative; avoids spoiler of later days; no day-filter complexity |
-| 3 | **Data authoring**: inline `export const spots = [...]` in MDX | Matches the existing `PolaroidGalleryScrapbook` convention; single-file authoring flow |
+| ~~3~~ | ~~**Data authoring**: inline `export const spots` in MDX~~ → **대체됨.** `src/data/diarySpots/{slug}.ts` 편당 파일 + MDX 에서 import | 후속 playground 와 검증 스크립트가 타입 안전하게 import 로 읽는다 (impl-plan D5) |
 | 4 | **Interaction**: hover tooltip; click → smooth scroll to section anchor in the same post; mobile uses two-tap pattern (tap 1 = tooltip, tap 2 = scroll) | Keeps the reader inside the post; reference-style "click → external Google Maps" is hostile to narrative flow |
-| 5 | **Component**: generic `<TravelMap geoRegion="..." spots={...} />` with a preset registry | Next diary (`japan-around-trip/`) is imminent; registry gives typed preset names with autocompletion |
-| 6 | **Placement in post**: under `### 루트`, fully replacing the `<ImageLoader>` screenshot; the `방문한 곳` bullet list is also removed because the map's tooltips carry the same information | Eliminates duplicated data; tightens the structure to "루트 (map) → 일정 (photos + prose)" |
+| ~~5~~ | ~~**Component**: `<TravelMap geoRegion="..." />` + preset registry~~ → **폐기.** `spots[].prefecture` 가 어느 GeoJSON 을 쓸지 이미 알려주므로 레지스트리는 중복 | impl-plan D3 |
+| 6 | **Placement in post**: under `### 루트`, fully replacing the `<ImageLoader>` screenshot; the `방문한 곳` bullet list is also removed | Eliminates duplicated data; tightens the structure to "루트 (map) → 일정 (photos + prose)" |
+| 6-A | **[2026-08-17 개정]** 결정 6번의 전제 조건: `DiarySpot` 에 `city` · `prefecture` 필드를 **반드시 포함**한 뒤에만 `방문한 곳` 을 삭제할 것 | `방문한 곳` 의 `- 히로시마현 후쿠야마시` 줄에만 존재하는 도시/도도부현 정보가, 후속 기능 [japan-trip-map](./active/planning/2026-08-16/2026-08-16-japan-trip-map-final.md) 의 도도부현 레이어·도시 그룹핑 근거다. 필드 없이 삭제하면 소실된다 |
+| 6-B | **[2026-08-17 확정]** 삭제한 목록은 `<TravelMap>` 이 spots 에서 다시 렌더한다 (`VisitedList`). `mapUrl` 필드로 원문의 구글맵 링크까지 보존 | 6-A 가 지키려던 정보 손실이 0이 되고, spots 가 단일 SSOT 가 된다 (impl-plan D6) |
 | 7 | **Original screenshot**: preserved inside a `<details>` collapse rendered by the component (controlled via `originalImageSrc` prop) | The screenshot is the real Google Maps data snapshot; worth preserving but not worth showing by default |
 
 ### Secondary decisions (author's call)
@@ -43,6 +51,10 @@ We adopt the same rendering approach, but differ in several places (see §3).
 - **Dark mode**: CSS variable bindings (`--color-surface`, `--color-surface-2`, `--color-border`). The `.dark` class strategy is already in place project-wide.
 
 ## 4. Architecture
+
+> **[2026-08-17]** 아래 파일 배치와 §5 데이터 모델은 결정 1·3·5 대체로 낡았다.
+> 실제 구조는 [impl-plan 「파일 구조」 + Task 2](./interactive-travel-map-impl-plan.md) 를 본다.
+> 이 절은 「D3 은 수학만, DOM 은 React 소유」라는 설계 규칙 때문에 남긴다.
 
 ### File layout
 
