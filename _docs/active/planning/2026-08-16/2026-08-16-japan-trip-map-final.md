@@ -6,7 +6,8 @@
 
 ## 0. 인접 기능 — `interactive-travel-map` (별개 기능, 데이터·렌더링 코어를 공유)
 
-[`interactive-travel-map-plan.md`](../../../interactive-travel-map-plan.md) (2026-04-23, 설계 스펙) + [`interactive-travel-map-impl-plan.md`](../../../interactive-travel-map-impl-plan.md) (**2026-08-17 재작성**, 미구현 — `blog/src` 에 `TravelMap` 없음. Task 1(GeoJSON 분할)만 완료).
+→ [`reference/travel-map`](../../../reference/travel-map/2026-08-18-travel-map.md) (설계 스펙 + 구현 계획 + 저작 가이드 통합본, 2026-08-18).
+**구현 완료** — 브랜치 `feat/travel-map`, diary 7편 적용(`14_12-10`, `22_12-18` ~ `27_12-23`).
 
 **둘은 별개 기능이다.** (저자 확인) 단 2026-08-17 재결정으로 **데이터·GeoJSON·렌더링 코어를 공유**하게 됐다.
 
@@ -28,7 +29,7 @@
 **이 순서가 이 문서의 데이터 설계를 바꾼다.** 1번이 각 diary MDX에 `export const spots = [...]` 를 심고, 그 타입이 좌표를 들고 있기 때문이다:
 
 ```ts
-// 확정본 — interactive-travel-map-impl-plan.md Task 2
+// 확정본 — reference/travel-map §2
 export type DiarySpot = {
   name: string;
   lat: number;             // ← 좌표가 여기 들어온다
@@ -75,7 +76,7 @@ export type DiarySpot = {
 
 ### ✅ 2026-08-17 — 1번 기능의 디테일 확정. 이 계획이 받는 것이 늘었다
 
-1번의 구현 계획이 재작성됐다 → [`interactive-travel-map-impl-plan.md` §0 결정 로그](../../../interactive-travel-map-impl-plan.md). 이 계획에 직접 영향을 주는 확정 사항:
+1번이 구현 완료됐다 → [`reference/travel-map`](../../../reference/travel-map/2026-08-18-travel-map.md). 이 계획에 직접 영향을 주는 확정 사항:
 
 - **`city` / `prefecture` 필드 채택 확정** (위 요구가 받아들여졌다). `mapUrl` 도 추가돼 원문의 구글맵 단축 URL 이 보존된다
 - **대상이 `japan-around-trip` 27편으로 확정.** 원안은 `25-01-tokyo` 2편만이라 이 계획의 전제가 성립하지 않았다. `14_12-10` 파일럿 → 나머지 복제
