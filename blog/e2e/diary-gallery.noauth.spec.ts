@@ -41,7 +41,8 @@ test.describe('DiaryGallery - 23_12-19', () => {
 
   test('hero images render for each section', async ({ page }) => {
     const heroAlts = [
-      '12월 19일 루트',
+      // '12월 19일 루트' 는 여기 없다 — 루트 스크린샷은 <TravelMap> 의 <details> 안으로
+      // 들어가면서 alt 가 '여행 루트 (원본 구글 맵 스크린샷)' 이 됐다. travel-map spec 이 검사한다.
       '숙소 로비의 후로후시 온천 그림',
       '눈 쌓인 신아오모리 거리 풍경',
       '히로사키역의 유키미쿠',
@@ -112,10 +113,10 @@ test.describe('DiaryGallery - 23_12-19', () => {
     await expect(nextLink).toHaveAttribute('href', '/blog/diary/japan-around-trip/24_12-20');
   });
 
+  // 목록은 이제 본문 불릿이 아니라 <VisitedList> 가 spots 에서 렌더한다.
+  // 도시명은 원문 정정이 반영된 값이다 — 「후쿠우라지마」는 深浦町 의 음차 오류였다.
   test('route section has visited places list', async ({ page }) => {
-    const routeSection = page.locator('li', { hasText: '아오모리현 후쿠우라지마' }).first();
-    await expect(routeSection).toBeVisible();
-
+    await expect(page.locator('li', { hasText: '아오모리현 후카우라마치' }).first()).toBeVisible();
     await expect(page.locator('li', { hasText: '아오모리현 히로사키시' }).first()).toBeVisible();
     await expect(page.locator('li', { hasText: '아오모리현 아오모리시' }).first()).toBeVisible();
   });
@@ -127,7 +128,7 @@ test.describe('DiaryGallery - responsive', () => {
     await page.goto(DIARY_URL);
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByAltText('12월 19일 루트')).toBeAttached();
+    await expect(page.getByAltText('여행 루트 (원본 구글 맵 스크린샷)')).toBeAttached();
     await expect(page.getByRole('heading', { name: '루트 및 방문한 곳' })).toBeVisible();
   });
 });
