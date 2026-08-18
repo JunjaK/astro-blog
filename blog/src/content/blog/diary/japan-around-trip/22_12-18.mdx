@@ -10,6 +10,9 @@ thumbnail: /files/blog/diary/japan-around-trip/assets/CleanShot_2025-03-30_23.04
 import ImageLoader from '@/components/Blog/ImageLoader.astro';  
 import VideoLoader from '@/components/Blog/VideoLoader.astro';  
 import TableOfContents from '@/components/Blog/TableOfContents.astro';  
+
+import { TravelMap, VisitedList } from '@/components/Blog/TravelMap';
+import { spots } from '@/data/diarySpots/22_12-18';
   
 <TableOfContents>  
 - 루트 및 방문한 곳  
@@ -29,13 +32,12 @@ import TableOfContents from '@/components/Blog/TableOfContents.astro';
   
 ### 루트  
   
-<ImageLoader src="/files/blog/diary/japan-around-trip/assets/CleanShot_2025-03-30_21.58.59.webp" alt="CleanShot_2025-03-30_21.58.59" />  
+<TravelMap spots={spots} originalImageSrc="/files/blog/diary/japan-around-trip/assets/CleanShot_2025-03-30_21.58.59.webp" client:visible />
   
 ### 방문한 곳  
-  
-- 아오모리현 후쿠우라지마  
-  - 코가네자키 후로후시 온천 여관  
-  
+
+<VisitedList spots={spots} />
+
 ## 일정  
   
 ### 아침 온천욕  

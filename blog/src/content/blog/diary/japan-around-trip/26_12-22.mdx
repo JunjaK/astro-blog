@@ -9,6 +9,9 @@ thumbnail: /files/blog/diary/japan-around-trip/assets/CleanShot_2025-12-18_00.34
 import { DiaryCarousel } from '@/components/Blog/DiaryGallery';  
 import ImageLoader from '@/components/Blog/ImageLoader.astro';  
 import TableOfContents from '@/components/Blog/TableOfContents.astro';  
+
+import { TravelMap, VisitedList } from '@/components/Blog/TravelMap';
+import { spots } from '@/data/diarySpots/26_12-22';
   
 <TableOfContents>  
 - 루트 및 방문한 곳  
@@ -29,15 +32,12 @@ import TableOfContents from '@/components/Blog/TableOfContents.astro';
 ## 루트 및 방문한 곳  
   
 ### 루트  
-<ImageLoader src="/files/blog/diary/japan-around-trip/assets/CleanShot_2025-03-30_22.01.59.webp" alt="12월 22일 루트" />  
+<TravelMap spots={spots} originalImageSrc="/files/blog/diary/japan-around-trip/assets/CleanShot_2025-03-30_22.01.59.webp" client:visible />
   
 ### 방문한 곳  
-- 미야기현 센다이 시  
-  - 센다이역  
-  - 오야도 노노 (숙소)  
-  - 닛카 미야기쿄 증류소  
-  - 스시 요시카네  
-  
+
+<VisitedList spots={spots} />
+
 ## 일정  
   
 <DiaryCarousel client:visible content={[  

@@ -9,6 +9,9 @@ thumbnail: /files/blog/diary/japan-around-trip/assets/IMG_4450.webp
 import { DiaryCarousel } from '@/components/Blog/DiaryGallery';  
 import ImageLoader from '@/components/Blog/ImageLoader.astro';  
 import TableOfContents from '@/components/Blog/TableOfContents.astro';  
+
+import { TravelMap, VisitedList } from '@/components/Blog/TravelMap';
+import { spots } from '@/data/diarySpots/27_12-23';
   
 <TableOfContents>  
 - 루트 및 방문한 곳  
@@ -26,17 +29,12 @@ import TableOfContents from '@/components/Blog/TableOfContents.astro';
 ## 루트 및 방문한 곳  
   
 ### 루트  
-<ImageLoader src="/files/blog/diary/japan-around-trip/assets/CleanShot_2026-02-16_19.33.04@2x.webp" alt="12월 23일 루트" />  
+<TravelMap spots={spots} originalImageSrc="/files/blog/diary/japan-around-trip/assets/CleanShot_2026-02-16_19.33.04@2x.webp" client:visible />
   
 ### 방문한 곳  
-- 마츠시마 가이칸  
-  - 리큐 마츠시마 카이간 에키마에 지점  
-  - 마츠시마 카마보코 총본점  
-  - 후쿠우라지마  
-  - 고다이지  
-- 센다이시  
-  - 재패니즈 레스토랑 e  
-  
+
+<VisitedList spots={spots} />
+
 ## 일정  
   
   
